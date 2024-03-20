@@ -1,4 +1,4 @@
-package com.example.skysync.ui.theme
+package ch.epfl.skysync.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

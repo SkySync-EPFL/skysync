@@ -1,4 +1,4 @@
-package com.example.skysync.ui.theme
+package ch.epfl.skysync.ui.theme
 
 import android.app.Activity
 import android.os.Build

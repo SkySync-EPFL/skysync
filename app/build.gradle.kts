@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.skysync"
+    namespace = "ch.epfl.skysync"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.skysync"
+        applicationId = "ch.epfl.skysync"
         minSdk = 29
         targetSdk = 34
         versionCode = 1
