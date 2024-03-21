@@ -1,4 +1,4 @@
-package com.example.skysync.ui.theme
+package ch.epfl.skysync.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

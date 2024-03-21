@@ -1,4 +1,4 @@
-package com.example.skysync
+package ch.epfl.skysync
 
 import org.junit.Assert.*
 import org.junit.Test

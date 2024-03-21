@@ -3,15 +3,24 @@ plugins {
     id ("org.jetbrains.kotlin.android")
     id("com.ncorti.ktfmt.gradle") version "0.16.0"
     id("com.google.gms.google-services")
+    id("org.sonarqube") version "4.4.1.3373"
 
 }
 
+sonar {
+    properties {
+        property("sonar.projectKey", "SkySync-EPFL_skysync")
+        property("sonar.organization", "skysync-epfl")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
+}
+
 android {
-    namespace = "com.example.skysync"
+    namespace = "ch.epfl.skysync"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.skysync"
+        applicationId = "ch.epfl.skysync"
         minSdk = 29
         targetSdk = 34
         versionCode = 1
@@ -123,4 +132,33 @@ dependencies {
     implementation("com.google.maps.android:maps-compose:4.3.3")
 
 
+}
+
+tasks.register("jacocoTestReport", JacocoReport::class) {
+    mustRunAfter("testDebugUnitTest", "connectedDebugAndroidTest")
+
+    reports {
+        xml.required = true
+        html.required = true
+    }
+
+    val fileFilter = listOf(
+        "**/R.class",
+        "**/R$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        "android/**/*.*",
+    )
+    val debugTree = fileTree("${project.buildDir}/tmp/kotlin-classes/debug") {
+        exclude(fileFilter)
+    }
+    val mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories.setFrom(files(mainSrc))
+    classDirectories.setFrom(files(debugTree))
+    executionData.setFrom(fileTree(project.buildDir) {
+        include("outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec")
+        include("outputs/code_coverage/debugAndroidTest/connected/*/coverage.ec")
+    })
 }
