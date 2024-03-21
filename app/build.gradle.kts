@@ -9,9 +9,9 @@ plugins {
 
 sonar {
     properties {
-        property("sonar.projectKey", "myProjectKey")
-        property("sonar.organization", "myOrganization")
-        property("sonar.host.url", "myHostUrl")
+        property("sonar.projectKey", "SkySync-EPFL_skysync")
+        property("sonar.organization", "skysync-epfl")
+        property("sonar.host.url", "https://sonarcloud.io")
     }
 }
 
