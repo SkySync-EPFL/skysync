@@ -1,5 +1,8 @@
 # SkySync
 
+## product vision
+An application that simplifies and optimizes staff interactions and planning in a hot air baloon enterprise.
+
 ## Links
 
 * [Figma](https://www.figma.com/files/project/215563737/Team-project?fuid=1343517062055653454)
