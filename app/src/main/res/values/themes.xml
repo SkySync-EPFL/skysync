@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.SkySync" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Updated theme to use Material Components -->
+    <style name="Theme.SkySync" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. For example, you can set your colorPrimary, colorPrimaryDark, colorAccent, etc. -->
+    </style>
 </resources>
