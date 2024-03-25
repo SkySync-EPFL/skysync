@@ -1,5 +1,6 @@
 package ch.epfl.skysync.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -14,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.BottomBarScreen
 import ch.epfl.skysync.BottomNavGraph
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
   val navController = rememberNavController()
