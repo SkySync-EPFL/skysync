@@ -14,23 +14,19 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun FlightScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Blue),
-        contentAlignment = Alignment.Center
-    ) {
+  Box(
+      modifier = Modifier.fillMaxSize().background(Color.Blue),
+      contentAlignment = Alignment.Center) {
         Text(
             text = "Flight",
             fontSize = MaterialTheme.typography.h3.fontSize,
             fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-    }
+            color = Color.White)
+      }
 }
 
 @Composable
 @Preview
 fun FlightScreenPreview() {
-    FlightScreen()
+  FlightScreen()
 }

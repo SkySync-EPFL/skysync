@@ -14,23 +14,19 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun HomeScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Magenta),
-        contentAlignment = Alignment.Center
-    ) {
+  Box(
+      modifier = Modifier.fillMaxSize().background(Color.Magenta),
+      contentAlignment = Alignment.Center) {
         Text(
             text = "HOME",
             fontSize = MaterialTheme.typography.h3.fontSize,
             fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-    }
+            color = Color.White)
+      }
 }
 
 @Composable
 @Preview
 fun HomeScreenPreview() {
-    HomeScreen()
+  HomeScreen()
 }

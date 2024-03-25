@@ -14,23 +14,19 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ChatScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Red),
-        contentAlignment = Alignment.Center
-    ) {
+  Box(
+      modifier = Modifier.fillMaxSize().background(Color.Red),
+      contentAlignment = Alignment.Center) {
         Text(
             text = "Chat",
             fontSize = MaterialTheme.typography.h3.fontSize,
             fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-    }
+            color = Color.White)
+      }
 }
 
 @Composable
 @Preview
 fun ChatScreenPreview() {
-    ChatScreen()
+  ChatScreen()
 }

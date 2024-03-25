@@ -32,11 +32,10 @@ class MainActivity : ComponentActivity() {
 
     // Initialize the signInLauncher
     signInLauncher =
-      registerForActivityResult(FirebaseAuthUIActivityResultContract()) { res ->
-        this.onSignInResult(res)
-      }
+        registerForActivityResult(FirebaseAuthUIActivityResultContract()) { res ->
+          this.onSignInResult(res)
+        }
 
     setContent { SkySyncTheme { LoginScreen(signInLauncher = signInLauncher, user = user.value) } }
   }
-
 }
