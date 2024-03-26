@@ -23,12 +23,18 @@ class AvailabilityTable(private val db: Database) {
    *
    * This will generate a new id for this availability and override any previously set id.
    *
+   * @param personId The ID of the person whose availability it is
    * @param item The availability to add to the database
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  fun add(item: Availability, onCompletion: () -> Unit, onError: (Exception) -> Unit) {
-    db.add(PATH, AvailabilitySchema.fromModel(item), { onCompletion() }, onError)
+  fun add(
+      personId: String,
+      item: Availability,
+      onCompletion: () -> Unit,
+      onError: (Exception) -> Unit
+  ) {
+    db.add(PATH, AvailabilitySchema.fromModel(personId, item), { onCompletion() }, onError)
   }
 
   companion object {

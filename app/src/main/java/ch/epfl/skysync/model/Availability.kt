@@ -5,7 +5,7 @@ import java.util.Date
 /** Represent the availability of a person for some period */
 data class Availability(
     val id: String = UNSET_ID,
-    val personId: String,
+    val status: AvailabilityStatus,
     val from: Date,
     val to: Date
 )
