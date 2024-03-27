@@ -8,6 +8,10 @@ class MockDatabase : Database {
   private var idCounter = 0
   private var state = hashMapOf<String, Any>()
 
+    fun getState(): HashMap<String, Any> {
+        return state
+    }
+
   private fun getKey(path: String, id: String): String {
     return "$path/$id"
   }
@@ -21,7 +25,7 @@ class MockDatabase : Database {
     val key = getKey(path, idCounter.toString())
     state[key] = item
     idCounter += 1
-    onCompletion
+    onCompletion()
   }
 
   override fun <T : Any> get(
