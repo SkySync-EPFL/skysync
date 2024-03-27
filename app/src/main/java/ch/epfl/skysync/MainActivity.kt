@@ -6,6 +6,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.mutableStateOf
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
+import ch.epfl.skysync.navigation.Route
+import ch.epfl.skysync.navigation.homeGraph
+import ch.epfl.skysync.screens.CalendarScreen
+import ch.epfl.skysync.screens.ChatScreen
+import ch.epfl.skysync.screens.FlightScreen
+import ch.epfl.skysync.screens.HomeScreen
 import ch.epfl.skysync.screens.LoginScreen
 import ch.epfl.skysync.ui.theme.SkySyncTheme
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
@@ -36,6 +46,19 @@ class MainActivity : ComponentActivity() {
           this.onSignInResult(res)
         }
 
-    setContent { SkySyncTheme { LoginScreen(signInLauncher = signInLauncher, user = user.value) } }
+    setContent {
+      SkySyncTheme {
+        val navController = rememberNavController()
+        NavHost(navController = navController, startDestination = Route.LOGIN) {
+            homeGraph(navController)
+            composable(Route.LOGIN){
+              LoginScreen(signInLauncher = signInLauncher, user = user.value, navController)
+            }
+
+
+        }
+
+      }
+    }
   }
 }

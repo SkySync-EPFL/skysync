@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -18,11 +19,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import ch.epfl.skysync.navigation.Route
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseUser
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(signInLauncher: ActivityResultLauncher<Intent>, user: FirebaseUser?) {
+fun LoginScreen(
+    signInLauncher: ActivityResultLauncher<Intent>,
+    user: FirebaseUser?,
+    navController: NavController
+) {
+
   val providers =
       listOf(
           // Google sign-in
@@ -44,7 +53,10 @@ fun LoginScreen(signInLauncher: ActivityResultLauncher<Intent>, user: FirebaseUs
 
           if (user != null) {
             // logged in
-            Text(text = "Welcome")
+              navController.navigate(Route.HOME){
+                  popUpTo(Route.LOGIN)
+                  launchSingleTop = true
+              }
           } else {
             // not logged in
             Text(text = "You need to log in")
