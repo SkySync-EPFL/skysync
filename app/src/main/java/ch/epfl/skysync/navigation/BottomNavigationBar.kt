@@ -19,22 +19,22 @@ import ch.epfl.skysync.R
 
 @Composable
 fun BottomBar(navController: NavHostController) {
-    val screens =
-        listOf(
-            BottomBarScreen.Home,
-            BottomBarScreen.Flight,
-            BottomBarScreen.Chat,
-            BottomBarScreen.Calendar,
-        )
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+  val screens =
+      listOf(
+          BottomBarScreen.Home,
+          BottomBarScreen.Flight,
+          BottomBarScreen.Chat,
+          BottomBarScreen.Calendar,
+      )
+  val navBackStackEntry by navController.currentBackStackEntryAsState()
+  val currentDestination = navBackStackEntry?.destination
 
-    NavigationBar {
-        screens.forEach { screen ->
-            AddItem(
-                screen = screen, currentDestination = currentDestination, navController = navController)
-        }
+  NavigationBar {
+    screens.forEach { screen ->
+      AddItem(
+          screen = screen, currentDestination = currentDestination, navController = navController)
     }
+  }
 }
 
 @Composable
@@ -43,30 +43,31 @@ fun RowScope.AddItem(
     currentDestination: NavDestination?,
     navController: NavController
 ) {
-    NavigationBarItem(
-        label = { Text(text = screen.title) },
-        icon = {
-            Icon(painter = painterResource(id = screen.icon), contentDescription = "Navigation Icon")
-        },
-        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-        onClick = {
-            navController.navigate(screen.route) {
-                popUpTo(navController.graph.findStartDestination().id)
-                launchSingleTop = true
-            }
-        })
+  NavigationBarItem(
+      label = { Text(text = screen.title) },
+      icon = {
+        Icon(painter = painterResource(id = screen.icon), contentDescription = "Navigation Icon")
+      },
+      selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+      onClick = {
+        navController.navigate(screen.route) {
+          popUpTo(navController.graph.findStartDestination().id)
+          launchSingleTop = true
+        }
+      })
 }
 
 sealed class BottomBarScreen(val route: String, val title: String, @DrawableRes val icon: Int) {
-  object Home : BottomBarScreen(route = Route.HOME, title = "Home", icon = R.drawable.baseline_home_24)
+  object Home :
+      BottomBarScreen(route = Route.HOME, title = "Home", icon = R.drawable.baseline_home_24)
 
   object Flight :
       BottomBarScreen(route = Route.FLIGHT, title = "Flight", icon = R.drawable.baseline_flight_24)
 
-  object Chat : BottomBarScreen(route = Route.CHAT, title = "Chat", icon = R.drawable.baseline_chat_24)
+  object Chat :
+      BottomBarScreen(route = Route.CHAT, title = "Chat", icon = R.drawable.baseline_chat_24)
 
   object Calendar :
       BottomBarScreen(
-          route = Route.CALENDAR, title = "Calendar", icon = R.drawable.baseline_calendar_month_24
-      )
+          route = Route.CALENDAR, title = "Calendar", icon = R.drawable.baseline_calendar_month_24)
 }

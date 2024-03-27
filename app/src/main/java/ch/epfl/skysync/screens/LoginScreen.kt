@@ -53,10 +53,10 @@ fun LoginScreen(
 
           if (user != null) {
             // logged in
-              navController.navigate(Route.HOME){
-                  popUpTo(Route.LOGIN)
-                  launchSingleTop = true
-              }
+            navController.navigate(Route.HOME) {
+              popUpTo(Route.LOGIN)
+              launchSingleTop = true
+            }
           } else {
             // not logged in
             Text(text = "You need to log in")
