@@ -2,9 +2,8 @@ package ch.epfl.skysync.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,7 +16,7 @@ import ch.epfl.skysync.navigation.BottomBar
 @Composable
 fun FlightScreen(navController: NavHostController) {
   Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
-    androidx.compose.material3.Text(
+    Text(
         modifier = Modifier.padding(padding),
         text = "Flight",
         fontSize = androidx.compose.material3.MaterialTheme.typography.displayLarge.fontSize,
