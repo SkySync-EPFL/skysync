@@ -1,8 +1,7 @@
 package ch.epfl.skysync.model
 
-/**
- * Represent the day in two time slots, morning (AM) and afternoon (PM)
- */
+/** Represent the day in two time slots, morning (AM) and afternoon (PM) */
 enum class TimeSlot {
-    AM, PM
+  AM,
+  PM
 }

@@ -19,24 +19,24 @@ data class AvailabilitySchema(
     // and will lead to easier queries
     val date: Date? = null
 ) : Schema<Availability> {
-    override fun toModel(): Availability {
-        return Availability(
-            id!!,
-            status!!,
-            timeSlot!!,
-            (date!!).toInstant().atZone(ZoneOffset.systemDefault()).toLocalDate(),
-        )
-    }
+  override fun toModel(): Availability {
+    return Availability(
+        id!!,
+        status!!,
+        timeSlot!!,
+        (date!!).toInstant().atZone(ZoneOffset.systemDefault()).toLocalDate(),
+    )
+  }
 
-    companion object {
-        fun fromModel(personId: String, model: Availability): AvailabilitySchema {
-            return AvailabilitySchema(
-                model.id,
-                personId,
-                model.status,
-                model.timeSlot,
-                Date.from(model.date.atStartOfDay(ZoneOffset.UTC).toInstant()),
-            )
-        }
+  companion object {
+    fun fromModel(personId: String, model: Availability): AvailabilitySchema {
+      return AvailabilitySchema(
+          model.id,
+          personId,
+          model.status,
+          model.timeSlot,
+          Date.from(model.date.atStartOfDay(ZoneOffset.UTC).toInstant()),
+      )
     }
+  }
 }

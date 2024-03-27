@@ -8,9 +8,9 @@ class MockDatabase : Database {
   private var idCounter = 0
   private var state = hashMapOf<String, Any>()
 
-    fun getState(): HashMap<String, Any> {
-        return state
-    }
+  fun getState(): HashMap<String, Any> {
+    return state
+  }
 
   private fun getKey(path: String, id: String): String {
     return "$path/$id"
