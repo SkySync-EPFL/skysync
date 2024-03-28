@@ -1,8 +1,8 @@
 package ch.epfl.skysync.database.schemas
 
-import ch.epfl.skysync.model.Availability
-import ch.epfl.skysync.model.AvailabilityStatus
-import ch.epfl.skysync.model.TimeSlot
+import ch.epfl.skysync.dataModels.calendarModels.Availability
+import ch.epfl.skysync.dataModels.calendarModels.AvailabilityStatus
+import ch.epfl.skysync.dataModels.calendarModels.TimeSlot
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.util.Date

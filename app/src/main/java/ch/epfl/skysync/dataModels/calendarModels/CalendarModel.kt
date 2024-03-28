@@ -3,32 +3,6 @@ package ch.epfl.skysync.dataModels.calendarModels
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-data class Availability(
-    val id: String,
-    val status: AvailabilityStatus,
-    override val timeSlot: TimeSlot,
-    override val date: LocalDate,
-) : CalendarViewable {
-    fun setStatus(status: AvailabilityStatus): Availability {
-        if (status == this.status) return this
-        return Availability(id, status, timeSlot, date)
-    }
-}
-
-enum class AvailabilityStatus {
-    OK,
-    MAYBE,
-    NO
-}
-
-
-interface CalendarViewable{
-    val date: LocalDate
-    val timeSlot: TimeSlot
-}
-
-
-
 abstract class CalendarModel<T: CalendarViewable>{
     protected val cells: MutableList<T> = mutableListOf()
     var size: Int = cells.size

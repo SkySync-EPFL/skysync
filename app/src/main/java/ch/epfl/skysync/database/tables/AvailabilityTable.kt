@@ -2,7 +2,7 @@ package ch.epfl.skysync.database.tables
 
 import ch.epfl.skysync.database.Database
 import ch.epfl.skysync.database.schemas.AvailabilitySchema
-import ch.epfl.skysync.model.Availability
+import ch.epfl.skysync.dataModels.calendarModels.Availability
 
 /** Represent the "availability" table */
 class AvailabilityTable(private val db: Database) {

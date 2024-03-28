@@ -1,4 +1,4 @@
-package ch.epfl.skysync.model
+package ch.epfl.skysync.dataModels.calendarModels
 
 /**
  * Represent three statuses: "OK" for available, "MAYBE" for pending confirmation, and "NO" for not
