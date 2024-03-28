@@ -7,8 +7,8 @@ import java.time.LocalDate
 data class Availability(
     val id: String = UNSET_ID,
     val status: AvailabilityStatus,
-    val timeSlot: TimeSlot,
-    val date: LocalDate
+    override val timeSlot: TimeSlot,
+    override val date: LocalDate
 ): CalendarViewable {
     fun setStatus(status: AvailabilityStatus): Availability {
         if (status == this.status) return this
