@@ -12,34 +12,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ch.epfl.skysync.dataModels.calendarModels.AvailabilityStatus
+import ch.epfl.skysync.dataModels.calendarModels.TimeSlot
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+fun getAvailabilityStatus(date : LocalDateTime, slot : TimeSlot): AvailabilityStatus{
+    return AvailabilityStatus.OK
+}
+
+fun nextAvailabilityStatus(date : LocalDateTime, slot : TimeSlot): AvailabilityStatus{
+    return AvailabilityStatus.OK
+}
 @Composable
 fun showGreenTile(date: LocalDateTime, size: Dp) {
-    if (date.dayOfWeek == DayOfWeek.MONDAY && date.hour < 12) {
-        Box(
-            modifier = Modifier.size(size).background(Color.Green),
-        )
-    }
-    else if (date.dayOfWeek == DayOfWeek.TUESDAY && date.hour >= 12) {
-        Box(
-            modifier = Modifier.size(size).background(Color.Red),
-        )
-    }
-    else if (date.dayOfWeek == DayOfWeek.WEDNESDAY && date.hour >= 12 ) {
-        Box(
-            modifier = Modifier.size(size).background(Color.Blue),
-        )
-    }
-    else {
-        Box(
-            modifier = Modifier.size(size).background(Color.White),
-        )
-    }
+    Box(
+            modifier = Modifier.size(size).background(Color.White),)
+
 }
 
 
