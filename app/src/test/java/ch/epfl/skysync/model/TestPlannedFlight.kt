@@ -1,5 +1,6 @@
 package ch.epfl.skysync.model
 
+import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
@@ -29,7 +30,7 @@ class TestPlannedFlight {
       Balloon("QQP", BalloonQualification.LARGE),
       Basket("basket 1", hasDoor = false),
       LocalDate.now(),
-      isMorningFlight = true,
+      timeSlot = TimeSlot.AM,
         listOf(Vehicle("sprinter 1"))
     )
 

@@ -1,16 +1,17 @@
 package ch.epfl.skysync.models.flight
 
+import ch.epfl.skysync.models.calendar.TimeSlot
 import java.time.LocalDate
 
 class PlannedFlight(
     override val id: Int,
-    override val n_passengers: Int,
+    override val nPassengers: Int,
     override val team: Team,
     override val flightType: FlightType,
     override val balloon: Balloon?,
     override val basket: Basket?,
     override val date: LocalDate,
-    override val isMorningFlight: Boolean,
+    override val timeSlot: TimeSlot,
     override val vehicles: List<Vehicle>
 ): Flight {
     init {
@@ -21,7 +22,7 @@ class PlannedFlight(
 
     fun readyToBeConfirmed(): Boolean {
         return team.isComplete()  &&
-                n_passengers > 0 &&
+                nPassengers > 0 &&
                 balloon != null &&
                 basket != null
     }
