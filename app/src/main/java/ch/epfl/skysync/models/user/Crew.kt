@@ -7,11 +7,11 @@ import ch.epfl.skysync.models.flight.RoleType
 class Crew(
     override val firstname: String,
     override val lastname: String,
-    override val userId: String,
+    override val id: String,
     override val availabilities: AvailabilityCalendar,
     override val assignedFlights: FlightCalendar,
 
-) : User {
+    ) : User {
 
     private val roleTypes: Set<RoleType> = setOf(RoleType.CREW)
 
