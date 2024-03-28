@@ -1,0 +1,11 @@
+package ch.epfl.skysync.dataModels.calendarModels
+
+/**
+ * Represent three statuses: "OK" for available, "MAYBE" for pending confirmation, and "NO" for not
+ * available
+ */
+enum class AvailabilityStatus {
+  OK,
+  MAYBE,
+  NO
+}
