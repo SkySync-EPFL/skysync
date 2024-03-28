@@ -1,9 +1,9 @@
 package ch.epfl.skysync.database.schemas
 
 import ch.epfl.skysync.database.Schema
-import ch.epfl.skysync.model.Availability
-import ch.epfl.skysync.model.AvailabilityStatus
-import ch.epfl.skysync.model.TimeSlot
+import ch.epfl.skysync.models.calendar.Availability
+import ch.epfl.skysync.models.calendar.AvailabilityStatus
+import ch.epfl.skysync.models.calendar.TimeSlot
 import com.google.firebase.firestore.DocumentId
 import java.time.ZoneOffset
 import java.util.Date
