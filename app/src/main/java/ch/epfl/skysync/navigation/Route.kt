@@ -1,5 +1,6 @@
 package ch.epfl.skysync.navigation
 
+/** Define the paths used for the navigation in the app */
 object Route {
   const val MAIN = "Main graph"
   const val HOME = "Home"

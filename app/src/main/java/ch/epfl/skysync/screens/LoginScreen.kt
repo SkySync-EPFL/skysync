@@ -19,18 +19,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import ch.epfl.skysync.navigation.Route
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseUser
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
-    signInLauncher: ActivityResultLauncher<Intent>,
-    user: FirebaseUser?,
-    navController: NavController
-) {
+fun LoginScreen(signInLauncher: ActivityResultLauncher<Intent>) {
 
   val providers =
       listOf(
@@ -50,17 +44,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.width(8.dp))
             Text("Sign in with Google")
           }
-
-          if (user != null) {
-            // logged in
-            navController.navigate(Route.HOME) {
-              popUpTo(Route.LOGIN)
-              launchSingleTop = true
-            }
-          } else {
-            // not logged in
-            Text(text = "You need to log in")
-          }
+          Text(text = "You need to log in")
         }
   }
 }

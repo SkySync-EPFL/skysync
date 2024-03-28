@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ch.epfl.skysync.navigation.MainGraph
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.screens.LoginScreen
@@ -44,12 +45,11 @@ class MainActivity : ComponentActivity() {
     setContent {
       SkySyncTheme {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = Route.LOGIN) {
-          homeGraph(navController)
-          composable(Route.LOGIN) {
-            LoginScreen(signInLauncher = signInLauncher, user = user.value, navController)
-          }
-        }
+        MainGraph(
+          navHostController = navController,
+          signInLauncher = signInLauncher,
+          user = user.value
+        )
       }
     }
   }
