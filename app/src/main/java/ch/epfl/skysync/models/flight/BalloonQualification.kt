@@ -7,10 +7,7 @@ enum class BalloonQualification {
     SMALL, MEDIUM, LARGE;
 
     fun canFlyThisBalloon(user: User): Boolean {
-        if (user is Pilot) {
-            return true
-            }
-        return false
-
+        return user is Pilot
+        //TODO: check that ballons Qualification is higher or equal than balloon
     }
 }
