@@ -1,12 +1,12 @@
 package ch.epfl.skysync.model
 
-import ch.epfl.skysync.dataModels.flightModels.Balloon
-import ch.epfl.skysync.dataModels.flightModels.BalloonQualification
-import ch.epfl.skysync.dataModels.flightModels.Basket
-import ch.epfl.skysync.dataModels.flightModels.FlightType
-import ch.epfl.skysync.dataModels.flightModels.PlannedFlight
-import ch.epfl.skysync.dataModels.flightModels.Team
-import ch.epfl.skysync.dataModels.flightModels.Vehicle
+import ch.epfl.skysync.models.flight.Balloon
+import ch.epfl.skysync.models.flight.BalloonQualification
+import ch.epfl.skysync.models.flight.Basket
+import ch.epfl.skysync.models.flight.FlightType
+import ch.epfl.skysync.models.flight.PlannedFlight
+import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.models.flight.Vehicle
 import org.junit.Assert.*
 import org.junit.Test
 import java.time.LocalDate

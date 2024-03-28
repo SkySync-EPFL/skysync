@@ -1,9 +1,9 @@
 package ch.epfl.skysync.model
 
-import ch.epfl.skysync.dataModels.calendarModels.Availability
-import ch.epfl.skysync.dataModels.calendarModels.AvailabilityCalendar
-import ch.epfl.skysync.dataModels.calendarModels.AvailabilityStatus
-import ch.epfl.skysync.dataModels.calendarModels.TimeSlot
+import ch.epfl.skysync.models.calendar.Availability
+import ch.epfl.skysync.models.calendar.AvailabilityCalendar
+import ch.epfl.skysync.models.calendar.AvailabilityStatus
+import ch.epfl.skysync.models.calendar.TimeSlot
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test

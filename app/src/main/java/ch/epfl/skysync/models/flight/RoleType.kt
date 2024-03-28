@@ -1,4 +1,4 @@
-package ch.epfl.skysync.dataModels.flightModels
+package ch.epfl.skysync.models.flight
 
 enum class RoleType {
     PILOT,

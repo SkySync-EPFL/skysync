@@ -1,8 +1,8 @@
-package ch.epfl.skysync.dataModels.userModels
+package ch.epfl.skysync.models.user
 
-import ch.epfl.skysync.dataModels.calendarModels.AvailabilityCalendar
-import ch.epfl.skysync.dataModels.calendarModels.FlightCalendar
-import ch.epfl.skysync.dataModels.flightModels.RoleType
+import ch.epfl.skysync.models.calendar.AvailabilityCalendar
+import ch.epfl.skysync.models.calendar.FlightCalendar
+import ch.epfl.skysync.models.flight.RoleType
 
 class Crew(
     override val firstname: String,

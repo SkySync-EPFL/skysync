@@ -1,4 +1,4 @@
-package ch.epfl.skysync.dataModels.flightModels
+package ch.epfl.skysync.models.flight
 
 data class FlightType(
     val name: String,

@@ -1,7 +1,6 @@
-package ch.epfl.skysync.dataModels.flightModels
+package ch.epfl.skysync.models.flight
 
-import ch.epfl.skysync.dataModels.flightModels.RoleType
-import ch.epfl.skysync.dataModels.userModels.User
+import ch.epfl.skysync.models.user.User
 
 class Role(
     val roleType: RoleType,

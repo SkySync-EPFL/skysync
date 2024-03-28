@@ -1,4 +1,4 @@
-package ch.epfl.skysync.dataModels.calendarModels
+package ch.epfl.skysync.models.calendar
 
 import com.google.common.collect.ImmutableList
 import java.time.LocalDate

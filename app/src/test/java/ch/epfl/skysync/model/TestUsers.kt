@@ -1,19 +1,14 @@
 package ch.epfl.skysync.model
 
-import ch.epfl.skysync.dataModels.calendarModels.Availability
-import ch.epfl.skysync.dataModels.calendarModels.AvailabilityCalendar
-import ch.epfl.skysync.dataModels.calendarModels.AvailabilityStatus
-import ch.epfl.skysync.dataModels.calendarModels.FlightCalendar
-import ch.epfl.skysync.dataModels.calendarModels.TimeSlot
-import ch.epfl.skysync.dataModels.flightModels.BalloonQualification
-import ch.epfl.skysync.dataModels.userModels.Admin
-import ch.epfl.skysync.dataModels.userModels.Crew
-import ch.epfl.skysync.dataModels.userModels.Pilot
-import ch.epfl.skysync.dataModels.userModels.UNSET_ID
-import org.junit.Assert.*
+import ch.epfl.skysync.models.calendar.AvailabilityCalendar
+import ch.epfl.skysync.models.calendar.FlightCalendar
+import ch.epfl.skysync.models.flight.BalloonQualification
+import ch.epfl.skysync.models.user.Admin
+import ch.epfl.skysync.models.user.Crew
+import ch.epfl.skysync.models.user.Pilot
+import ch.epfl.skysync.models.user.UNSET_ID
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDate
 
 /**
  * Example local unit test, which will execute on the development machine (host).

@@ -1,4 +1,4 @@
-package ch.epfl.skysync.dataModels.calendarModels
+package ch.epfl.skysync.models.calendar
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit

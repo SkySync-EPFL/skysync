@@ -1,4 +1,4 @@
-package ch.epfl.skysync.dataModels.flightModels
+package ch.epfl.skysync.models.flight
 
 data class Vehicle(val name:String)
 

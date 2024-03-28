@@ -1,6 +1,6 @@
-package ch.epfl.skysync.dataModels.calendarModels
+package ch.epfl.skysync.models.calendar
 
-import ch.epfl.skysync.dataModels.flightModels.Flight
+import ch.epfl.skysync.models.flight.Flight
 import com.google.common.collect.ImmutableList
 import java.time.LocalDate
 

@@ -1,4 +1,4 @@
-package ch.epfl.skysync.dataModels.flightModels
+package ch.epfl.skysync.models.flight
 
 data class Basket(val name:String, val hasDoor: Boolean)
 

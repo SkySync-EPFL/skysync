@@ -1,6 +1,6 @@
-package ch.epfl.skysync.dataModels.calendarModels
+package ch.epfl.skysync.models.calendar
 
-import ch.epfl.skysync.dataModels.userModels.UNSET_ID
+import ch.epfl.skysync.models.user.UNSET_ID
 import java.time.LocalDate
 
 /** Represent the availability of a person for some period */
