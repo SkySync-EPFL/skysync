@@ -1,5 +1,4 @@
 package ch.epfl.skysync.screens
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,9 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.dataModels.calendarModels.AvailabilityStatus
 import ch.epfl.skysync.dataModels.calendarModels.TimeSlot
-import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 /**
@@ -29,7 +26,7 @@ import java.util.Locale
  * @return The availability status for the specified date and time slot.
  */
 fun getAvailabilityStatus(date : LocalDate, slot : TimeSlot): AvailabilityStatus{
-    return AvailabilityStatus.OK
+    return AvailabilityStatus.MAYBE
 }
 /**
  * Determines the availability status for a given date and time slot.
@@ -50,7 +47,7 @@ fun nextAvailabilityStatus(date : LocalDate, slot : TimeSlot): AvailabilityStatu
  * @param size The size of the tile.
  */
 @Composable
-fun showGreenTile(date: LocalDate, slot : TimeSlot, size: Dp) {
+fun showTile(date: LocalDate, slot : TimeSlot, size: Dp) {
     var availabilityStatus by remember { mutableStateOf(getAvailabilityStatus(date, slot)) }
 
     val backgroundColor = when (availabilityStatus) {
@@ -76,9 +73,9 @@ fun showGreenTile(date: LocalDate, slot : TimeSlot, size: Dp) {
 
 
 @Composable
-fun showCalendar(){
+fun showCalendarAvailabilities(){
     Calendar {
-             date,slot,size -> showGreenTile(date, slot,size)
+             date,slot,size -> showTile(date, slot,size)
     }
 }
 
