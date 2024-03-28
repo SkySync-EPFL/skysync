@@ -1,4 +1,7 @@
-package ch.epfl.skysync.dataModels
+package ch.epfl.skysync.dataModels.flightModels
+
+import ch.epfl.skysync.dataModels.userModels.Pilot
+import ch.epfl.skysync.dataModels.userModels.User
 
 enum class BalloonQualification {
     SMALL, MEDIUM, LARGE;

@@ -1,7 +1,6 @@
-package ch.epfl.skysync.dataModels
+package ch.epfl.skysync.dataModels.flightModels
 
 import java.time.LocalDate
-import java.util.Date
 
 class PlannedFlight(
     override val id: Int,
