@@ -1,5 +1,7 @@
 package ch.epfl.skysync.screens
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -19,26 +21,65 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-
-fun getAvailabilityStatus(date : LocalDateTime, slot : TimeSlot): AvailabilityStatus{
+/**
+ * Determines the availability status for a given date and time slot.
+ *
+ * @param date The date for which availability status is being checked.
+ * @param slot The time slot for which availability status is being checked.
+ * @return The availability status for the specified date and time slot.
+ */
+fun getAvailabilityStatus(date : LocalDate, slot : TimeSlot): AvailabilityStatus{
+    return AvailabilityStatus.OK
+}
+/**
+ * Determines the availability status for a given date and time slot.
+ *
+ * @param date The date for which availability status is being checked.
+ * @param slot The time slot for which availability status is being checked.
+ * @return The availability status for the specified date and time slot.
+ */
+fun nextAvailabilityStatus(date : LocalDate, slot : TimeSlot): AvailabilityStatus{
     return AvailabilityStatus.OK
 }
 
-fun nextAvailabilityStatus(date : LocalDateTime, slot : TimeSlot): AvailabilityStatus{
-    return AvailabilityStatus.OK
-}
+/**
+ * Composable function to display a colored tile indicating availability status.
+ *
+ * @param date The date for which availability status is being displayed.
+ * @param slot The time slot for which availability status is being displayed.
+ * @param size The size of the tile.
+ */
 @Composable
-fun showGreenTile(date: LocalDateTime, size: Dp) {
-    Box(
-            modifier = Modifier.size(size).background(Color.White),)
+@Composable
+fun showGreenTile(date: LocalDate, slot : TimeSlot, size: Dp) {
+    var availabilityStatus by remember { mutableStateOf(getAvailabilityStatus(date, slot)) }
 
+    val backgroundColor = when (availabilityStatus) {
+        AvailabilityStatus.OK -> Color.Green
+        AvailabilityStatus.MAYBE -> Color.Blue
+        AvailabilityStatus.NO -> Color.Red
+    }
+
+    Box(
+        modifier = Modifier
+            .size(size)
+            .background(backgroundColor)
+            .clickable {
+                availabilityStatus = nextAvailabilityStatus(date, slot)
+            }
+    )
 }
+
+
+
+
+
 
 
 @Composable
 fun showCalendar(){
     Calendar {
-             date, size -> showGreenTile(date, size)
+             date,slot,size -> showGreenTile(date, slot,size)
     }
 }
 
@@ -50,7 +91,7 @@ fun showCalendar(){
  * on the day and if it's AM/PM (AM=0:00 and PM=12:00).
  */
 @Composable
-fun Calendar(modularShow: @Composable (LocalDateTime, Dp) -> Unit) {
+fun Calendar(modularShow: @Composable (LocalDate,TimeSlot, Dp) -> Unit) {
   var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(LocalDate.now())) }
 
   Column(
@@ -76,7 +117,7 @@ fun Calendar(modularShow: @Composable (LocalDateTime, Dp) -> Unit) {
  * on the day and if it's AM/PM (AM=0:00 and PM=12:00).
  */
 @Composable
-fun WeekView(startOfWeek: LocalDate, modularShow: @Composable (LocalDateTime, Dp) -> Unit) {
+fun WeekView(startOfWeek: LocalDate, modularShow: @Composable (LocalDate,TimeSlot, Dp) -> Unit) {
   val weekDays = (0..6).map { startOfWeek.plusDays(it.toLong()) }
   Column {
     Row(
@@ -97,8 +138,8 @@ fun WeekView(startOfWeek: LocalDate, modularShow: @Composable (LocalDateTime, Dp
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 modifier = Modifier.width(120.dp))
-            modularShow(day.atStartOfDay(), 25.dp)
-            modularShow(day.atTime(12, 0), 25.dp)
+            modularShow(day,TimeSlot.AM, 25.dp)
+            modularShow(day,TimeSlot.PM, 25.dp)
           }
     }
   }
