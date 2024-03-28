@@ -50,7 +50,6 @@ fun nextAvailabilityStatus(date : LocalDate, slot : TimeSlot): AvailabilityStatu
  * @param size The size of the tile.
  */
 @Composable
-@Composable
 fun showGreenTile(date: LocalDate, slot : TimeSlot, size: Dp) {
     var availabilityStatus by remember { mutableStateOf(getAvailabilityStatus(date, slot)) }
 
