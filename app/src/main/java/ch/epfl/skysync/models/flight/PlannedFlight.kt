@@ -6,7 +6,7 @@ import java.time.LocalDate
 class PlannedFlight(
     override val id: Int,
     override val nPassengers: Int,
-    override val team: Team,
+    override val team: Team = Team(BASE_ROLES),
     override val flightType: FlightType,
     override val balloon: Balloon?,
     override val basket: Basket?,
@@ -14,12 +14,6 @@ class PlannedFlight(
     override val timeSlot: TimeSlot,
     override val vehicles: List<Vehicle>
 ): Flight {
-    init {
-        if (team.hasNoRoles()) {
-            team.roles.addAll(BASE_ROLES)
-        }
-    }
-
     fun readyToBeConfirmed(): Boolean {
         return team.isComplete()  &&
                 nPassengers > 0 &&

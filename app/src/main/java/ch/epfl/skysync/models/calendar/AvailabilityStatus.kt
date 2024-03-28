@@ -7,5 +7,13 @@ package ch.epfl.skysync.models.calendar
 enum class AvailabilityStatus {
   OK,
   MAYBE,
-  NO
+  NO;
+
+  fun next(): AvailabilityStatus {
+    return when (this) {
+      OK -> MAYBE
+      MAYBE -> NO
+      NO -> OK
+    }
+  }
 }
