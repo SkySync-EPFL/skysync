@@ -19,16 +19,16 @@ Each user has a set of roles (crew, pilot, admin, maitre fondu...).
 
 ### Crew
 
-Crew members read have access to their personal data and to information relating to the flight to which they are assigned.
+Crew members are responsible for preparing the flight, (includes arranging equipment and food for the journey). During the flight, they either follow the balloon in a vehicle or remain inside to cater to the passengers. After the theft, they are responsible for storing the equipment.. read have access to their personal data and to information relating to the flight to which they are assigned.
 
 ### Pilot
 
-Pilots members read have access to their personal data and to information relating to the flight to which they are assigned.
+Pilots are the only ones legally entitled to drive a hot-air balloon. They are responsible for specialized equipment if required (high-altitude flight). Pilots have read access to their personal data and to information relating to the flight to which they are assigned.
 
 ### Admin
 
-Admins have read/wrtie acccess to everything.
+Administrators create flights and assign staff to them. They have read/write acccess to everything.
 
 ### Other roles
 
-To be determined
+TBD
