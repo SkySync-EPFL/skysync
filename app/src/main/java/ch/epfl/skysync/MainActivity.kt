@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.mutableStateOf
 import ch.epfl.skysync.screens.LoginScreen
+import ch.epfl.skysync.screens.showCalendar
 import ch.epfl.skysync.ui.theme.SkySyncTheme
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
@@ -36,6 +37,10 @@ class MainActivity : ComponentActivity() {
           this.onSignInResult(res)
         }
 
-    setContent { SkySyncTheme { LoginScreen(signInLauncher = signInLauncher, user = user.value) } }
+    setContent { SkySyncTheme {
+      //LoginScreen(signInLauncher = signInLauncher, user = user.value)
+      showCalendar()
+      }
+    }
   }
 }
