@@ -13,7 +13,7 @@ interface  User {
 
     fun addRoleType(roleType: RoleType): User
 
-    fun hasRoleType(roleType: RoleType): Boolean
+    fun canAssumeRole(roleType: RoleType): Boolean
 
 
 }

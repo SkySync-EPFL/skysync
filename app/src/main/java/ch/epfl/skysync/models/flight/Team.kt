@@ -1,5 +1,7 @@
 package ch.epfl.skysync.models.flight
 
+import ch.epfl.skysync.models.user.User
+
 
 data class Team (val roles:List<Role>)
 
@@ -11,6 +13,14 @@ data class Team (val roles:List<Role>)
      */
     fun isComplete(): Boolean {
         return roles.all { it.isAssigned()}
+    }
+
+
+    fun assign(user: User, roleType: RoleType): Team {
+        if (!user.canAssumeRole(roleType)) throw IllegalArgumentException("user can not assume role type")
+        //Todo: to be implemented
+        throw NotImplementedError()
+
     }
 
     fun hasNoRoles(): Boolean {

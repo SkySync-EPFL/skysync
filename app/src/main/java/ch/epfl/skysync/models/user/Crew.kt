@@ -19,7 +19,7 @@ class Crew(
         TODO("Not yet implemented")
     }
 
-    override fun hasRoleType(roleType: RoleType): Boolean {
+    override fun canAssumeRole(roleType: RoleType): Boolean {
         return roleTypes.contains(roleType)
     }
 

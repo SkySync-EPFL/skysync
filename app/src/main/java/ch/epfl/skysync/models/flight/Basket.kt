@@ -1,7 +1,5 @@
 package ch.epfl.skysync.models.flight
 
-data class Basket(val name:String, val hasDoor: Boolean, val id: String = "")
+import ch.epfl.skysync.models.UNSET_ID
 
-
-
-val EXAMPLE_BASKET = Basket("C5", true)
+data class Basket(val name:String, val hasDoor: Boolean, val id: String = UNSET_ID)

@@ -1,27 +1,28 @@
 package ch.epfl.skysync.models.flight
 
+/**
+ * represents a particular flight type
+ * @property name name of the type
+ * @property specialRoles roles in addition to the BASE_ROLES(crew, pilot)
+ */
 data class FlightType(
     val name: String,
-    val specialRoles: List<Role> = emptyList()
+    val specialRoles: List<RoleType> = emptyList()
 ) {
     companion object{
         val DISCOVERY = FlightType("Discovery")
         val PREMIUM = FlightType("Premium")
-        val FONDUE = FlightType("Fondue")
-        val HIGH_ALTITUDE = FlightType("High Altitude")
+        val FONDUE = FlightType("Fondue", listOf(RoleType.MAITRE_FONDUE))
+        val HIGH_ALTITUDE = FlightType("High Altitude", listOf(RoleType.OXYGEN_MASTER))
 
     }
 }
 
 
-
-
-
-
 /**
- * Minimal set of roles present in any FlightType => PILOT and CREW
+ * Minimal set of roles present in each FlightType => PILOT and CREW
  */
 val BASE_ROLES = listOf(
-    Role(RoleType.PILOT),
-    Role(RoleType.CREW),
+    RoleType.PILOT,
+    RoleType.CREW,
 )
