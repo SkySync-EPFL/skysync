@@ -3,6 +3,15 @@ package ch.epfl.skysync.models.calendar
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
+/**
+ * represents a calendar where each slot uniquely defined by its date and timeslot contains
+ * a CalendarViewable object. Each slot can have exactly one object.
+ *
+ * @property cells: the Collection that contains the cells
+ * @property size: the curent number of slots
+ *
+ * (mutable class)
+ */
 abstract class CalendarModel<T: CalendarViewable>{
     protected val cells: MutableList<T> = mutableListOf()
     var size: Int = cells.size
@@ -17,8 +26,11 @@ abstract class CalendarModel<T: CalendarViewable>{
                               to: LocalDate,)
 
     /**
-     * @param from inclusive
-     * @param to inclusive
+     * creates the slots for the given interval and inits
+     * each slot with the given constructor lambda
+     * @param from first slot to be generated (inclusive)
+     * @param to last slot to be generated (inclusive)
+     * @param constructor: constructs a new instance for T as a function of the slot coordinates
      */
     protected fun initForRangeSuper(from: LocalDate,
                                     to: LocalDate,
@@ -34,10 +46,19 @@ abstract class CalendarModel<T: CalendarViewable>{
         }
 
     }
+
+    /**
+     * updates the size
+     */
     private fun updateSize(){
         size = cells.size
     }
 
+    /**
+     * adds the given slots by checking that there are not duplicate slots
+     * @param toAdd the slots to add
+     * @exception IllegalArgumentException: if multiple slots have the same coordinate (date, timeSlot)
+     */
     fun addCells(toAdd: List<T>) {
         for (t in toAdd) {
             if (cells.any {
@@ -51,6 +72,14 @@ abstract class CalendarModel<T: CalendarViewable>{
             updateSize()
         }
     }
+
+    /**
+     * updates the slot by the given coordinates with the output of produceNewValue
+     * @param date the date coordinate of the slot
+     * @param timeSlot the timeSlot coordinate of the slot
+     * @param produceNewValue computes a new value as function of the coordinates and the old value
+     *
+     */
     fun setByDate(date: LocalDate,
                   timeSlot: TimeSlot,
                   produceNewValue: (LocalDate, TimeSlot, oldValue: T) -> T) {
@@ -77,6 +106,11 @@ abstract class CalendarModel<T: CalendarViewable>{
         return oldValue
     }
 
+    /**
+     * @param date date coordinate of slot
+     * @param timeSlot timeSlot coordinate of slot
+     * @return slot for given coordinates if found, else null
+     */
     fun getByDate(date: LocalDate, timeSlot: TimeSlot): T? {
         return cells.firstOrNull { it.date == date && it.timeSlot == timeSlot }
     }
