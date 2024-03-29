@@ -1,7 +1,5 @@
 package ch.epfl.skysync.screens
 
-
-
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -12,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.navigation.BottomBar
