@@ -6,7 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.mutableStateOf
-import ch.epfl.skysync.screens.showCalendarAvailabilities
+import androidx.navigation.compose.rememberNavController
+import ch.epfl.skysync.navigation.MainGraph
 import ch.epfl.skysync.ui.theme.SkySyncTheme
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
@@ -35,10 +36,11 @@ class MainActivity : ComponentActivity() {
         registerForActivityResult(FirebaseAuthUIActivityResultContract()) { res ->
           this.onSignInResult(res)
         }
-
-    setContent { SkySyncTheme {
-      //LoginScreen(signInLauncher = signInLauncher, user = user.value)
-      showCalendarAvailabilities()
+    setContent {
+      SkySyncTheme {
+        val navController = rememberNavController()
+        MainGraph(
+            navHostController = navController, signInLauncher = signInLauncher, user = user.value)
       }
     }
   }
