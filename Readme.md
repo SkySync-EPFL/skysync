@@ -15,23 +15,26 @@ An application that simplifies and optimizes staff interactions and planning in 
 
 ## Roles
 
-Each user has a set of roles (crew, pilot, admin, maitre fondu...). 
+Each user is assigned a primary authentication role, such as crew, pilot, or admin. Additionally, users may temporarily acquire supplementary roles, such as maitre fondu during a flight, which should not expand their permissions.
 
-### Crew
+These roles are stored in the database.
+
+### Auth Crew
 
 Crew members are responsible for preparing the flight, (includes arranging equipment and food for the journey). During the flight, they either follow the balloon in a vehicle or remain inside to cater to the passengers. After the theft, they are responsible for storing the equipment.. read have access to their personal data and to information relating to the flight to which they are assigned.
 
-### Pilot
+### Auth Pilot
 
 Pilots are the only ones legally entitled to drive a hot-air balloon. They are responsible for specialized equipment if required (high-altitude flight). Pilots have read access to their personal data and to information relating to the flight to which they are assigned.
 
-### Admin
+### Auth Admin
 
 Administrators create flights and assign staff to them. They have read/write acccess to everything.
 
 ### Other roles
 
 TBD
+
 ## Testing
 
 ### UI Testing: Global Description
