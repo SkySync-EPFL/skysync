@@ -8,6 +8,11 @@ abstract class CalendarModel<T: CalendarViewable>{
     var size: Int = cells.size
         private set
 
+    /**
+     * fills the calendar with some init values of T
+     * @param from: the first date for which an entry in the calendar is initialized
+     * @param to: the last date (inclusive)
+     */
     abstract fun initForRange(from: LocalDate,
                               to: LocalDate,)
 
@@ -23,13 +28,13 @@ abstract class CalendarModel<T: CalendarViewable>{
         for (i in 0.. numberOfDays) {
             for (timeSlot in TimeSlot.entries) {
                 cells.add(constructor(currentDate, timeSlot))
-                update_size()
+                updateSize()
             }
             currentDate = currentDate.plusDays(1)
         }
 
     }
-    private fun update_size(){
+    private fun updateSize(){
         size = cells.size
     }
 
@@ -43,7 +48,7 @@ abstract class CalendarModel<T: CalendarViewable>{
                 throw IllegalArgumentException("Cannot add cells for the same date and time slot twice")
             }
             cells.add(t)
-            update_size()
+            updateSize()
         }
     }
     fun setByDate(date: LocalDate,
@@ -67,7 +72,7 @@ abstract class CalendarModel<T: CalendarViewable>{
         val oldValue = getByDate(date, timeSlot)
         if (oldValue != null) {
             cells.remove(oldValue)
-            update_size()
+            updateSize()
         }
         return oldValue
     }

@@ -1,4 +1,4 @@
-package ch.epfl.skysync.model
+package ch.epfl.skysync.model.calendar
 
 import ch.epfl.skysync.models.calendar.Availability
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
@@ -101,6 +101,24 @@ class TestAvailabilityCalendar {
   }
 
   @Test
+  fun `getAvailabilityStatus returns current status`() {
+    val calendar = AvailabilityCalendar()
+    calendar.addCells(availabilities)
+    val av1 = availabilities[0]
+    assertEquals(calendar.getAvailabilityStatus(av1.date, av1.timeSlot), av1.status)
+  }
+
+  @Test
+  fun `nextAvailabilityStatus updates to next status and returns correctly`() {
+    val calendar = AvailabilityCalendar()
+    calendar.addCells(availabilities)
+    val av1 = availabilities[0]
+    assertEquals(calendar.nextAvailabilityStatus(av1.date, av1.timeSlot), av1.status.next())
+    // check calendar is correctly updated
+    assertEquals(calendar.getByDate(av1.date, av1.timeSlot)?.status, av1.status.next())
+  }
+
+  @Test
   fun `size is correctly updated`() {
     val calendar = AvailabilityCalendar()
     calendar.addCells(availabilities)
@@ -109,6 +127,9 @@ class TestAvailabilityCalendar {
     calendar.removeByDate(av1.date, av1.timeSlot)
     assertEquals(calendar.size, availabilities.size-1)
   }
+
+
+
 
 
 
