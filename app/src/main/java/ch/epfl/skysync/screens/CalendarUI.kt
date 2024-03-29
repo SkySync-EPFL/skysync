@@ -14,8 +14,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ch.epfl.skysync.dataModels.calendarModels.AvailabilityStatus
-import ch.epfl.skysync.dataModels.calendarModels.TimeSlot
+import ch.epfl.skysync.models.calendar.AvailabilityStatus
+import ch.epfl.skysync.models.calendar.TimeSlot
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
