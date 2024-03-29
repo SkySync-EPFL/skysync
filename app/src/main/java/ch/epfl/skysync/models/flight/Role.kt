@@ -32,11 +32,21 @@ data class Role(
         return assignedUser != null
     }
 
+    /**
+     * @param roleType the RoleType to compare with this role's RoleType
+     * @return true if this role has the given role type
+     */
     fun isOfRoleType(roleType: RoleType): Boolean{
         return roleType == this.roleType
     }
 
     companion object{
+        /**
+         * produces a list of Role from a list of RoleTypes. If a RoleType R appears
+         * X times, the returned list will contain X distinct roles of RoleType R
+         * @param roleList the list of RoleTypes for which to create roles
+         * @return list of initialised roles (one role for each role type)
+         */
         fun initRoles(roleList: List<RoleType>): List<Role> {
             return roleList.map{Role(it)}
 

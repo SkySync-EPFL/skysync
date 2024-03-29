@@ -4,7 +4,6 @@ package ch.epfl.skysync.model.flight
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.FlightCalendar
-import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.Crew
@@ -60,6 +59,19 @@ class TestRole {
     for (i in roleTypeList){
       assertTrue(roleList.any{it.isOfRoleType(i)})
     }
+  }
+
+  @Test
+  fun `isOfRoleType() returns true if of same role type`() {
+    val roleType = RoleType.CREW
+    val role = Role(roleType)
+    assertTrue(role.isOfRoleType(roleType))
+  }
+
+  @Test
+  fun `isOfRoleType() returns false if not of same role type`() {
+    val role = Role(RoleType.OXYGEN_MASTER)
+    assertFalse(role.isOfRoleType(RoleType.CREW))
   }
 
 
