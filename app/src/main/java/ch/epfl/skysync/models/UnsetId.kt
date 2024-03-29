@@ -1,4 +1,4 @@
-package ch.epfl.skysync.model
+package ch.epfl.skysync.models
 
 // Only define a global constant to be used as default value for models id field
 // when creating a new instance of the model in the database.
