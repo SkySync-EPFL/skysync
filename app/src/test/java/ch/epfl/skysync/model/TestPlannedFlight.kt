@@ -27,7 +27,7 @@ class TestPlannedFlight {
       2,
       Team(listOf()),
       FlightType.DISCOVERY,
-      Balloon("QQP", BalloonQualification.LARGE),
+      Balloon("QQP", BalloonQualification.LARGE, ""),
       Basket("basket 1", hasDoor = false),
       LocalDate.now(),
       timeSlot = TimeSlot.AM,

@@ -1,6 +1,9 @@
 package ch.epfl.skysync.models.flight
 
-data class Balloon(val name:String, val qualification: BalloonQualification)
-
-
-val EXAMPLE_BALLOON = Balloon("QQP", BalloonQualification.LARGE)
+/**
+ * represents a balloon (envelope)
+ * @property name the name id of the balloon
+ * @property qualification classification of balloon size
+ * @property id: the db id
+ */
+data class Balloon(val name:String, val qualification: BalloonQualification, val id: String)
