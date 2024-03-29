@@ -1,5 +1,6 @@
 package ch.epfl.skysync.database
 
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import java.lang.Exception
@@ -8,6 +9,7 @@ import kotlin.reflect.KClass
 /** Represent a connection to a Firestore database */
 class FirestoreDatabase : Database {
   private val db = Firebase.firestore
+  private val TAG = "Firebase"
 
   override fun <T : Any> add(
       path: String,
@@ -18,11 +20,11 @@ class FirestoreDatabase : Database {
     db.collection(path)
         .add(item)
         .addOnSuccessListener {
-          println("Added $path/${it.id}")
+          Log.d(TAG, "Added $path/${it.id}")
           onCompletion()
         }
         .addOnFailureListener { exception ->
-          println("Error adding document: $exception")
+          Log.e(TAG, "Error adding document: ", exception)
           onError(exception)
         }
   }
@@ -38,11 +40,11 @@ class FirestoreDatabase : Database {
         .document(id)
         .get()
         .addOnSuccessListener { documentSnapshot ->
-          println("Got $path/${documentSnapshot.id}")
+          Log.d(TAG, "Got $path/${documentSnapshot.id}")
           onCompletion(documentSnapshot.toObject(clazz.java))
         }
         .addOnFailureListener { exception ->
-          println("Error getting document: $exception")
+          Log.e(TAG, "Error getting document: ", exception)
           onError(exception)
         }
   }
@@ -57,11 +59,11 @@ class FirestoreDatabase : Database {
         .document(id)
         .delete()
         .addOnSuccessListener {
-          println("Deleted $path/$id")
+          Log.d(TAG, "Deleted $path/$id")
           onCompletion()
         }
         .addOnFailureListener { exception ->
-          println("Error deleting document: $exception")
+          Log.e(TAG, "Error deleting document: ", exception)
           onError(exception)
         }
   }

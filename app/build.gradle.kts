@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
+
 plugins {
     id ("com.android.application")
     id ("org.jetbrains.kotlin.android")
@@ -40,6 +42,12 @@ android {
                 "proguard-rules.pro"
             )
         }
+        buildTypes {
+            debug {
+                enableUnitTestCoverage = true
+                enableAndroidTestCoverage = true
+            }
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -66,6 +74,9 @@ android {
             jniLibs {
                 useLegacyPackaging = true
             }
+        }
+        unitTests {
+            isIncludeAndroidResources = true
         }
     }
     buildToolsVersion = "34.0.0"
@@ -100,6 +111,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
+
+    androidTestImplementation("androidx.navigation:navigation-testing:2.7.5")
     debugImplementation("androidx.compose.ui:ui-tooling:1.4.0")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.0")
 
@@ -131,6 +144,13 @@ dependencies {
 
     implementation("com.google.maps.android:maps-compose:4.3.3")
 
+    // Dependency for using Intents in instrumented tests
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+
+    // Dependencies for using MockK in instrumented tests
+    androidTestImplementation("io.mockk:mockk:1.13.7")
+    androidTestImplementation("io.mockk:mockk-android:1.13.7")
+    androidTestImplementation("io.mockk:mockk-agent:1.13.7")
 
 }
 
