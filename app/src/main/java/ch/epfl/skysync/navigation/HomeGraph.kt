@@ -9,6 +9,7 @@ import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
 
+/** Graph of the main screens of the app */
 fun NavGraphBuilder.homeGraph(navController: NavHostController) {
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
     composable(Route.CALENDAR) { CalendarScreen(navController) }

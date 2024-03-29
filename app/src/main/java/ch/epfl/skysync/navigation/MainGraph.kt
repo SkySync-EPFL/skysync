@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import ch.epfl.skysync.screens.LoginScreen
 import com.google.firebase.auth.FirebaseUser
 
+/** Graph of the whole navigation of the app */
 @Composable
 fun MainGraph(
     navHostController: NavHostController,
