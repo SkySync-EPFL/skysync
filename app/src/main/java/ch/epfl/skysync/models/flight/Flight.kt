@@ -1,10 +1,9 @@
 package ch.epfl.skysync.models.flight
 
-import ch.epfl.skysync.models.calendar.CalendarViewable
 import ch.epfl.skysync.models.calendar.TimeSlot
 import java.time.LocalDate
 
-interface Flight  {
+interface Flight {
   val flightId: Int
   val nPassengers: Int
   val team: Team

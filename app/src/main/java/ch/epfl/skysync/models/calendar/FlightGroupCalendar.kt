@@ -26,8 +26,14 @@ class FlightGroupCalendar : CalendarModel<FlightGroup>() {
     }
   }
 
+  /**
+   * inits the calendar with empty FlightGroups for the given range
+   *
+   * @param from start date of the range
+   * @param to end date of the range (inclusive)
+   */
   override fun initForRange(from: LocalDate, to: LocalDate) {
-    initForRangeSuper(from, to) { date, timeSlot -> FlightGroup(date, timeSlot, listOf<Flight>()) }
+    initForRangeSuper(from, to) { date, timeSlot -> FlightGroup(date, timeSlot, listOf()) }
   }
 
   /**
