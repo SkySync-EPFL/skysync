@@ -28,7 +28,6 @@ class TestFlightGroup {
         PlannedFlight(
             UNSET_ID,
             1,
-            1,
             Team(listOf()),
             FlightType.FONDUE,
             null,

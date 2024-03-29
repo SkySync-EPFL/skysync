@@ -4,7 +4,6 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import java.time.LocalDate
 
 interface Flight {
-  val flightId: Int
   val nPassengers: Int
   val team: Team
   val flightType: FlightType

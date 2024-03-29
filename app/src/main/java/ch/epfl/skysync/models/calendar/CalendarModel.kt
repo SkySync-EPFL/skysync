@@ -8,14 +8,11 @@ import java.time.temporal.ChronoUnit
  * CalendarViewable object. Each slot can have exactly one object.
  *
  * @property cells: the Collection that contains the cells
- * @property size: the curent number of slots
  *
  * (mutable class)
  */
 abstract class CalendarModel<T : CalendarViewable> {
   protected val cells: MutableList<T> = mutableListOf()
-  var size: Int = cells.size
-    private set
 
   /**
    * fills the calendar with some init values of T
@@ -27,6 +24,11 @@ abstract class CalendarModel<T : CalendarViewable> {
       from: LocalDate,
       to: LocalDate,
   )
+
+  /** @return number of entries in calendar */
+  fun getSize(): Int {
+    return cells.size
+  }
 
   /**
    * creates the slots for the given interval and inits each slot with the given constructor lambda
@@ -45,15 +47,9 @@ abstract class CalendarModel<T : CalendarViewable> {
     for (i in 0..numberOfDays) {
       for (timeSlot in TimeSlot.entries) {
         cells.add(constructor(currentDate, timeSlot))
-        updateSize()
       }
       currentDate = currentDate.plusDays(1)
     }
-  }
-
-  /** updates the size */
-  private fun updateSize() {
-    size = cells.size
   }
 
   /**
@@ -69,7 +65,6 @@ abstract class CalendarModel<T : CalendarViewable> {
         throw IllegalArgumentException("Cannot add cells for the same date and time slot twice")
       }
       cells.add(t)
-      updateSize()
     }
   }
 
@@ -102,7 +97,6 @@ abstract class CalendarModel<T : CalendarViewable> {
     val oldValue = getByDate(date, timeSlot)
     if (oldValue != null) {
       cells.remove(oldValue)
-      updateSize()
     }
     return oldValue
   }

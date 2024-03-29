@@ -30,7 +30,7 @@ class TestAvailability {
   fun `setStatus changes status immutably`() {
     val oldStatus = initAvailability.status
     val newStatus = AvailabilityStatus.OK
-    val newAvailability = initAvailability.setStatus(newStatus)
+    val newAvailability = initAvailability.copy(status = newStatus)
     assertEquals(newAvailability.status, newStatus)
     // check that old object remains unchanged
     assertEquals(initAvailability.status, oldStatus)
@@ -39,7 +39,7 @@ class TestAvailability {
   @Test
   fun `setStatus for same status is secure`() {
     val oldStatus = initAvailability.status
-    val newAvailability = initAvailability.setStatus(oldStatus)
+    val newAvailability = initAvailability.copy(status = oldStatus)
     assertEquals(newAvailability.status, oldStatus)
   }
 }

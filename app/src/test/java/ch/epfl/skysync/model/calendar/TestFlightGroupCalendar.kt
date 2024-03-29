@@ -29,7 +29,6 @@ class TestFlightGroupCalendar {
         PlannedFlight(
             UNSET_ID,
             1,
-            1,
             Team(listOf()),
             FlightType.FONDUE,
             null,
@@ -46,7 +45,7 @@ class TestFlightGroupCalendar {
     val start = LocalDate.of(2024, 4, 1)
     val days: Long = 7
     calendar.initForRange(start, start.plusDays(days - 1))
-    assertEquals(calendar.size, days.toInt() * TimeSlot.entries.size)
+    assertEquals(calendar.getSize(), days.toInt() * TimeSlot.entries.size)
     for (i in 0 until days) {
       for (timeSlot in TimeSlot.entries) {
         val group = calendar.getByDate(start.plusDays(i), timeSlot)

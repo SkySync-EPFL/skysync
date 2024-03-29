@@ -5,7 +5,6 @@ import java.time.LocalDate
 
 class PlannedFlight(
     override val id: String,
-    override val flightId: Int,
     override val nPassengers: Int,
     override val team: Team = Team(Role.initRoles(BASE_ROLES)),
     override val flightType: FlightType,

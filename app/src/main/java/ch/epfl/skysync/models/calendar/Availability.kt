@@ -9,14 +9,4 @@ data class Availability(
     val status: AvailabilityStatus,
     override val timeSlot: TimeSlot,
     override val date: LocalDate
-) : CalendarViewable {
-  /**
-   * returns a new availability with the given status
-   *
-   * @param status: the status to change this availability to @return: the updated availability
-   */
-  fun setStatus(status: AvailabilityStatus): Availability {
-    if (status == this.status) return this
-    return Availability(id, status, timeSlot, date)
-  }
-}
+) : CalendarViewable

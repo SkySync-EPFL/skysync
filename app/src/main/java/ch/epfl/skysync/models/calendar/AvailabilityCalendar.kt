@@ -14,7 +14,7 @@ class AvailabilityCalendar : CalendarModel<Availability>() {
    * @param status: the new status
    */
   fun setAvailabilityByDate(date: LocalDate, timeSlot: TimeSlot, status: AvailabilityStatus) {
-    setByDate(date, timeSlot) { d, t, old -> old.setStatus(status) }
+    setByDate(date, timeSlot) { d, t, old -> old.copy(status = status) }
   }
 
   /**

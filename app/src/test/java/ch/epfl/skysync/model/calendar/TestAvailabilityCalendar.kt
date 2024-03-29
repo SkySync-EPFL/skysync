@@ -79,7 +79,7 @@ class TestAvailabilityCalendar {
     val end = start.plusDays(number_of_days)
     calendar.initForRange(start, end)
     val expectedNumberOfCells = (number_of_days.toInt() + 1) * TimeSlot.entries.size
-    assertEquals(calendar.size, expectedNumberOfCells)
+    assertEquals(calendar.getSize(), expectedNumberOfCells)
     for (i in 0..number_of_days) {
       for (timeSlot in TimeSlot.entries) {
         val av = calendar.getByDate(start.plusDays(i), timeSlot)
@@ -118,8 +118,8 @@ class TestAvailabilityCalendar {
     val calendar = AvailabilityCalendar()
     calendar.addCells(availabilities)
     val av1 = availabilities[0]
-    assertEquals(calendar.size, availabilities.size)
+    assertEquals(calendar.getSize(), availabilities.size)
     calendar.removeByDate(av1.date, av1.timeSlot)
-    assertEquals(calendar.size, availabilities.size - 1)
+    assertEquals(calendar.getSize(), availabilities.size - 1)
   }
 }
