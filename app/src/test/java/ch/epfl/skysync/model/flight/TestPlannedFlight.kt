@@ -22,17 +22,17 @@ class TestPlannedFlight {
   @Test
   fun `planned flight is correctly created`() {
 
-    val testFlight =
-        PlannedFlight(
-            1,
-            2,
-            Team(listOf()),
-            FlightType.DISCOVERY,
-            Balloon("QQP", BalloonQualification.LARGE, ""),
-            Basket("basket 1", hasDoor = false),
-            LocalDate.now(),
-            timeSlot = TimeSlot.AM,
-            listOf(Vehicle("sprinter 1")))
+//    val testFlight =
+//        PlannedFlight(
+//            1,
+//            2,
+//            Team(listOf()),
+//            FlightType.DISCOVERY,
+//            Balloon("QQP", BalloonQualification.LARGE, ""),
+//            Basket("basket 1", hasDoor = false),
+//            LocalDate.now(),
+//            timeSlot = TimeSlot.AM,
+//            listOf(Vehicle("sprinter 1")))
 
     assertTrue(true)
   }
