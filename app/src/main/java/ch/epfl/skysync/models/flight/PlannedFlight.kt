@@ -4,7 +4,8 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import java.time.LocalDate
 
 class PlannedFlight(
-    override val id: Int,
+    override val id: String,
+    override val flightId: Int,
     override val nPassengers: Int,
     override val team: Team = Team(Role.initRoles(BASE_ROLES)),
     override val flightType: FlightType,
@@ -13,12 +14,8 @@ class PlannedFlight(
     override val date: LocalDate,
     override val timeSlot: TimeSlot,
     override val vehicles: List<Vehicle>
-): Flight {
-    fun readyToBeConfirmed(): Boolean {
-        return team.isComplete()  &&
-                nPassengers > 0 &&
-                balloon != null &&
-                basket != null
-    }
-
+) : Flight {
+  fun readyToBeConfirmed(): Boolean {
+    return team.isComplete() && nPassengers > 0 && balloon != null && basket != null
+  }
 }

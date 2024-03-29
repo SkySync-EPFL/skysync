@@ -1,15 +1,13 @@
 package ch.epfl.skysync.model.flight
 
-
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.Crew
-
-import org.junit.Before
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Test
 
 /**
@@ -19,25 +17,20 @@ import org.junit.Test
  */
 class TestRole {
   lateinit var unassignedCrewRole: Role
-  val testUser = Crew(
-    "jo",
-    "blunt",
-    UNSET_ID,
-    AvailabilityCalendar(),
-    FlightGroupCalendar()
-  )
+  val testUser = Crew("jo", "blunt", UNSET_ID, AvailabilityCalendar(), FlightGroupCalendar())
 
   @Before
-  fun setUp(){
+  fun setUp() {
     unassignedCrewRole = Role(RoleType.CREW)
   }
+
   @Test
   fun `assign() assigns user to role`() {
-    assertEquals(unassignedCrewRole.assignedUser,null )
+    assertEquals(unassignedCrewRole.assignedUser, null)
     val newRole = unassignedCrewRole.assign(testUser)
     assertEquals(testUser, newRole.assignedUser)
     // check that initial remains unchanged
-    assertEquals(unassignedCrewRole.assignedUser,null )
+    assertEquals(unassignedCrewRole.assignedUser, null)
   }
 
   @Test
@@ -46,9 +39,8 @@ class TestRole {
     val newRole = unassignedCrewRole.assign(testUser)
     assertTrue(newRole.isAssigned())
 
-    //check that initial remains unchanged
+    // check that initial remains unchanged
     assertFalse(unassignedCrewRole.isAssigned())
-
   }
 
   @Test
@@ -56,8 +48,8 @@ class TestRole {
     val roleTypeList = listOf<RoleType>(RoleType.CREW, RoleType.OXYGEN_MASTER)
     val roleList: List<Role> = Role.initRoles(roleTypeList)
     assertEquals(roleList.size, roleTypeList.size)
-    for (i in roleTypeList){
-      assertTrue(roleList.any{it.isOfRoleType(i)})
+    for (i in roleTypeList) {
+      assertTrue(roleList.any { it.isOfRoleType(i) })
     }
   }
 
@@ -73,13 +65,4 @@ class TestRole {
     val role = Role(RoleType.OXYGEN_MASTER)
     assertFalse(role.isOfRoleType(RoleType.CREW))
   }
-
-
-
-
-
-
-
-
-
 }

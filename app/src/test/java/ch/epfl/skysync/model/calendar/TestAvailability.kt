@@ -3,10 +3,10 @@ package ch.epfl.skysync.model.calendar
 import ch.epfl.skysync.models.calendar.Availability
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
+import java.time.LocalDate
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDate
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -19,12 +19,13 @@ class TestAvailability {
 
   @Before
   fun setUp() {
-    initAvailability = Availability(
-      status=AvailabilityStatus.MAYBE,
-      timeSlot = TimeSlot.AM,
-      date = LocalDate.of(2024, 4, 1)
-    )
+    initAvailability =
+        Availability(
+            status = AvailabilityStatus.MAYBE,
+            timeSlot = TimeSlot.AM,
+            date = LocalDate.of(2024, 4, 1))
   }
+
   @Test
   fun `setStatus changes status immutably`() {
     val oldStatus = initAvailability.status
@@ -41,11 +42,4 @@ class TestAvailability {
     val newAvailability = initAvailability.setStatus(oldStatus)
     assertEquals(newAvailability.status, oldStatus)
   }
-
-
-
-
-
-
-
 }

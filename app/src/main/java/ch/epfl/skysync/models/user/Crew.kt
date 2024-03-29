@@ -10,19 +10,15 @@ class Crew(
     override val id: String,
     override val availabilities: AvailabilityCalendar,
     override val assignedFlights: FlightGroupCalendar,
+) : User {
 
-    ) : User {
+  private val roleTypes: Set<RoleType> = setOf(RoleType.CREW)
 
-    private val roleTypes: Set<RoleType> = setOf(RoleType.CREW)
+  override fun addRoleType(roleType: RoleType): Crew {
+    throw NotImplementedError()
+  }
 
-    override fun addRoleType(roleType: RoleType): Crew {
-        throw NotImplementedError()
-    }
-
-    override fun canAssumeRole(roleType: RoleType): Boolean {
-        return roleTypes.contains(roleType)
-    }
-
-
-
+  override fun canAssumeRole(roleType: RoleType): Boolean {
+    return roleTypes.contains(roleType)
+  }
 }

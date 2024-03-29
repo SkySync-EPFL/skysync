@@ -1,9 +1,6 @@
 package ch.epfl.skysync.model.flight
 
-
 import ch.epfl.skysync.models.flight.BalloonQualification
-
-import org.junit.Before
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -20,13 +17,5 @@ class TestBalloonQualification {
     assertTrue(BalloonQualification.LARGE.greaterEqual(BalloonQualification.SMALL))
     assertTrue(BalloonQualification.MEDIUM.greaterEqual(BalloonQualification.SMALL))
     assertFalse(BalloonQualification.MEDIUM.greaterEqual(BalloonQualification.LARGE))
-
   }
-
-
-
-
-
-
-
 }

@@ -10,18 +10,14 @@ class Admin(
     override val id: String,
     override val availabilities: AvailabilityCalendar,
     override val assignedFlights: FlightGroupCalendar,
+) : User {
+  private val roleTypes: Set<RoleType> = setOf()
 
-    ) : User {
-    private val roleTypes: Set<RoleType> = setOf()
+  override fun addRoleType(roleType: RoleType): Admin {
+    throw NotImplementedError()
+  }
 
-    override fun addRoleType(roleType: RoleType): Admin {
-        throw NotImplementedError()
-    }
-
-    override fun canAssumeRole(roleType: RoleType): Boolean {
-        return roleTypes.contains(roleType)
-    }
-
-
-
+  override fun canAssumeRole(roleType: RoleType): Boolean {
+    return roleTypes.contains(roleType)
+  }
 }
