@@ -25,7 +25,7 @@ class TestPlannedFlight {
     val testFlight = PlannedFlight(
       1,
       2,
-      Team(),
+      Team(listOf()),
       FlightType.DISCOVERY,
       Balloon("QQP", BalloonQualification.LARGE),
       Basket("basket 1", hasDoor = false),

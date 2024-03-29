@@ -6,7 +6,7 @@ import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
-import ch.epfl.skysync.models.user.UNSET_ID
+import ch.epfl.skysync.models.UNSET_ID
 import org.junit.Before
 import org.junit.Test
 
