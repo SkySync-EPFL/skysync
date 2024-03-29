@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -19,10 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.firebase.ui.auth.AuthUI
-import com.google.firebase.auth.FirebaseUser
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(signInLauncher: ActivityResultLauncher<Intent>, user: FirebaseUser?) {
+fun LoginScreen(signInLauncher: ActivityResultLauncher<Intent>) {
+
   val providers =
       listOf(
           // Google sign-in
@@ -41,14 +43,7 @@ fun LoginScreen(signInLauncher: ActivityResultLauncher<Intent>, user: FirebaseUs
             Spacer(modifier = Modifier.width(8.dp))
             Text("Sign in with Google")
           }
-
-          if (user != null) {
-            // logged in
-            Text(text = "Welcome")
-          } else {
-            // not logged in
-            Text(text = "You need to log in")
-          }
+          Text(text = "You need to log in")
         }
   }
 }
