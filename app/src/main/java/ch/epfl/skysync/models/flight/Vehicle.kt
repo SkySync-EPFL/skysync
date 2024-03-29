@@ -1,5 +1,10 @@
 package ch.epfl.skysync.models.flight
 
-data class Vehicle(val name:String, val id: String = "")
+import ch.epfl.skysync.models.UNSET_ID
 
-val EXAMPLE_VEHICLE = Vehicle("sprinter 1")
+/**
+ * represents a vehicle
+ * @property name of the vehicle
+ * @property id firebase id
+ */
+data class Vehicle(val name:String, val id: String = UNSET_ID)

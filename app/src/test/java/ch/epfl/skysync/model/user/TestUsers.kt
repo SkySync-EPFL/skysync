@@ -1,7 +1,7 @@
-package ch.epfl.skysync.model
+package ch.epfl.skysync.model.user
 
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightCalendar
+import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.Crew
@@ -26,7 +26,7 @@ class TestUsers {
       "Deer",
       UNSET_ID,
       AvailabilityCalendar(),
-      FlightCalendar(),
+      FlightGroupCalendar(),
       BalloonQualification.LARGE)
 
   }
@@ -36,7 +36,7 @@ class TestUsers {
       "Deer",
       UNSET_ID,
       AvailabilityCalendar(),
-      FlightCalendar())
+      FlightGroupCalendar())
   }
 
   @Test
@@ -45,7 +45,7 @@ class TestUsers {
       "Deer",
       UNSET_ID,
       AvailabilityCalendar(),
-      FlightCalendar())
+      FlightGroupCalendar())
   }
 
 

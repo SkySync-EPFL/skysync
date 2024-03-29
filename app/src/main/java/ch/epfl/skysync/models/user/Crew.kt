@@ -1,7 +1,7 @@
 package ch.epfl.skysync.models.user
 
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightCalendar
+import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.RoleType
 
 class Crew(
@@ -9,14 +9,14 @@ class Crew(
     override val lastname: String,
     override val id: String,
     override val availabilities: AvailabilityCalendar,
-    override val assignedFlights: FlightCalendar,
+    override val assignedFlights: FlightGroupCalendar,
 
     ) : User {
 
     private val roleTypes: Set<RoleType> = setOf(RoleType.CREW)
 
     override fun addRoleType(roleType: RoleType): Crew {
-        TODO("Not yet implemented")
+        throw NotImplementedError()
     }
 
     override fun canAssumeRole(roleType: RoleType): Boolean {

@@ -3,13 +3,12 @@ package ch.epfl.skysync.model.flight
 
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightCalendar
+import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.user.Crew
 
-import org.junit.Before
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -24,14 +23,14 @@ class TestTeam {
     "blunt",
     UNSET_ID,
     AvailabilityCalendar(),
-    FlightCalendar()
+    FlightGroupCalendar()
   )
   val testUser2 = Crew(
     "peter",
     "brown",
     UNSET_ID,
     AvailabilityCalendar(),
-    FlightCalendar()
+    FlightGroupCalendar()
   )
 
 

@@ -1,4 +1,4 @@
-package ch.epfl.skysync.model
+package ch.epfl.skysync.model.flight
 
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
