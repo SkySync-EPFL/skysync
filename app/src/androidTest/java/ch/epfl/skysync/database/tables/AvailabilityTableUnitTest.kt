@@ -21,7 +21,7 @@ class AvailabilityTableUnitTest {
 
   @Before
   fun testSetup() {
-    table.deleteTable({})
+    table.deleteTable {}
     SystemClock.sleep(DB_SLEEP_TIME)
   }
 
@@ -40,8 +40,8 @@ class AvailabilityTableUnitTest {
     // Step 1: Add
 
     var id = "__invalid_id__"
-    var addComplete = false
-    var addError = false
+    var isComplete = false
+    var isError = false
 
     // add an availability
     table.add(
@@ -49,49 +49,49 @@ class AvailabilityTableUnitTest {
         availability,
         {
           id = it
-          addComplete = true
+          isComplete = true
         },
-        { addError = true })
+        { isError = true })
 
     SystemClock.sleep(DB_SLEEP_TIME)
 
-    assertEquals(true, addComplete)
-    assertEquals(false, addError)
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
 
     // Step 2: Get
 
     var getAvailability: Availability? = null
-    var getComplete = false
-    var getError = false
+    isComplete = false
+    isError = false
 
     // retrieve the added availability
     table.get(
         id,
         {
           getAvailability = it
-          getComplete = true
+          isComplete = true
         },
-        { getError = true })
+        { isError = true })
 
     SystemClock.sleep(DB_SLEEP_TIME)
 
-    assertEquals(true, getComplete)
-    assertEquals(false, getError)
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
     // the added then retrieved availability should be the same as the initial one
     assertEquals(availability.copy(id = id), getAvailability)
 
     // Step 3: Delete
 
-    var deleteComplete = false
-    var deleteError = false
+    isComplete = false
+    isError = false
 
     // delete the availability
-    table.delete(id, { deleteComplete = true }, { deleteError = true })
+    table.delete(id, { isComplete = true }, { isError = true })
 
     SystemClock.sleep(DB_SLEEP_TIME)
 
-    assertEquals(true, deleteComplete)
-    assertEquals(false, deleteError)
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
 
     // Step 4: GetAll
 
