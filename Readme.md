@@ -8,10 +8,8 @@ An application that simplifies and optimizes staff interactions and planning in 
 * [Figma](https://www.figma.com/files/project/215563737/Team-project?fuid=1343517062055653454)
 * [Discord](https://discord.com/channels/1215608534088024145/1216071295163170857)
 * [Firebase](https://console.firebase.google.com/u/1/project/skysync-a1160/overview)
-
-| |
-| - |
-| [Standup 1](https://docs.google.com/spreadsheets/d/1m8U5FLoCYPnLGZMNuJ6yGFX6ynVkkjzNFThc0HQJ9-g/edit#gid=0) |
+* [Standup](https://docs.google.com/spreadsheets/d/1i_jQHeHb9f_Q8SR2-SSEBDQeCGQ0PqrkyyI27g9egv4/edit#gid=0)
+* [Team Retrospective](https://docs.google.com/spreadsheets/d/1HttrnOvkY0A7PFclFm-wyba8CDeAdHuONOSRZka6cV8/edit#gid=2104623826)
 
 ## Roles
 
