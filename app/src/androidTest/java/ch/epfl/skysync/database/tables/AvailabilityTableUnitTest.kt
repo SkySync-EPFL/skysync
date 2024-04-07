@@ -13,7 +13,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 // sleep to let the db requests the time to be done
-const val DB_SLEEP_TIME = 1000L
+const val DB_SLEEP_TIME = 3000L
 
 @RunWith(AndroidJUnit4::class)
 class AvailabilityTableUnitTest {
