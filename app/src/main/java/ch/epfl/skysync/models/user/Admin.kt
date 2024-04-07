@@ -5,7 +5,7 @@ import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.RoleType
 
-class Admin(
+data class Admin(
     override val id: String = UNSET_ID,
     override val firstname: String,
     override val lastname: String,

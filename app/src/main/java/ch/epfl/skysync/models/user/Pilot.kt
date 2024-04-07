@@ -6,7 +6,7 @@ import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.RoleType
 
-class Pilot(
+data class Pilot(
     override val id: String = UNSET_ID,
     override val firstname: String,
     override val lastname: String,
