@@ -35,6 +35,29 @@ TBD
 
 ## Testing
 
+### Firebase emulators
+
+We use [emulators](https://firebase.google.com/docs/emulator-suite?_gl=1*1lfc7ua*_up*MQ..*_ga*MTQwMTc0MTY3Mi4xNzEyNDAwNTk1*_ga_CW55HF8NVT*MTcxMjQwMDU5NC4xLjAuMTcxMjQwMDU5NC4wLjAuMA..) to integrate Firebase products in the tests.
+
+To run the tests that use the emulators locally, you need to setup the emulators:
+
+* Install the Firebase CLI ([doc](https://firebase.google.com/docs/cli?_gl=1*1fghral*_up*MQ..*_ga*NTQ0MjY1MjUxLjE3MTI0Nzk1OTQ.*_ga_CW55HF8NVT*MTcxMjQ3OTU5My4xLjAuMTcxMjQ3OTU5My4wLjAuMA..)), on linux:
+  ```
+  curl -sL https://firebase.tools | bash
+  ```
+* Login the Firebase CLI
+  ```
+  firebase login
+  ```
+* Before running the tests, on a new terminal, run:
+  ```
+  firebase emulators:start --only firestore
+  ```
+* After running the tests, you can stop the emulators with Ctrl+C
+
+> [!NOTE]
+> Tests using the Firebase emulators need to be UI tests, they need to run on the Android emulator.
+
 ### UI Testing: Global Description
 
 Here is the official documentation: https://developer.android.com/develop/ui/compose/testing#isolation
