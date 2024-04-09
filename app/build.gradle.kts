@@ -5,13 +5,13 @@ plugins {
     id ("org.jetbrains.kotlin.android")
     id("com.ncorti.ktfmt.gradle") version "0.16.0"
     id("com.google.gms.google-services")
-    id("org.sonarqube") version "4.4.1.3373"
+    id("org.sonarqube") version "5.0.0.4638"
 
 }
 
 sonar {
     properties {
-        property("sonar.projectKey", "SkySync-EPFL_skysync")
+        property("sonar.projectKey", "skysync-epfl")
         property("sonar.organization", "skysync-epfl")
         property("sonar.host.url", "https://sonarcloud.io")
     }
