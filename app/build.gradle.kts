@@ -14,8 +14,12 @@ sonar {
         property("sonar.projectKey", "SkySync-EPFL_skysync")
         property("sonar.organization", "skysync-epfl")
         property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/androidTests/connected/debug/TEST-jacocoTestReportTest.xml")
-    }
+
+        property("sonar.junit.reportPaths", "${project.layout.buildDirectory.get()}/test-results/testDebugunitTest/")
+        // Paths to xml files with Android Lint issues. If the main flavor is changed, this file will have to be changed too.
+        property("sonar.androidLint.reportPaths", "${project.layout.buildDirectory.get()}/reports/lint-results-debug.xml")
+        // Paths to JaCoCo XML coverage report files.
+        property("sonar.coverage.jacoco.xmlReportPaths", "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")    }
 }
 
 android {
@@ -158,9 +162,6 @@ tasks.register("jacocoTestReport", JacocoReport::class) {
     reports {
         xml.required = true
         html.required = true
-
-        xml.outputLocation = file("build/reports/androidTests/connected/debug/TEST-jacocoTestReportTest.xml")
-        //xml.outputLocation = file("build/reports/jacoco/jacocoTestReport/TEST-jacocoTestReportTest.xml")
 
     }
 
