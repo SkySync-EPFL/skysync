@@ -14,7 +14,7 @@ sonar {
         property("sonar.projectKey", "SkySync-EPFL_skysync")
         property("sonar.organization", "skysync-epfl")
         property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/androidTests/connected/debug/TEST-jacocoTestReportTest.xml")
     }
 }
 
@@ -160,7 +160,7 @@ tasks.register("jacocoTestReport", JacocoReport::class) {
         html.required = true
 
         xml.outputLocation = file("build/reports/androidTests/connected/debug/TEST-jacocoTestReportTest.xml")
-        //xml.outputLocation = file("build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+        //xml.outputLocation = file("build/reports/jacoco/jacocoTestReport/TEST-jacocoTestReportTest.xml")
 
     }
 
