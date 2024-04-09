@@ -32,6 +32,10 @@ jobs:
           DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo $DATA | base64 -di > app/google-services.json
 
+      # Install the Firebase CLI
+      - name: Install firebase
+        run: curl -sL https://firebase.tools | bash
+
       # Kernel-based Virtual Machine (KVM) is an open source virtualization technology built into Linux. Enabling it allows the Android emulator to run faster.
       - name: Enable KVM group perms
         run: |
@@ -88,6 +92,10 @@ jobs:
         run: |
           # To run the CI with debug information, add --info
           ./gradlew assemble lint --parallel --build-cache
+
+      # Start the Firebase emulators
+      - name: Run firebase emulators
+        run: firebase emulators:start --only firestore &
 
       # Run Unit tests
       - name: Run tests
