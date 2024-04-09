@@ -11,9 +11,10 @@ plugins {
 
 sonar {
     properties {
-        property("sonar.projectKey", "skysync-epfl")
+        property("sonar.projectKey", "SkySync-EPFL_skysync")
         property("sonar.organization", "skysync-epfl")
         property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco.xml")
     }
 }
 
