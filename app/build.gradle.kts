@@ -14,7 +14,7 @@ sonar {
         property("sonar.projectKey", "SkySync-EPFL_skysync")
         property("sonar.organization", "skysync-epfl")
         property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+        property("sonar.jacoco.reportPaths", "${project.buildDir}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
     }
 }
 
