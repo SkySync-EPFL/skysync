@@ -24,7 +24,7 @@ data class UserSchema(
   override fun toModel(): User {
     return when (role!!) {
       UserRole.ADMIN ->
-          return Admin(
+          Admin(
               id = id!!,
               firstname = firstname!!,
               lastname = lastname!!,
@@ -32,7 +32,7 @@ data class UserSchema(
               assignedFlights = FlightGroupCalendar(),
           )
       UserRole.CREW ->
-          return Crew(
+          Crew(
               id = id!!,
               firstname = firstname!!,
               lastname = lastname!!,
@@ -40,7 +40,7 @@ data class UserSchema(
               assignedFlights = FlightGroupCalendar(),
           )
       UserRole.PILOT ->
-          return Pilot(
+          Pilot(
               id = id!!,
               firstname = firstname!!,
               lastname = lastname!!,

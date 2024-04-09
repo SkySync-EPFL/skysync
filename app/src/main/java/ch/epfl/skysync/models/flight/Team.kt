@@ -32,4 +32,12 @@ data class Team(val roles: List<Role>) {
     val newRoles = rolesToAdd + roles
     return Team(newRoles)
   }
+
+  override fun equals(other: Any?): Boolean {
+    if (other == null) return false
+    if (other::class != this::class) return false
+    // we do not take into account the order in which the roles have been added
+    // when performing equality check
+    return (other as Team).roles.sortedBy { it.roleType } == this.roles.sortedBy { it.roleType }
+  }
 }
