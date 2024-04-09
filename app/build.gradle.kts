@@ -14,7 +14,7 @@ sonar {
         property("sonar.projectKey", "SkySync-EPFL_skysync")
         property("sonar.organization", "skysync-epfl")
         property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.jacoco.reportPaths", "${project.buildDir}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+        property("sonar.coverage.jacoco.xmlReportPaths", "${layout.buildDirectory}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
     }
 }
 
@@ -158,6 +158,10 @@ tasks.register("jacocoTestReport", JacocoReport::class) {
     reports {
         xml.required = true
         html.required = true
+
+        xml.outputLocation = file("build/reports/androidTests/connected/debug/jacocoTestReportTest.xml")
+        //xml.outputLocation = file(getBuildDir().toString() + File.separator.toString() + "jacoco" + File.separator.toString() + "coverage.xml")
+
     }
 
     val fileFilter = listOf(
