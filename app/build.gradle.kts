@@ -159,7 +159,8 @@ tasks.register("jacocoTestReport", JacocoReport::class) {
         xml.required = true
         html.required = true
 
-        //xml.outputLocation = file("build/reports/androidTests/connected/debug/TEST-jacocoTestReportTest.xml")
+        xml.outputLocation = file("build/reports/androidTests/connected/debug/TEST-jacocoTestReportTest.xml")
+        //xml.outputLocation = file("build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
 
     }
 
