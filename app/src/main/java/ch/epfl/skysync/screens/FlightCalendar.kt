@@ -93,7 +93,8 @@ fun ShowFlight(
 /**
  * Composable function to display the flight calendar screen.
  *
- * @param navController The navigation controller used for navigating to different destinations within the app.
+ * @param navController The navigation controller used for navigating to different destinations
+ *   within the app.
  */
 @Composable
 fun ShowFlightCalendar(navController: NavHostController) {
@@ -142,7 +143,8 @@ val FakeFlights: (LocalDate, TimeSlot) -> Flight? = { date: LocalDate, timeslot:
 /**
  * Composable function to display a calendar with flight information for each date and time slot.
  *
- * @param navController The navigation controller used for navigating to different destinations within the app.
+ * @param navController The navigation controller used for navigating to different destinations
+ *   within the app.
  */
 @Composable
 fun Calendar(navController: NavHostController) {
