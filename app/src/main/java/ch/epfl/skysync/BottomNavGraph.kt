@@ -12,9 +12,9 @@ import ch.epfl.skysync.screens.HomeScreen
 @Composable
 fun BottomNavGraph(navController: NavHostController) {
   NavHost(navController = navController, startDestination = BottomBarScreen.Home.route) {
-    composable(route = BottomBarScreen.Home.route) { HomeScreen() }
-    composable(route = BottomBarScreen.Flight.route) { FlightScreen() }
-    composable(route = BottomBarScreen.Chat.route) { ChatScreen() }
-    composable(route = BottomBarScreen.Calendar.route) { CalendarScreen() }
+    composable(route = BottomBarScreen.Home.route) { HomeScreen(navController) }
+    composable(route = BottomBarScreen.Flight.route) { FlightScreen(navController) }
+    composable(route = BottomBarScreen.Chat.route) { ChatScreen(navController) }
+    composable(route = BottomBarScreen.Calendar.route) { CalendarScreen(navController) }
   }
 }
