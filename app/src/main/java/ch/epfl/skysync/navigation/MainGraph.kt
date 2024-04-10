@@ -15,11 +15,17 @@ fun MainGraph(
     navHostController: NavHostController,
     signInLauncher: ActivityResultLauncher<Intent>,
     user: FirebaseUser?
+
 ) {
   NavHost(
       navController = navHostController,
-      startDestination = if (user == null) Route.LOGIN else Route.MAIN) {
-        homeGraph(navHostController)
-        composable(Route.LOGIN) { LoginScreen(signInLauncher = signInLauncher) }
+      startDestination = Route.MAIN
+      //startDestination = if (user == null) Route.LOGIN else Route.MAIN
+  )
+  {
+      homeGraph(navHostController, user)
+      composable(Route.LOGIN) {
+          LoginScreen(signInLauncher = signInLauncher)
       }
+  }
 }
