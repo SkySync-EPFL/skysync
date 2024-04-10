@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.navigation.BottomBar
+import javax.annotation.processing.Generated
 
 @Composable
 fun ChatScreen(navController: NavHostController) {
@@ -25,6 +26,7 @@ fun ChatScreen(navController: NavHostController) {
   }
 }
 
+@Generated
 @Composable
 @Preview
 fun ChatScreenPreview() {
