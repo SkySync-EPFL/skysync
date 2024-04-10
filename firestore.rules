@@ -31,20 +31,20 @@ service cloud.firestore {
     }
 
     match /user/{userId}{
-      // Allow read if user is owner
-    	allow read: if isSignedIn() && resourceExists(resource) && request.auth.uid == userId;
-      // Allow write if user is admin
-      allow write: if isSignedIn() && resourceExists(resource) &&
-      											(request.auth.uid == userId || isAdmin());
+        // Allow read if user is owner or admin
+        allow read: if isSignedIn() && resourceExists(resource) &&
+      					    (request.auth.uid == userId || isAdmin());
+        // Allow write if user is admin
+        allow write: if isSignedIn() && resourceExists(resource) && isAdmin();
 
-		}
+	}
 
     match /availability/{avy}{
 
-    	function isOwner(rsc){
-      	return resourceExists(rsc) &&
+        function isOwner(rsc){
+      	    return resourceExists(rsc) &&
         				(rsc.data.personId == request.auth.uid)
-      }
+        }
 
     	// Allow read, write if document exists and the user is owner or admin
     	allow read, write: if isSignedIn() && resourceExists(resource) &&
