@@ -69,8 +69,8 @@ abstract class CalendarModel<T : CalendarViewable> {
   }
 
   /**
-   * updates the slot (if present) or creates new slot by the given coordinates
-   * with the output of produceNewValue
+   * updates the slot (if present) or creates new slot by the given coordinates with the output of
+   * produceNewValue
    *
    * @param date the date coordinate of the slot
    * @param timeSlot the timeSlot coordinate of the slot
