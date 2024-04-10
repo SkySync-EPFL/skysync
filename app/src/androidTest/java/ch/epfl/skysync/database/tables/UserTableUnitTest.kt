@@ -13,6 +13,7 @@ import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.models.user.User
+import com.google.firebase.firestore.Filter
 import java.time.LocalDate
 import org.junit.Assert.*
 import org.junit.Before
@@ -39,13 +40,13 @@ class UserTableUnitTest {
   private var crew1 =
       Crew(
           firstname = "crew-1",
-          lastname = "lastname",
+          lastname = "bob",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
   private var pilot1 =
       Pilot(
           firstname = "pilot-1",
-          lastname = "lastname",
+          lastname = "bob",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.LARGE)
@@ -167,6 +168,27 @@ class UserTableUnitTest {
     assertEquals(true, isComplete)
     assertEquals(false, isError)
     assertEquals(crew1, user)
+  }
+
+  @Test
+  fun queryTest() {
+    var users = listOf<User>()
+    var isComplete = false
+    var isError = false
+
+    userTable.query(
+        Filter.equalTo("lastname", "bob"),
+        {
+          users = it
+          isComplete = true
+        },
+        { isError = true })
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
+    assertTrue(listOf(crew1, pilot1).containsAll(users))
   }
 
   @Test
