@@ -82,48 +82,36 @@ val emptyList: List<PlannedFlight> = emptyList()
 
 @Composable
 fun UpcomingFlights(flights: List<Flight>, onFlightClick: (Flight) -> Unit) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
-        Text(
-            text = "Upcoming flights",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier
-                .background(
+  Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Text(
+        text = "Upcoming flights",
+        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+        modifier =
+            Modifier.background(
                     color = lightOrange,
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                )
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .fillMaxWidth()
                 .padding(16.dp),
-            color = Color.White,
-            textAlign = TextAlign.Center
-        )
+        color = Color.White,
+        textAlign = TextAlign.Center)
 
-        Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(16.dp))
 
-        if (flights.isEmpty()) {
-            // Handle case when no upcoming flights
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.3f),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No upcoming flights",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                    color = Color.Gray
-                )
-            }
-        } else {
-            // Display the flights in a LazyColumn if the list is not empty
-            LazyColumn {
-                items(flights) { flight ->
-                    FlightRow(flight, onFlightClick)
-                }
-            }
-        }
+    if (flights.isEmpty()) {
+      // Handle case when no upcoming flights
+      Box(
+          modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f),
+          contentAlignment = Alignment.Center) {
+            Text(
+                text = "No upcoming flights",
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                color = Color.Gray)
+          }
+    } else {
+      // Display the flights in a LazyColumn if the list is not empty
+      LazyColumn { items(flights) { flight -> FlightRow(flight, onFlightClick) } }
     }
+  }
 }
 
 @Composable
@@ -170,7 +158,9 @@ fun HomeScreen(navController: NavHostController) {
   Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
     // Calls UpcomingFlights composable with navigation logic
     UpcomingFlights(listFlights) { selectedFlight ->
-      navController.navigate("FlightDetailsScreen/${selectedFlight.id}") // route to the details of the selected flight (to be modified)
+      navController.navigate(
+          "FlightDetailsScreen/${selectedFlight.id}") // route to the details of the selected flight
+                                                      // (to be modified)
     }
   }
 }
