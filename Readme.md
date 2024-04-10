@@ -33,6 +33,10 @@ Administrators create flights and assign staff to them. They have read/write acc
 
 TBD
 
+## Database
+
+![SkySync Database Model](https://github.com/SkySync-EPFL/skysync/assets/93386280/3d09b922-137d-478c-b8ca-7a3e7b7894fd)
+
 ## Testing
 
 ### Firebase emulators
