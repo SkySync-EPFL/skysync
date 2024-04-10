@@ -1,9 +1,11 @@
+import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
+
 plugins {
     id ("com.android.application")
     id ("org.jetbrains.kotlin.android")
     id("com.ncorti.ktfmt.gradle") version "0.16.0"
     id("com.google.gms.google-services")
-    id("org.sonarqube") version "4.4.1.3373"
+    id("org.sonarqube") version "5.0.0.4638"
 
 }
 
@@ -12,7 +14,12 @@ sonar {
         property("sonar.projectKey", "SkySync-EPFL_skysync")
         property("sonar.organization", "skysync-epfl")
         property("sonar.host.url", "https://sonarcloud.io")
-    }
+
+        property("sonar.junit.reportPaths", "${project.layout.buildDirectory.get()}/test-results/testDebugUnitTest/")
+        // Paths to xml files with Android Lint issues. If the main flavor is changed, this file will have to be changed too.
+        property("sonar.androidLint.reportPaths", "${project.layout.buildDirectory.get()}/reports/lint-results-debug.xml")
+        // Paths to JaCoCo XML coverage report files.
+        property("sonar.coverage.jacoco.xmlReportPaths", "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")    }
 }
 
 android {
@@ -40,6 +47,12 @@ android {
                 "proguard-rules.pro"
             )
         }
+
+        debug {
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
+        }
+
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -73,7 +86,7 @@ android {
 
 dependencies {
 
-
+    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.ui:ui:1.4.0")
     implementation("androidx.compose.ui:ui-tooling-preview:1.4.0")
@@ -133,6 +146,13 @@ dependencies {
 
     implementation("com.google.maps.android:maps-compose:4.3.3")
 
+    // Dependency for using Intents in instrumented tests
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+
+    // Dependencies for using MockK in instrumented tests
+    androidTestImplementation("io.mockk:mockk:1.13.7")
+    androidTestImplementation("io.mockk:mockk-android:1.13.7")
+    androidTestImplementation("io.mockk:mockk-agent:1.13.7")
 
 }
 
