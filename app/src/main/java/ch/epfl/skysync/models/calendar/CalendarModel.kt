@@ -69,7 +69,8 @@ abstract class CalendarModel<T : CalendarViewable> {
   }
 
   /**
-   * updates the slot by the given coordinates with the output of produceNewValue
+   * updates the slot (if present) or creates new slot by the given coordinates
+   * with the output of produceNewValue
    *
    * @param date the date coordinate of the slot
    * @param timeSlot the timeSlot coordinate of the slot
@@ -78,13 +79,11 @@ abstract class CalendarModel<T : CalendarViewable> {
   fun setByDate(
       date: LocalDate,
       timeSlot: TimeSlot,
-      produceNewValue: (LocalDate, TimeSlot, oldValue: T) -> T
+      produceNewValue: (LocalDate, TimeSlot, oldValue: T?) -> T
   ) {
     val oldValue = removeByDate(date, timeSlot)
-    if (oldValue != null) {
-      val newValue = produceNewValue(date, timeSlot, oldValue)
-      cells.add(newValue)
-    }
+    val newValue = produceNewValue(date, timeSlot, oldValue)
+    cells.add(newValue)
   }
 
   /**
