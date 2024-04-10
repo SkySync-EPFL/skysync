@@ -5,6 +5,7 @@ import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.BalloonSchema
 import ch.epfl.skysync.models.flight.Balloon
 
+/** Represent the "balloon" table */
 class BalloonTable(db: FirestoreDatabase) :
     Table<Balloon, BalloonSchema>(db, BalloonSchema::class, PATH) {
 

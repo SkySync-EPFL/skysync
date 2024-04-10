@@ -5,6 +5,7 @@ import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.BasketSchema
 import ch.epfl.skysync.models.flight.Basket
 
+/** Represent the "basket" table */
 class BasketTable(db: FirestoreDatabase) :
     Table<Basket, BasketSchema>(db, BasketSchema::class, PATH) {
 

@@ -13,7 +13,9 @@ import java.util.Date
 data class FlightSchema(
     @DocumentId val id: String? = null,
     val flightTypeId: String? = null,
+    /** Nullable */
     val balloonId: String? = null,
+    /** Nullable */
     val basketId: String? = null,
     val vehicleIds: List<String>? = null,
     val status: FlightStatus? = null,

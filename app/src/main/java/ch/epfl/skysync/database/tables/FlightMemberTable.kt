@@ -4,6 +4,7 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.FlightMemberSchema
 
+/** Represent the "flight-member" relation */
 class FlightMemberTable(db: FirestoreDatabase) :
     Table<FlightMemberSchema, FlightMemberSchema>(db, FlightMemberSchema::class, PATH) {
 

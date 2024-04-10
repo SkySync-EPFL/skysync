@@ -18,6 +18,7 @@ import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.Filter
 
+/** Represent the "flight" table */
 class FlightTable(db: FirestoreDatabase) :
     Table<Flight, FlightSchema>(db, FlightSchema::class, PATH) {
   private val flightTypeTable = FlightTypeTable(db)
@@ -27,11 +28,12 @@ class FlightTable(db: FirestoreDatabase) :
   private val flightMemberTable = FlightMemberTable(db)
   private val userTable = UserTable(db)
 
+  /** Create a [Flight] instance from the flight schema and the retrieved entities */
   private fun makeFlight(
       schema: FlightSchema,
       flightType: FlightType,
-      balloon: Balloon,
-      basket: Basket,
+      balloon: Balloon?,
+      basket: Basket?,
       vehicles: List<Vehicle>,
       team: Team
   ): Flight {
@@ -52,6 +54,10 @@ class FlightTable(db: FirestoreDatabase) :
     }
   }
 
+  /**
+   * Add items to the flight-member relation for each role defined in the team, whether or not it
+   * has a user assigned.
+   */
   private fun addTeam(
       flightId: String,
       team: Team,
@@ -68,6 +74,12 @@ class FlightTable(db: FirestoreDatabase) :
     }
   }
 
+  /**
+   * Retrieve the team members of the flight
+   *
+   * First query the flight-member relation then for the roles which have a user assigned, query the
+   * user table.
+   */
   private fun retrieveTeam(
       schema: FlightSchema,
       onCompletion: (Team) -> Unit,
@@ -108,6 +120,7 @@ class FlightTable(db: FirestoreDatabase) :
         onError)
   }
 
+  /** Retrieve the vehicles linked to the flight */
   private fun retrieveVehicles(
       schema: FlightSchema,
       onCompletion: (List<Vehicle>) -> Unit,
@@ -130,6 +143,7 @@ class FlightTable(db: FirestoreDatabase) :
     }
   }
 
+  /** Retrieve all the entities linked to the flight */
   private fun retrieveFlight(
       flightSchema: FlightSchema,
       onCompletion: (Flight?) -> Unit,
@@ -141,9 +155,16 @@ class FlightTable(db: FirestoreDatabase) :
     var basket: Basket? = null
     var vehicles: List<Vehicle>? = null
     var team: Team? = null
-    var delayedOnCompletion =
-        DelayedCallback(4) {
-          onCompletion(makeFlight(schema, flightType!!, balloon!!, basket!!, vehicles!!, team!!))
+
+    // the number of requests that will be executed depends
+    // on if balloon/basket IDs are defined
+    var numEntitiesRequests = 2
+    if (flightSchema.balloonId != null) numEntitiesRequests += 1
+    if (flightSchema.basketId != null) numEntitiesRequests += 1
+
+    val delayedOnCompletion =
+        DelayedCallback(numEntitiesRequests) {
+          onCompletion(makeFlight(schema, flightType!!, balloon, basket, vehicles!!, team!!))
         }
     flightTypeTable.get(
         schema.flightTypeId!!,
@@ -157,29 +178,33 @@ class FlightTable(db: FirestoreDatabase) :
         },
         onError)
 
-    balloonTable.get(
-        schema.balloonId!!,
-        {
-          if (it == null) {
-            onCompletion(null)
-          } else {
-            balloon = it
-            delayedOnCompletion.run()
-          }
-        },
-        onError)
+    if (flightSchema.balloonId != null) {
+      balloonTable.get(
+          schema.balloonId!!,
+          {
+            if (it == null) {
+              onCompletion(null)
+            } else {
+              balloon = it
+              delayedOnCompletion.run()
+            }
+          },
+          onError)
+    }
 
-    basketTable.get(
-        schema.basketId!!,
-        {
-          if (it == null) {
-            onCompletion(null)
-          } else {
-            basket = it
-            delayedOnCompletion.run()
-          }
-        },
-        onError)
+    if (flightSchema.basketId != null) {
+      basketTable.get(
+          schema.basketId!!,
+          {
+            if (it == null) {
+              onCompletion(null)
+            } else {
+              basket = it
+              delayedOnCompletion.run()
+            }
+          },
+          onError)
+    }
 
     retrieveVehicles(
         schema,

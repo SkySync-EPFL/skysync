@@ -30,6 +30,12 @@ import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
 import java.time.LocalDate
 
+/**
+ * Represent a mock database setup
+ *
+ * Define sample data and a standard database state ([fillDatabase]). Designed to be used on a blank
+ * database, use [clearDatabase] to clear any existing data.
+ */
 class DatabaseSetup {
   var admin1 =
       Admin(
@@ -99,6 +105,11 @@ class DatabaseSetup {
           vehicles = listOf(vehicle1),
           id = UNSET_ID)
 
+  /**
+   * Delete all items in all tables of the database
+   *
+   * @param db Firestore database instance
+   */
   fun clearDatabase(db: FirestoreDatabase) {
     FlightTypeTable(db).deleteTable {}
     BalloonTable(db).deleteTable {}
@@ -112,6 +123,11 @@ class DatabaseSetup {
     SystemClock.sleep(DB_SLEEP_TIME)
   }
 
+  /**
+   * Fill the database with a standard state
+   *
+   * @param db Firestore database instance
+   */
   fun fillDatabase(db: FirestoreDatabase) {
     val flightTypeTable = FlightTypeTable(db)
     val balloonTable = BalloonTable(db)

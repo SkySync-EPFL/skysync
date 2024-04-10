@@ -6,6 +6,7 @@ import com.google.firebase.firestore.DocumentId
 
 data class FlightMemberSchema(
     @DocumentId val id: String? = null,
+    /** Nullable */
     val userId: String? = null,
     val flightId: String? = null,
     val roleType: RoleType? = null,

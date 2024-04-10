@@ -5,6 +5,7 @@ import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.VehicleSchema
 import ch.epfl.skysync.models.flight.Vehicle
 
+/** Represent the "vehicle" table */
 class VehicleTable(db: FirestoreDatabase) :
     Table<Vehicle, VehicleSchema>(db, VehicleSchema::class, PATH) {
 

@@ -5,6 +5,7 @@ import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.FlightTypeSchema
 import ch.epfl.skysync.models.flight.FlightType
 
+/** Represent the "flight-type" table */
 class FlightTypeTable(db: FirestoreDatabase) :
     Table<FlightType, FlightTypeSchema>(db, FlightTypeSchema::class, PATH) {
 
