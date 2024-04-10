@@ -35,7 +35,8 @@ TBD
 
 ## Database
 
-![SkySync Database Model](https://github.com/SkySync-EPFL/skysync/assets/93386280/3d09b922-137d-478c-b8ca-7a3e7b7894fd)
+![SkySync database diagram](https://github.com/SkySync-EPFL/skysync/assets/93386280/12758f88-e731-4578-bb11-9c85a23fc748)
+
 
 ## Testing
 
