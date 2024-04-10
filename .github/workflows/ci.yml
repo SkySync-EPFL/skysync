@@ -98,13 +98,13 @@ jobs:
         run: firebase emulators:start --only firestore &
 
       # Run Unit tests
-      - name: Run tests
+      - name: Run unit tests
         run: |
           # To run the CI with debug information, add --info
           ./gradlew check --parallel --build-cache
 
       # Run connected tests on the emulator
-      - name: run tests
+      - name: Run android tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
@@ -125,4 +125,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonar --parallel --build-cache
+        run: ./gradlew sonar --parallel --build-cache --warning-mode all

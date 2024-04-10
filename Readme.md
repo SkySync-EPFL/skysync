@@ -99,7 +99,6 @@ class ChatScreenTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
     //required to test UI components
   @get:Rule val composeTestRule = createComposeRule()
-    /*
 
   @Before
   fun testSetup() {
