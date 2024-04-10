@@ -33,6 +33,10 @@ data class Team(val roles: List<Role>) {
     return Team(newRoles)
   }
 
+  override fun hashCode(): Int {
+    return roles.sortedBy { it.roleType }.hashCode()
+  }
+
   override fun equals(other: Any?): Boolean {
     if (other == null) return false
     if (other::class != this::class) return false

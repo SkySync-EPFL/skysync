@@ -8,7 +8,6 @@ import com.google.firebase.firestore.DocumentId
 data class FlightTypeSchema(
     @DocumentId val id: String? = null,
     val name: String? = null,
-    val hasDoor: Boolean? = null,
     val specialRoles: List<RoleType>? = null
 ) : Schema<FlightType> {
   override fun toModel(): FlightType {

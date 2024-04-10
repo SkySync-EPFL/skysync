@@ -24,7 +24,9 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
       // can only be called once but there is no method to check if already called
       try {
         db.useEmulator("10.0.2.2", 5002)
-      } catch (e: IllegalStateException) {}
+      } catch (_: IllegalStateException) {
+        // this occurs when the FirebaseDatabase is instanced twice
+      }
       db.firestoreSettings = firestoreSettings {
         setLocalCacheSettings(MemoryCacheSettings.newBuilder().build())
       }

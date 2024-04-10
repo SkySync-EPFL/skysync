@@ -117,6 +117,10 @@ abstract class CalendarModel<T : CalendarViewable> {
         Comparator<T> { a, b -> a.date.compareTo(b.date) }.thenBy { it.timeSlot })
   }
 
+  override fun hashCode(): Int {
+    return getSortedSetOfCells().hashCode()
+  }
+
   override fun equals(other: Any?): Boolean {
     if (other == null) return false
     if (other::class != this::class) return false
