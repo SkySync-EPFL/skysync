@@ -40,7 +40,7 @@ class UpcomingFlightsTests {
 
     composeTestRule.setContent { UpcomingFlights(flights = listOf(testFlight), onFlightClick = {}) }
 
-    composeTestRule.onNodeWithText("DISCOVERY - 1 pax").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Discovery - 1 pax").assertIsDisplayed()
   }
 
   @Test
@@ -62,7 +62,7 @@ class UpcomingFlightsTests {
       UpcomingFlights(flights = listOf(testFlight)) { wasClicked = it.id == testFlight.id }
     }
 
-    composeTestRule.onNodeWithText("DISCOVERY - 1 pax").performClick()
+    composeTestRule.onNodeWithText("Discovery - 1 pax").performClick()
 
     assertTrue("Flight click callback was not triggered with the correct flight", wasClicked)
   }
