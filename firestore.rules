@@ -1,6 +1,12 @@
 rules_version = '2';
 
 service cloud.firestore {
+  // This rule allows anyone with your Firestore database reference to view, edit,
+  // and delete all data in your Firestore database.
+  match /{document=**} {
+    allow read, write: if true;
+  }
+
   match /databases/{database}/documents {
   	function isSignedIn(){
     	return request.auth != null;
