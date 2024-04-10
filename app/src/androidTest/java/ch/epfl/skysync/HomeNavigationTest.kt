@@ -25,7 +25,7 @@ class HomeNavigationTest {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(navController)
+        homeGraph(navController, null)
       }
     }
   }
