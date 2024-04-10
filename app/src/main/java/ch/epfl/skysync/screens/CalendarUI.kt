@@ -14,8 +14,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.viewmodel.UserViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -67,7 +69,9 @@ fun showTile(date: LocalDate, slot: TimeSlot, size: Dp) {
 }
 
 @Composable
-fun showCalendarAvailabilities() {
+fun showCalendarAvailabilities(navHostController: NavHostController,
+                               padding: PaddingValues,
+                               viewModel: UserViewModel) {
   Calendar { date, slot, size -> showTile(date, slot, size) }
 }
 
