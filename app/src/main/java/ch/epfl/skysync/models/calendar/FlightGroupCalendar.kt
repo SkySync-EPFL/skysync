@@ -27,22 +27,21 @@ class FlightGroupCalendar : CalendarModel<FlightGroup>() {
   }
 
   /**
-   * inits the calendar with empty FlightGroups for the given range
-   *
-   * @param from start date of the range
-   * @param to end date of the range (inclusive)
+   * @param date date calendar slot coordinate
+   * @param timeSlot timeSlot calendar slot coordinate
+   * @return first flight of the FlightGroup for the given slot coordinates
    */
-  override fun initForRange(from: LocalDate, to: LocalDate) {
-    initForRangeSuper(from, to) { date, timeSlot -> FlightGroup(date, timeSlot, listOf()) }
+  fun getFirstFlightByDate(date: LocalDate, timeSlot: TimeSlot): Flight? {
+    val flightGroup = getByDate(date, timeSlot) ?: return null
+    return flightGroup.firstFlight()
   }
 
   /**
    * @param date date calendar slot coordinate
    * @param timeSlot timeSlot calendar slot coordinate
-   * @return first flight of the FlightGroup for the given slot coordinates
+   * @return the FlightGroup for the given slot coordinates or null if none exists
    */
-  fun getFlightByDate(date: LocalDate, timeSlot: TimeSlot): Flight? {
-    val flightGroup = getByDate(date, timeSlot) ?: return null
-    return flightGroup.firstFlight()
+  fun getFlightGroupByDate(date: LocalDate, timeSlot: TimeSlot): FlightGroup? {
+    return getByDate(date, timeSlot)
   }
 }
