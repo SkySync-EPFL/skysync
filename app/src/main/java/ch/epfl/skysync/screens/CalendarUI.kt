@@ -59,7 +59,6 @@ fun showTile(date: LocalDate, slot: TimeSlot, scaleHeight: Float,scaleWidth: Flo
             AvailabilityStatus.NO -> customRed
             null -> customEmpty
         }
-
     Box(
         modifier = Modifier.fillMaxHeight(scaleHeight).fillMaxWidth(scaleWidth).background(color = backgroundColor,
             shape = RoundedCornerShape(0.dp)).clickable {
@@ -125,7 +124,7 @@ fun Calendar(today : LocalDate,viewModel: UserViewModel) {
 @Composable
 fun WeekView(startOfWeek: LocalDate,viewModel: UserViewModel) {
     val weekDays = (0..6).map { startOfWeek.plusDays(it.toLong()) }
-    Column(modifier = Modifier.fillMaxHeight(0.6f)) {
+    Column(modifier = Modifier.fillMaxHeight(0.7f)) {
         Row(
         ) {
             Spacer(modifier = Modifier.width(120.dp))
