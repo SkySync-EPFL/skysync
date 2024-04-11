@@ -9,6 +9,5 @@ object Route {
   const val CHAT = "Chat"
   const val FLIGHTCALENDAR = "Flight Calendar"
   const val ADDFLIGHT = "Add Flight"
-
   const val LOGIN = "Login"
 }

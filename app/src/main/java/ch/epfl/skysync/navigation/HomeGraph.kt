@@ -10,6 +10,7 @@ import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
 import ch.epfl.skysync.screens.ShowFlightCalendar
 import ch.epfl.skysync.screens.showCalendarAvailabilities
+import ch.epfl.skysync.viewmodel.UserViewModel
 
 /** Graph of the main screens of the app */
 fun NavGraphBuilder.homeGraph(navController: NavHostController) {
@@ -18,7 +19,9 @@ fun NavGraphBuilder.homeGraph(navController: NavHostController) {
     composable(Route.CHAT) { ChatScreen(navController) }
     composable(Route.FLIGHT) { FlightScreen(navController) }
     composable(Route.HOME) { HomeScreen(navController) }
-    composable(Route.FLIGHTCALENDAR) { ShowFlightCalendar(navController) }
+    composable(Route.FLIGHTCALENDAR) {
+      ShowFlightCalendar(navController, UserViewModel.createViewModel(null))
+    }
     composable(Route.ADDFLIGHT) { AddFlight(navController) }
   }
 }
