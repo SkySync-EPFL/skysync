@@ -11,6 +11,7 @@ import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
+import ch.epfl.skysync.screens.getStartOfWeek
 import java.time.LocalDate
 import org.junit.Assert
 import org.junit.Before
@@ -43,6 +44,66 @@ class CalendarUITest {
   fun routeIsRightIfClickOnAddTodayDate() {
     var previewDate = LocalDate.now()
     val testTag = previewDate.toString() + TimeSlot.AM.toString()
+    composeTestRule.onNode(hasTestTag(testTag)).performClick()
+
+    val route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(route, Route.CALENDAR)
+  }
+
+  @Test
+  fun routeIsRightIfClickOnMondayAm() {
+    var previewDate = getStartOfWeek(LocalDate.now())
+    val testTag = previewDate.toString() + TimeSlot.AM.toString()
+    composeTestRule.onNode(hasTestTag(testTag)).performClick()
+
+    val route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(route, Route.CALENDAR)
+  }
+
+  @Test
+  fun routeIsRightIfClickOnMondayPm() {
+    var previewDate = getStartOfWeek(LocalDate.now())
+    val testTag = previewDate.toString() + TimeSlot.PM.toString()
+    composeTestRule.onNode(hasTestTag(testTag)).performClick()
+
+    val route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(route, Route.CALENDAR)
+  }
+
+  @Test
+  fun routeIsRightIfClickOnTuesdayAm() {
+    var previewDate = getStartOfWeek(LocalDate.now()).plusDays(1)
+    val testTag = previewDate.toString() + TimeSlot.AM.toString()
+    composeTestRule.onNode(hasTestTag(testTag)).performClick()
+
+    val route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(route, Route.CALENDAR)
+  }
+
+  @Test
+  fun routeIsRightIfClickOnTuesdayPm() {
+    var previewDate = getStartOfWeek(LocalDate.now()).plusDays(1)
+    val testTag = previewDate.toString() + TimeSlot.PM.toString()
+    composeTestRule.onNode(hasTestTag(testTag)).performClick()
+
+    val route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(route, Route.CALENDAR)
+  }
+
+  @Test
+  fun routeIsRightIfClickOnWednesdayAm() {
+    var previewDate = getStartOfWeek(LocalDate.now()).plusDays(2)
+    val testTag = previewDate.toString() + TimeSlot.AM.toString()
+    composeTestRule.onNode(hasTestTag(testTag)).performClick()
+
+    val route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(route, Route.CALENDAR)
+  }
+
+  @Test
+  fun routeIsRightIfClickOnWednesdayPm() {
+    var previewDate = getStartOfWeek(LocalDate.now()).plusDays(2)
+    val testTag = previewDate.toString() + TimeSlot.PM.toString()
     composeTestRule.onNode(hasTestTag(testTag)).performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
