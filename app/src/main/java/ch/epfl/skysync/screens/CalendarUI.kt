@@ -17,13 +17,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.viewmodel.UserViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+
 // Define custom colors to represent availability status
 // These colors are used to indicate availability status in the UI
 
@@ -38,8 +38,23 @@ val customRed = Color(android.graphics.Color.parseColor("#f05959"))
 
 // Custom color for indicating an empty or unknown availability status
 val customEmpty = Color(android.graphics.Color.parseColor("#f0f0f0"))
-
-
+/**
+ * Maps availability status to a corresponding color.
+ *
+ * @param status The availability status to be mapped.
+ * @return The color representing the availability status.
+ */
+fun availabilityToColor(status: AvailabilityStatus): Color {
+    if(status==AvailabilityStatus.OK){
+        return customGreen}
+    if(status==AvailabilityStatus.MAYBE){
+        return customBlue}
+    if(status==AvailabilityStatus.NO){
+        return customRed}
+    else{
+        return customEmpty
+    }
+}
 /**
  * Composable function to display a colored tile indicating availability status.
  *
@@ -51,20 +66,15 @@ val customEmpty = Color(android.graphics.Color.parseColor("#f0f0f0"))
  *
  */
 @Composable
-fun showTile(date: LocalDate, slot: TimeSlot, scaleHeight: Float,scaleWidth: Float,viewModel: UserViewModel) {
-    var availabilityStatus by remember { mutableStateOf(viewModel.user.value.availabilities.getAvailabilityStatus(date, slot)) }
-    val backgroundColor =
-        when (availabilityStatus) {
-            AvailabilityStatus.OK -> customGreen
-            AvailabilityStatus.MAYBE -> customBlue
-            AvailabilityStatus.NO -> customRed
-            null -> customEmpty
-        }
+fun showTile(date: LocalDate, slot: TimeSlot, scaleHeight: Float,scaleWidth: Float,viewModel: UserViewModel,index: Int) {
+    var colorUp by remember { mutableStateOf(availabilityToColor( viewModel.user.value.availabilities.getAvailabilityStatus(date, slot))) }
+    colorUp= availabilityToColor( viewModel.user.value.availabilities.getAvailabilityStatus(date, slot))
     Box(
-        modifier = Modifier.fillMaxHeight(scaleHeight).testTag(date.toString()+slot.toString()).fillMaxWidth(scaleWidth).background(color = backgroundColor,
+        modifier = Modifier.fillMaxHeight(scaleHeight).testTag(date.toString()+slot.toString()).fillMaxWidth(scaleWidth).background(color = colorUp,
             shape = RoundedCornerShape(0.dp)).clickable {
-            availabilityStatus =  viewModel.user.value.availabilities.nextAvailabilityStatus(date, slot)
-        })
+            colorUp = availabilityToColor(viewModel.user.value.availabilities.nextAvailabilityStatus (date, slot))
+
+            })
 }
 /**
  * Composable function to display the calendar view.
@@ -99,7 +109,7 @@ fun Calendar(today : LocalDate,viewModel: UserViewModel) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
     ) {
-        WeekView(currentWeekStartDate,viewModel) // Add key parameter
+        WeekView(currentWeekStartDate,viewModel)
         Spacer(modifier = Modifier.height(8.dp))
         Row {
             Spacer(modifier = Modifier.width(138.dp))
@@ -159,9 +169,11 @@ fun WeekView(startOfWeek: LocalDate,viewModel: UserViewModel) {
                 )
                 val scale=(1f/7*7/(7-i))
                 Column(modifier = Modifier.width(1.dp).fillMaxHeight(scale).background(Color.Black)){}
-                showTile(day, TimeSlot.AM, scale,0.5f,viewModel)
+                val amIndex = i*2
+                showTile(day, TimeSlot.AM, scale,0.5f,viewModel,amIndex)
                 Column(modifier = Modifier.width(1.dp).fillMaxHeight(scale).background(Color.Black)){}
-                showTile(day, TimeSlot.PM, scale,1f,viewModel)
+                val pmIndex = i*2+1
+                showTile(day, TimeSlot.PM, scale,1f,viewModel,pmIndex)
             }
             Column(modifier = Modifier.height(1.dp).fillMaxWidth().background(Color.Black)){}
         }
