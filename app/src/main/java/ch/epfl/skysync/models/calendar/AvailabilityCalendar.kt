@@ -19,22 +19,9 @@ class AvailabilityCalendar : CalendarModel<Availability>() {
     }
   }
 
-  /**
-   * fills the calendar with availabilities for the given interval. Each availability is init with
-   * UNSET_ID and MAYBE
-   *
-   * @param from: the first date for which an entry in the calendar is initialized
-   * @param to: the last date (inclusive)
-   */
-  override fun initForRange(from: LocalDate, to: LocalDate) {
-    initForRangeSuper(from, to) { date, timeSlot ->
-      Availability(UNSET_ID, AvailabilityStatus.MAYBE, timeSlot, date)
-    }
-  }
-
-  /** @return current AvailabilityStatus for given date and timeSlot if any, else null */
-  fun getAvailabilityStatus(date: LocalDate, timeSlot: TimeSlot): AvailabilityStatus? {
-    return getByDate(date, timeSlot)?.status
+  /** @return current AvailabilityStatus for given date and timeSlot if any, else UNDEFINED */
+  fun getAvailabilityStatus(date: LocalDate, timeSlot: TimeSlot): AvailabilityStatus {
+    return getByDate(date, timeSlot)?.status ?: AvailabilityStatus.UNDEFINED
   }
 
   /**
@@ -45,10 +32,16 @@ class AvailabilityCalendar : CalendarModel<Availability>() {
    * @param timeSlot: timeSlot of the Availability of which to change the status
    * @return the new AvailabilityStatus if successfully modified, else null
    */
-  fun nextAvailabilityStatus(date: LocalDate, timeSlot: TimeSlot): AvailabilityStatus? {
-    val currentAvailability = getByDate(date, timeSlot) ?: return null
-    val newAvailabilityStatus = currentAvailability.status.next()
-    setAvailabilityByDate(date, timeSlot, newAvailabilityStatus)
-    return newAvailabilityStatus
+  fun nextAvailabilityStatus(date: LocalDate, timeSlot: TimeSlot): AvailabilityStatus {
+    val currentAvailability = getByDate(date, timeSlot)
+    val nextAvailabilityStatus: AvailabilityStatus =
+        currentAvailability?.status?.next()
+            ?: AvailabilityStatus.OK // non-existing entries get init by OK
+    if (nextAvailabilityStatus == AvailabilityStatus.UNDEFINED) {
+      removeByDate(date, timeSlot)
+    } else {
+      setAvailabilityByDate(date, timeSlot, nextAvailabilityStatus)
+    }
+    return nextAvailabilityStatus
   }
 }
