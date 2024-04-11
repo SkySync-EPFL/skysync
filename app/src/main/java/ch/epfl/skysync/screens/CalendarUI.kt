@@ -69,9 +69,11 @@ fun showTile(date: LocalDate, slot: TimeSlot, size: Dp) {
 }
 
 @Composable
-fun showCalendarAvailabilities(navHostController: NavHostController,
-                               padding: PaddingValues,
-                               viewModel: UserViewModel) {
+fun showCalendarAvailabilities(
+    navHostController: NavHostController,
+    padding: PaddingValues,
+    viewModel: UserViewModel
+) {
   Calendar { date, slot, size -> showTile(date, slot, size) }
 }
 
