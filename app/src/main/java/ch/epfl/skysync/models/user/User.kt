@@ -5,9 +5,9 @@ import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.RoleType
 
 interface User {
+  val id: String
   val firstname: String
   val lastname: String
-  val id: String
   val availabilities: AvailabilityCalendar
   val assignedFlights: FlightGroupCalendar
 

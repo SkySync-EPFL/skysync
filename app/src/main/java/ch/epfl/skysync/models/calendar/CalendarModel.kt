@@ -1,6 +1,7 @@
 package ch.epfl.skysync.models.calendar
 
 import java.time.LocalDate
+import java.util.SortedSet
 
 /**
  * represents a calendar where each slot uniquely defined by its date and timeslot contains a
@@ -73,5 +74,23 @@ abstract class CalendarModel<T : CalendarViewable> {
    */
   protected fun getByDate(date: LocalDate, timeSlot: TimeSlot): T? {
     return cells.firstOrNull { it.date == date && it.timeSlot == timeSlot }
+  }
+
+  /** Return a set of the cells, sorted by date and time slot */
+  private fun getSortedSetOfCells(): SortedSet<T> {
+    return cells.toSortedSet(
+        Comparator<T> { a, b -> a.date.compareTo(b.date) }.thenBy { it.timeSlot })
+  }
+
+  override fun hashCode(): Int {
+    return getSortedSetOfCells().hashCode()
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other == null) return false
+    if (other::class != this::class) return false
+    // we do not take into account the order in which the cells have been added
+    // when performing equality check
+    return (other as CalendarModel<*>).getSortedSetOfCells() == this.getSortedSetOfCells()
   }
 }
