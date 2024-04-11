@@ -10,7 +10,7 @@ import java.util.Date
 
 data class AvailabilitySchema(
     @DocumentId val id: String? = null,
-    val personId: String? = null,
+    val userId: String? = null,
     val status: AvailabilityStatus? = null,
     val timeSlot: TimeSlot? = null,
     // We use the Date class instead of the LocalDate one because

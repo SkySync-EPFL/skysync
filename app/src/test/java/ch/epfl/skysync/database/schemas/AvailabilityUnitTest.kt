@@ -23,7 +23,7 @@ class AvailabilityUnitTest {
     val availabilitySchema =
         AvailabilitySchema(
             id = "id",
-            personId = personId,
+            userId = personId,
             status = AvailabilityStatus.MAYBE,
             timeSlot = TimeSlot.PM,
             date = date)
