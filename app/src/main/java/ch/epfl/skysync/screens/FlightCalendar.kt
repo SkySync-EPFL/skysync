@@ -17,7 +17,6 @@ import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.viewmodel.UserViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -86,8 +84,12 @@ fun ShowFlight(date: LocalDate, time: TimeSlot, viewModel: UserViewModel) {
  *   within the app.
  */
 @Composable
-fun ShowFlightCalendar(navController: NavHostController, padding: PaddingValues, viewModel: UserViewModel) {
-   Calendar(navController, padding, viewModel)
+fun ShowFlightCalendar(
+    navController: NavHostController,
+    padding: PaddingValues,
+    viewModel: UserViewModel
+) {
+  Calendar(navController, viewModel)
 }
 
 /**
@@ -97,7 +99,7 @@ fun ShowFlightCalendar(navController: NavHostController, padding: PaddingValues,
  *   within the app.
  */
 @Composable
-fun Calendar(navController: NavHostController, padding: PaddingValues, viewModel: UserViewModel) {
+fun Calendar(navController: NavHostController, viewModel: UserViewModel) {
   var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(LocalDate.now())) }
   Column(
       modifier = Modifier.fillMaxSize().padding(16.dp).background(Color.White),

@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -85,17 +84,15 @@ fun showTile(
       availabilityToColor(viewModel.user.value.availabilities.getAvailabilityStatus(date, slot))
   Box(
       modifier =
-      Modifier
-          .fillMaxHeight(scaleHeight)
-          .testTag(date.toString() + slot.toString())
-          .fillMaxWidth(scaleWidth)
-          .background(color = colorUp, shape = RoundedCornerShape(0.dp))
-          .clickable {
-              colorUp =
-                  availabilityToColor(
-                      viewModel.user.value.availabilities.nextAvailabilityStatus(date, slot)
-                  )
-          })
+          Modifier.fillMaxHeight(scaleHeight)
+              .testTag(date.toString() + slot.toString())
+              .fillMaxWidth(scaleWidth)
+              .background(color = colorUp, shape = RoundedCornerShape(0.dp))
+              .clickable {
+                colorUp =
+                    availabilityToColor(
+                        viewModel.user.value.availabilities.nextAvailabilityStatus(date, slot))
+              })
 }
 /**
  * Composable function to display the calendar view.
@@ -104,19 +101,23 @@ fun showTile(
  * @param viewModel user viewmodel (used to determine availabilities status)
  */
 @Composable
-fun showCalendarAvailabilities(navHostController: NavHostController, padding: PaddingValues, viewModel: UserViewModel) {
-    val today = LocalDate.now()
-    Calendar(navHostController, today, viewModel)
+fun showCalendarAvailabilities(
+    navHostController: NavHostController,
+    padding: PaddingValues,
+    viewModel: UserViewModel
+) {
+  val today = LocalDate.now()
+  Calendar(navHostController, today, viewModel)
 }
 /** Preview function to display the calendar view. */
-//@Composable
-//@Preview
-//fun CalendarPreview() {
+// @Composable
+// @Preview
+// fun CalendarPreview() {
 //  var viewModel = UserViewModel.createViewModel(firebaseUser = null)
 //  viewModel.user.value.availabilities.setAvailabilityByDate(
 //      LocalDate.now(), TimeSlot.AM, AvailabilityStatus.MAYBE)
 //  showCalendarAvailabilities(viewModel)
-//}
+// }
 /**
  * Composable function to display a calendar view.
  *
@@ -128,9 +129,7 @@ fun Calendar(navHostController: NavHostController, today: LocalDate, viewModel: 
   var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(today)) }
 
   Column(
-      modifier = Modifier
-          .fillMaxSize()
-          .padding(16.dp),
+      modifier = Modifier.fillMaxSize().padding(16.dp),
   ) {
     WeekView(currentWeekStartDate, viewModel)
     Spacer(modifier = Modifier.height(8.dp))
@@ -145,20 +144,16 @@ fun Calendar(navHostController: NavHostController, today: LocalDate, viewModel: 
       }
       Spacer(modifier = Modifier.width(4.dp))
     }
-      Row {
-          Button(
-                  onClick = {navHostController.navigate(Route.PERSONAL_FLIGHT_CALENDAR)}
-              ){
-                  Text(text = "Flight Calendar")
-              }
-          Button(
-              onClick = {navHostController.navigate(Route.AVAILABILITY_CALENDAR)}
-          ){
-              Text(text = "Availability")
-          }
+    Row {
+      Button(onClick = { navHostController.navigate(Route.PERSONAL_FLIGHT_CALENDAR) }) {
+        Text(text = "Flight Calendar")
       }
+      Button(onClick = { navHostController.navigate(Route.AVAILABILITY_CALENDAR) }) {
+        Text(text = "Availability")
+      }
+    }
   }
-  }
+}
 
 /**
  * Composable function to display a week view with customizable tiles for each day.
@@ -198,23 +193,14 @@ fun WeekView(startOfWeek: LocalDate, viewModel: UserViewModel) {
             color = Color.Black,
             modifier = Modifier.width(120.dp))
         val scale = (1f / 7 * 7 / (7 - i))
-        Column(modifier = Modifier
-            .width(1.dp)
-            .fillMaxHeight(scale)
-            .background(Color.Black)) {}
+        Column(modifier = Modifier.width(1.dp).fillMaxHeight(scale).background(Color.Black)) {}
         val amIndex = i * 2
         showTile(day, TimeSlot.AM, scale, 0.5f, viewModel, amIndex)
-        Column(modifier = Modifier
-            .width(1.dp)
-            .fillMaxHeight(scale)
-            .background(Color.Black)) {}
+        Column(modifier = Modifier.width(1.dp).fillMaxHeight(scale).background(Color.Black)) {}
         val pmIndex = i * 2 + 1
         showTile(day, TimeSlot.PM, scale, 1f, viewModel, pmIndex)
       }
-      Column(modifier = Modifier
-          .height(1.dp)
-          .fillMaxWidth()
-          .background(Color.Black)) {}
+      Column(modifier = Modifier.height(1.dp).fillMaxWidth().background(Color.Black)) {}
     }
   }
 }
