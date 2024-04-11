@@ -68,7 +68,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
         Column(
             modifier = Modifier.padding(padding), verticalArrangement = Arrangement.SpaceBetween) {
               val defaultPadding = 16.dp
-
+              // Field getting the number of passengers. Only number can be entered
               var nbPassenger by remember { mutableStateOf("") }
               OutlinedTextField(
                   value = nbPassenger,
@@ -79,6 +79,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                   modifier =
                       Modifier.fillMaxWidth().padding(defaultPadding).testTag("nb Passenger"))
 
+              // The date field is a clickable field that opens a date picker
               var openDatePicker by remember { mutableStateOf(false) }
               var date by remember { mutableStateOf(LocalDate.now()) }
               if (openDatePicker) {
@@ -120,7 +121,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                   value =
                       String.format("%02d/%02d/%04d", date.dayOfMonth, date.monthValue, date.year),
                   onValueChange = {})
-
+              // Drop down menu for the flight type
               var flightType: FlightType? by remember { mutableStateOf(null) }
               var expandedFlightTypeMenu by remember { mutableStateOf(false) }
               ExposedDropdownMenuBox(
@@ -155,7 +156,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                           }
                         }
                   }
-
+              // Drop down menu for the vehicle
               var vehicle: Vehicle? by remember { mutableStateOf(null) }
               var expandedVehicleMenu by remember { mutableStateOf(false) }
               val allVehicles = listOf<Vehicle>(Vehicle("Car"), Vehicle("Bus"), Vehicle("Bike"))
@@ -190,6 +191,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                           }
                         }
                   }
+              // Drop down menu for the time slot. Only AM and PM are available
               var timeSlot: TimeSlot by remember { mutableStateOf(TimeSlot.AM) }
               var expandedTimeSlot by remember { mutableStateOf(false) }
               Box(modifier = Modifier.fillMaxWidth()) {
@@ -216,7 +218,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                       }
                     }
               }
-
+              // Drop down menu for the balloon
               var balloon: Balloon? by remember { mutableStateOf(null) }
               val balloons: List<Balloon> =
                   listOf(
@@ -255,7 +257,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                           }
                         }
                   }
-
+              // Drop down menu for the basket
               var basket: Basket? by remember { mutableStateOf(null) }
               val baskets: List<Basket> =
                   listOf(
@@ -294,6 +296,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                           }
                         }
                   }
+              // Field for the fondue role. Only displayed if the flight type is FONDUE
               var fondueRole: String? by remember { mutableStateOf(null) }
               if (flightType == FlightType.FONDUE) {
                 OutlinedTextField(
@@ -306,6 +309,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                     value = fondueRole ?: "",
                     onValueChange = { fondueRole = it })
               }
+              // Button to add the flight to the list of flights
               Button(
                   modifier =
                       Modifier.fillMaxWidth().padding(defaultPadding).testTag("Add Flight Button"),

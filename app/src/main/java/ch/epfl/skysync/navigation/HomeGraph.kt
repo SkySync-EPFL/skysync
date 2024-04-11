@@ -17,6 +17,7 @@ import java.time.LocalDate
 
 /** Graph of the main screens of the app */
 fun NavGraphBuilder.homeGraph(navController: NavHostController) {
+  // Only there for preview purposes. It will then be integrated in a model view
   val listFlights =
       mutableListOf(
           PlannedFlight(
