@@ -61,6 +61,20 @@ abstract class Table<M, S : Schema<M>>(
   }
 
   /**
+   * Execute a query and delete the resulting items
+   *
+   * Note: this only delete the items, not their potential dependencies. To delete items with
+   * dependencies, call [query], then [delete] for each item.
+   *
+   * @param filter The filter to apply to the query
+   * @param onCompletion Callback called on completion of the operation
+   * @param onError Callback called when an error occurs
+   */
+  open fun queryDelete(filter: Filter, onCompletion: () -> Unit, onError: (Exception) -> Unit) {
+    db.queryDelete(path, filter, onCompletion, onError)
+  }
+
+  /**
    * Delete the table
    *
    * This is only used for testing, as such it is only supported if using the emulator.
