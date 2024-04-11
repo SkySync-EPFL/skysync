@@ -42,7 +42,7 @@ class PersonalCalendarsIntegrationTest {
 
     composeTestRule.onNodeWithText("Availability Calendar").performClick()
     route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.PERSONAL_FLIGHT_CALENDAR)
+    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
 
     composeTestRule.onNodeWithText("Flight").performClick()
     route = navController.currentBackStackEntry?.destination?.route
