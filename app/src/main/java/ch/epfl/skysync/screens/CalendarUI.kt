@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -136,17 +137,27 @@ fun Calendar(navHostController: NavHostController,
   ) {
     WeekView(currentWeekStartDate, viewModel)
     Spacer(modifier = Modifier.height(8.dp))
-    Row {
-      Spacer(modifier = Modifier.width(138.dp))
-      Button(onClick = { currentWeekStartDate = currentWeekStartDate.minusWeeks(1) }) {
-        Text("Prev Week")
+      Row(
+          modifier = Modifier
+              .fillMaxWidth()
+              .padding(vertical = 10.dp),
+          horizontalArrangement = Arrangement.SpaceBetween) {
+          Spacer(modifier = Modifier.width(5.dp))
+          androidx.compose.material3.Button(
+              onClick = { currentWeekStartDate = currentWeekStartDate.minusWeeks(1) },
+              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
+          ) {
+              Text(text = "Prev Week", color = Color.DarkGray)
+          }
+          Spacer(modifier = Modifier.width(20.dp))
+          androidx.compose.material3.Button(
+              onClick = { currentWeekStartDate = currentWeekStartDate.plusWeeks(1) },
+              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
+          ) {
+              Text(text = "Next Week", color = Color.DarkGray)
+          }
+          Spacer(modifier = Modifier.width(5.dp))
       }
-      Spacer(modifier = Modifier.width(20.dp))
-      Button(onClick = { currentWeekStartDate = currentWeekStartDate.plusWeeks(1) }) {
-        Text("Next Week")
-      }
-      Spacer(modifier = Modifier.width(4.dp))
-    }
       Spacer(modifier = Modifier.height(8.dp))
       SwitchButton(
           Availability = true,

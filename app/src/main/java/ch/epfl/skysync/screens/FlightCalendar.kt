@@ -154,6 +154,7 @@ fun WeekView(startOfWeek: LocalDate, viewModel: UserViewModel, navController: Na
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically) {
+            Spacer(modifier = Modifier.fillMaxWidth(0.01f))
           Box(contentAlignment = Alignment.Center) {
             Text(text = "AM", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
           }

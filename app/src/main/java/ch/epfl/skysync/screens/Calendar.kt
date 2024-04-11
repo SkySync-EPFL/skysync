@@ -5,9 +5,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.models.UNSET_ID
+import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.flight.FlightType
+import ch.epfl.skysync.models.flight.PlannedFlight
+import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.UserViewModel
+import java.time.LocalDate
 
 @Composable
 fun CalendarScreen(
@@ -19,7 +25,39 @@ fun CalendarScreen(
     if (calendarType == Route.AVAILABILITY_CALENDAR) {
       showCalendarAvailabilities(navController, padding, viewModel)
     } else if (calendarType == Route.PERSONAL_FLIGHT_CALENDAR) {
+        val dummyFlight = PlannedFlight(
+            UNSET_ID,
+            1,
+            Team(listOf()),
+            FlightType.FONDUE,
+            null,
+            null,
+            LocalDate.now(),
+            TimeSlot.AM,
+            listOf())
+        val dummyFlight2 = PlannedFlight(
+            UNSET_ID,
+            1,
+            Team(listOf()),
+            FlightType.DISCOVERY,
+            null,
+            null,
+            LocalDate.now().plusDays(1),
+            TimeSlot.PM,
+            listOf())
+        viewModel.user.value.assignedFlights.addFlightByDate(
+            date=dummyFlight.date,
+            timeSlot =dummyFlight.timeSlot,
+            dummyFlight
+        )
+        viewModel.user.value.assignedFlights.addFlightByDate(
+            date=dummyFlight2.date,
+            timeSlot =dummyFlight2.timeSlot,
+            dummyFlight2
+        )
       ShowFlightCalendar(navController, padding, viewModel)
     }
   }
 }
+
+
