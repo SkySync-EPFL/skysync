@@ -15,111 +15,94 @@ import org.junit.Test
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class TestAvailabilityCalendar {
-  var availabilities = listOf<Availability>()
+  var defaultAvailabilities = listOf<Availability>()
   var calendar = AvailabilityCalendar()
+  var someDate = LocalDate.of(2024, 4, 1)
 
   @Before
   fun setUp() {
-    val av1 = Availability("1", AvailabilityStatus.OK, TimeSlot.AM, LocalDate.now())
-    val av2 = Availability("2", AvailabilityStatus.OK, TimeSlot.AM, LocalDate.now().plusDays(1))
-    availabilities = listOf(av1, av2)
+    someDate = LocalDate.of(2024, 4, 1)
+    val defaultAvailability1 = Availability("1", AvailabilityStatus.OK, TimeSlot.AM, someDate)
+    val defaultAvailability2 =
+        Availability("2", AvailabilityStatus.MAYBE, TimeSlot.PM, someDate.plusDays(1))
+    defaultAvailabilities = listOf(defaultAvailability1, defaultAvailability2)
     calendar = AvailabilityCalendar()
   }
 
   @Test
-  fun `finds an availability by date and time slot`() {
+  fun `finds an availability status by date and time slot`() {
     val calendar = AvailabilityCalendar()
-    calendar.addCells(availabilities)
-    val av1 = availabilities[0]
-    val av2 = availabilities[1]
-    assertEquals(calendar.getByDate(av1.date, av1.timeSlot), av1)
-    assertEquals(calendar.getByDate(av2.date, av2.timeSlot), av2)
-  }
-
-  @Test
-  fun `change an availability status by date and time slot`() {
-    calendar.addCells(availabilities)
-    val av1 = availabilities[0]
-    val av2 = availabilities[1]
-    val new_status = AvailabilityStatus.NO
-    calendar.setAvailabilityByDate(av1.date, av1.timeSlot, new_status)
-    val av1_expected = Availability(av1.id, new_status, av1.timeSlot, av1.date)
-    // check availability is changed
-    assertEquals(calendar.getByDate(av1.date, av1.timeSlot), av1_expected)
-    // check other availability is not changed
-    assertEquals(calendar.getByDate(av2.date, av2.timeSlot), av2)
-  }
-
-  @Test
-  fun `remove an existing availability by date and time slot`() {
-    calendar.addCells(availabilities)
-    val av1 = availabilities[0]
-    val av2 = availabilities[1]
-    assertEquals(calendar.removeByDate(av1.date, av1.timeSlot), av1)
-    // check only the first availability is removed
-    assertEquals(calendar.getByDate(av2.date, av2.timeSlot), av2)
-  }
-
-  @Test
-  fun `remove non existing availability by date and time slot`() {
-    calendar.addCells(availabilities.take(1))
-    val av1 = availabilities[0]
-    val av2 = availabilities[1]
-    // check that av2 is initially not in the calendar
-    assertEquals(calendar.getByDate(av2.date, av2.timeSlot), null)
-    // check that removing av2 does not change the calendar
-    assertEquals(calendar.removeByDate(av2.date, av2.timeSlot), null)
-    assertEquals(calendar.getByDate(av1.date, av1.timeSlot), av1)
-  }
-
-  @Test
-  fun `init range`() {
-    val number_of_days: Long = 7
-    val start = LocalDate.of(2021, 1, 1)
-    val end = start.plusDays(number_of_days)
-    calendar.initForRange(start, end)
-    val expectedNumberOfCells = (number_of_days.toInt() + 1) * TimeSlot.entries.size
-    assertEquals(calendar.getSize(), expectedNumberOfCells)
-    for (i in 0..number_of_days) {
-      for (timeSlot in TimeSlot.entries) {
-        val av = calendar.getByDate(start.plusDays(i), timeSlot)
-        assertNotNull(av)
-      }
-    }
-  }
-
-  @Test
-  fun `add rejects cells with same data and timeslot`() {
-    calendar.addCells(availabilities)
-    assertThrows(IllegalArgumentException::class.java) { calendar.addCells(availabilities.take(1)) }
-    assertThrows(IllegalArgumentException::class.java) { calendar.addCells(availabilities) }
-  }
-
-  @Test
-  fun `getAvailabilityStatus returns current status`() {
-    val calendar = AvailabilityCalendar()
-    calendar.addCells(availabilities)
-    val av1 = availabilities[0]
+    calendar.addCells(defaultAvailabilities)
+    val av1 = defaultAvailabilities[0]
+    val av2 = defaultAvailabilities[1]
     assertEquals(calendar.getAvailabilityStatus(av1.date, av1.timeSlot), av1.status)
+    assertEquals(calendar.getAvailabilityStatus(av2.date, av2.timeSlot), av2.status)
   }
 
   @Test
-  fun `nextAvailabilityStatus updates to next status and returns correctly`() {
+  fun `add a new availability by date and time slot`() {
     val calendar = AvailabilityCalendar()
-    calendar.addCells(availabilities)
-    val av1 = availabilities[0]
-    assertEquals(calendar.nextAvailabilityStatus(av1.date, av1.timeSlot), av1.status.next())
-    // check calendar is correctly updated
-    assertEquals(calendar.getByDate(av1.date, av1.timeSlot)?.status, av1.status.next())
+    val newStatus = AvailabilityStatus.OK
+    val timeSlot = TimeSlot.PM
+    calendar.setAvailabilityByDate(someDate, timeSlot, newStatus)
+    assertEquals(calendar.getAvailabilityStatus(someDate, timeSlot), newStatus)
   }
 
   @Test
-  fun `size is correctly updated`() {
+  fun `change an availability status by date and time slot without changing others`() {
+    val initAvailability = Availability("1", AvailabilityStatus.MAYBE, TimeSlot.AM, someDate)
+    val initAvailability2 = Availability("1", AvailabilityStatus.OK, TimeSlot.PM, someDate)
+    calendar.addCells(listOf(initAvailability, initAvailability2))
+    val new_status = AvailabilityStatus.NO
+    calendar.setAvailabilityByDate(initAvailability.date, initAvailability.timeSlot, new_status)
+    // check availability is changed
+    assertEquals(
+        calendar.getAvailabilityStatus(initAvailability.date, initAvailability.timeSlot),
+        new_status)
+    // check other availability is not changed
+    assertEquals(
+        calendar.getAvailabilityStatus(initAvailability2.date, initAvailability2.timeSlot),
+        AvailabilityStatus.OK)
+  }
+
+  @Test
+  fun `nextAvailabilityStatus updates existing entry to next status and returns correctly`() {
     val calendar = AvailabilityCalendar()
-    calendar.addCells(availabilities)
-    val av1 = availabilities[0]
-    assertEquals(calendar.getSize(), availabilities.size)
-    calendar.removeByDate(av1.date, av1.timeSlot)
-    assertEquals(calendar.getSize(), availabilities.size - 1)
+    val availability1 = Availability("1", AvailabilityStatus.MAYBE, TimeSlot.AM, someDate)
+    calendar.addCells(listOf(availability1))
+    assertEquals(
+        calendar.nextAvailabilityStatus(availability1.date, availability1.timeSlot),
+        availability1.status.next())
+  }
+
+  @Test
+  fun `nextAvailabilityStatus initialises non-existing entry to OK and returns correctly`() {
+    val calendar = AvailabilityCalendar()
+    val availability1 = Availability("1", AvailabilityStatus.MAYBE, TimeSlot.AM, someDate)
+    assertEquals(
+        calendar.nextAvailabilityStatus(availability1.date, availability1.timeSlot),
+        AvailabilityStatus.OK)
+  }
+
+  @Test
+  fun `nextAvailabilityStatus removes NO and returns UNDEFINED`() {
+    val calendar = AvailabilityCalendar()
+    val availability1 = Availability("1", AvailabilityStatus.NO, TimeSlot.AM, someDate)
+    calendar.addCells(listOf(availability1))
+    assertEquals(
+        calendar.nextAvailabilityStatus(availability1.date, availability1.timeSlot),
+        AvailabilityStatus.UNDEFINED)
+    assertEquals(calendar.getSize(), 0)
+  }
+
+  @Test
+  fun `size is correctly returned`() {
+    val calendar = AvailabilityCalendar()
+    val availability1 = Availability("1", AvailabilityStatus.NO, TimeSlot.AM, someDate)
+    calendar.addCells(listOf(availability1))
+    assertEquals(calendar.getSize(), 1)
+    val availability2 = Availability("2", AvailabilityStatus.MAYBE, TimeSlot.PM, someDate)
+    calendar.addCells(listOf(availability2))
+    assertEquals(calendar.getSize(), 2)
   }
 }
