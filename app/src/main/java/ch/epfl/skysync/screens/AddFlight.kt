@@ -1,22 +1,17 @@
 package ch.epfl.skysync.screens
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
@@ -26,8 +21,6 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,14 +31,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,16 +40,21 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
+import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
+import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
+import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.navigation.BottomBarScreen
+import ch.epfl.skysync.navigation.Route
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddFlightScreen(navController: NavHostController) {
+fun AddFlightScreen(navController: NavHostController, flights : MutableList<Flight>) {
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       topBar = {
@@ -162,52 +154,39 @@ fun AddFlightScreen(navController: NavHostController) {
                         }
                   }
 
-              var vehicles by remember { mutableStateOf(emptyList<Vehicle>()) }
-              var expandedVehicleMenu by remember { mutableStateOf(false) }
-              var vehicleQuery by remember { mutableStateOf("") }
               var vehicle: Vehicle? by remember { mutableStateOf(null) }
+              var expandedVehicleMenu by remember { mutableStateOf(false) }
               val allVehicles = listOf<Vehicle>(Vehicle("Car"), Vehicle("Bus"), Vehicle("Bike"))
-              val focusRequester = remember { FocusRequester() }
-              Box(Modifier.fillMaxWidth()) {
-                Column {
-                  OutlinedTextField(
-                      value = vehicleQuery,
-                      onValueChange = {
-                        vehicleQuery = it
-                        vehicle = null
+              ExposedDropdownMenuBox(
+                  modifier =
+                      Modifier.fillMaxWidth().padding(defaultPadding).clickable {
+                        expandedVehicleMenu = true
                       },
-                      placeholder = { Text("Vehicles") },
-                      modifier =
-                          Modifier.padding(horizontal = defaultPadding)
-                              .fillMaxWidth()
-                              .focusRequester(focusRequester)
-                              .onFocusChanged { expandedVehicleMenu = it.isFocused },
-                      singleLine = true,
-                      keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                      keyboardActions = KeyboardActions(onDone = { expandedVehicleMenu = false }))
-                  if (expandedVehicleMenu) {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                          items(allVehicles) { item ->
-                            if (item.name.contains(vehicleQuery, ignoreCase = true)) {
-                              ListItem(
-                                  modifier =
-                                      Modifier.clickable {
-                                        vehicle = item
-                                        vehicleQuery = item.name
-                                        expandedVehicleMenu = false
-                                        focusRequester.freeFocus()
-                                      },
-                                  colors = ListItemDefaults.colors(Color.Transparent),
-                                  headlineContent = { Text(text = item.name) })
-                            }
+                  expanded = expandedVehicleMenu,
+                  onExpandedChange = { expandedVehicleMenu = !expandedVehicleMenu }) {
+                    OutlinedTextField(
+                        value = vehicle?.name ?: "Vehicle",
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        readOnly = true,
+                        onValueChange = {},
+                        trailingIcon = {
+                          ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedVehicleMenu)
+                        })
+
+                    DropdownMenu(
+                        expanded = expandedVehicleMenu,
+                        onDismissRequest = { expandedVehicleMenu = false }) {
+                          allVehicles.forEach { item ->
+                            DropdownMenuItem(
+                                modifier = Modifier.fillMaxWidth().padding(defaultPadding),
+                                onClick = {
+                                  vehicle = item
+                                  expandedVehicleMenu = false
+                                },
+                                text = { Text(item.name) })
                           }
                         }
                   }
-                }
-              }
               var timeSlot: TimeSlot by remember { mutableStateOf(TimeSlot.AM) }
               var expandedTimeSlot by remember { mutableStateOf(false) }
               Box(modifier = Modifier.fillMaxWidth()) {
@@ -235,7 +214,113 @@ fun AddFlightScreen(navController: NavHostController) {
               }
 
               var balloon: Balloon? by remember { mutableStateOf(null) }
+              val balloons: List<Balloon> =
+                  listOf(
+                      Balloon("Balloon1", BalloonQualification.LARGE),
+                      Balloon("Balloon2", BalloonQualification.MEDIUM),
+                      Balloon("Balloon3", BalloonQualification.SMALL))
+              var expandedBalloonMenu by remember { mutableStateOf(false) }
+              ExposedDropdownMenuBox(
+                  modifier =
+                      Modifier.fillMaxWidth().padding(defaultPadding).clickable {
+                        expandedBalloonMenu = true
+                      },
+                  expanded = expandedBalloonMenu,
+                  onExpandedChange = { expandedBalloonMenu = !expandedBalloonMenu }) {
+                    OutlinedTextField(
+                        value = balloon?.name ?: "Balloon",
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        readOnly = true,
+                        onValueChange = {},
+                        trailingIcon = {
+                          ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedBalloonMenu)
+                        })
+
+                    DropdownMenu(
+                        expanded = expandedBalloonMenu,
+                        onDismissRequest = { expandedBalloonMenu = false }) {
+                          balloons.forEach { item ->
+                            DropdownMenuItem(
+                                modifier = Modifier.fillMaxWidth().padding(defaultPadding),
+                                onClick = {
+                                  balloon = item
+                                  expandedBalloonMenu = false
+                                },
+                                text = { Text(item.name) })
+                          }
+                        }
+                  }
+
               var basket: Basket? by remember { mutableStateOf(null) }
+              val baskets: List<Basket> =
+                  listOf(
+                      Basket("Basket1", hasDoor = false),
+                      Basket("Basket2", hasDoor = true),
+                      Basket("Basket3", hasDoor = true))
+              var expandedBasketMenu by remember { mutableStateOf(false) }
+              ExposedDropdownMenuBox(
+                  modifier =
+                      Modifier.fillMaxWidth().padding(defaultPadding).clickable {
+                        expandedVehicleMenu = true
+                      },
+                  expanded = expandedBasketMenu,
+                  onExpandedChange = { expandedBasketMenu = !expandedBasketMenu }) {
+                    OutlinedTextField(
+                        value = basket?.name ?: "Basket",
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        readOnly = true,
+                        onValueChange = {},
+                        trailingIcon = {
+                          ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedBasketMenu)
+                        })
+
+                    DropdownMenu(
+                        expanded = expandedBasketMenu,
+                        onDismissRequest = { expandedBasketMenu = false }) {
+                          baskets.forEach { item ->
+                            DropdownMenuItem(
+                                modifier = Modifier.fillMaxWidth().padding(defaultPadding),
+                                onClick = {
+                                  basket = item
+                                  expandedBasketMenu = false
+                                },
+                                text = { Text(item.name) })
+                          }
+                        }
+                  }
+              var fondueRole: String? by remember { mutableStateOf(null) }
+              if (flightType == FlightType.FONDUE) {
+                OutlinedTextField(
+                    placeholder = { Text("Fondue Role") },
+                    modifier =
+                        Modifier.fillMaxWidth().padding(defaultPadding).clickable {
+                          expandedTimeSlot = true
+                        },
+                    value = fondueRole ?: "",
+                    onValueChange = { fondueRole = it })
+              }
+              Button(
+                  modifier = Modifier.fillMaxWidth().padding(defaultPadding),
+                  onClick = {
+                    val newFlight =
+                        PlannedFlight(
+                            nPassengers = nbPassenger.toInt(),
+                            date = date,
+                            flightType = flightType!!,
+                            timeSlot = timeSlot,
+                            balloon = balloon,
+                            basket = basket,
+                            vehicles = listOf(vehicle!!),
+                            id = null
+                        )
+                    flights += newFlight
+                      navController.navigate(Route.HOME){
+                          launchSingleTop = true
+                      }
+                    navController.popBackStack()
+                  }) {
+                Text("Add Flight")
+              }
             }
       }
 }
@@ -244,5 +329,5 @@ fun AddFlightScreen(navController: NavHostController) {
 @Preview
 fun AddFlightScreenPreview() {
   val navController = rememberNavController()
-  AddFlightScreen(navController = navController)
+  AddFlightScreen(navController = navController, flights = mutableListOf())
 }
