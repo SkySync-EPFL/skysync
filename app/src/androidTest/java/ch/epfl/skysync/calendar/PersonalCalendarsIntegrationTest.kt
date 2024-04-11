@@ -51,8 +51,6 @@ class PersonalCalendarsIntegrationTest {
     composeTestRule.onNodeWithText("Calendar").performClick()
     route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
-
-
   }
 
   @Test

@@ -30,14 +30,14 @@ class CalendarUITest {
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(navController, null)
       }
-      navController.navigate(Route.CALENDAR)
+      navController.navigate(Route.AVAILABILITY_CALENDAR)
     }
   }
 
   @Test
   fun verifyFlightCalendarIsStartDestination() {
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
+    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
   }
 
   @Test
@@ -47,7 +47,7 @@ class CalendarUITest {
     composeTestRule.onNode(hasTestTag(testTag)).performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
+    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
   }
 
   @Test
@@ -57,7 +57,7 @@ class CalendarUITest {
     composeTestRule.onNode(hasTestTag(testTag)).performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
+    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
   }
 
   @Test
@@ -67,7 +67,7 @@ class CalendarUITest {
     composeTestRule.onNode(hasTestTag(testTag)).performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
+    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
   }
 
   @Test
@@ -77,7 +77,7 @@ class CalendarUITest {
     composeTestRule.onNode(hasTestTag(testTag)).performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
+    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
   }
 
   @Test
@@ -87,7 +87,7 @@ class CalendarUITest {
     composeTestRule.onNode(hasTestTag(testTag)).performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
+    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
   }
 
   @Test
@@ -97,7 +97,7 @@ class CalendarUITest {
     composeTestRule.onNode(hasTestTag(testTag)).performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
+    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
   }
 
   @Test
@@ -107,14 +107,14 @@ class CalendarUITest {
     composeTestRule.onNode(hasTestTag(testTag)).performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
+    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
   }
 
   @Test
   fun routeIsRightIfClickOnNext() {
     composeTestRule.onNodeWithText("Next Week").performClick()
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
+    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
   }
 
   @Test
@@ -122,6 +122,6 @@ class CalendarUITest {
     composeTestRule.onNodeWithText("Prev Week").performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
+    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
   }
 }

@@ -61,9 +61,7 @@ fun ShowFlight(date: LocalDate, time: TimeSlot, viewModel: UserViewModel) {
     Button(
         onClick = {},
         shape = RectangleShape,
-        modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(weight),
+        modifier = Modifier.fillMaxHeight().fillMaxWidth(weight),
         colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)) {
           Text(
               text = flight.flightType.name,
@@ -76,9 +74,7 @@ fun ShowFlight(date: LocalDate, time: TimeSlot, viewModel: UserViewModel) {
         }
   } else {
     Box(
-        modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(weight),
+        modifier = Modifier.fillMaxHeight().fillMaxWidth(weight),
         contentAlignment = Alignment.Center) {}
   }
 }
@@ -107,17 +103,12 @@ fun ShowFlightCalendar(
 fun Calendar(navController: NavHostController, padding: PaddingValues, viewModel: UserViewModel) {
   var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(LocalDate.now())) }
   Column(
-      modifier = Modifier
-          .fillMaxSize()
-          .padding(16.dp)
-          .background(Color.White),
+      modifier = Modifier.fillMaxSize().padding(16.dp).background(Color.White),
   ) {
     WeekView(currentWeekStartDate, viewModel, navController)
     Spacer(modifier = Modifier.height(8.dp))
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
           Spacer(modifier = Modifier.width(5.dp))
           Button(
@@ -133,11 +124,11 @@ fun Calendar(navController: NavHostController, padding: PaddingValues, viewModel
               }
           Spacer(modifier = Modifier.width(5.dp))
         }
-      SwitchButton(
-          Availability = false,
-          padding = padding,
-          onClick = { },
-          onClickRight = { navController.navigate(Route.AVAILABILITY_CALENDAR) })
+    SwitchButton(
+        Availability = false,
+        padding = padding,
+        onClick = {},
+        onClickRight = { navController.navigate(Route.AVAILABILITY_CALENDAR) })
   }
 }
 
@@ -154,7 +145,7 @@ fun WeekView(startOfWeek: LocalDate, viewModel: UserViewModel, navController: Na
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically) {
-            Spacer(modifier = Modifier.fillMaxWidth(0.01f))
+          Spacer(modifier = Modifier.fillMaxWidth(0.01f))
           Box(contentAlignment = Alignment.Center) {
             Text(text = "AM", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
           }
@@ -167,16 +158,11 @@ fun WeekView(startOfWeek: LocalDate, viewModel: UserViewModel, navController: Na
     weekDays.withIndex().forEach { (i, day) ->
       val scale = (1f / 10 * 10 / (10 - i))
       Row(
-          modifier = Modifier
-              .fillMaxWidth()
-              .fillMaxHeight(scale),
+          modifier = Modifier.fillMaxWidth().fillMaxHeight(scale),
           verticalAlignment = Alignment.CenterVertically,
       ) {
         Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.3f)
-                .background(Color.White),
+            modifier = Modifier.fillMaxHeight().fillMaxWidth(0.3f).background(Color.White),
             verticalArrangement = Arrangement.Center,
         ) {
           Row(
@@ -202,9 +188,7 @@ fun WeekView(startOfWeek: LocalDate, viewModel: UserViewModel, navController: Na
               }
         }
         Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.LightGray),
+            modifier = Modifier.fillMaxSize().background(Color.LightGray),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
               ShowFlight(day, TimeSlot.AM, viewModel)

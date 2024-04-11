@@ -38,11 +38,11 @@ class SwitchButtonTest {
 
   @Test
   fun SwitchButtonIsDisplayed() {
-    composeTestRule.onNodeWithText("Avaliability Calendar").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Availability Calendar").assertIsDisplayed()
   }
 
   @Test
   fun SwitchButtonIsClickable() {
-    composeTestRule.onNodeWithText("Avaliability Calendar").assertHasClickAction()
+    composeTestRule.onNodeWithText("Availability Calendar").assertHasClickAction()
   }
 }

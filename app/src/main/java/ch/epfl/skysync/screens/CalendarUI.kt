@@ -126,10 +126,12 @@ fun showCalendarAvailabilities(
  * @param viewModel user viewmodel (used to determine availabilities status)
  */
 @Composable
-fun Calendar(navHostController: NavHostController,
-             today: LocalDate,
-             padding: PaddingValues,
-             viewModel: UserViewModel) {
+fun Calendar(
+    navHostController: NavHostController,
+    today: LocalDate,
+    padding: PaddingValues,
+    viewModel: UserViewModel
+) {
   var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(today)) }
 
   Column(
@@ -137,34 +139,29 @@ fun Calendar(navHostController: NavHostController,
   ) {
     WeekView(currentWeekStartDate, viewModel)
     Spacer(modifier = Modifier.height(8.dp))
-      Row(
-          modifier = Modifier
-              .fillMaxWidth()
-              .padding(vertical = 10.dp),
-          horizontalArrangement = Arrangement.SpaceBetween) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween) {
           Spacer(modifier = Modifier.width(5.dp))
           androidx.compose.material3.Button(
               onClick = { currentWeekStartDate = currentWeekStartDate.minusWeeks(1) },
-              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
-          ) {
-              Text(text = "Prev Week", color = Color.DarkGray)
-          }
+              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))) {
+                Text(text = "Prev Week", color = Color.DarkGray)
+              }
           Spacer(modifier = Modifier.width(20.dp))
           androidx.compose.material3.Button(
               onClick = { currentWeekStartDate = currentWeekStartDate.plusWeeks(1) },
-              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
-          ) {
-              Text(text = "Next Week", color = Color.DarkGray)
-          }
+              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))) {
+                Text(text = "Next Week", color = Color.DarkGray)
+              }
           Spacer(modifier = Modifier.width(5.dp))
-      }
-      Spacer(modifier = Modifier.height(8.dp))
-      SwitchButton(
-          Availability = true,
-          padding = padding,
-          onClick = {navHostController.navigate(Route.PERSONAL_FLIGHT_CALENDAR)},
-          onClickRight = {}
-      )
+        }
+    Spacer(modifier = Modifier.height(8.dp))
+    SwitchButton(
+        Availability = true,
+        padding = padding,
+        onClick = { navHostController.navigate(Route.PERSONAL_FLIGHT_CALENDAR) },
+        onClickRight = {})
   }
 }
 
