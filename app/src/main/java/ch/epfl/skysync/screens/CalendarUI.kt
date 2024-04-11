@@ -200,26 +200,3 @@ fun WeekView(startOfWeek: LocalDate, viewModel: UserViewModel) {
 fun getStartOfWeek(date: LocalDate): LocalDate {
   return date.minusDays(date.dayOfWeek.value.toLong() - 1)
 }
-
-/**
- * Determines the availability status for a given date and time slot. Dummy function that always
- * returns AvailabilityStatus.OK.
- *
- * @param date The date for which availability status is being checked.
- * @param slot The time slot for which availability status is being checked.
- * @return The availability status for the specified date and time slot.
- */
-fun getAvailabilityStatus(date: LocalDate, slot: TimeSlot): AvailabilityStatus? {
-  return AvailabilityStatus.OK
-}
-/**
- * Determines the availability status for a given date and time slot. Dummy function that always
- * returns AvailabilityStatus.NO.
- *
- * @param date The date for which availability status is being checked.
- * @param slot The time slot for which availability status is being checked.
- * @return The availability status for the specified date and time slot.
- */
-fun nextAvailabilityStatus(date: LocalDate, slot: TimeSlot): AvailabilityStatus? {
-  return null
-}
