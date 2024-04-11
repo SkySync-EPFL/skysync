@@ -16,14 +16,16 @@ import ch.epfl.skysync.navigation.BottomBar
 
 @Composable
 fun FlightScreen(navController: NavHostController) {
-  Scaffold(modifier = Modifier.fillMaxSize().testTag("FLightScreenScaffold"), bottomBar = { BottomBar(navController) }) { padding ->
-    Text(
-        modifier = Modifier.padding(padding),
-        text = "Flight",
-        fontSize = androidx.compose.material3.MaterialTheme.typography.displayLarge.fontSize,
-        fontWeight = FontWeight.Bold,
-        color = Color.Black)
-  }
+  Scaffold(
+      modifier = Modifier.fillMaxSize().testTag("FLightScreenScaffold"),
+      bottomBar = { BottomBar(navController) }) { padding ->
+        Text(
+            modifier = Modifier.padding(padding),
+            text = "Flight",
+            fontSize = androidx.compose.material3.MaterialTheme.typography.displayLarge.fontSize,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black)
+      }
 }
 
 @Composable
