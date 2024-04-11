@@ -24,7 +24,9 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
       // can only be called once but there is no method to check if already called
       try {
         db.useEmulator("10.0.2.2", 5002)
-      } catch (e: IllegalStateException) {}
+      } catch (_: IllegalStateException) {
+        // this occurs when the FirebaseDatabase is instanced twice
+      }
       db.firestoreSettings = firestoreSettings {
         setLocalCacheSettings(MemoryCacheSettings.newBuilder().build())
       }
@@ -181,6 +183,43 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
   }
 
   /**
+   * Execute a query on a table and delete the resulting items
+   *
+   * @param path A filesystem-like path that specify the location of the table
+   * @param filter The filter to apply to the query
+   * @param onCompletion Callback called on completion of the operation
+   * @param onError Callback called when an error occurs
+   */
+  fun queryDelete(
+      path: String,
+      filter: Filter,
+      onCompletion: () -> Unit,
+      onError: (Exception) -> Unit
+  ) {
+    db.collection(path)
+        .where(filter)
+        .get()
+        .addOnSuccessListener { querySnapshot ->
+          Log.d(TAG, "Delete $path (x${querySnapshot.size()})")
+          val delayedCallback =
+              ParallelOperationsEndCallback(querySnapshot.size()) { onCompletion() }
+          for (document in querySnapshot.documents) {
+            document.reference
+                .delete()
+                .addOnSuccessListener { delayedCallback.run() }
+                .addOnFailureListener { exception ->
+                  Log.e(TAG, "Error deleting document: ", exception)
+                  onError(exception)
+                }
+          }
+        }
+        .addOnFailureListener { exception ->
+          Log.e(TAG, "Error getting document: ", exception)
+          onError(exception)
+        }
+  }
+
+  /**
    * Delete a table (collection of items)
    *
    * This is only used for testing, as such it is only supported if using the emulator.
@@ -195,7 +234,7 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
     db.collection(path)
         .get()
         .addOnSuccessListener {
-          Log.d(TAG, "Deleted table $path")
+          Log.d(TAG, "Delete table $path")
           for (d in it.documents) d.reference.delete()
         }
         .addOnFailureListener { exception -> onError(exception) }

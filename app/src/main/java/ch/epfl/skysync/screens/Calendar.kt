@@ -23,6 +23,7 @@ fun CalendarScreen(navController: NavHostController) {
         fontSize = MaterialTheme.typography.displayLarge.fontSize,
         fontWeight = FontWeight.Bold,
         color = Color.Black)
+    CalendarPreview()
   }
 }
 
