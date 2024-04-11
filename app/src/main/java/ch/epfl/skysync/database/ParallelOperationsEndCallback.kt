@@ -12,6 +12,12 @@ class ParallelOperationsEndCallback(
     private val callback: () -> Unit
 ) {
 
+  init {
+    if (numParallelOperations < 1) {
+      callback()
+    }
+  }
+
   /** To be executed at the end of each parallel operation at the last one, execute the callback */
   fun run() {
     if (numParallelOperations <= 1) {
