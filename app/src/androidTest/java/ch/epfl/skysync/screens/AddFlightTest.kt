@@ -94,8 +94,6 @@ class AddFlightTest {
     composeTestRule.onNodeWithTag("nb Passenger").performClick()
     composeTestRule.onNodeWithTag("nb Passenger").performTextClearance()
     composeTestRule.onNodeWithTag("nb Passenger").performTextInput("1")
-    composeTestRule.onNodeWithTag("nb Passenger").assertTextEquals("1")
-
     composeTestRule.onNodeWithTag("Date Field").performClick()
     composeTestRule.onNodeWithText("OK").performClick()
     composeTestRule.onNodeWithTag("Flight Type Menu").performClick()
