@@ -1,5 +1,5 @@
 package ch.epfl.skysync.screens
-import android.util.Log
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -45,15 +45,17 @@ val customEmpty = Color(android.graphics.Color.parseColor("#f0f0f0"))
  * @return The color representing the availability status.
  */
 fun availabilityToColor(status: AvailabilityStatus): Color {
-    if(status==AvailabilityStatus.OK){
-        return customGreen}
-    if(status==AvailabilityStatus.MAYBE){
-        return customBlue}
-    if(status==AvailabilityStatus.NO){
-        return customRed}
-    else{
-        return customEmpty
-    }
+  if (status == AvailabilityStatus.OK) {
+    return customGreen
+  }
+  if (status == AvailabilityStatus.MAYBE) {
+    return customBlue
+  }
+  if (status == AvailabilityStatus.NO) {
+    return customRed
+  } else {
+    return customEmpty
+  }
 }
 /**
  * Composable function to display a colored tile indicating availability status.
@@ -63,68 +65,81 @@ fun availabilityToColor(status: AvailabilityStatus): Color {
  * @param scaleHeight The scale (in height) of the tile.
  * @param scaleWidth The scale (in width) of the tile.
  * @param viewModel user viewmodel (used to determine availabilities status)
- *
  */
 @Composable
-fun showTile(date: LocalDate, slot: TimeSlot, scaleHeight: Float,scaleWidth: Float,viewModel: UserViewModel,index: Int) {
-    var colorUp by remember { mutableStateOf(availabilityToColor( viewModel.user.value.availabilities.getAvailabilityStatus(date, slot))) }
-    colorUp= availabilityToColor( viewModel.user.value.availabilities.getAvailabilityStatus(date, slot))
-    Box(
-        modifier = Modifier.fillMaxHeight(scaleHeight).testTag(date.toString()+slot.toString()).fillMaxWidth(scaleWidth).background(color = colorUp,
-            shape = RoundedCornerShape(0.dp)).clickable {
-            colorUp = availabilityToColor(viewModel.user.value.availabilities.nextAvailabilityStatus (date, slot))
-
-            })
+fun showTile(
+    date: LocalDate,
+    slot: TimeSlot,
+    scaleHeight: Float,
+    scaleWidth: Float,
+    viewModel: UserViewModel,
+    index: Int
+) {
+  var colorUp by remember {
+    mutableStateOf(
+        availabilityToColor(viewModel.user.value.availabilities.getAvailabilityStatus(date, slot)))
+  }
+  colorUp =
+      availabilityToColor(viewModel.user.value.availabilities.getAvailabilityStatus(date, slot))
+  Box(
+      modifier =
+          Modifier.fillMaxHeight(scaleHeight)
+              .testTag(date.toString() + slot.toString())
+              .fillMaxWidth(scaleWidth)
+              .background(color = colorUp, shape = RoundedCornerShape(0.dp))
+              .clickable {
+                colorUp =
+                    availabilityToColor(
+                        viewModel.user.value.availabilities.nextAvailabilityStatus(date, slot))
+              })
 }
 /**
  * Composable function to display the calendar view.
+ *
  * @param today The current date to initialize the calendar.
  * @param viewModel user viewmodel (used to determine availabilities status)
  */
 @Composable
-fun showCalendarAvailabilities(today: LocalDate,viewModel: UserViewModel) {
-    Calendar(today,viewModel)
+fun showCalendarAvailabilities(today: LocalDate, viewModel: UserViewModel) {
+  Calendar(today, viewModel)
 }
-/**
- * Preview function to display the calendar view.
- *
- */
+/** Preview function to display the calendar view. */
 @Composable
 @Preview
 fun CalendarPreview() {
-    var viewModel = UserViewModel.createViewModel(firebaseUser = null)
-    viewModel.user.value.availabilities.setAvailabilityByDate(
-        LocalDate.now(), TimeSlot.AM, AvailabilityStatus.MAYBE)
-    showCalendarAvailabilities(LocalDate.now(),viewModel)
+  var viewModel = UserViewModel.createViewModel(firebaseUser = null)
+  viewModel.user.value.availabilities.setAvailabilityByDate(
+      LocalDate.now(), TimeSlot.AM, AvailabilityStatus.MAYBE)
+  showCalendarAvailabilities(LocalDate.now(), viewModel)
 }
 /**
  * Composable function to display a calendar view.
+ *
  * @param today The current date to initialize the calendar.
  * @param viewModel user viewmodel (used to determine availabilities status)
  */
 @Composable
-fun Calendar(today : LocalDate,viewModel: UserViewModel) {
-    var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(today)) }
+fun Calendar(today: LocalDate, viewModel: UserViewModel) {
+  var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(today)) }
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-    ) {
-        WeekView(currentWeekStartDate,viewModel)
-        Spacer(modifier = Modifier.height(8.dp))
-        Row {
-            Spacer(modifier = Modifier.width(138.dp))
-            Button(onClick = { currentWeekStartDate = currentWeekStartDate.minusWeeks(1) }) {
-                Text("Prev Week")
-            }
-            Spacer(modifier = Modifier.width(20.dp))
-            Button(onClick = { currentWeekStartDate = currentWeekStartDate.plusWeeks(1) }) {
-                Text("Next Week")
-            }
-            Spacer(modifier = Modifier.width(4.dp))
-        }
+  Column(
+      modifier = Modifier.fillMaxSize().padding(16.dp),
+  ) {
+    WeekView(currentWeekStartDate, viewModel)
+    Spacer(modifier = Modifier.height(8.dp))
+    Row {
+      Spacer(modifier = Modifier.width(138.dp))
+      Button(onClick = { currentWeekStartDate = currentWeekStartDate.minusWeeks(1) }) {
+        Text("Prev Week")
+      }
+      Spacer(modifier = Modifier.width(20.dp))
+      Button(onClick = { currentWeekStartDate = currentWeekStartDate.plusWeeks(1) }) {
+        Text("Next Week")
+      }
+      Spacer(modifier = Modifier.width(4.dp))
     }
+  }
 }
-
 
 /**
  * Composable function to display a week view with customizable tiles for each day.
@@ -133,51 +148,47 @@ fun Calendar(today : LocalDate,viewModel: UserViewModel) {
  * @param viewModel user viewmodel (used to determine availabilities status)
  */
 @Composable
-fun WeekView(startOfWeek: LocalDate,viewModel: UserViewModel) {
-    val weekDays = (0..6).map { startOfWeek.plusDays(it.toLong()) }
-    Column(modifier = Modifier.fillMaxHeight(0.7f)) {
-        Row(
-        ) {
-            Spacer(modifier = Modifier.width(120.dp))
-            Text(
-                modifier = Modifier.fillMaxWidth(0.5f),
-                text = "AM",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                modifier = Modifier.fillMaxWidth(1f),
-                text = "PM",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                textAlign = TextAlign.Center
-            )
-        }
-        weekDays.withIndex().forEach { (i,day) ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = day.format(DateTimeFormatter.ofPattern("EEE, MM/dd", Locale.getDefault())),
-                    fontSize = 16.sp,
-                    color = Color.Black,
-                    modifier = Modifier.width(120.dp)
-                )
-                val scale=(1f/7*7/(7-i))
-                Column(modifier = Modifier.width(1.dp).fillMaxHeight(scale).background(Color.Black)){}
-                val amIndex = i*2
-                showTile(day, TimeSlot.AM, scale,0.5f,viewModel,amIndex)
-                Column(modifier = Modifier.width(1.dp).fillMaxHeight(scale).background(Color.Black)){}
-                val pmIndex = i*2+1
-                showTile(day, TimeSlot.PM, scale,1f,viewModel,pmIndex)
-            }
-            Column(modifier = Modifier.height(1.dp).fillMaxWidth().background(Color.Black)){}
-        }
+fun WeekView(startOfWeek: LocalDate, viewModel: UserViewModel) {
+  val weekDays = (0..6).map { startOfWeek.plusDays(it.toLong()) }
+  Column(modifier = Modifier.fillMaxHeight(0.7f)) {
+    Row() {
+      Spacer(modifier = Modifier.width(120.dp))
+      Text(
+          modifier = Modifier.fillMaxWidth(0.5f),
+          text = "AM",
+          fontSize = 16.sp,
+          fontWeight = FontWeight.Bold,
+          color = Color.Black,
+          textAlign = TextAlign.Center)
+      Text(
+          modifier = Modifier.fillMaxWidth(1f),
+          text = "PM",
+          fontSize = 16.sp,
+          fontWeight = FontWeight.Bold,
+          color = Color.Black,
+          textAlign = TextAlign.Center)
     }
+    weekDays.withIndex().forEach { (i, day) ->
+      Row(
+          modifier = Modifier.fillMaxWidth(),
+          verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+            text = day.format(DateTimeFormatter.ofPattern("EEE, MM/dd", Locale.getDefault())),
+            fontSize = 16.sp,
+            color = Color.Black,
+            modifier = Modifier.width(120.dp))
+        val scale = (1f / 7 * 7 / (7 - i))
+        Column(modifier = Modifier.width(1.dp).fillMaxHeight(scale).background(Color.Black)) {}
+        val amIndex = i * 2
+        showTile(day, TimeSlot.AM, scale, 0.5f, viewModel, amIndex)
+        Column(modifier = Modifier.width(1.dp).fillMaxHeight(scale).background(Color.Black)) {}
+        val pmIndex = i * 2 + 1
+        showTile(day, TimeSlot.PM, scale, 1f, viewModel, pmIndex)
+      }
+      Column(modifier = Modifier.height(1.dp).fillMaxWidth().background(Color.Black)) {}
+    }
+  }
 }
 
 /**
@@ -187,28 +198,28 @@ fun WeekView(startOfWeek: LocalDate,viewModel: UserViewModel) {
  * @return The start date of the week containing the input date.
  */
 fun getStartOfWeek(date: LocalDate): LocalDate {
-    return date.minusDays(date.dayOfWeek.value.toLong() - 1)
+  return date.minusDays(date.dayOfWeek.value.toLong() - 1)
 }
 
 /**
- * Determines the availability status for a given date and time slot.
- * Dummy function that always returns AvailabilityStatus.OK.
+ * Determines the availability status for a given date and time slot. Dummy function that always
+ * returns AvailabilityStatus.OK.
  *
  * @param date The date for which availability status is being checked.
  * @param slot The time slot for which availability status is being checked.
  * @return The availability status for the specified date and time slot.
  */
 fun getAvailabilityStatus(date: LocalDate, slot: TimeSlot): AvailabilityStatus? {
-    return AvailabilityStatus.OK
+  return AvailabilityStatus.OK
 }
 /**
- * Determines the availability status for a given date and time slot.
- * Dummy function that always returns AvailabilityStatus.NO.
+ * Determines the availability status for a given date and time slot. Dummy function that always
+ * returns AvailabilityStatus.NO.
  *
  * @param date The date for which availability status is being checked.
  * @param slot The time slot for which availability status is being checked.
  * @return The availability status for the specified date and time slot.
  */
 fun nextAvailabilityStatus(date: LocalDate, slot: TimeSlot): AvailabilityStatus? {
-    return null
+  return null
 }
