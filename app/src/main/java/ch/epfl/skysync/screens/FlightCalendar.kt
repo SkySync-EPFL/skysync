@@ -1,7 +1,6 @@
 package ch.epfl.skysync.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -170,41 +168,6 @@ fun Calendar(navController: NavHostController) {
                 Text(text = "Next Week", color = Color.DarkGray)
               }
           Spacer(modifier = Modifier.width(5.dp))
-        }
-    Box(
-        modifier =
-            Modifier.fillMaxSize().padding(bottom = 80.dp), // Adjust bottom padding as needed
-        contentAlignment = Alignment.BottomCenter) {
-          Row(
-              modifier =
-                  Modifier.background(Color.LightGray, RoundedCornerShape(16.dp))
-                      .border(1.dp, Color.Gray, RoundedCornerShape(16.dp)),
-          ) {
-            Button(
-                onClick = { navController.navigate(Route.CALENDAR) },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                modifier = Modifier.size(width = 170.dp, height = 40.dp),
-            ) {
-              Text(
-                  text = "Flight Calendar",
-                  fontSize = 12.sp,
-                  color = Color(0xFFFFA500),
-                  modifier = Modifier,
-                  overflow = TextOverflow.Clip)
-            }
-            Button(
-                onClick = { navController.navigate(Route.CALENDAR) },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                modifier = Modifier.padding(start = 8.dp).size(width = 170.dp, height = 40.dp),
-            ) {
-              Text(
-                  text = "Avaliability Calendar",
-                  fontSize = 12.sp,
-                  color = Color.Black,
-                  overflow = TextOverflow.Clip,
-                  maxLines = 1)
-            }
-          }
         }
   }
 }

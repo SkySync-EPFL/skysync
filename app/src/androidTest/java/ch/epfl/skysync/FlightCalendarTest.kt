@@ -37,63 +37,11 @@ class FlightCalendarTest {
   }
 
   @Test
-  fun routeIsRightIfClickOnSwitch() {
-    composeTestRule.onNodeWithText("Avaliability Calendar").performClick()
-
-    val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
-  }
-
-  @Test
-  fun routeIsRightIfClickOnSwitch2() {
-    composeTestRule.onNodeWithText("Flight Calendar").performClick()
-
-    val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
-  }
-
-  @Test
   fun routeIsRightIfClickOnAdd() {
     composeTestRule.onNodeWithText("Add").performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(route, Route.ADDFLIGHT)
-  }
-
-  @Test
-  fun routeIsRightIfClickOnNextAndSwitch() {
-    composeTestRule.onNodeWithText("Next Week").performClick()
-    composeTestRule.onNodeWithText("Avaliability Calendar").performClick()
-
-    val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
-  }
-
-  @Test
-  fun routeIsRightIfClickOnNextAndSwitch2() {
-    composeTestRule.onNodeWithText("Next Week").performClick()
-    composeTestRule.onNodeWithText("Flight Calendar").performClick()
-
-    val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
-  }
-
-  @Test
-  fun routeIsRightIfClickOnPrevAndSwitch() {
-    composeTestRule.onNodeWithText("Prev Week").performClick()
-    composeTestRule.onNodeWithText("Avaliability Calendar").performClick()
-
-    val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
-  }
-
-  @Test
-  fun routeIsRightIfClickOnPrevAndSwitch2() {
-    composeTestRule.onNodeWithText("Prev Week").performClick()
-    composeTestRule.onNodeWithText("Flight Calendar").performClick()
-
-    val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
   }
 
   @Test
@@ -112,37 +60,5 @@ class FlightCalendarTest {
 
     val route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(route, Route.ADDFLIGHT)
-  }
-
-  @Test
-  fun routeIsRightIfClickOnCalendar() {
-    composeTestRule.onNodeWithText("Calendar").performClick()
-
-    val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
-  }
-
-  @Test
-  fun routeIsRightIfClickOnFlight() {
-    composeTestRule.onNodeWithText("Flight").performClick()
-
-    val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.FLIGHT)
-  }
-
-  @Test
-  fun routeIsRightIfClickOnChat() {
-    composeTestRule.onNodeWithText("Chat").performClick()
-
-    val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CHAT)
-  }
-
-  @Test
-  fun routeIsRightIfClickOnHome() {
-    composeTestRule.onNodeWithText("Home").performClick()
-
-    val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.HOME)
   }
 }
