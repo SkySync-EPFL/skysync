@@ -1,9 +1,9 @@
 package ch.epfl.skysync.database.tables
 
 import ch.epfl.skysync.database.DateLocalDateConverter
-import ch.epfl.skysync.database.ParallelOperationsEndCallback
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.FlightStatus
+import ch.epfl.skysync.database.ParallelOperationsEndCallback
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.FlightMemberSchema
 import ch.epfl.skysync.database.schemas.FlightSchema
@@ -98,7 +98,8 @@ class FlightTable(db: FirestoreDatabase) :
             onCompletion(Team(members.map { Role(it.roleType!!, null) }))
             return@query
           }
-          val delayedCallback = ParallelOperationsEndCallback(numUserRequests) { onCompletion(Team(roles)) }
+          val delayedCallback =
+              ParallelOperationsEndCallback(numUserRequests) { onCompletion(Team(roles)) }
           for (member in members) {
             if (member.userId == null) {
               roles.add(Role(member.roleType!!, null))
@@ -127,7 +128,8 @@ class FlightTable(db: FirestoreDatabase) :
       onError: (Exception) -> Unit
   ) {
     var vehicles = mutableListOf<Vehicle>()
-    var delayedCallback = ParallelOperationsEndCallback(schema.vehicleIds!!.size) { onCompletion(vehicles) }
+    var delayedCallback =
+        ParallelOperationsEndCallback(schema.vehicleIds!!.size) { onCompletion(vehicles) }
     for (vehicleId in schema.vehicleIds!!) {
       vehicleTable.get(
           vehicleId,
@@ -244,7 +246,8 @@ class FlightTable(db: FirestoreDatabase) :
         clazz,
         { schemas ->
           val flights = mutableListOf<Flight>()
-          val delayedCallback = ParallelOperationsEndCallback(schemas.size) { onCompletion(flights) }
+          val delayedCallback =
+              ParallelOperationsEndCallback(schemas.size) { onCompletion(flights) }
           for (schema in schemas) {
             retrieveFlight(
                 schema,
@@ -273,7 +276,8 @@ class FlightTable(db: FirestoreDatabase) :
         clazz,
         { schemas ->
           val flights = mutableListOf<Flight>()
-          val delayedCallback = ParallelOperationsEndCallback(schemas.size) { onCompletion(flights) }
+          val delayedCallback =
+              ParallelOperationsEndCallback(schemas.size) { onCompletion(flights) }
           for (schema in schemas) {
             retrieveFlight(
                 schema,
