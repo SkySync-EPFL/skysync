@@ -2,6 +2,7 @@ package ch.epfl.skysync.database
 
 import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.MemoryCacheSettings
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.firestoreSettings
@@ -20,10 +21,11 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
 
   init {
     if (useEmulator) {
-      val firestore = Firebase.firestore
-      firestore.useEmulator("10.0.2.2", 5002)
-
-      firestore.firestoreSettings = firestoreSettings {
+      // can only be called once but there is no method to check if already called
+      try {
+        db.useEmulator("10.0.2.2", 5002)
+      } catch (e: IllegalStateException) {}
+      db.firestoreSettings = firestoreSettings {
         setLocalCacheSettings(MemoryCacheSettings.newBuilder().build())
       }
     }
@@ -104,7 +106,43 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
     db.collection(path)
         .get()
         .addOnSuccessListener { querySnapshot ->
-          Log.d(TAG, "Got $path")
+          Log.d(TAG, "Got $path (x${querySnapshot.size()})")
+          onCompletion(
+              querySnapshot.documents.mapNotNull {
+                val res = it.toObject(clazz.java)
+                if (res == null) {
+                  Log.w(TAG, "Casting failed for $path/${it.id}")
+                }
+                res
+              })
+        }
+        .addOnFailureListener { exception ->
+          Log.e(TAG, "Error getting document: ", exception)
+          onError(exception)
+        }
+  }
+
+  /**
+   * Query items from a table based on a filter
+   *
+   * @param path A filesystem-like path that specify the location of the table
+   * @param filter The filter to apply to the query
+   * @param clazz The class of the item, this is used to reconstruct an instance of the item class
+   * @param onCompletion Callback called on completion of the operation
+   * @param onError Callback called when an error occurs
+   */
+  fun <T : Any> query(
+      path: String,
+      filter: Filter,
+      clazz: KClass<T>,
+      onCompletion: (List<T>) -> Unit,
+      onError: (Exception) -> Unit
+  ) {
+    db.collection(path)
+        .where(filter)
+        .get()
+        .addOnSuccessListener { querySnapshot ->
+          Log.d(TAG, "Got $path (x${querySnapshot.size()})")
           onCompletion(
               querySnapshot.documents.mapNotNull {
                 val res = it.toObject(clazz.java)
@@ -156,7 +194,10 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
     }
     db.collection(path)
         .get()
-        .addOnSuccessListener { for (d in it.documents) d.reference.delete() }
+        .addOnSuccessListener {
+          Log.d(TAG, "Deleted table $path")
+          for (d in it.documents) d.reference.delete()
+        }
         .addOnFailureListener { exception -> onError(exception) }
   }
 }

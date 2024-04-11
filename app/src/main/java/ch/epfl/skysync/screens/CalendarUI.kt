@@ -59,6 +59,7 @@ fun showTile(date: LocalDate, slot: TimeSlot, size: Dp) {
         AvailabilityStatus.OK -> Color.Green
         AvailabilityStatus.MAYBE -> Color.Blue
         AvailabilityStatus.NO -> Color.Red
+        AvailabilityStatus.UNDEFINED -> Color.Gray
       }
 
   Box(
