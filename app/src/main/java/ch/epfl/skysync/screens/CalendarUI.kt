@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,11 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.UserViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -100,18 +102,23 @@ fun showTile(
  * @param viewModel user viewmodel (used to determine availabilities status)
  */
 @Composable
-fun showCalendarAvailabilities(today: LocalDate, viewModel: UserViewModel) {
-  Calendar(today, viewModel)
+fun showCalendarAvailabilities(
+    navHostController: NavHostController,
+    padding: PaddingValues,
+    viewModel: UserViewModel
+) {
+  val today = LocalDate.now()
+  Calendar(navHostController, today, padding, viewModel)
 }
 /** Preview function to display the calendar view. */
-@Composable
-@Preview
-fun CalendarPreview() {
-  var viewModel = UserViewModel.createViewModel(firebaseUser = null)
-  viewModel.user.value.availabilities.setAvailabilityByDate(
-      LocalDate.now(), TimeSlot.AM, AvailabilityStatus.MAYBE)
-  showCalendarAvailabilities(LocalDate.now(), viewModel)
-}
+// @Composable
+// @Preview
+// fun CalendarPreview() {
+//  var viewModel = UserViewModel.createViewModel(firebaseUser = null)
+//  viewModel.user.value.availabilities.setAvailabilityByDate(
+//      LocalDate.now(), TimeSlot.AM, AvailabilityStatus.MAYBE)
+//  showCalendarAvailabilities(viewModel)
+// }
 /**
  * Composable function to display a calendar view.
  *
@@ -119,7 +126,12 @@ fun CalendarPreview() {
  * @param viewModel user viewmodel (used to determine availabilities status)
  */
 @Composable
-fun Calendar(today: LocalDate, viewModel: UserViewModel) {
+fun Calendar(
+    navHostController: NavHostController,
+    today: LocalDate,
+    padding: PaddingValues,
+    viewModel: UserViewModel
+) {
   var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(today)) }
 
   Column(
@@ -127,17 +139,29 @@ fun Calendar(today: LocalDate, viewModel: UserViewModel) {
   ) {
     WeekView(currentWeekStartDate, viewModel)
     Spacer(modifier = Modifier.height(8.dp))
-    Row {
-      Spacer(modifier = Modifier.width(138.dp))
-      Button(onClick = { currentWeekStartDate = currentWeekStartDate.minusWeeks(1) }) {
-        Text("Prev Week")
-      }
-      Spacer(modifier = Modifier.width(20.dp))
-      Button(onClick = { currentWeekStartDate = currentWeekStartDate.plusWeeks(1) }) {
-        Text("Next Week")
-      }
-      Spacer(modifier = Modifier.width(4.dp))
-    }
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween) {
+          Spacer(modifier = Modifier.width(5.dp))
+          androidx.compose.material3.Button(
+              onClick = { currentWeekStartDate = currentWeekStartDate.minusWeeks(1) },
+              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))) {
+                Text(text = "Prev Week", color = Color.DarkGray)
+              }
+          Spacer(modifier = Modifier.width(20.dp))
+          androidx.compose.material3.Button(
+              onClick = { currentWeekStartDate = currentWeekStartDate.plusWeeks(1) },
+              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))) {
+                Text(text = "Next Week", color = Color.DarkGray)
+              }
+          Spacer(modifier = Modifier.width(5.dp))
+        }
+    Spacer(modifier = Modifier.height(8.dp))
+    SwitchButton(
+        Availability = true,
+        padding = padding,
+        onClick = { navHostController.navigate(Route.PERSONAL_FLIGHT_CALENDAR) },
+        onClickRight = {})
   }
 }
 

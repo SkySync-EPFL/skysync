@@ -5,6 +5,8 @@ object Route {
   const val MAIN = "Main graph"
   const val HOME = "Home"
   const val CALENDAR = "Calendar"
+  const val AVAILABILITY_CALENDAR = "Availability Calendar"
+  const val PERSONAL_FLIGHT_CALENDAR = "Personal Flight Calendar"
   const val FLIGHT = "Flight"
   const val ADD_FLIGHT = "Add Flight"
   const val CHAT = "Chat"

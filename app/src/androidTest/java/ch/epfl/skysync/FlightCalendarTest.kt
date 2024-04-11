@@ -1,10 +1,12 @@
 package ch.epfl.skysync
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.screens.ShowFlightCalendar
@@ -28,6 +30,7 @@ class FlightCalendarTest {
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       ShowFlightCalendar(
           navController = navController,
+          padding = PaddingValues(0.dp),
           viewModel = UserViewModel.createViewModel(firebaseUser = null))
     }
   }

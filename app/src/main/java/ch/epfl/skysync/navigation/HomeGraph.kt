@@ -49,7 +49,7 @@ fun NavGraphBuilder.homeGraph(navController: NavHostController) {
               id = UNSET_ID),
       )
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
-    composable(Route.CALENDAR) { CalendarScreen(navController) }
+    personalCalendar(navController, user)
     composable(Route.CHAT) { ChatScreen(navController) }
     composable(Route.FLIGHT) { FlightScreen(navController) }
     composable(Route.HOME) { HomeScreen(navController, listFlights) }
