@@ -29,10 +29,10 @@ data class AvailabilitySchema(
   }
 
   companion object {
-    fun fromModel(personId: String, model: Availability): AvailabilitySchema {
+    fun fromModel(userId: String, model: Availability): AvailabilitySchema {
       return AvailabilitySchema(
           model.id,
-          personId,
+          userId,
           model.status,
           model.timeSlot,
           Date.from(model.date.atStartOfDay(ZoneOffset.UTC).toInstant()),

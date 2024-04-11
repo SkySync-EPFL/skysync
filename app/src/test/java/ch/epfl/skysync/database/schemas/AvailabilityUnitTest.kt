@@ -17,13 +17,13 @@ class AvailabilityUnitTest {
    */
   @Test
   fun modelSchemaCastingTest() {
-    val personId = "personId"
+    val userId = "userId"
     val localDate = LocalDate.now()
     val date = Date.from(localDate.atStartOfDay(ZoneOffset.UTC).toInstant())
     val availabilitySchema =
         AvailabilitySchema(
             id = "id",
-            userId = personId,
+            userId = userId,
             status = AvailabilityStatus.MAYBE,
             timeSlot = TimeSlot.PM,
             date = date)
@@ -32,6 +32,6 @@ class AvailabilityUnitTest {
             id = "id", status = AvailabilityStatus.MAYBE, timeSlot = TimeSlot.PM, date = localDate)
 
     assertEquals(availability, availabilitySchema.toModel())
-    assertEquals(availabilitySchema, AvailabilitySchema.fromModel(personId, availability))
+    assertEquals(availabilitySchema, AvailabilitySchema.fromModel(userId, availability))
   }
 }

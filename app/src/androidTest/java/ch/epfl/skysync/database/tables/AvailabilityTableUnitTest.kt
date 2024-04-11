@@ -32,7 +32,7 @@ class AvailabilityTableUnitTest {
    */
   @Test
   fun integrationTest() {
-    val personId = "personId"
+    val userId = "userId"
     val availability =
         Availability(
             status = AvailabilityStatus.MAYBE, timeSlot = TimeSlot.PM, date = LocalDate.now())
@@ -45,7 +45,7 @@ class AvailabilityTableUnitTest {
 
     // add an availability
     table.add(
-        personId,
+        userId,
         availability,
         {
           id = it

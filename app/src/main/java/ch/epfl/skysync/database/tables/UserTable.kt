@@ -18,7 +18,7 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
       onError: (Exception) -> Unit
   ) {
     availabilityTable.query(
-        Filter.equalTo("personId", user.id),
+        Filter.equalTo("userId", user.id),
         { availabilities ->
           user.availabilities.addCells(availabilities)
           onCompletion(user)
@@ -33,7 +33,7 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
       onError: (Exception) -> Unit
   ) {
     availabilityTable.query(
-        Filter.equalTo("personId", id),
+        Filter.equalTo("userId", id),
         { availabilities ->
           val delayedCallback = DelayedCallback(availabilities.size - 1, onCompletion)
           for (availability in availabilities) {
