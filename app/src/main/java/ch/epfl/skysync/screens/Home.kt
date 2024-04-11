@@ -1,6 +1,7 @@
 package ch.epfl.skysync.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -158,9 +159,8 @@ fun HomeScreen(navController: NavHostController) {
   Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
     // Calls UpcomingFlights composable with navigation logic
     UpcomingFlights(listFlights) { selectedFlight ->
-      navController.navigate(
-          "FlightDetailsScreen/${selectedFlight.id}") // route to the details of the selected flight
-      // (to be modified)
+      Log.d("UpcomingFlights", "Selected flight ID: ${selectedFlight.id}")
+      // Temporarily replace navigation with a log message
     }
   }
 }

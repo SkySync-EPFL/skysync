@@ -1,4 +1,4 @@
-package ch.epfl.skysync
+package ch.epfl.skysync.screens.home
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
