@@ -107,7 +107,7 @@ fun showCalendarAvailabilities(
     viewModel: UserViewModel
 ) {
   val today = LocalDate.now()
-  Calendar(navHostController, today, viewModel)
+  Calendar(navHostController, today, padding, viewModel)
 }
 /** Preview function to display the calendar view. */
 // @Composable
@@ -125,7 +125,10 @@ fun showCalendarAvailabilities(
  * @param viewModel user viewmodel (used to determine availabilities status)
  */
 @Composable
-fun Calendar(navHostController: NavHostController, today: LocalDate, viewModel: UserViewModel) {
+fun Calendar(navHostController: NavHostController,
+             today: LocalDate,
+             padding: PaddingValues,
+             viewModel: UserViewModel) {
   var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(today)) }
 
   Column(
@@ -144,14 +147,13 @@ fun Calendar(navHostController: NavHostController, today: LocalDate, viewModel: 
       }
       Spacer(modifier = Modifier.width(4.dp))
     }
-    Row {
-      Button(onClick = { navHostController.navigate(Route.PERSONAL_FLIGHT_CALENDAR) }) {
-        Text(text = "Flight Calendar")
-      }
-      Button(onClick = { navHostController.navigate(Route.AVAILABILITY_CALENDAR) }) {
-        Text(text = "Availability")
-      }
-    }
+      Spacer(modifier = Modifier.height(8.dp))
+      SwitchButton(
+          Availability = true,
+          padding = padding,
+          onClick = {navHostController.navigate(Route.PERSONAL_FLIGHT_CALENDAR)},
+          onClickRight = {}
+      )
   }
 }
 
