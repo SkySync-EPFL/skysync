@@ -1,12 +1,18 @@
 package ch.epfl.skysync.models.flight
 
+import ch.epfl.skysync.models.UNSET_ID
+
 /**
  * represents a particular flight type
  *
  * @property name name of the type
  * @property specialRoles roles in addition to the BASE_ROLES(crew, pilot)
  */
-data class FlightType(val name: String, val specialRoles: List<RoleType> = emptyList()) {
+data class FlightType(
+    val name: String,
+    val specialRoles: List<RoleType> = emptyList(),
+    val id: String = UNSET_ID
+) {
   companion object {
     val DISCOVERY = FlightType("Discovery")
     val PREMIUM = FlightType("Premium")

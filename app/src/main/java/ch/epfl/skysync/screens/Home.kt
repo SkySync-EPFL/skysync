@@ -18,8 +18,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -156,11 +161,27 @@ fun FlightRow(flight: Flight, onFlightClick: (Flight) -> Unit) {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(navController: NavHostController) {
-  Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
-    // Calls UpcomingFlights composable with navigation logic
+  Scaffold(
+      modifier = Modifier.fillMaxSize(),
+      bottomBar = { BottomBar(navController) },
+      floatingActionButton = {
+        // Define the FloatingActionButton to create a flight
+        FloatingActionButton(
+            onClick = {
+              // Here is where you'd navigate to a new screen. For now, just log a message.
+              Log.d("HomeScreen", "FloatingActionButton clicked. Implement navigation here.")
+              // Example navigation call: navController.navigate("AddFlight")
+            },
+            containerColor = lightOrange) {
+              Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
+            }
+      },
+      floatingActionButtonPosition = FabPosition.End,
+  ) { padding ->
     UpcomingFlights(listFlights) { selectedFlight ->
+      // Here is where you'd navigate to a new screen. For now, just log a message.
       Log.d("UpcomingFlights", "Selected flight ID: ${selectedFlight.id}")
-      // Temporarily replace navigation with a log message
+      // Example navigation call: navController.navigate("FlightDetails.id")
     }
   }
 }
