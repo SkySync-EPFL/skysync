@@ -25,7 +25,8 @@ class generalViewModelTest {
     val someTimeSlot = TimeSlot.AM
     val nonExistingDate =
         viewModel.user.value.availabilities.getAvailabilityStatus(someDate, someTimeSlot)
-    Assert.assertNull(nonExistingDate)
+    Assert.assertEquals(nonExistingDate, AvailabilityStatus.UNDEFINED)
+    Assert.assertEquals(viewModel.user.value.availabilities.getSize(), 0)
   }
 
   @Test
