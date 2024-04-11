@@ -3,7 +3,7 @@ package ch.epfl.skysync.models.flight
 import ch.epfl.skysync.models.calendar.TimeSlot
 import java.time.LocalDate
 
-class PlannedFlight(
+data class PlannedFlight(
     override val id: String,
     override val nPassengers: Int,
     override val team: Team = Team(Role.initRoles(BASE_ROLES)),

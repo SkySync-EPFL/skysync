@@ -32,15 +32,7 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
       onCompletion: () -> Unit,
       onError: (Exception) -> Unit
   ) {
-    availabilityTable.query(
-        Filter.equalTo("userId", id),
-        { availabilities ->
-          val delayedCallback = ParallelOperationsEndCallback(availabilities.size, onCompletion)
-          for (availability in availabilities) {
-            availabilityTable.delete(availability.id, { delayedCallback.run() }, onError)
-          }
-        },
-        onError)
+    availabilityTable.queryDelete(Filter.equalTo("userId", id), onCompletion, onError)
   }
 
   override fun get(id: String, onCompletion: (User?) -> Unit, onError: (Exception) -> Unit) {
@@ -86,8 +78,8 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
   /**
    * Add a new user to the database
    *
-   * This will generate a new id for this availability and disregard any previously set id. This
-   * will not add availabilities or assigned flights to the database, it must be done separately.
+   * This will generate a new id for this user and disregard any previously set id. This will not
+   * add availabilities or assigned flights to the database, it must be done separately.
    *
    * @param item The user to add to the database
    * @param onCompletion Callback called on completion of the operation
