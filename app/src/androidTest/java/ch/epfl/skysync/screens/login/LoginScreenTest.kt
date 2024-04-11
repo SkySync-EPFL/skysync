@@ -13,7 +13,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class LoginTest : TestCase() {
+class LoginScreenTest : TestCase() {
+
   @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
 
   // The IntentsTestRule simply calls Intents.init() before the @Test block
