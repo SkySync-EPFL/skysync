@@ -37,6 +37,14 @@ class TestAvailabilityCalendar {
   }
 
   @Test
+  fun `add a new availability by date and time slot`() {
+    val calendar = AvailabilityCalendar()
+    val av1 = availabilities[0]
+    calendar.setAvailabilityByDate(av1.date, av1.timeSlot, av1.status)
+    assertEquals(calendar.getAvailabilityStatus(av1.date, av1.timeSlot), av1.status)
+  }
+
+  @Test
   fun `change an availability status by date and time slot`() {
     calendar.addCells(availabilities)
     val av1 = availabilities[0]
