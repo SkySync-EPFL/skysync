@@ -9,7 +9,6 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.screens.AddFlightScreen
-import ch.epfl.skysync.screens.CalendarScreen
 import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
