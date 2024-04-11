@@ -7,8 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.compose.rememberNavController
-import ch.epfl.skysync.models.flight.Flight
-import ch.epfl.skysync.navigation.BottomBarScreen
 import ch.epfl.skysync.navigation.MainGraph
 import ch.epfl.skysync.ui.theme.SkySyncTheme
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
@@ -19,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser
 class MainActivity : ComponentActivity() {
   private lateinit var signInLauncher: ActivityResultLauncher<Intent>
   private val user = mutableStateOf<FirebaseUser?>(null)
+
   private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
     // callback after service
     if (result.resultCode == RESULT_OK) {

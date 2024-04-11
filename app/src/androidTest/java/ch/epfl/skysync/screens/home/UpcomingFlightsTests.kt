@@ -74,7 +74,8 @@ class UpcomingFlightsTests {
   @Test
   fun floatingActionButton_onClick_logsMessage() {
     val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-    composeTestRule.setContent { HomeScreen(navController) }
+    val flights = mutableListOf<PlannedFlight>()
+    composeTestRule.setContent { HomeScreen(navController, flights) }
 
     // Perform a click on the FAB
     composeTestRule.onNodeWithContentDescription("Add").performClick()

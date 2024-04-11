@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,11 +43,9 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
-import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Vehicle
-import ch.epfl.skysync.navigation.BottomBarScreen
 import ch.epfl.skysync.navigation.Route
 import java.time.Instant
 import java.time.LocalDate
@@ -54,7 +53,7 @@ import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddFlightScreen(navController: NavHostController, flights : MutableList<Flight>) {
+fun AddFlightScreen(navController: NavHostController, flights: MutableList<PlannedFlight>) {
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       topBar = {
@@ -77,7 +76,8 @@ fun AddFlightScreen(navController: NavHostController, flights : MutableList<Flig
                   placeholder = { Text("Number of passengers") },
                   singleLine = true,
                   keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                  modifier = Modifier.fillMaxWidth().padding(defaultPadding))
+                  modifier =
+                      Modifier.fillMaxWidth().padding(defaultPadding).testTag("nb Passenger"))
 
               var openDatePicker by remember { mutableStateOf(false) }
               var date by remember { mutableStateOf(LocalDate.now()) }
@@ -112,9 +112,10 @@ fun AddFlightScreen(navController: NavHostController, flights : MutableList<Flig
 
               OutlinedTextField(
                   modifier =
-                      Modifier.fillMaxWidth().padding(defaultPadding).clickable {
-                        openDatePicker = true
-                      },
+                      Modifier.fillMaxWidth()
+                          .padding(defaultPadding)
+                          .clickable { openDatePicker = true }
+                          .testTag("Date Field"),
                   enabled = false,
                   value =
                       String.format("%02d/%02d/%04d", date.dayOfMonth, date.monthValue, date.year),
@@ -124,9 +125,10 @@ fun AddFlightScreen(navController: NavHostController, flights : MutableList<Flig
               var expandedFlightTypeMenu by remember { mutableStateOf(false) }
               ExposedDropdownMenuBox(
                   modifier =
-                      Modifier.fillMaxWidth().padding(defaultPadding).clickable {
-                        expandedFlightTypeMenu = true
-                      },
+                      Modifier.fillMaxWidth()
+                          .padding(defaultPadding)
+                          .clickable { expandedFlightTypeMenu = true }
+                          .testTag("Flight Type Menu"),
                   expanded = expandedFlightTypeMenu,
                   onExpandedChange = { expandedFlightTypeMenu = !expandedFlightTypeMenu }) {
                     OutlinedTextField(
@@ -159,9 +161,10 @@ fun AddFlightScreen(navController: NavHostController, flights : MutableList<Flig
               val allVehicles = listOf<Vehicle>(Vehicle("Car"), Vehicle("Bus"), Vehicle("Bike"))
               ExposedDropdownMenuBox(
                   modifier =
-                      Modifier.fillMaxWidth().padding(defaultPadding).clickable {
-                        expandedVehicleMenu = true
-                      },
+                      Modifier.fillMaxWidth()
+                          .padding(defaultPadding)
+                          .clickable { expandedVehicleMenu = true }
+                          .testTag("Vehicle Menu"),
                   expanded = expandedVehicleMenu,
                   onExpandedChange = { expandedVehicleMenu = !expandedVehicleMenu }) {
                     OutlinedTextField(
@@ -193,9 +196,10 @@ fun AddFlightScreen(navController: NavHostController, flights : MutableList<Flig
                 OutlinedTextField(
                     placeholder = { Text("Time Slot") },
                     modifier =
-                        Modifier.fillMaxWidth().padding(defaultPadding).clickable {
-                          expandedTimeSlot = true
-                        },
+                        Modifier.fillMaxWidth()
+                            .padding(defaultPadding)
+                            .clickable { expandedTimeSlot = true }
+                            .testTag("Time Slot Menu"),
                     enabled = false,
                     value = timeSlot.toString(),
                     onValueChange = {})
@@ -222,9 +226,10 @@ fun AddFlightScreen(navController: NavHostController, flights : MutableList<Flig
               var expandedBalloonMenu by remember { mutableStateOf(false) }
               ExposedDropdownMenuBox(
                   modifier =
-                      Modifier.fillMaxWidth().padding(defaultPadding).clickable {
-                        expandedBalloonMenu = true
-                      },
+                      Modifier.fillMaxWidth()
+                          .padding(defaultPadding)
+                          .clickable { expandedBalloonMenu = true }
+                          .testTag("Balloon Menu"),
                   expanded = expandedBalloonMenu,
                   onExpandedChange = { expandedBalloonMenu = !expandedBalloonMenu }) {
                     OutlinedTextField(
@@ -260,9 +265,10 @@ fun AddFlightScreen(navController: NavHostController, flights : MutableList<Flig
               var expandedBasketMenu by remember { mutableStateOf(false) }
               ExposedDropdownMenuBox(
                   modifier =
-                      Modifier.fillMaxWidth().padding(defaultPadding).clickable {
-                        expandedVehicleMenu = true
-                      },
+                      Modifier.fillMaxWidth()
+                          .padding(defaultPadding)
+                          .clickable { expandedVehicleMenu = true }
+                          .testTag("Basket Menu"),
                   expanded = expandedBasketMenu,
                   onExpandedChange = { expandedBasketMenu = !expandedBasketMenu }) {
                     OutlinedTextField(
@@ -293,14 +299,16 @@ fun AddFlightScreen(navController: NavHostController, flights : MutableList<Flig
                 OutlinedTextField(
                     placeholder = { Text("Fondue Role") },
                     modifier =
-                        Modifier.fillMaxWidth().padding(defaultPadding).clickable {
-                          expandedTimeSlot = true
-                        },
+                        Modifier.fillMaxWidth()
+                            .padding(defaultPadding)
+                            .clickable { expandedTimeSlot = true }
+                            .testTag("Fondue Role Field"),
                     value = fondueRole ?: "",
                     onValueChange = { fondueRole = it })
               }
               Button(
-                  modifier = Modifier.fillMaxWidth().padding(defaultPadding),
+                  modifier =
+                      Modifier.fillMaxWidth().padding(defaultPadding).testTag("Add Flight Button"),
                   onClick = {
                     val newFlight =
                         PlannedFlight(
@@ -311,16 +319,15 @@ fun AddFlightScreen(navController: NavHostController, flights : MutableList<Flig
                             balloon = balloon,
                             basket = basket,
                             vehicles = listOf(vehicle!!),
-                            id = null
-                        )
-                    flights += newFlight
-                      navController.navigate(Route.HOME){
-                          launchSingleTop = true
-                      }
-                    navController.popBackStack()
+                            id = null)
+                    flights.add(newFlight)
+                    navController.navigate(Route.HOME) {
+                      launchSingleTop = true
+                      popUpTo(Route.ADD_FLIGHT) { inclusive = true }
+                    }
                   }) {
-                Text("Add Flight")
-              }
+                    Text("Add Flight")
+                  }
             }
       }
 }

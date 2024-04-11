@@ -39,52 +39,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Flight
-import ch.epfl.skysync.models.flight.FlightType.Companion.DISCOVERY
-import ch.epfl.skysync.models.flight.FlightType.Companion.FONDUE
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-
-// Sample list for preview (to be deleted)
-val listFlights =
-    listOf(
-        PlannedFlight(
-            nPassengers = 4,
-            date = LocalDate.of(2024, 3, 19),
-            timeSlot = TimeSlot.AM,
-            flightType = FONDUE,
-            vehicles = listOf(),
-            balloon = null,
-            basket = null,
-            id = UNSET_ID),
-        PlannedFlight(
-            nPassengers = 2,
-            date = LocalDate.of(2024, 3, 20),
-            timeSlot = TimeSlot.AM,
-            flightType = DISCOVERY,
-            vehicles = listOf(),
-            balloon = null,
-            basket = null,
-            id = UNSET_ID),
-        PlannedFlight(
-            nPassengers = 3,
-            date = LocalDate.of(2024, 3, 22),
-            timeSlot = TimeSlot.PM,
-            flightType = DISCOVERY,
-            vehicles = listOf(),
-            balloon = null,
-            basket = null,
-            id = UNSET_ID),
-    )
-// Sample empty list for preview (to be deleted)
-val emptyList: List<PlannedFlight> = emptyList()
 
 @Composable
 fun UpcomingFlights(flights: List<Flight>, onFlightClick: (Flight) -> Unit) {
@@ -160,19 +122,14 @@ fun FlightRow(flight: Flight, onFlightClick: (Flight) -> Unit) {
 // Scaffold wrapper for the Home Screen
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController, listFlights: MutableList<PlannedFlight>) {
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       bottomBar = { BottomBar(navController) },
       floatingActionButton = {
         // Define the FloatingActionButton to create a flight
         FloatingActionButton(
-            onClick = {
-              // Here is where you'd navigate to a new screen. For now, just log a message.
-              Log.d("HomeScreen", "FloatingActionButton clicked. Implement navigation here.")
-              // Example navigation call: navController.navigate("AddFlight")
-            },
-            containerColor = lightOrange) {
+            onClick = { navController.navigate(Route.ADD_FLIGHT) }, containerColor = lightOrange) {
               Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
             }
       },
@@ -192,6 +149,7 @@ fun HomeScreen(navController: NavHostController) {
 fun HomeScreenPreview() {
   // Preview navigation controller
   val navController = rememberNavController()
+  val listFlights = mutableListOf<PlannedFlight>()
   // Preview of Home Screen
-  HomeScreen(navController = navController)
+  HomeScreen(navController = navController, listFlights)
 }
