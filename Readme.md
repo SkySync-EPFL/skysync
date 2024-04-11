@@ -37,6 +37,11 @@ TBD
 
 ![SkySync database diagram](https://github.com/SkySync-EPFL/skysync/assets/93386280/b8088739-655e-4511-bf8e-48be7d5954b7)
 
+## Architecture Diagram
+
+![SwEnt Architecture Diagram](https://github.com/SkySync-EPFL/skysync/assets/75271095/fa9c1de8-369b-4ebf-b376-aa8ef0ec9848)
+
+
 ## Testing
 
 ### Firebase emulators
@@ -257,3 +262,5 @@ check connectedCheck jacocoTestReport
 ```
 In order to run connectedCheck you have to launch the emulator. While in the Gradle menu (accessed by clicking on the elephant icon), you can search for tasks by clicking on the terminal icon located directly beneath "Gradle". 
 * Running the Gradle task jacocoTestReport will generate a coverage report, which will be in app/build/reports/jacoco/jacocoTestReport/html. Open index.html with a Web browser to see the report.
+
+
