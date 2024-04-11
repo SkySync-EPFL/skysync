@@ -1,0 +1,54 @@
+rules_version = '2';
+
+service cloud.firestore {
+  // This rule allows anyone with your Firestore database reference to view, edit,
+  // and delete all data in your Firestore database.
+  match /{document=**} {
+    allow read, write: if true;
+  }
+
+  match /databases/{database}/documents {
+  	function isSignedIn(){
+    	return request.auth != null;
+    }
+
+    function resourceExists(rsc){
+    	return rsc != null;
+    }
+
+    function getRole(uid) {
+    	// Retrieves the role of the user
+      return get(/databases/$(database)/documents/user/$(uid)).data.role;
+    }
+
+    function isOneOfRoles(array) {
+      // Determine if the user is one of an array of roles
+      return getRole(request.auth.uid) in array;
+    }
+
+    function isAdmin(){
+    	return isOneOfRoles(["admin"])
+    }
+
+    match /user/{userId}{
+        // Allow read if user is owner or admin
+        allow read: if isSignedIn() && resourceExists(resource) &&
+      					    (request.auth.uid == userId || isAdmin());
+        // Allow write if user is admin
+        allow write: if isSignedIn() && resourceExists(resource) && isAdmin();
+
+	}
+
+    match /availability/{avy}{
+
+        function isOwner(rsc){
+      	    return resourceExists(rsc) &&
+        				(rsc.data.personId == request.auth.uid)
+        }
+
+    	// Allow read, write if document exists and the user is owner or admin
+    	allow read, write: if isSignedIn() && resourceExists(resource) &&
+      											(isOwner(resource) || isAdmin());
+    }
+  }
+}
