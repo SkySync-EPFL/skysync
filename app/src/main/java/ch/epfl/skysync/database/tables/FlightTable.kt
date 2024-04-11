@@ -1,7 +1,7 @@
 package ch.epfl.skysync.database.tables
 
 import ch.epfl.skysync.database.DateLocalDateConverter
-import ch.epfl.skysync.database.DelayedCallback
+import ch.epfl.skysync.database.ParallelOperationsEndCallback
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.FlightStatus
 import ch.epfl.skysync.database.Table
@@ -64,7 +64,7 @@ class FlightTable(db: FirestoreDatabase) :
       onCompletion: () -> Unit,
       onError: (Exception) -> Unit
   ) {
-    val delayedCallback = DelayedCallback(team.roles.size - 1) { onCompletion() }
+    val delayedCallback = ParallelOperationsEndCallback(team.roles.size) { onCompletion() }
     for (role in team.roles) {
       flightMemberTable.add(
           FlightMemberSchema(
@@ -98,7 +98,7 @@ class FlightTable(db: FirestoreDatabase) :
             onCompletion(Team(members.map { Role(it.roleType!!, null) }))
             return@query
           }
-          val delayedCallback = DelayedCallback(numUserRequests - 1) { onCompletion(Team(roles)) }
+          val delayedCallback = ParallelOperationsEndCallback(numUserRequests) { onCompletion(Team(roles)) }
           for (member in members) {
             if (member.userId == null) {
               roles.add(Role(member.roleType!!, null))
@@ -127,7 +127,7 @@ class FlightTable(db: FirestoreDatabase) :
       onError: (Exception) -> Unit
   ) {
     var vehicles = mutableListOf<Vehicle>()
-    var delayedCallback = DelayedCallback(schema.vehicleIds!!.size - 1) { onCompletion(vehicles) }
+    var delayedCallback = ParallelOperationsEndCallback(schema.vehicleIds!!.size) { onCompletion(vehicles) }
     for (vehicleId in schema.vehicleIds!!) {
       vehicleTable.get(
           vehicleId,
@@ -158,12 +158,12 @@ class FlightTable(db: FirestoreDatabase) :
 
     // the number of requests that will be executed depends
     // on if balloon/basket IDs are defined
-    var numEntitiesRequests = 2
+    var numEntitiesRequests = 3
     if (flightSchema.balloonId != null) numEntitiesRequests += 1
     if (flightSchema.basketId != null) numEntitiesRequests += 1
 
     val delayedOnCompletion =
-        DelayedCallback(numEntitiesRequests) {
+        ParallelOperationsEndCallback(numEntitiesRequests) {
           onCompletion(makeFlight(schema, flightType!!, balloon, basket, vehicles!!, team!!))
         }
     flightTypeTable.get(
@@ -244,7 +244,7 @@ class FlightTable(db: FirestoreDatabase) :
         clazz,
         { schemas ->
           val flights = mutableListOf<Flight>()
-          val delayedCallback = DelayedCallback(schemas.size - 1) { onCompletion(flights) }
+          val delayedCallback = ParallelOperationsEndCallback(schemas.size) { onCompletion(flights) }
           for (schema in schemas) {
             retrieveFlight(
                 schema,
@@ -273,7 +273,7 @@ class FlightTable(db: FirestoreDatabase) :
         clazz,
         { schemas ->
           val flights = mutableListOf<Flight>()
-          val delayedCallback = DelayedCallback(schemas.size - 1) { onCompletion(flights) }
+          val delayedCallback = ParallelOperationsEndCallback(schemas.size) { onCompletion(flights) }
           for (schema in schemas) {
             retrieveFlight(
                 schema,

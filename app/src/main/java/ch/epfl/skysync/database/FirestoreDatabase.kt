@@ -201,7 +201,7 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
         .get()
         .addOnSuccessListener { querySnapshot ->
           Log.d(TAG, "Delete $path (x${querySnapshot.size()})")
-          val delayedCallback = DelayedCallback(querySnapshot.size() - 1) { onCompletion() }
+          val delayedCallback = ParallelOperationsEndCallback(querySnapshot.size()) { onCompletion() }
           for (document in querySnapshot.documents) {
             document.reference
                 .delete()
