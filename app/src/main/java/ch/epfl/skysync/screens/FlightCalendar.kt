@@ -13,14 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,20 +30,11 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.flight.FlightType
-import ch.epfl.skysync.models.flight.PlannedFlight
-import ch.epfl.skysync.models.flight.Role
-import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.flight.Team
-import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.navigation.BottomBar
-import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.UserViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -103,29 +90,6 @@ fun ShowFlightCalendar(navController: NavHostController, viewModel: UserViewMode
   Scaffold(bottomBar = { BottomBar(navController) }) { padding ->
     Box() { Calendar(navController, viewModel, padding) }
   }
-}
-
-
-@Composable
-@Preview
-fun ShowFlightCalendarPreview() {
-  val navController = rememberNavController()
-  val viewModel = UserViewModel.createViewModel(null)
-  viewModel.user.value.assignedFlights.addFlightByDate(
-      LocalDate.now(),
-      TimeSlot.PM,
-      PlannedFlight(
-          "Test Flight",
-          1,
-          Team(mutableListOf(Role(RoleType.PILOT))),
-          FlightType("Premium"),
-          null,
-          null,
-          LocalDate.now(),
-          TimeSlot.AM,
-          mutableListOf(Vehicle("car", "car1")))
-  )
-  ShowFlightCalendar(navController = navController, viewModel)
 }
 
 /**
