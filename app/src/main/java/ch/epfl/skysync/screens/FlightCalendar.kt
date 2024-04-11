@@ -86,10 +86,8 @@ fun ShowFlight(date: LocalDate, time: TimeSlot, viewModel: UserViewModel) {
  *   within the app.
  */
 @Composable
-fun ShowFlightCalendar(navController: NavHostController, viewModel: UserViewModel) {
-  Scaffold(bottomBar = { BottomBar(navController) }) { padding ->
-    Box() { Calendar(navController, viewModel, padding) }
-  }
+fun ShowFlightCalendar(navController: NavHostController, padding: PaddingValues, viewModel: UserViewModel) {
+   Calendar(navController, padding, viewModel)
 }
 
 /**
@@ -99,7 +97,7 @@ fun ShowFlightCalendar(navController: NavHostController, viewModel: UserViewMode
  *   within the app.
  */
 @Composable
-fun Calendar(navController: NavHostController, viewModel: UserViewModel, padding: PaddingValues) {
+fun Calendar(navController: NavHostController, padding: PaddingValues, viewModel: UserViewModel) {
   var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(LocalDate.now())) }
   Column(
       modifier = Modifier.fillMaxSize().padding(16.dp).background(Color.White),

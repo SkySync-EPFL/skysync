@@ -104,7 +104,7 @@ fun showTile(
  * @param viewModel user viewmodel (used to determine availabilities status)
  */
 @Composable
-fun showCalendarAvailabilities(navHostController: NavHostController, pading: PaddingValues, viewModel: UserViewModel) {
+fun showCalendarAvailabilities(navHostController: NavHostController, padding: PaddingValues, viewModel: UserViewModel) {
     val today = LocalDate.now()
     Calendar(navHostController, today, viewModel)
 }

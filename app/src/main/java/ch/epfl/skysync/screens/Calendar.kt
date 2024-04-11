@@ -49,7 +49,7 @@ import ch.epfl.skysync.viewmodel.UserViewModel
                  showCalendarAvailabilities(navController, padding, viewModel)
              } else if (calendarType == Route.PERSONAL_FLIGHT_CALENDAR) {
                  // TODO: change to correct view model
-                 showCalendarAvailabilities(navController, padding, viewModel)
+                 ShowFlightCalendar(navController, padding, viewModel)
              }
          }
      }
