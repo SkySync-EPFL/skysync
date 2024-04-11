@@ -1,5 +1,6 @@
 package ch.epfl.skysync.screens
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -16,14 +17,17 @@ import ch.epfl.skysync.navigation.BottomBar
 
 @Composable
 fun CalendarScreen(navController: NavHostController) {
-  Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
-    Text(
-        modifier = Modifier.padding(padding),
-        text = "Calendar",
-        fontSize = MaterialTheme.typography.displayLarge.fontSize,
-        fontWeight = FontWeight.Bold,
-        color = Color.Black)
-  }
+    Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
+        Column(modifier = Modifier.padding(padding)) {
+            Text(
+                text = "Calendar",
+                fontSize = MaterialTheme.typography.displayLarge.fontSize,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            CalendarPreview()
+        }
+    }
 }
 
 @Composable

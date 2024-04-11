@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,7 +61,7 @@ fun showTile(date: LocalDate, slot: TimeSlot, scaleHeight: Float,scaleWidth: Flo
             null -> customEmpty
         }
     Box(
-        modifier = Modifier.fillMaxHeight(scaleHeight).fillMaxWidth(scaleWidth).background(color = backgroundColor,
+        modifier = Modifier.fillMaxHeight(scaleHeight).testTag(date.toString()+slot.toString()).fillMaxWidth(scaleWidth).background(color = backgroundColor,
             shape = RoundedCornerShape(0.dp)).clickable {
             availabilityStatus =  viewModel.user.value.availabilities.nextAvailabilityStatus(date, slot)
         })
@@ -156,7 +157,6 @@ fun WeekView(startOfWeek: LocalDate,viewModel: UserViewModel) {
                     color = Color.Black,
                     modifier = Modifier.width(120.dp)
                 )
-                Log.d("ret",i.toString())
                 val scale=(1f/7*7/(7-i))
                 Column(modifier = Modifier.width(1.dp).fillMaxHeight(scale).background(Color.Black)){}
                 showTile(day, TimeSlot.AM, scale,0.5f,viewModel)
