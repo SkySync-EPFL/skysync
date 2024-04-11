@@ -10,7 +10,7 @@ import java.util.Date
 
 data class AvailabilitySchema(
     @DocumentId val id: String? = null,
-    val personId: String? = null,
+    val userId: String? = null,
     val status: AvailabilityStatus? = null,
     val timeSlot: TimeSlot? = null,
     /** We use the Date class instead of the LocalDate for Firestore see [DateLocalDateConverter] */
@@ -26,10 +26,10 @@ data class AvailabilitySchema(
   }
 
   companion object {
-    fun fromModel(personId: String, model: Availability): AvailabilitySchema {
+    fun fromModel(userId: String, model: Availability): AvailabilitySchema {
       return AvailabilitySchema(
           model.id,
-          personId,
+          userId,
           model.status,
           model.timeSlot,
           DateLocalDateConverter.localDateToDate(model.date),

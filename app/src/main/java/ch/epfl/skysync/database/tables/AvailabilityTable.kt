@@ -14,18 +14,18 @@ class AvailabilityTable(db: FirestoreDatabase) :
    *
    * This will generate a new id for this availability and disregard any previously set id.
    *
-   * @param personId The ID of the person whose availability it is
+   * @param userId The ID of the user whose availability it is
    * @param item The availability to add to the database
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   fun add(
-      personId: String,
+      userId: String,
       item: Availability,
       onCompletion: (id: String) -> Unit,
       onError: (Exception) -> Unit
   ) {
-    db.addItem(path, AvailabilitySchema.fromModel(personId, item), onCompletion, onError)
+    db.addItem(path, AvailabilitySchema.fromModel(userId, item), onCompletion, onError)
   }
 
   companion object {

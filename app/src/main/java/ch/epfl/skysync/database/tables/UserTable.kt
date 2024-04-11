@@ -1,7 +1,7 @@
 package ch.epfl.skysync.database.tables
 
-import ch.epfl.skysync.database.DelayedCallback
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.database.ParallelOperationsEndCallback
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.UserSchema
 import ch.epfl.skysync.models.user.User
@@ -18,7 +18,7 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
       onError: (Exception) -> Unit
   ) {
     availabilityTable.query(
-        Filter.equalTo("personId", user.id),
+        Filter.equalTo("userId", user.id),
         { availabilities ->
           user.availabilities.addCells(availabilities)
           onCompletion(user)
@@ -32,7 +32,7 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
       onCompletion: () -> Unit,
       onError: (Exception) -> Unit
   ) {
-    availabilityTable.queryDelete(Filter.equalTo("personId", id), onCompletion, onError)
+    availabilityTable.queryDelete(Filter.equalTo("userId", id), onCompletion, onError)
   }
 
   override fun get(id: String, onCompletion: (User?) -> Unit, onError: (Exception) -> Unit) {
@@ -51,7 +51,7 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
   override fun getAll(onCompletion: (List<User>) -> Unit, onError: (Exception) -> Unit) {
     super.getAll(
         { users ->
-          val delayedCallback = DelayedCallback(users.size - 1) { onCompletion(users) }
+          val delayedCallback = ParallelOperationsEndCallback(users.size) { onCompletion(users) }
           for (user in users) {
             retrieveAvailabilities(user, { delayedCallback.run() }, onError)
           }
@@ -67,7 +67,7 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
     super.query(
         filter,
         { users ->
-          val delayedCallback = DelayedCallback(users.size - 1) { onCompletion(users) }
+          val delayedCallback = ParallelOperationsEndCallback(users.size) { onCompletion(users) }
           for (user in users) {
             retrieveAvailabilities(user, { delayedCallback.run() }, onError)
           }

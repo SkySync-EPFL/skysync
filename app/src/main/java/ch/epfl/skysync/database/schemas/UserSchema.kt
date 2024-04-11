@@ -15,14 +15,14 @@ import java.lang.UnsupportedOperationException
 
 data class UserSchema(
     @DocumentId val id: String? = null,
-    val role: UserRole? = null,
+    val userRole: UserRole? = null,
     val firstname: String? = null,
     val lastname: String? = null,
     val roleTypes: List<RoleType>? = null,
     val balloonQualification: BalloonQualification? = null,
 ) : Schema<User> {
   override fun toModel(): User {
-    return when (role!!) {
+    return when (userRole!!) {
       UserRole.ADMIN ->
           Admin(
               id = id!!,
@@ -52,7 +52,7 @@ data class UserSchema(
 
   companion object {
     fun fromModel(model: User): UserSchema {
-      val (userType, qualification) =
+      val (userRole, qualification) =
           when (model) {
             is Admin -> Pair(UserRole.ADMIN, null)
             is Crew -> Pair(UserRole.CREW, null)
@@ -63,7 +63,7 @@ data class UserSchema(
           }
       return UserSchema(
           id = model.id,
-          role = userType,
+          userRole = userRole,
           firstname = model.firstname,
           lastname = model.lastname,
           roleTypes = listOf(),
