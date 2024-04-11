@@ -12,6 +12,13 @@ data class FlightType(val name: String, val specialRoles: List<RoleType> = empty
     val PREMIUM = FlightType("Premium")
     val FONDUE = FlightType("Fondue", listOf(RoleType.MAITRE_FONDUE))
     val HIGH_ALTITUDE = FlightType("High Altitude", listOf(RoleType.OXYGEN_MASTER))
+    val all_flights =
+        listOf(
+            DISCOVERY,
+            PREMIUM,
+            FONDUE,
+            HIGH_ALTITUDE,
+        )
   }
 }
 
@@ -21,3 +28,10 @@ val BASE_ROLES =
         RoleType.PILOT,
         RoleType.CREW,
     )
+
+enum class FlightTypeTest(val name_val: String, val specialRoles: List<RoleType> = emptyList()) {
+  DISCOVERY("Discovery"),
+  PREMIUM("Premium"),
+  FONDUE("Fondue", listOf(RoleType.MAITRE_FONDUE)),
+  HIGH_ALTITUDE("High Altitude", listOf(RoleType.OXYGEN_MASTER))
+}
