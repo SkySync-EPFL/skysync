@@ -32,11 +32,6 @@ fun CalendarScreen(
             // TODO: change to correct view model
             showCalendarAvailabilities(navController, padding, viewModel)
           }
-          Row {
-            Button(onClick = { /*TODO*/}) { Text("Flights") }
-
-            Button(onClick = { /*TODO*/}) { Text("Availabilities") }
-          }
         }
   }
 }
