@@ -7,8 +7,6 @@ import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
-import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.navigation.homeGraph
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
