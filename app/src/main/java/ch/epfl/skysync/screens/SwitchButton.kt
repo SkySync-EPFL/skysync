@@ -67,7 +67,7 @@ fun SwitchButton(
               modifier = Modifier.fillMaxWidth(1f).fillMaxHeight(),
           ) {
             Text(
-                text = "Avaliability Calendar",
+                text = "Availability Calendar",
                 fontSize = 12.sp,
                 color = rightTextColor,
                 overflow = TextOverflow.Clip,
