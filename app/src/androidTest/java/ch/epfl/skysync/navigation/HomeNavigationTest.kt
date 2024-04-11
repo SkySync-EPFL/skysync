@@ -1,4 +1,4 @@
-package ch.epfl.skysync
+package ch.epfl.skysync.navigation
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -41,7 +41,7 @@ class HomeNavigationTest {
     composeTestRule.onNodeWithText("Calendar").performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CALENDAR)
+    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
   }
 
   @Test
