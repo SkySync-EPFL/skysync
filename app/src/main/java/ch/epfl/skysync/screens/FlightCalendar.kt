@@ -4,13 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
@@ -33,9 +34,11 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
@@ -46,6 +49,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
+import ch.epfl.skysync.viewmodel.UserViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -65,18 +69,23 @@ import java.util.Locale
 fun ShowFlight(
     date: LocalDate,
     time: TimeSlot,
-    getFlightByDate: (LocalDate, TimeSlot) -> Flight?,
-    onClick: () -> Unit
+    viewModel: UserViewModel
 ) {
-  val flight = getFlightByDate(date, time)
+  val flight = viewModel.user.value.assignedFlights.getFirstFlightByDate(date, time)
+    var weight = 0.5f
+    if(time == TimeSlot.PM){
+        weight = 1f
+    }
   if (flight != null) {
     Button(
-        onClick,
+        onClick = {},
         shape = RectangleShape,
-        modifier = Modifier.size(105.dp, 100.dp),
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth(weight),
         colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)) {
           Text(
-              text = flight.id,
+              text = flight.flightType.name,
               fontSize = 12.sp,
               color = Color.Black,
               overflow = TextOverflow.Clip,
@@ -85,7 +94,9 @@ fun ShowFlight(
               textAlign = TextAlign.Center)
         }
   } else {
-    Box(modifier = Modifier.size(105.dp, 100.dp), contentAlignment = Alignment.Center) {}
+    Box(modifier = Modifier
+        .fillMaxHeight()
+        .fillMaxWidth(weight), contentAlignment = Alignment.Center) {}
   }
 }
 /**
@@ -95,31 +106,31 @@ fun ShowFlight(
  *   within the app.
  */
 @Composable
-fun ShowFlightCalendar(navController: NavHostController) {
+fun ShowFlightCalendar(navController: NavHostController, viewModel: UserViewModel) {
   Scaffold(bottomBar = { BottomBar(navController) }) { padding ->
     Box() {
-      Calendar(navController)
-      Button(
-          onClick = { navController.navigate(Route.ADDFLIGHT) },
-          shape = CircleShape,
-          colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Gray),
-          modifier = Modifier.padding(25.dp)) {
-            Icon(
-                Icons.Default.Add,
-                contentDescription = "content description",
-                tint = Color.DarkGray)
-            Text(text = "Add", color = Color.DarkGray)
-          }
+      Calendar(navController,viewModel,padding)
     }
   }
 }
 
-/*@Composable
+@Composable
 @Preview
 fun ShowFlightCalendarPreview() {
   val navController = rememberNavController()
-  ShowFlightCalendar(navController = navController)
-}*/
+    val viewModel = UserViewModel.createViewModel(null)
+    viewModel.user.value.assignedFlights.addFlightByDate(LocalDate.now(),TimeSlot.PM, PlannedFlight(
+        "Test Flight",
+        1,
+        Team(mutableListOf(Role(RoleType.PILOT))),
+        FlightType("Premium"),
+        null,
+        null,
+        LocalDate.now(),
+        TimeSlot.AM,
+        mutableListOf(Vehicle("car", "car1"))))
+  ShowFlightCalendar(navController = navController, viewModel)
+}
 
 val FakeFlights: (LocalDate, TimeSlot) -> Flight? = { date: LocalDate, timeslot: TimeSlot ->
   if ((LocalDate.now() == date) && (timeslot == TimeSlot.AM)) {
@@ -145,15 +156,20 @@ val FakeFlights: (LocalDate, TimeSlot) -> Flight? = { date: LocalDate, timeslot:
  *   within the app.
  */
 @Composable
-fun Calendar(navController: NavHostController) {
+fun Calendar(navController: NavHostController,viewModel: UserViewModel,padding: PaddingValues) {
   var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(LocalDate.now())) }
   Column(
-      modifier = Modifier.fillMaxSize().padding(16.dp).background(Color.White),
+      modifier = Modifier
+          .fillMaxSize()
+          .padding(16.dp)
+          .background(Color.White),
   ) {
-    WeekView(currentWeekStartDate) // Add key parameter
+    WeekView(currentWeekStartDate,viewModel,navController)
     Spacer(modifier = Modifier.height(8.dp))
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
           Spacer(modifier = Modifier.width(5.dp))
           Button(
@@ -178,15 +194,27 @@ fun Calendar(navController: NavHostController) {
  * @param startOfWeek The start date of the week to be displayed.
  */
 @Composable
-fun WeekView(startOfWeek: LocalDate) {
+fun WeekView(startOfWeek: LocalDate,viewModel: UserViewModel,navController: NavHostController) {
   val weekDays = (0..6).map { startOfWeek.plusDays(it.toLong()) }
   Column() {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween) {
-          Spacer(modifier = Modifier.width(30.dp))
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically)
+    {
+        Button(
+            onClick = { navController.navigate(Route.ADDFLIGHT) },
+            shape = CircleShape,
+            colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Gray),
+            modifier = Modifier.padding()) {
+            Icon(
+                Icons.Default.Add,
+                contentDescription = "content description",
+                tint = Color.DarkGray)
+            Text(text = "Add", color = Color.DarkGray)
+        }
           Box(
-              modifier = Modifier.size(30.dp, 50.dp).padding(vertical = 1.dp),
               contentAlignment = Alignment.Center) {
                 Text(
                     text = "AM",
@@ -195,7 +223,6 @@ fun WeekView(startOfWeek: LocalDate) {
                     color = Color.Black)
               }
           Box(
-              modifier = Modifier.size(30.dp, 50.dp).padding(vertical = 1.dp),
               contentAlignment = Alignment.Center) {
                 Text(
                     text = "PM",
@@ -203,15 +230,22 @@ fun WeekView(startOfWeek: LocalDate) {
                     fontWeight = FontWeight.Bold,
                     color = Color.Black)
               }
-          Spacer(modifier = Modifier.width(1.dp))
+        Spacer(modifier = Modifier.fillMaxWidth(0.01f))
         }
-    weekDays.forEach { day ->
+
+    weekDays.withIndex().forEach { (i,day) ->
+        val scale=(1f/10*10/(10-i))
       Row(
-          modifier = Modifier.fillMaxWidth().size(200.dp, 70.dp).padding(vertical = 1.dp),
+          modifier = Modifier
+              .fillMaxWidth()
+              .fillMaxHeight(scale),
           verticalAlignment = Alignment.CenterVertically,
       ) {
         Column(
-            modifier = Modifier.size(120.dp, 70.dp),
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(0.3f)
+                .background(Color.White),
             verticalArrangement = Arrangement.Center,
         ) {
           Row(
@@ -221,7 +255,7 @@ fun WeekView(startOfWeek: LocalDate) {
                     text = day.format(DateTimeFormatter.ofPattern("EEE", Locale.getDefault())),
                     fontSize = 16.sp,
                     color = Color.Black,
-                    modifier = Modifier.width(120.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center)
               }
           Row(
@@ -232,17 +266,18 @@ fun WeekView(startOfWeek: LocalDate) {
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
-                    modifier = Modifier.width(120.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center)
               }
         }
         Row(
-            modifier = Modifier.fillMaxSize().background(Color.LightGray),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.LightGray),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
-              ShowFlight(day, TimeSlot.AM, FakeFlights, {})
-              ShowFlight(day, TimeSlot.PM, FakeFlights, {})
-              Spacer(modifier = Modifier.width(1.dp))
+              ShowFlight(day, TimeSlot.AM, viewModel )
+              ShowFlight(day, TimeSlot.PM, viewModel)
             }
       }
       Divider(color = Color.Black, thickness = 1.dp)
