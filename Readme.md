@@ -8,10 +8,8 @@ An application that simplifies and optimizes staff interactions and planning in 
 * [Figma](https://www.figma.com/files/project/215563737/Team-project?fuid=1343517062055653454)
 * [Discord](https://discord.com/channels/1215608534088024145/1216071295163170857)
 * [Firebase](https://console.firebase.google.com/u/1/project/skysync-a1160/overview)
-
-| |
-| - |
-| [Standup 1](https://docs.google.com/spreadsheets/d/1m8U5FLoCYPnLGZMNuJ6yGFX6ynVkkjzNFThc0HQJ9-g/edit#gid=0) |
+* [Standup](https://docs.google.com/spreadsheets/d/1i_jQHeHb9f_Q8SR2-SSEBDQeCGQ0PqrkyyI27g9egv4/edit#gid=0)
+* [Team Retrospective](https://docs.google.com/spreadsheets/d/1HttrnOvkY0A7PFclFm-wyba8CDeAdHuONOSRZka6cV8/edit#gid=2104623826)
 
 ## Roles
 
@@ -35,7 +33,34 @@ Administrators create flights and assign staff to them. They have read/write acc
 
 TBD
 
+## Database
+
+![SkySync database diagram](https://github.com/SkySync-EPFL/skysync/assets/93386280/b8088739-655e-4511-bf8e-48be7d5954b7)
+
 ## Testing
+
+### Firebase emulators
+
+We use [emulators](https://firebase.google.com/docs/emulator-suite?_gl=1*1lfc7ua*_up*MQ..*_ga*MTQwMTc0MTY3Mi4xNzEyNDAwNTk1*_ga_CW55HF8NVT*MTcxMjQwMDU5NC4xLjAuMTcxMjQwMDU5NC4wLjAuMA..) to integrate Firebase products in the tests.
+
+To run the tests that use the emulators locally, you need to setup the emulators:
+
+* Install the Firebase CLI ([doc](https://firebase.google.com/docs/cli?_gl=1*1fghral*_up*MQ..*_ga*NTQ0MjY1MjUxLjE3MTI0Nzk1OTQ.*_ga_CW55HF8NVT*MTcxMjQ3OTU5My4xLjAuMTcxMjQ3OTU5My4wLjAuMA..)), on linux:
+  ```
+  curl -sL https://firebase.tools | bash
+  ```
+* Login the Firebase CLI
+  ```
+  firebase login
+  ```
+* Before running the tests, on a new terminal, run:
+  ```
+  firebase emulators:start --only firestore
+  ```
+* After running the tests, you can stop the emulators with Ctrl+C
+
+> [!NOTE]
+> Tests using the Firebase emulators need to be UI tests, they need to run on the Android emulator.
 
 ### UI Testing: Global Description
 
