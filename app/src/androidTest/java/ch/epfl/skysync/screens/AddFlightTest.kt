@@ -117,7 +117,7 @@ class AddFlightTest {
     composeTestRule.onNodeWithTag("Time Slot Menu").performClick()
     composeTestRule.onNodeWithText("PM", substring = true).performClick()
     composeTestRule.onNodeWithTag("Basket Menu").performClick()
-    composeTestRule.onNodeWithText("Basket1").performClick()
+    composeTestRule.onNodeWithText("Basket1", substring = true).performClick()
     composeTestRule.onNodeWithTag("Add Flight Button").performClick()
     Assert.assertEquals(navController.currentDestination?.route, Route.HOME)
   }
