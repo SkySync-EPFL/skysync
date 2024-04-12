@@ -39,11 +39,13 @@ fun LoginScreen(signInLauncher: ActivityResultLauncher<Intent>) {
         modifier = Modifier.fillMaxSize().padding(16.dp).testTag("LoginScreen"),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
-          Button(modifier = Modifier.testTag("LoginButton"),onClick = { signInLauncher.launch(signInIntent) }) {
-            Icon(imageVector = Icons.Default.Check, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Sign in with Google")
-          }
+          Button(
+              modifier = Modifier.testTag("LoginButton"),
+              onClick = { signInLauncher.launch(signInIntent) }) {
+                Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Sign in with Google")
+              }
           Text(text = "You need to log in")
         }
   }
