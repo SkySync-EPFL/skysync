@@ -1,19 +1,16 @@
 package ch.epfl.skysync.screens.login
 
-
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.MainActivity
-import ch.epfl.skysync.screens.login.LoginScreenNodes
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
 
 @RunWith(AndroidJUnit4::class)
 class LoginScreenTest : TestCase() {
@@ -45,4 +42,3 @@ class LoginScreenTest : TestCase() {
     }
   }
 }
-
