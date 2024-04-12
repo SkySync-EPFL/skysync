@@ -12,7 +12,6 @@ import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
-import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import org.junit.Assert
