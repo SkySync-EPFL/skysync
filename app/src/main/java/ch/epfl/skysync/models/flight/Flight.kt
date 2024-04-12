@@ -12,5 +12,5 @@ interface Flight {
   val date: LocalDate
   val timeSlot: TimeSlot
   val vehicles: List<Vehicle>
-  val id: String?
+  val id: String
 }

@@ -323,7 +323,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                             balloon = balloon,
                             basket = basket,
                             vehicles = listOf(vehicle!!),
-                            id = null)
+                            id = "testId")
                     flights.add(newFlight)
                     navController.navigate(Route.HOME) {
                       launchSingleTop = true
