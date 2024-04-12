@@ -72,6 +72,12 @@ class AddFlightTest {
   }
 
   @Test
+  fun timeSlotFieldIsClickable() {
+    composeTestRule.onNodeWithTag("Time Slot Menu").performClick()
+    composeTestRule.onNodeWithText("PM", substring = true).performClick()
+  }
+
+  @Test
   fun balloonFieldIsDisplayed() {
     composeTestRule.onNodeWithTag("Balloon Menu").assertExists()
   }
@@ -108,6 +114,8 @@ class AddFlightTest {
     composeTestRule.onNodeWithText("Car").performClick()
     composeTestRule.onNodeWithTag("Balloon Menu").performClick()
     composeTestRule.onNodeWithText("Balloon1").performClick()
+    composeTestRule.onNodeWithTag("Time Slot Menu").performClick()
+    composeTestRule.onNodeWithText("PM", substring = true).performClick()
     composeTestRule.onNodeWithTag("Basket Menu").performClick()
     composeTestRule.onNodeWithText("Basket1").performClick()
     composeTestRule.onNodeWithTag("Add Flight Button").performClick()
