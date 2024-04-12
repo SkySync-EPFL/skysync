@@ -9,9 +9,12 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import androidx.navigation.compose.ComposeNavigator
+import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.navigation.Route
+import ch.epfl.skysync.navigation.homeGraph
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -26,7 +29,11 @@ class AddFlightTest {
   fun setup() {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
-      AddFlightScreen(navController = navController, mutableListOf<PlannedFlight>())
+      navController.navigatorProvider.addNavigator(ComposeNavigator())
+      NavHost(navController = navController, startDestination = Route.MAIN) {
+        homeGraph(navController, null)
+      }
+      navController.navigate(Route.ADD_FLIGHT)
     }
   }
 
@@ -99,13 +106,13 @@ class AddFlightTest {
     composeTestRule.onNodeWithTag("Flight Type Menu").performClick()
     composeTestRule.onNodeWithText("Fondue").performClick()
     composeTestRule.onNodeWithTag("Vehicle Menu").performClick()
-    composeTestRule.onNodeWithText("Balloon").performClick()
+    composeTestRule.onNodeWithText("Car").performClick()
     composeTestRule.onNodeWithTag("Time Slot Menu").performClick()
-    composeTestRule.onNodeWithText("PM  ").performClick()
+    composeTestRule.onNodeWithText("PM").performClick()
     composeTestRule.onNodeWithTag("Balloon Menu").performClick()
-    composeTestRule.onNodeWithText("Balloon 1").performClick()
+    composeTestRule.onNodeWithText("Balloon1").performClick()
     composeTestRule.onNodeWithTag("Basket Menu").performClick()
-    composeTestRule.onNodeWithText("Basket 1").performClick()
+    composeTestRule.onNodeWithText("Basket1").performClick()
     composeTestRule.onNodeWithTag("Add Flight Button").performClick()
     Assert.assertEquals(navController.currentDestination?.route, Route.HOME)
   }
