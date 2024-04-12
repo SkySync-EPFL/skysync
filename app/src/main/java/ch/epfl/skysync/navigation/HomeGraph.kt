@@ -12,10 +12,11 @@ import ch.epfl.skysync.screens.AddFlightScreen
 import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
+import com.google.firebase.auth.FirebaseUser
 import java.time.LocalDate
 
 /** Graph of the main screens of the app */
-fun NavGraphBuilder.homeGraph(navController: NavHostController) {
+fun NavGraphBuilder.homeGraph(navController: NavHostController, user: FirebaseUser?) {
   // Only there for preview purposes. It will then be integrated in a model view
   val listFlights =
       mutableListOf(
