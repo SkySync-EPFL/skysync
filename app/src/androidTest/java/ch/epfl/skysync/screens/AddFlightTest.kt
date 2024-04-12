@@ -1,7 +1,6 @@
 package ch.epfl.skysync.screens
 
 import android.content.Context
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextContains
@@ -35,7 +34,6 @@ class AddFlightTest {
     navController = TestNavHostController(context)
     navController.navigatorProvider.addNavigator(ComposeNavigator())
     composeTestRule.setContent {
-
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(navController, null)
       }
