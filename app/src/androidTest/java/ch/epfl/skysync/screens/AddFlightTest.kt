@@ -101,7 +101,6 @@ class AddFlightTest {
     composeTestRule.onNodeWithTag("Vehicle Menu").performClick()
     composeTestRule.onNodeWithText("Balloon").performClick()
     composeTestRule.onNodeWithTag("Time Slot Menu").performClick()
-    composeTestRule.onNodeWithText("Morning").performClick()
     composeTestRule.onNodeWithTag("Balloon Menu").performClick()
     composeTestRule.onNodeWithText("Balloon 1").performClick()
     composeTestRule.onNodeWithTag("Basket Menu").performClick()
