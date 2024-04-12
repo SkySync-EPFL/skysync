@@ -1,5 +1,6 @@
 package ch.epfl.skysync.screens
 
+import android.content.Context
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
@@ -15,6 +16,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
+import androidx.test.core.app.ApplicationProvider
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import org.junit.Assert
@@ -29,9 +31,11 @@ class AddFlightTest {
 
   @Before
   fun setup() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    navController = TestNavHostController(context)
+    navController.navigatorProvider.addNavigator(ComposeNavigator())
     composeTestRule.setContent {
-      navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
+
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(navController, null)
       }
