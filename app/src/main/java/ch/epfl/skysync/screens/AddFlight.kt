@@ -145,9 +145,12 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                     DropdownMenu(
                         expanded = expandedFlightTypeMenu,
                         onDismissRequest = { expandedFlightTypeMenu = false }) {
-                          FlightType.all_flights.forEach { item ->
+                          FlightType.all_flights.withIndex().forEach { (id, item) ->
                             DropdownMenuItem(
-                                modifier = Modifier.fillMaxWidth().padding(defaultPadding),
+                                modifier =
+                                    Modifier.fillMaxWidth()
+                                        .padding(defaultPadding)
+                                        .testTag("Flight Type $id"),
                                 onClick = {
                                   flightType = item
                                   expandedFlightTypeMenu = false
@@ -180,9 +183,12 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                     DropdownMenu(
                         expanded = expandedVehicleMenu,
                         onDismissRequest = { expandedVehicleMenu = false }) {
-                          allVehicles.forEach { item ->
+                          allVehicles.withIndex().forEach { (id, item) ->
                             DropdownMenuItem(
-                                modifier = Modifier.fillMaxWidth().padding(defaultPadding),
+                                modifier =
+                                    Modifier.fillMaxWidth()
+                                        .padding(defaultPadding)
+                                        .testTag("Vehicle $id"),
                                 onClick = {
                                   vehicle = item
                                   expandedVehicleMenu = false
@@ -207,9 +213,12 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                     onValueChange = {})
                 DropdownMenu(
                     expanded = expandedTimeSlot, onDismissRequest = { expandedTimeSlot = false }) {
-                      TimeSlot.entries.forEach { item ->
+                      TimeSlot.entries.withIndex().forEach { (id, item) ->
                         DropdownMenuItem(
-                            modifier = Modifier.fillMaxWidth().padding(defaultPadding),
+                            modifier =
+                                Modifier.fillMaxWidth()
+                                    .padding(defaultPadding)
+                                    .testTag("Time Slot $id"),
                             onClick = {
                               timeSlot = item
                               expandedTimeSlot = false
@@ -246,9 +255,12 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                     DropdownMenu(
                         expanded = expandedBalloonMenu,
                         onDismissRequest = { expandedBalloonMenu = false }) {
-                          balloons.forEach { item ->
+                          balloons.withIndex().forEach { (id, item) ->
                             DropdownMenuItem(
-                                modifier = Modifier.fillMaxWidth().padding(defaultPadding),
+                                modifier =
+                                    Modifier.fillMaxWidth()
+                                        .padding(defaultPadding)
+                                        .testTag("Balloon $id"),
                                 onClick = {
                                   balloon = item
                                   expandedBalloonMenu = false
@@ -285,9 +297,12 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                     DropdownMenu(
                         expanded = expandedBasketMenu,
                         onDismissRequest = { expandedBasketMenu = false }) {
-                          baskets.forEach { item ->
+                          baskets.withIndex().forEach { (id, item) ->
                             DropdownMenuItem(
-                                modifier = Modifier.fillMaxWidth().padding(defaultPadding),
+                                modifier =
+                                    Modifier.fillMaxWidth()
+                                        .padding(defaultPadding)
+                                        .testTag("Basket $id"),
                                 onClick = {
                                   basket = item
                                   expandedBasketMenu = false
