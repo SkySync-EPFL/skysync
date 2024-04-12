@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.firebase.ui.auth.AuthUI
 
@@ -36,16 +35,14 @@ fun LoginScreen(signInLauncher: ActivityResultLauncher<Intent>) {
 
   Surface(modifier = Modifier.fillMaxSize()) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp).testTag("LoginScreen"),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
-          Button(
-              modifier = Modifier.testTag("LoginButton"),
-              onClick = { signInLauncher.launch(signInIntent) }) {
-                Icon(imageVector = Icons.Default.Check, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Sign in with Google")
-              }
+          Button(onClick = { signInLauncher.launch(signInIntent) }) {
+            Icon(imageVector = Icons.Default.Check, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Sign in with Google")
+          }
           Text(text = "You need to log in")
         }
   }
