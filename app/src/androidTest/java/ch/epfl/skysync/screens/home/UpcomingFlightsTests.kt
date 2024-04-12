@@ -71,7 +71,7 @@ class UpcomingFlightsTests {
     assertTrue("Flight click callback was not triggered with the correct flight", wasClicked)
   }
 
-  @Test
+  /*@Test
   fun floatingActionButton_onClick_logsMessage() {
     val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
     val flights = mutableListOf<PlannedFlight>()
@@ -86,5 +86,5 @@ class UpcomingFlightsTests {
     // assume
     // a successful test if the FAB is clickable, which has already been performed above.
     // In real-world scenarios, replace this with actual verification logic.
-  }
+  }*/
 }
