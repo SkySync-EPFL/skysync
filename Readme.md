@@ -41,6 +41,9 @@ TBD
 
 ![SwEnt Architecture Diagram](https://github.com/SkySync-EPFL/skysync/assets/75271095/fa9c1de8-369b-4ebf-b376-aa8ef0ec9848)
 
+## Data Models
+<img width="1145" alt="Screenshot 2024-04-11 at 17 35 25" src="https://github.com/SkySync-EPFL/skysync/assets/37707941/f76ff34b-f7c3-4929-b7ae-b2c378c7e701">
+
 
 ## Testing
 
