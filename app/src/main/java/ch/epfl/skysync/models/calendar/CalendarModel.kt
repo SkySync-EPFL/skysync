@@ -11,8 +11,8 @@ import java.util.SortedSet
  *
  * (mutable class)
  */
-abstract class CalendarModel<T : CalendarViewable> {
-  protected val cells: MutableList<T> = mutableListOf()
+abstract class CalendarModel<T : CalendarViewable>(protected val cells: MutableList<T> = mutableListOf()) {
+
 
   /** @return number of entries in calendar */
   fun getSize(): Int {
@@ -43,7 +43,7 @@ abstract class CalendarModel<T : CalendarViewable> {
    * @param timeSlot the timeSlot coordinate of the slot
    * @param produceNewValue computes a new value as function of the coordinates and the old value
    */
-  protected fun setByDate(
+  fun setByDate(
       date: LocalDate,
       timeSlot: TimeSlot,
       produceNewValue: (LocalDate, TimeSlot, oldValue: T?) -> T
@@ -58,7 +58,7 @@ abstract class CalendarModel<T : CalendarViewable> {
    * @param timeSlot the timeSlot of the cell to remove
    * @return the removed value if it was found, null otherwise
    */
-  protected fun removeByDate(date: LocalDate, timeSlot: TimeSlot): T? {
+  fun removeByDate(date: LocalDate, timeSlot: TimeSlot): T? {
 
     val oldValue = getByDate(date, timeSlot)
     if (oldValue != null) {
@@ -72,7 +72,7 @@ abstract class CalendarModel<T : CalendarViewable> {
    * @param timeSlot timeSlot coordinate of slot
    * @return slot for given coordinates if found, else null
    */
-  protected fun getByDate(date: LocalDate, timeSlot: TimeSlot): T? {
+  fun getByDate(date: LocalDate, timeSlot: TimeSlot): T? {
     return cells.firstOrNull { it.date == date && it.timeSlot == timeSlot }
   }
 

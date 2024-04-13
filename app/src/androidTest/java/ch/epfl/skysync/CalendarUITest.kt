@@ -11,7 +11,7 @@ import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
-import ch.epfl.skysync.screens.getStartOfWeek
+import ch.epfl.skysync.components.getStartOfWeek
 import java.time.LocalDate
 import org.junit.Assert
 import org.junit.Before

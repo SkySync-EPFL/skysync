@@ -4,7 +4,11 @@ import ch.epfl.skysync.models.UNSET_ID
 import java.time.LocalDate
 
 /** represents a calendar for availabilities */
-class AvailabilityCalendar : CalendarModel<Availability>() {
+class AvailabilityCalendar(cells: MutableList<Availability> = mutableListOf()) : CalendarModel<Availability>(cells=cells) {
+
+  fun getAvailabilities(): List<Availability> {
+    return cells
+  }
 
   /**
    * changes the status of the availability of given date and timeSlot if found in the calendar
@@ -43,5 +47,9 @@ class AvailabilityCalendar : CalendarModel<Availability>() {
       setAvailabilityByDate(date, timeSlot, nextAvailabilityStatus)
     }
     return nextAvailabilityStatus
+  }
+
+  fun copy():AvailabilityCalendar {
+    return AvailabilityCalendar(cells.toMutableList())
   }
 }
