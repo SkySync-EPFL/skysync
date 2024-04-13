@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.home
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
@@ -90,7 +90,7 @@ class AddFlightTest {
   fun timeSlotFieldIsClickable() {
     composeTestRule.onNodeWithTag("Time Slot Menu").performScrollTo()
     composeTestRule.onNodeWithTag("Time Slot Menu").performClick()
-    composeTestRule.onNodeWithText("PM", substring = true).performClick()
+    composeTestRule.onNodeWithTag("Time Slot 1").performClick()
   }
 
   @Test
@@ -152,7 +152,7 @@ class AddFlightTest {
     composeTestRule.onNodeWithTag("Basket Menu").performClick()
     composeTestRule.onNodeWithTag("Basket 1").performClick()
 
-    /*composeTestRule.onNodeWithTag("Add Flight Button").performClick()
-    Assert.assertEquals(navController.currentDestination?.route, Route.HOME)*/
+    composeTestRule.onNodeWithTag("Add Flight Button").performClick()
+    Assert.assertEquals(navController.currentDestination?.route, Route.HOME)
   }
 }
