@@ -2,7 +2,6 @@ package ch.epfl.skysync.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,6 +46,8 @@ import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.user.Crew
+import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.navigation.Route
 import java.time.Instant
 import java.time.LocalDate
@@ -69,23 +70,26 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
         Column {
           val defaultPadding = 16.dp
 
-          var nbPassenger by remember { mutableStateOf("") }
+          var nbPassengersValue by remember { mutableStateOf("") }
+          var nbPassengersValueError by remember { mutableStateOf(false) }
 
           var openDatePicker by remember { mutableStateOf(false) }
-          var date by remember { mutableStateOf(LocalDate.now()) }
+          var dateValue by remember { mutableStateOf(LocalDate.now()) }
 
-          var flightType: FlightType? by remember { mutableStateOf(null) }
+          var flightTypeValue: FlightType? by remember { mutableStateOf(null) }
           var expandedFlightTypeMenu by remember { mutableStateOf(false) }
+          var flightTypeValueError by remember { mutableStateOf(false) }
 
           var vehicle: Vehicle? by remember { mutableStateOf(null) }
           var expandedVehicleMenu by remember { mutableStateOf(false) }
           // List of all vehicles to be removed when connected to the database
           val allVehicles = listOf<Vehicle>(Vehicle("Car"), Vehicle("Bus"), Vehicle("Bike"))
+          var listVehiclesValue by remember { mutableStateOf(emptyList<Vehicle>()) }
 
-          var timeSlot: TimeSlot by remember { mutableStateOf(TimeSlot.AM) }
+          var timeSlotValue: TimeSlot by remember { mutableStateOf(TimeSlot.AM) }
           var expandedTimeSlot by remember { mutableStateOf(false) }
 
-          var balloon: Balloon? by remember { mutableStateOf(null) }
+          var balloonValue: Balloon? by remember { mutableStateOf(null) }
           // List of all balloons to be removed when connected to the database
           val balloons: List<Balloon> =
               listOf(
@@ -94,7 +98,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                   Balloon("Balloon3", BalloonQualification.SMALL))
           var expandedBalloonMenu by remember { mutableStateOf(false) }
 
-          var basket: Basket? by remember { mutableStateOf(null) }
+          var basketValue: Basket? by remember { mutableStateOf(null) }
           // List of all baskets to be removed when connected to the database
           val baskets: List<Basket> =
               listOf(
@@ -103,7 +107,10 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                   Basket("Basket3", hasDoor = true))
           var expandedBasketMenu by remember { mutableStateOf(false) }
 
-          var fondueRole: String? by remember { mutableStateOf(null) }
+          var fondueRoleValue: String? by remember { mutableStateOf(null) }
+
+          var crewMembers by remember { mutableStateOf(emptyList<Crew>()) }
+          var pilot: Pilot? by remember { mutableStateOf(null) }
 
           Column(
               modifier =
@@ -113,17 +120,19 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                       .verticalScroll(rememberScrollState()),
               verticalArrangement = Arrangement.SpaceBetween) {
                 // Field getting the number of passengers. Only number can be entered
-
                 OutlinedTextField(
-                    value = nbPassenger,
-                    onValueChange = { value -> nbPassenger = value.filter { it.isDigit() } },
+                    value = nbPassengersValue,
+                    onValueChange = { value -> nbPassengersValue = value.filter { it.isDigit() } },
                     placeholder = { Text("Number of passengers") },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier =
-                        Modifier.fillMaxWidth().padding(defaultPadding).testTag("nb Passenger"))
+                        Modifier.fillMaxWidth().padding(defaultPadding).testTag("nb Passenger"),
+                    isError = nbPassengersValueError,
+                )
 
                 // The date field is a clickable field that opens a date picker
+                // TODO make sure that we can only select a date in the future
                 if (openDatePicker) {
                   val datePickerState =
                       rememberDatePickerState(
@@ -137,7 +146,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                               openDatePicker = false
                               java.util.Calendar.getInstance().apply {
                                 timeInMillis = datePickerState.selectedDateMillis!!
-                                date =
+                                dateValue =
                                     Instant.ofEpochMilli(timeInMillis)
                                         .atZone(ZoneId.of("GMT"))
                                         .toLocalDate()
@@ -162,7 +171,10 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                     enabled = false,
                     value =
                         String.format(
-                            "%02d/%02d/%04d", date.dayOfMonth, date.monthValue, date.year),
+                            "%02d/%02d/%04d",
+                            dateValue.dayOfMonth,
+                            dateValue.monthValue,
+                            dateValue.year),
                     onValueChange = {})
 
                 // Drop down menu for the flight type
@@ -175,14 +187,15 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                     expanded = expandedFlightTypeMenu,
                     onExpandedChange = { expandedFlightTypeMenu = !expandedFlightTypeMenu }) {
                       OutlinedTextField(
-                          value = flightType?.name ?: "Flight Type",
+                          value = flightTypeValue?.name ?: "Flight Type",
                           modifier = Modifier.menuAnchor().fillMaxWidth(),
                           readOnly = true,
                           onValueChange = {},
                           trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(
                                 expanded = expandedFlightTypeMenu)
-                          })
+                          },
+                          isError = flightTypeValueError)
 
                       DropdownMenu(
                           expanded = expandedFlightTypeMenu,
@@ -194,7 +207,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                                           .padding(defaultPadding)
                                           .testTag("Flight Type $id"),
                                   onClick = {
-                                    flightType = item
+                                    flightTypeValue = item
                                     expandedFlightTypeMenu = false
                                   },
                                   text = { Text(item.name) })
@@ -237,34 +250,40 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                           }
                     }
                 // Drop down menu for the time slot. Only AM and PM are available
-                Box(modifier = Modifier.fillMaxWidth()) {
-                  OutlinedTextField(
-                      placeholder = { Text("Time Slot") },
-                      modifier =
-                          Modifier.fillMaxWidth()
-                              .padding(defaultPadding)
-                              .clickable { expandedTimeSlot = true }
-                              .testTag("Time Slot Menu"),
-                      enabled = false,
-                      value = timeSlot.toString(),
-                      onValueChange = {})
-                  DropdownMenu(
-                      expanded = expandedTimeSlot,
-                      onDismissRequest = { expandedTimeSlot = false }) {
-                        TimeSlot.entries.withIndex().forEach { (id, item) ->
-                          DropdownMenuItem(
-                              modifier =
-                                  Modifier.fillMaxWidth()
-                                      .padding(defaultPadding)
-                                      .testTag("Time Slot $id"),
-                              onClick = {
-                                timeSlot = item
-                                expandedTimeSlot = false
-                              },
-                              text = { Text(item.name) })
-                        }
-                      }
-                }
+                ExposedDropdownMenuBox(
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .padding(defaultPadding)
+                            .clickable { expandedBalloonMenu = true }
+                            .testTag("Time Slot Menu"),
+                    expanded = expandedBalloonMenu,
+                    onExpandedChange = { expandedBalloonMenu = !expandedBalloonMenu }) {
+                      OutlinedTextField(
+                          value = timeSlotValue.toString(),
+                          modifier = Modifier.menuAnchor().fillMaxWidth(),
+                          readOnly = true,
+                          onValueChange = {},
+                          trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedBalloonMenu)
+                          })
+
+                      DropdownMenu(
+                          expanded = expandedBalloonMenu,
+                          onDismissRequest = { expandedBalloonMenu = false }) {
+                            balloons.withIndex().forEach { (id, item) ->
+                              DropdownMenuItem(
+                                  modifier =
+                                      Modifier.fillMaxWidth()
+                                          .padding(defaultPadding)
+                                          .testTag("Time Slot $id"),
+                                  onClick = {
+                                    balloonValue = item
+                                    expandedBalloonMenu = false
+                                  },
+                                  text = { Text(item.name) })
+                            }
+                          }
+                    }
                 // Drop down menu for the balloon
                 ExposedDropdownMenuBox(
                     modifier =
@@ -275,7 +294,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                     expanded = expandedBalloonMenu,
                     onExpandedChange = { expandedBalloonMenu = !expandedBalloonMenu }) {
                       OutlinedTextField(
-                          value = balloon?.name ?: "Balloon",
+                          value = balloonValue?.name ?: "Balloon",
                           modifier = Modifier.menuAnchor().fillMaxWidth(),
                           readOnly = true,
                           onValueChange = {},
@@ -293,7 +312,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                                           .padding(defaultPadding)
                                           .testTag("Balloon $id"),
                                   onClick = {
-                                    balloon = item
+                                    balloonValue = item
                                     expandedBalloonMenu = false
                                   },
                                   text = { Text(item.name) })
@@ -310,7 +329,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                     expanded = expandedBasketMenu,
                     onExpandedChange = { expandedBasketMenu = !expandedBasketMenu }) {
                       OutlinedTextField(
-                          value = basket?.name ?: "Basket",
+                          value = basketValue?.name ?: "Basket",
                           modifier = Modifier.menuAnchor().fillMaxWidth(),
                           readOnly = true,
                           onValueChange = {},
@@ -328,7 +347,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                                           .padding(defaultPadding)
                                           .testTag("Basket $id"),
                                   onClick = {
-                                    basket = item
+                                    basketValue = item
                                     expandedBasketMenu = false
                                   },
                                   text = { Text(item.name) })
@@ -336,7 +355,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                           }
                     }
                 // Field for the fondue role. Only displayed if the flight type is FONDUE
-                if (flightType == FlightType.FONDUE) {
+                if (flightTypeValue == FlightType.FONDUE) {
                   OutlinedTextField(
                       placeholder = { Text("Fondue Role") },
                       modifier =
@@ -344,8 +363,8 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                               .padding(defaultPadding)
                               .clickable { expandedTimeSlot = true }
                               .testTag("Fondue Role Field"),
-                      value = fondueRole ?: "",
-                      onValueChange = { fondueRole = it })
+                      value = fondueRoleValue ?: "",
+                      onValueChange = { fondueRoleValue = it })
                 }
               }
           // Button to add the flight to the list of flights
@@ -353,20 +372,28 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
               modifier =
                   Modifier.fillMaxWidth().padding(defaultPadding).testTag("Add Flight Button"),
               onClick = {
-                val newFlight =
-                    PlannedFlight(
-                        nPassengers = nbPassenger.toInt(),
-                        date = date,
-                        flightType = flightType!!,
-                        timeSlot = timeSlot,
-                        balloon = balloon,
-                        basket = basket,
-                        vehicles = listOf(vehicle!!),
-                        id = "testId")
-                flights.add(newFlight)
-                navController.navigate(Route.HOME) {
-                  launchSingleTop = true
-                  popUpTo(Route.ADD_FLIGHT) { inclusive = true }
+                nbPassengersValueError =
+                    nbPassengersValue.isEmpty() || nbPassengersValue.toInt() <= 0
+                flightTypeValueError = flightTypeValue == null
+                val isError = flightTypeValueError || nbPassengersValueError
+                if (!isError) {
+                  val vehicles: List<Vehicle> =
+                      if (vehicle == null) emptyList() else listOf(vehicle!!)
+                  val newFlight =
+                      PlannedFlight(
+                          nPassengers = nbPassengersValue.toInt(),
+                          date = dateValue,
+                          flightType = flightTypeValue!!,
+                          timeSlot = timeSlotValue,
+                          balloon = balloonValue,
+                          basket = basketValue,
+                          vehicles = vehicles,
+                          id = "testId")
+                  flights.add(newFlight)
+                  navController.navigate(Route.HOME) {
+                    launchSingleTop = true
+                    popUpTo(Route.ADD_FLIGHT) { inclusive = true }
+                  }
                 }
               }) {
                 Text("Add Flight")
