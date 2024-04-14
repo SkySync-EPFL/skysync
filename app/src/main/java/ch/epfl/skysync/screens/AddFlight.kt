@@ -77,7 +77,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
       }) { padding ->
         Column {
           val defaultPadding = 16.dp
-            val smallPadding = 8.dp
+          val smallPadding = 8.dp
 
           var nbPassengersValue by remember { mutableStateOf("") }
           var nbPassengersValueError by remember { mutableStateOf(false) }
@@ -361,7 +361,9 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                             else it.toString()
                           })
                   OutlinedTextField(
-                      modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding, vertical = smallPadding),
+                      modifier =
+                          Modifier.fillMaxWidth()
+                              .padding(horizontal = defaultPadding, vertical = smallPadding),
                       value = query,
                       onValueChange = { query = it },
                       placeholder = { Text("User ${id + 1}") },
@@ -414,7 +416,9 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                                   DropdownMenuItem(
                                       modifier =
                                           Modifier.fillMaxWidth()
-                                              .padding(horizontal = defaultPadding, vertical = smallPadding)
+                                              .padding(
+                                                  horizontal = defaultPadding,
+                                                  vertical = smallPadding)
                                               .testTag("Vehicle $id"),
                                       onClick = {
                                         listVehiclesValue[idList] = item

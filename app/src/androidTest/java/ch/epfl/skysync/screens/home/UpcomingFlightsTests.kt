@@ -2,15 +2,11 @@ package ch.epfl.skysync.screens.home
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.navigation.testing.TestNavHostController
-import androidx.test.core.app.ApplicationProvider
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
-import ch.epfl.skysync.screens.HomeScreen
 import ch.epfl.skysync.screens.UpcomingFlights
 import java.time.LocalDate
 import org.junit.Assert.assertTrue
