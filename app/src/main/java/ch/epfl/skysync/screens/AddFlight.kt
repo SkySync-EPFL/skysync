@@ -7,9 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -59,7 +58,6 @@ import ch.epfl.skysync.navigation.Route
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,7 +94,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
           val listVehiclesValue = remember { mutableStateListOf<Vehicle>() }
           var addVehicle by remember { mutableStateOf(listVehiclesValue.isEmpty()) }
 
-          val timeSlotValue: TimeSlot by remember { mutableStateOf(TimeSlot.AM) }
+          var timeSlotValue: TimeSlot by remember { mutableStateOf(TimeSlot.AM) }
           var expandedTimeSlot by remember { mutableStateOf(false) }
 
           var balloonValue: Balloon? by remember { mutableStateOf(null) }
@@ -125,428 +123,446 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
 
           var addNewUserQuery: String by remember { mutableStateOf("") }
 
-          // TODO change this Column to a LazyColumn and adapt the code accordingly (including
-          // tests)
-          Column(
-              modifier =
-                  Modifier.padding(padding)
-                      .weight(1f)
-                      .testTag("Flight Lazy Column")
-                      .verticalScroll(rememberScrollState()),
+          /* TODO change this Column to a LazyColumn and adapt the code accordingly (including
+          tests)*/
+          LazyColumn(
+              modifier = Modifier.padding(padding).weight(1f).testTag("Flight Lazy Column"),
               verticalArrangement = Arrangement.SpaceBetween) {
                 // Field getting the number of passengers. Only number can be entered
-                OutlinedTextField(
-                    value = nbPassengersValue,
-                    onValueChange = { value -> nbPassengersValue = value.filter { it.isDigit() } },
-                    placeholder = { Text("Number of passengers") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier =
-                        Modifier.fillMaxWidth().padding(defaultPadding).testTag("nb Passenger"),
-                    isError = nbPassengersValueError,
-                )
-
+                item {
+                  OutlinedTextField(
+                      value = nbPassengersValue,
+                      onValueChange = { value ->
+                        nbPassengersValue = value.filter { it.isDigit() }
+                      },
+                      placeholder = { Text("Number of passengers") },
+                      singleLine = true,
+                      keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                      modifier =
+                          Modifier.fillMaxWidth().padding(defaultPadding).testTag("nb Passenger"),
+                      isError = nbPassengersValueError,
+                  )
+                }
                 // The date field is a clickable field that opens a date picker
-                // TODO make sure that we can only select a date in the future
-                if (openDatePicker) {
-                  val datePickerState =
-                      rememberDatePickerState(
-                          initialSelectedDateMillis = java.util.Calendar.getInstance().timeInMillis)
+                item {
+                  // TODO make sure that we can only select a date in the future
+                  if (openDatePicker) {
+                    val datePickerState =
+                        rememberDatePickerState(
+                            initialSelectedDateMillis =
+                                java.util.Calendar.getInstance().timeInMillis)
 
-                  DatePickerDialog(
-                      onDismissRequest = {},
-                      confirmButton = {
-                        TextButton(
-                            onClick = {
-                              openDatePicker = false
-                              java.util.Calendar.getInstance().apply {
-                                timeInMillis = datePickerState.selectedDateMillis!!
-                                dateValue =
-                                    Instant.ofEpochMilli(timeInMillis)
-                                        .atZone(ZoneId.of("GMT"))
-                                        .toLocalDate()
+                    DatePickerDialog(
+                        onDismissRequest = {},
+                        confirmButton = {
+                          TextButton(
+                              onClick = {
+                                openDatePicker = false
+                                java.util.Calendar.getInstance().apply {
+                                  timeInMillis = datePickerState.selectedDateMillis!!
+                                  dateValue =
+                                      Instant.ofEpochMilli(timeInMillis)
+                                          .atZone(ZoneId.of("GMT"))
+                                          .toLocalDate()
+                                }
+                              }) {
+                                Text("OK")
                               }
-                            }) {
-                              Text("OK")
-                            }
-                      },
-                      dismissButton = {
-                        TextButton(onClick = { openDatePicker = false }) { Text("Cancel") }
-                      }) {
-                        DatePicker(state = datePickerState)
-                      }
-                }
-
-                OutlinedTextField(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .padding(defaultPadding)
-                            .clickable { openDatePicker = true }
-                            .testTag("Date Field"),
-                    enabled = false,
-                    value =
-                        String.format(
-                            "%02d/%02d/%04d",
-                            dateValue.dayOfMonth,
-                            dateValue.monthValue,
-                            dateValue.year),
-                    onValueChange = {})
-                // Drop down menu for the time slot. Only AM and PM are available
-                ExposedDropdownMenuBox(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .padding(defaultPadding)
-                            .clickable { expandedTimeSlot = true }
-                            .testTag("Time Slot Menu"),
-                    expanded = expandedTimeSlot,
-                    onExpandedChange = { expandedTimeSlot = !expandedTimeSlot }) {
-                      OutlinedTextField(
-                          value = timeSlotValue.toString(),
-                          modifier = Modifier.menuAnchor().fillMaxWidth(),
-                          readOnly = true,
-                          onValueChange = {},
-                          trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTimeSlot)
-                          })
-
-                      DropdownMenu(
-                          expanded = expandedBalloonMenu,
-                          onDismissRequest = { expandedBalloonMenu = false }) {
-                            balloons.withIndex().forEach { (id, item) ->
-                              DropdownMenuItem(
-                                  modifier =
-                                      Modifier.fillMaxWidth()
-                                          .padding(defaultPadding)
-                                          .testTag("Time Slot $id"),
-                                  onClick = {
-                                    balloonValue = item
-                                    expandedBalloonMenu = false
-                                  },
-                                  text = { Text(item.name) })
-                            }
-                          }
-                    }
-                // Drop down menu for the flight type
-                ExposedDropdownMenuBox(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .padding(defaultPadding)
-                            .clickable { expandedFlightTypeMenu = true }
-                            .testTag("Flight Type Menu"),
-                    expanded = expandedFlightTypeMenu,
-                    onExpandedChange = { expandedFlightTypeMenu = !expandedFlightTypeMenu }) {
-                      OutlinedTextField(
-                          value = flightTypeValue?.name ?: "Flight Type",
-                          modifier = Modifier.menuAnchor().fillMaxWidth(),
-                          readOnly = true,
-                          onValueChange = {},
-                          trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                expanded = expandedFlightTypeMenu)
-                          },
-                          isError = flightTypeValueError)
-
-                      DropdownMenu(
-                          expanded = expandedFlightTypeMenu,
-                          onDismissRequest = { expandedFlightTypeMenu = false }) {
-                            FlightType.all_flights.withIndex().forEach { (id, item) ->
-                              DropdownMenuItem(
-                                  modifier =
-                                      Modifier.fillMaxWidth()
-                                          .padding(defaultPadding)
-                                          .testTag("Flight Type $id"),
-                                  onClick = {
-                                    flightTypeValue = item
-                                    expandedFlightTypeMenu = false
-                                    // It is assumed that these special roles are not used with
-                                    // other flight types
-                                    if (flightTypeValue == FlightType.FONDUE) {
-                                      crewMembers.add(RoleType.MAITRE_FONDUE)
-                                    } else if (crewMembers.contains(RoleType.MAITRE_FONDUE)) {
-                                      crewMembers.remove(RoleType.MAITRE_FONDUE)
-                                    }
-                                    if (flightTypeValue == FlightType.HIGH_ALTITUDE) {
-                                      crewMembers.add(RoleType.OXYGEN_MASTER)
-                                    } else if (crewMembers.contains(RoleType.OXYGEN_MASTER)) {
-                                      crewMembers.remove(RoleType.OXYGEN_MASTER)
-                                    }
-                                  },
-                                  text = { Text(item.name) })
-                            }
-                          }
-                    }
-                // Section to add the crew members
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween) {
-                      Text(
-                          modifier = Modifier.padding(horizontal = defaultPadding),
-                          text = "Team",
-                          style = MaterialTheme.typography.headlineSmall,
-                      )
-                      IconButton(
-                          modifier =
-                              Modifier.padding(horizontal = defaultPadding)
-                                  .testTag("Add Crew Button"),
-                          onClick = { showAddMemberDialog = true },
-                      ) {
-                        Icon(Icons.Default.Add, contentDescription = "Add Crew Member")
-                      }
-                    }
-                // Dialog to add a new crew member and its corresponding field
-                if (showAddMemberDialog) {
-                  AlertDialog(
-                      onDismissRequest = { showAddMemberDialog = false },
-                      title = { Text("Add Crew Member") },
-                      text = {
-                        Column {
-                          ExposedDropdownMenuBox(
-                              modifier =
-                                  Modifier.fillMaxWidth()
-                                      .padding(defaultPadding)
-                                      .clickable { expandedAddNewRole = true }
-                                      .testTag("Role Type Menu"),
-                              expanded = expandedAddNewRole,
-                              onExpandedChange = { expandedAddNewRole = !expandedAddNewRole }) {
-                                OutlinedTextField(
-                                    value = addNewRole?.name ?: "Role Type",
-                                    modifier = Modifier.menuAnchor().fillMaxWidth(),
-                                    readOnly = true,
-                                    onValueChange = {},
-                                    trailingIcon = {
-                                      ExposedDropdownMenuDefaults.TrailingIcon(
-                                          expanded = expandedAddNewRole)
-                                    })
-
-                                DropdownMenu(
-                                    expanded = expandedAddNewRole,
-                                    onDismissRequest = { expandedAddNewRole = false }) {
-                                      RoleType.entries.withIndex().forEach { (id, item) ->
-                                        DropdownMenuItem(
-                                            modifier =
-                                                Modifier.fillMaxWidth()
-                                                    .padding(horizontal = defaultPadding)
-                                                    .testTag("Role Type $id"),
-                                            onClick = {
-                                              addNewRole = item
-                                              expandedAddNewRole = false
-                                            },
-                                            text = { Text(item.name) })
-                                      }
-                                    }
-                              }
-                          // TODO: Handle correctly the user for now it is just a text field
-                          OutlinedTextField(
-                              value = addNewUserQuery,
-                              onValueChange = { addNewUserQuery = it },
-                              placeholder = { Text("User") })
+                        },
+                        dismissButton = {
+                          TextButton(onClick = { openDatePicker = false }) { Text("Cancel") }
+                        }) {
+                          DatePicker(state = datePickerState)
                         }
-                      },
-                      confirmButton = {
-                        Button(
-                            onClick = {
-                              addNewRoleError = addNewRole == null
-                              if (!addNewRoleError) {
-                                crewMembers.add(addNewRole!!)
-                                showAddMemberDialog = false
-                              }
-                            }) {
-                              Text("Add")
-                            }
-                      },
-                      dismissButton = {
-                        Button(onClick = { showAddMemberDialog = false }) { Text("Cancel") }
-                      })
-                }
+                  }
 
-                crewMembers.withIndex().forEach() { (id, role) ->
-                  var query by remember { mutableStateOf("") }
-                  Text(
-                      modifier = Modifier.padding(horizontal = defaultPadding),
-                      text =
-                          role.name.lowercase().replaceFirstChar {
-                            if (it.isLowerCase()) it.titlecase(Locale.getDefault())
-                            else it.toString()
-                          })
                   OutlinedTextField(
                       modifier =
                           Modifier.fillMaxWidth()
-                              .padding(horizontal = defaultPadding, vertical = smallPadding),
-                      value = query,
-                      onValueChange = { query = it },
-                      placeholder = { Text("User ${id + 1}") },
-                      singleLine = true)
+                              .padding(defaultPadding)
+                              .clickable { openDatePicker = true }
+                              .testTag("Date Field"),
+                      enabled = false,
+                      value =
+                          String.format(
+                              "%02d/%02d/%04d",
+                              dateValue.dayOfMonth,
+                              dateValue.monthValue,
+                              dateValue.year),
+                      onValueChange = {})
+                }
+                // Drop down menu for the time slot. Only AM and PM are available
+                item {
+                  ExposedDropdownMenuBox(
+                      modifier =
+                          Modifier.fillMaxWidth()
+                              .padding(defaultPadding)
+                              .clickable { expandedTimeSlot = true }
+                              .testTag("Time Slot Menu"),
+                      expanded = expandedTimeSlot,
+                      onExpandedChange = { expandedTimeSlot = !expandedTimeSlot }) {
+                        OutlinedTextField(
+                            value = timeSlotValue.toString(),
+                            modifier = Modifier.menuAnchor().fillMaxWidth(),
+                            readOnly = true,
+                            onValueChange = {},
+                            trailingIcon = {
+                              ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTimeSlot)
+                            })
+
+                        DropdownMenu(
+                            expanded = expandedTimeSlot,
+                            onDismissRequest = { expandedTimeSlot = false }) {
+                              TimeSlot.entries.withIndex().forEach { (id, item) ->
+                                DropdownMenuItem(
+                                    modifier =
+                                        Modifier.fillMaxWidth()
+                                            .padding(defaultPadding)
+                                            .testTag("Time Slot $id"),
+                                    onClick = {
+                                      timeSlotValue = item
+                                      expandedTimeSlot = false
+                                    },
+                                    text = { Text(item.name) })
+                              }
+                            }
+                      }
+                }
+                // Drop down menu for the flight type
+                item {
+                  ExposedDropdownMenuBox(
+                      modifier =
+                          Modifier.fillMaxWidth()
+                              .padding(defaultPadding)
+                              .clickable { expandedFlightTypeMenu = true }
+                              .testTag("Flight Type Menu"),
+                      expanded = expandedFlightTypeMenu,
+                      onExpandedChange = { expandedFlightTypeMenu = !expandedFlightTypeMenu }) {
+                        OutlinedTextField(
+                            value = flightTypeValue?.name ?: "Flight Type",
+                            modifier = Modifier.menuAnchor().fillMaxWidth(),
+                            readOnly = true,
+                            onValueChange = {},
+                            trailingIcon = {
+                              ExposedDropdownMenuDefaults.TrailingIcon(
+                                  expanded = expandedFlightTypeMenu)
+                            },
+                            isError = flightTypeValueError)
+
+                        DropdownMenu(
+                            expanded = expandedFlightTypeMenu,
+                            onDismissRequest = { expandedFlightTypeMenu = false }) {
+                              FlightType.all_flights.withIndex().forEach { (id, item) ->
+                                DropdownMenuItem(
+                                    modifier =
+                                        Modifier.fillMaxWidth()
+                                            .padding(defaultPadding)
+                                            .testTag("Flight Type $id"),
+                                    onClick = {
+                                      flightTypeValue = item
+                                      expandedFlightTypeMenu = false
+                                      // It is assumed that these special roles are not used with
+                                      // other flight types
+                                      if (flightTypeValue == FlightType.FONDUE) {
+                                        crewMembers.add(RoleType.MAITRE_FONDUE)
+                                      } else if (crewMembers.contains(RoleType.MAITRE_FONDUE)) {
+                                        crewMembers.remove(RoleType.MAITRE_FONDUE)
+                                      }
+                                      if (flightTypeValue == FlightType.HIGH_ALTITUDE) {
+                                        crewMembers.add(RoleType.OXYGEN_MASTER)
+                                      } else if (crewMembers.contains(RoleType.OXYGEN_MASTER)) {
+                                        crewMembers.remove(RoleType.OXYGEN_MASTER)
+                                      }
+                                    },
+                                    text = { Text(item.name) })
+                              }
+                            }
+                      }
+                }
+                // Section to add the crew members
+                item {
+                  Row(
+                      modifier = Modifier.fillMaxWidth(),
+                      horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(
+                            modifier = Modifier.padding(horizontal = defaultPadding),
+                            text = "Team",
+                            style = MaterialTheme.typography.headlineSmall,
+                        )
+                        IconButton(
+                            modifier =
+                                Modifier.padding(horizontal = defaultPadding)
+                                    .testTag("Add Crew Button"),
+                            onClick = { showAddMemberDialog = true },
+                        ) {
+                          Icon(Icons.Default.Add, contentDescription = "Add Crew Member")
+                        }
+                      }
+                  // Dialog to add a new crew member and its corresponding field
+                  if (showAddMemberDialog) {
+                    // TODO make adjustments in the dialog visuals
+                    AlertDialog(
+                        onDismissRequest = { showAddMemberDialog = false },
+                        title = { Text("Add Crew Member") },
+                        text = {
+                          Column {
+                            ExposedDropdownMenuBox(
+                                modifier =
+                                    Modifier.fillMaxWidth()
+                                        .padding(defaultPadding)
+                                        .clickable { expandedAddNewRole = true }
+                                        .testTag("Role Type Menu"),
+                                expanded = expandedAddNewRole,
+                                onExpandedChange = { expandedAddNewRole = !expandedAddNewRole }) {
+                                  OutlinedTextField(
+                                      value = addNewRole?.name ?: "Role Type",
+                                      modifier = Modifier.menuAnchor().fillMaxWidth(),
+                                      readOnly = true,
+                                      onValueChange = {},
+                                      trailingIcon = {
+                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                            expanded = expandedAddNewRole)
+                                      })
+
+                                  DropdownMenu(
+                                      expanded = expandedAddNewRole,
+                                      onDismissRequest = { expandedAddNewRole = false }) {
+                                        RoleType.entries.withIndex().forEach { (id, item) ->
+                                          DropdownMenuItem(
+                                              modifier =
+                                                  Modifier.fillMaxWidth()
+                                                      .padding(horizontal = defaultPadding)
+                                                      .testTag("Role Type $id"),
+                                              onClick = {
+                                                addNewRole = item
+                                                expandedAddNewRole = false
+                                              },
+                                              text = { Text(item.name) })
+                                        }
+                                      }
+                                }
+                            // TODO: Handle correctly the user for now it is just a text field
+                            OutlinedTextField(
+                                value = addNewUserQuery,
+                                onValueChange = { addNewUserQuery = it },
+                                placeholder = { Text("User") })
+                          }
+                        },
+                        confirmButton = {
+                          Button(
+                              onClick = {
+                                addNewRoleError = addNewRole == null
+                                if (!addNewRoleError) {
+                                  crewMembers.add(addNewRole!!)
+                                  showAddMemberDialog = false
+                                }
+                              }) {
+                                Text("Add")
+                              }
+                        },
+                        dismissButton = {
+                          Button(onClick = { showAddMemberDialog = false }) { Text("Cancel") }
+                        })
+                  }
+                }
+                crewMembers.withIndex().forEach() { (id, role) ->
+                  item {
+                    var query by remember { mutableStateOf("") }
+                    Text(modifier = Modifier.padding(horizontal = defaultPadding), text = role.name)
+                    OutlinedTextField(
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .padding(horizontal = defaultPadding, vertical = smallPadding),
+                        value = query,
+                        onValueChange = { query = it },
+                        placeholder = { Text("User ${id + 1}") },
+                        singleLine = true)
+                  }
                 }
                 // Drop down menu for the vehicle
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween) {
-                      Text(
-                          modifier = Modifier.padding(horizontal = defaultPadding),
-                          text = "Vehicles",
-                          style = MaterialTheme.typography.headlineSmall)
-                      IconButton(
-                          modifier =
-                              Modifier.padding(horizontal = defaultPadding)
-                                  .testTag("Add Vehicle Button"),
-                          onClick = {
-                            if (listVehiclesValue.size < allVehicles.size) {
-                              addVehicle = true
-                            }
-                          },
-                      ) {
-                        Icon(Icons.Default.Add, contentDescription = "Add Vehicle")
+                item {
+                  Row(
+                      modifier = Modifier.fillMaxWidth(),
+                      horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(
+                            modifier = Modifier.padding(horizontal = defaultPadding),
+                            text = "Vehicles",
+                            style = MaterialTheme.typography.headlineSmall)
+                        IconButton(
+                            modifier =
+                                Modifier.padding(horizontal = defaultPadding)
+                                    .testTag("Add Vehicle Button"),
+                            onClick = {
+                              if (listVehiclesValue.size < allVehicles.size) {
+                                addVehicle = true
+                              }
+                            },
+                        ) {
+                          Icon(Icons.Default.Add, contentDescription = "Add Vehicle")
+                        }
                       }
-                    }
+                }
                 listVehiclesValue.withIndex().forEach() { (idList, car) ->
-                  ExposedDropdownMenuBox(
-                      modifier =
-                          Modifier.fillMaxWidth()
-                              .clickable { expandedVehicleMenu = true }
-                              .testTag("Vehicle Menu $idList"),
-                      expanded = expandedVehicleMenu,
-                      onExpandedChange = { expandedVehicleMenu = !expandedVehicleMenu }) {
-                        OutlinedTextField(
-                            value = car.name,
-                            modifier = Modifier.menuAnchor().fillMaxWidth().padding(defaultPadding),
-                            readOnly = true,
-                            onValueChange = {},
-                            trailingIcon = {
-                              ExposedDropdownMenuDefaults.TrailingIcon(
-                                  expanded = expandedVehicleMenu)
-                            })
+                  item {
+                    ExposedDropdownMenuBox(
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .clickable { expandedVehicleMenu = true }
+                                .testTag("Vehicle Menu $idList"),
+                        expanded = expandedVehicleMenu,
+                        onExpandedChange = { expandedVehicleMenu = !expandedVehicleMenu }) {
+                          OutlinedTextField(
+                              value = car.name,
+                              modifier =
+                                  Modifier.menuAnchor().fillMaxWidth().padding(defaultPadding),
+                              readOnly = true,
+                              onValueChange = {},
+                              trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(
+                                    expanded = expandedVehicleMenu)
+                              })
 
-                        DropdownMenu(
-                            expanded = expandedVehicleMenu,
-                            onDismissRequest = { expandedVehicleMenu = false }) {
-                              allVehicles.withIndex().forEach { (id, item) ->
-                                if (!listVehiclesValue.contains(item)) {
-                                  DropdownMenuItem(
-                                      modifier =
-                                          Modifier.fillMaxWidth()
-                                              .padding(
-                                                  horizontal = defaultPadding,
-                                                  vertical = smallPadding)
-                                              .testTag("Vehicle $id"),
-                                      onClick = {
-                                        listVehiclesValue[idList] = item
-                                        expandedVehicleMenu = false
-                                      },
-                                      text = { Text(item.name) })
+                          DropdownMenu(
+                              expanded = expandedVehicleMenu,
+                              onDismissRequest = { expandedVehicleMenu = false }) {
+                                allVehicles.withIndex().forEach { (id, item) ->
+                                  if (!listVehiclesValue.contains(item)) {
+                                    DropdownMenuItem(
+                                        modifier =
+                                            Modifier.fillMaxWidth()
+                                                .padding(
+                                                    horizontal = defaultPadding,
+                                                    vertical = smallPadding)
+                                                .testTag("Vehicle $id"),
+                                        onClick = {
+                                          listVehiclesValue[idList] = item
+                                          expandedVehicleMenu = false
+                                        },
+                                        text = { Text(item.name) })
+                                  }
                                 }
                               }
-                            }
-                      }
+                        }
+                  }
                 }
                 if (addVehicle) {
+                  item {
+                    ExposedDropdownMenuBox(
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .clickable { expandedVehicleMenu = true }
+                                .testTag("Vehicle Menu ${listVehiclesValue.size + 1}"),
+                        expanded = expandedVehicleMenu,
+                        onExpandedChange = { expandedVehicleMenu = !expandedVehicleMenu }) {
+                          OutlinedTextField(
+                              value = vehicle?.name ?: "Vehicle ${listVehiclesValue.size + 1}",
+                              modifier =
+                                  Modifier.menuAnchor().fillMaxWidth().padding(defaultPadding),
+                              readOnly = true,
+                              onValueChange = {},
+                              trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(
+                                    expanded = expandedVehicleMenu)
+                              })
+
+                          DropdownMenu(
+                              expanded = expandedVehicleMenu,
+                              onDismissRequest = { expandedVehicleMenu = false }) {
+                                allVehicles.withIndex().forEach { (id, item) ->
+                                  if (!listVehiclesValue.contains(item)) {
+                                    DropdownMenuItem(
+                                        modifier =
+                                            Modifier.fillMaxWidth()
+                                                .padding(defaultPadding)
+                                                .testTag("Vehicle $id"),
+                                        onClick = {
+                                          listVehiclesValue.add(item)
+                                          expandedVehicleMenu = false
+                                          addVehicle = false
+                                        },
+                                        text = { Text(item.name) })
+                                  }
+                                }
+                              }
+                        }
+                  }
+                }
+                // Drop down menu for the balloon
+                item {
                   ExposedDropdownMenuBox(
                       modifier =
                           Modifier.fillMaxWidth()
-                              .clickable { expandedVehicleMenu = true }
-                              .testTag("Vehicle Menu"),
-                      expanded = expandedVehicleMenu,
-                      onExpandedChange = { expandedVehicleMenu = !expandedVehicleMenu }) {
+                              .padding(defaultPadding)
+                              .clickable { expandedBalloonMenu = true }
+                              .testTag("Balloon Menu"),
+                      expanded = expandedBalloonMenu,
+                      onExpandedChange = { expandedBalloonMenu = !expandedBalloonMenu }) {
                         OutlinedTextField(
-                            value = vehicle?.name ?: "Vehicle ${listVehiclesValue.size + 1}",
-                            modifier = Modifier.menuAnchor().fillMaxWidth().padding(defaultPadding),
+                            value = balloonValue?.name ?: "Balloon",
+                            modifier = Modifier.menuAnchor().fillMaxWidth(),
                             readOnly = true,
                             onValueChange = {},
                             trailingIcon = {
                               ExposedDropdownMenuDefaults.TrailingIcon(
-                                  expanded = expandedVehicleMenu)
+                                  expanded = expandedBalloonMenu)
                             })
 
                         DropdownMenu(
-                            expanded = expandedVehicleMenu,
-                            onDismissRequest = { expandedVehicleMenu = false }) {
-                              allVehicles.withIndex().forEach { (id, item) ->
-                                if (!listVehiclesValue.contains(item)) {
-                                  DropdownMenuItem(
-                                      modifier =
-                                          Modifier.fillMaxWidth()
-                                              .padding(defaultPadding)
-                                              .testTag("Vehicle $id"),
-                                      onClick = {
-                                        listVehiclesValue.add(item)
-                                        expandedVehicleMenu = false
-                                        addVehicle = false
-                                      },
-                                      text = { Text(item.name) })
-                                }
+                            expanded = expandedBalloonMenu,
+                            onDismissRequest = { expandedBalloonMenu = false }) {
+                              balloons.withIndex().forEach { (id, item) ->
+                                DropdownMenuItem(
+                                    modifier =
+                                        Modifier.fillMaxWidth()
+                                            .padding(defaultPadding)
+                                            .testTag("Balloon $id"),
+                                    onClick = {
+                                      balloonValue = item
+                                      expandedBalloonMenu = false
+                                    },
+                                    text = { Text(item.name) })
                               }
                             }
                       }
                 }
-                // Drop down menu for the balloon
-                ExposedDropdownMenuBox(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .padding(defaultPadding)
-                            .clickable { expandedBalloonMenu = true }
-                            .testTag("Balloon Menu"),
-                    expanded = expandedBalloonMenu,
-                    onExpandedChange = { expandedBalloonMenu = !expandedBalloonMenu }) {
-                      OutlinedTextField(
-                          value = balloonValue?.name ?: "Balloon",
-                          modifier = Modifier.menuAnchor().fillMaxWidth(),
-                          readOnly = true,
-                          onValueChange = {},
-                          trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedBalloonMenu)
-                          })
-
-                      DropdownMenu(
-                          expanded = expandedBalloonMenu,
-                          onDismissRequest = { expandedBalloonMenu = false }) {
-                            balloons.withIndex().forEach { (id, item) ->
-                              DropdownMenuItem(
-                                  modifier =
-                                      Modifier.fillMaxWidth()
-                                          .padding(defaultPadding)
-                                          .testTag("Balloon $id"),
-                                  onClick = {
-                                    balloonValue = item
-                                    expandedBalloonMenu = false
-                                  },
-                                  text = { Text(item.name) })
-                            }
-                          }
-                    }
                 // Drop down menu for the basket
-                ExposedDropdownMenuBox(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .padding(defaultPadding)
-                            .clickable { expandedVehicleMenu = true }
-                            .testTag("Basket Menu"),
-                    expanded = expandedBasketMenu,
-                    onExpandedChange = { expandedBasketMenu = !expandedBasketMenu }) {
-                      OutlinedTextField(
-                          value = basketValue?.name ?: "Basket",
-                          modifier = Modifier.menuAnchor().fillMaxWidth(),
-                          readOnly = true,
-                          onValueChange = {},
-                          trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedBasketMenu)
-                          })
+                item {
+                  ExposedDropdownMenuBox(
+                      modifier =
+                          Modifier.fillMaxWidth()
+                              .padding(defaultPadding)
+                              .clickable { expandedVehicleMenu = true }
+                              .testTag("Basket Menu"),
+                      expanded = expandedBasketMenu,
+                      onExpandedChange = { expandedBasketMenu = !expandedBasketMenu }) {
+                        OutlinedTextField(
+                            value = basketValue?.name ?: "Basket",
+                            modifier = Modifier.menuAnchor().fillMaxWidth(),
+                            readOnly = true,
+                            onValueChange = {},
+                            trailingIcon = {
+                              ExposedDropdownMenuDefaults.TrailingIcon(
+                                  expanded = expandedBasketMenu)
+                            })
 
-                      DropdownMenu(
-                          expanded = expandedBasketMenu,
-                          onDismissRequest = { expandedBasketMenu = false }) {
-                            baskets.withIndex().forEach { (id, item) ->
-                              DropdownMenuItem(
-                                  modifier =
-                                      Modifier.fillMaxWidth()
-                                          .padding(defaultPadding)
-                                          .testTag("Basket $id"),
-                                  onClick = {
-                                    basketValue = item
-                                    expandedBasketMenu = false
-                                  },
-                                  text = { Text(item.name) })
+                        DropdownMenu(
+                            expanded = expandedBasketMenu,
+                            onDismissRequest = { expandedBasketMenu = false }) {
+                              baskets.withIndex().forEach { (id, item) ->
+                                DropdownMenuItem(
+                                    modifier =
+                                        Modifier.fillMaxWidth()
+                                            .padding(defaultPadding)
+                                            .testTag("Basket $id"),
+                                    onClick = {
+                                      basketValue = item
+                                      expandedBasketMenu = false
+                                    },
+                                    text = { Text(item.name) })
+                              }
                             }
-                          }
-                    }
+                      }
+                }
               }
           // Button to add the flight to the list of flights
           Button(

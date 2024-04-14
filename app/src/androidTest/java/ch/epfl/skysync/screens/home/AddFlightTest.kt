@@ -5,16 +5,19 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
+import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import org.junit.Assert
@@ -41,13 +44,17 @@ class AddFlightTest {
 
   @Test
   fun nbPassengerFieldIsDisplayed() {
-    composeTestRule.onNodeWithTag("nb Passenger").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("nb Passenger"))
     composeTestRule.onNodeWithTag("nb Passenger").assertIsDisplayed()
   }
 
   @Test
   fun nbPassengerFieldWorksCorrectly() {
-    composeTestRule.onNodeWithTag("nb Passenger").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("nb Passenger"))
     composeTestRule.onNodeWithTag("nb Passenger").assertTextContains("Number of passengers")
     composeTestRule.onNodeWithTag("nb Passenger").performClick()
     composeTestRule.onNodeWithTag("nb Passenger").performTextClearance()
@@ -57,63 +64,83 @@ class AddFlightTest {
 
   @Test
   fun dateFieldIsDisplayed() {
-    composeTestRule.onNodeWithTag("Date Field").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Date Field"))
     composeTestRule.onNodeWithTag("Date Field").assertIsDisplayed()
   }
 
   @Test
   fun dateFieldIsClickable() {
-    composeTestRule.onNodeWithTag("Date Field").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Date Field"))
     composeTestRule.onNodeWithTag("Date Field").performClick()
     composeTestRule.onNodeWithText("OK").performClick()
   }
 
   @Test
   fun flightTypeFieldIsDisplayed() {
-    composeTestRule.onNodeWithTag("Flight Type Menu").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Flight Type Menu"))
     composeTestRule.onNodeWithTag("Flight Type Menu").assertIsDisplayed()
   }
 
   @Test
   fun vehicleFieldIsDisplayed() {
-    composeTestRule.onNodeWithTag("Vehicle Menu").performScrollTo()
-    composeTestRule.onNodeWithTag("Vehicle Menu").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Vehicle Menu 1"))
+    composeTestRule.onNodeWithTag("Vehicle Menu 1").assertIsDisplayed()
   }
 
   @Test
   fun timeSlotFieldIsDisplayed() {
-    composeTestRule.onNodeWithTag("Time Slot Menu").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Time Slot Menu"))
     composeTestRule.onNodeWithTag("Time Slot Menu").assertIsDisplayed()
   }
 
   @Test
   fun timeSlotFieldIsClickable() {
-    composeTestRule.onNodeWithTag("Time Slot Menu").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Time Slot Menu"))
     composeTestRule.onNodeWithTag("Time Slot Menu").performClick()
     composeTestRule.onNodeWithTag("Time Slot 1").performClick()
   }
 
   @Test
   fun balloonFieldIsDisplayed() {
-    composeTestRule.onNodeWithTag("Balloon Menu").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Balloon Menu"))
     composeTestRule.onNodeWithTag("Balloon Menu").assertIsDisplayed()
   }
 
   @Test
   fun basketFieldIsDisplayed() {
-    composeTestRule.onNodeWithTag("Basket Menu").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Basket Menu"))
     composeTestRule.onNodeWithTag("Basket Menu").assertIsDisplayed()
   }
 
   @Test
   fun fondueFieldIsDisplayedCorrectly() {
-    composeTestRule.onNodeWithTag("Fondue Role Field").assertIsNotDisplayed()
+    composeTestRule.onNodeWithText(RoleType.MAITRE_FONDUE.name).assertIsNotDisplayed()
 
-    composeTestRule.onNodeWithTag("Flight Type Menu").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Flight Type Menu"))
     composeTestRule.onNodeWithTag("Flight Type Menu").performClick()
     composeTestRule.onNodeWithText("Fondue").performClick()
-    composeTestRule.onNodeWithTag("Fondue Role Field").performScrollTo()
-    composeTestRule.onNodeWithTag("Fondue Role Field").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasText(RoleType.MAITRE_FONDUE.name))
+    composeTestRule.onNodeWithText(RoleType.MAITRE_FONDUE.name).assertIsDisplayed()
   }
 
   @Test
@@ -123,32 +150,46 @@ class AddFlightTest {
 
   @Test
   fun checkAddAFlightWorksCorrectly() {
-    composeTestRule.onNodeWithTag("nb Passenger").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("nb Passenger"))
     composeTestRule.onNodeWithTag("nb Passenger").performClick()
     composeTestRule.onNodeWithTag("nb Passenger").performTextClearance()
     composeTestRule.onNodeWithTag("nb Passenger").performTextInput("1")
 
-    composeTestRule.onNodeWithTag("Date Field").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Date Field"))
     composeTestRule.onNodeWithTag("Date Field").performClick()
     composeTestRule.onNodeWithText("OK").performClick()
 
-    composeTestRule.onNodeWithTag("Flight Type Menu").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Flight Type Menu"))
     composeTestRule.onNodeWithTag("Flight Type Menu").performClick()
     composeTestRule.onNodeWithTag("Flight Type 1").performClick()
 
-    composeTestRule.onNodeWithTag("Vehicle Menu").performScrollTo()
-    composeTestRule.onNodeWithTag("Vehicle Menu").performClick()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Vehicle Menu 1"))
+    composeTestRule.onNodeWithTag("Vehicle Menu 1").performClick()
     composeTestRule.onNodeWithTag("Vehicle 1").performClick()
 
-    composeTestRule.onNodeWithTag("Balloon Menu").performScrollTo()
-    composeTestRule.onNodeWithTag("Balloon Menu").performClick()
-    composeTestRule.onNodeWithTag("Balloon 1").performClick()
-
-    composeTestRule.onNodeWithTag("Time Slot Menu").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Time Slot Menu"))
     composeTestRule.onNodeWithTag("Time Slot Menu").performClick()
     composeTestRule.onNodeWithTag("Time Slot 1").performClick()
 
-    composeTestRule.onNodeWithTag("Basket Menu").performScrollTo()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Balloon Menu"))
+    composeTestRule.onNodeWithTag("Balloon Menu").performClick()
+    composeTestRule.onNodeWithTag("Balloon 1").performClick()
+
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Basket Menu"))
     composeTestRule.onNodeWithTag("Basket Menu").performClick()
     composeTestRule.onNodeWithTag("Basket 1").performClick()
 
