@@ -12,8 +12,10 @@ import com.google.firebase.auth.FirebaseUser
 
 /** Graph of the main screens of the app */
 fun NavGraphBuilder.homeGraph(
-  repository: Repository,
-  navController: NavHostController, user: FirebaseUser?) {
+    repository: Repository,
+    navController: NavHostController,
+    user: FirebaseUser?
+) {
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
     personalCalendar(repository, navController, user)
     composable(Route.CHAT) { ChatScreen(navController) }

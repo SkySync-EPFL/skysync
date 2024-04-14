@@ -4,19 +4,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.screens.SwitchButton
-import ch.epfl.skysync.viewmodel.CalendarViewModel
 import java.time.LocalDate
 
 // Define custom colors to represent availability status
@@ -41,88 +38,96 @@ val customEmpty = Color(android.graphics.Color.parseColor("#f0f0f0"))
  * @return The color representing the availability status.
  */
 fun availabilityToColor(status: AvailabilityStatus): Color {
-    if (status == AvailabilityStatus.OK) {
-        return customGreen
-    }
-    if (status == AvailabilityStatus.MAYBE) {
-        return customBlue
-    }
-    if (status == AvailabilityStatus.NO) {
-        return customRed
-    } else {
-        return customEmpty
-    }
+  if (status == AvailabilityStatus.OK) {
+    return customGreen
+  }
+  if (status == AvailabilityStatus.MAYBE) {
+    return customBlue
+  }
+  if (status == AvailabilityStatus.NO) {
+    return customRed
+  } else {
+    return customEmpty
+  }
 }
 
 /**
  * Composable function to display a colored tile indicating availability status.
  *
- * @param date The date for which availability status is being displayed.
- * @param slot The time slot for which availability status is being displayed.
- * @param scaleHeight The scale (in height) of the tile.
- * @param scaleWidth The scale (in width) of the tile.
- * @param viewModel user viewmodel (used to determine availabilities status)
+ * @param date The date of the tile
+ * @param time The time slot of the tile
+ * @param availabilityStatus The availability status of the tile
+ * @param onClick Callback called when clicking on the tile
  */
 @Composable
 fun AvailabilityTile(
     date: LocalDate,
     time: TimeSlot,
     availabilityStatus: AvailabilityStatus,
-    onClick: () -> AvailabilityStatus
+    onClick: () -> Unit
 ) {
-    var status by remember {
-        mutableStateOf(
-            availabilityStatus
-        )
-    }
-    var weight = 0.5f
-    if (time == TimeSlot.PM) {
-        weight = 1f
-    }
-    Box(
-        modifier =
-        Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(weight)
-            .testTag(date.toString() + time.toString())
-            .background(
-                color = availabilityToColor(status),
-                shape = RoundedCornerShape(0.dp)
-            )
-            .clickable {
-                status = onClick()
-                println("clicked: $status")
-            })
+  var weight = 0.5f
+  if (time == TimeSlot.PM) {
+    weight = 1f
+  }
+  Box(
+      modifier =
+          Modifier.fillMaxHeight()
+              .fillMaxWidth(weight)
+              .testTag(date.toString() + time.toString())
+              .background(
+                  color = availabilityToColor(availabilityStatus), shape = RoundedCornerShape(0.dp))
+              .clickable { onClick() })
 }
 
 /**
- * Composable function to display a calendar with flight information for each date and time slot.
+ * Composable function to display a calendar with the user's availabilities for each date and time
+ * slot.
  *
- * @param navController The navigation controller used for navigating to different destinations
- *   within the app.
+ * @param onFlightCalendarClick Callback called when clicking the button to navigate to the Flight
+ *   calendar
+ * @param getAvailabilityStatus Callback that returns the [AvailabilityStatus] for a specific date
+ *   and time slot
+ * @param nextAvailabilityStatus Callback called when clicking on an tile, returns the next
+ *   [AvailabilityStatus], should also update the [AvailabilityCalendar]
+ * @param onSave Callback called when clicking on the save button, should save the
+ *   [AvailabilityCalendar] to the database
  */
 @Composable
 fun AvailabilityCalendar(
-    viewModel: CalendarViewModel,
     padding: PaddingValues,
-    navController: NavHostController,
+    onFlightCalendarClick: () -> Unit,
+    getAvailabilityStatus: (LocalDate, TimeSlot) -> AvailabilityStatus,
+    nextAvailabilityStatus: (LocalDate, TimeSlot) -> AvailabilityStatus,
+    onSave: () -> Unit
 ) {
-    ModularCalendar({
-        SwitchButton(
-            Availability = true,
-            padding = padding,
-            onClick = { navController.navigate(Route.PERSONAL_FLIGHT_CALENDAR) },
-            onClickRight = { })
-    }) { date, time ->
-        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        println("AvailabilityCalendar user: ${uiState.user}")
-        val availabilityCalendar = uiState.user?.availabilities
-        val availabilityStatus = availabilityCalendar?.getAvailabilityStatus(date, time)
-            ?: AvailabilityStatus.UNDEFINED
-
-        AvailabilityTile(date = date, time = time, availabilityStatus = availabilityStatus) {
-            return@AvailabilityTile availabilityCalendar?.nextAvailabilityStatus(date, time)
-                ?: AvailabilityStatus.UNDEFINED
+  ModularCalendar(
+      bottom = {
+        Column {
+          // TODO: Proper UI for this button
+          Button(onClick = onSave) { Text(text = "Save") }
+          SwitchButton(
+              currentSide = Side.RIGHT,
+              padding = padding,
+              textLeft = "Flight Calendar",
+              textRight = "Availability Calendar",
+              onClickLeft = onFlightCalendarClick,
+              onClickRight = {})
         }
-    }
+      }) { date, time ->
+        // at the moment the Calendar is a mutable class
+        // thus the reference of the Calendar stay the same on updates
+        // -> it does not trigger a recompose. To trigger the recompose
+        // we have to store the availability status in a state and update
+        // it each time the result of getAvailabilityStatus change
+        // which is a bit hacky and should be a temporary solution
+        val availabilityStatus = getAvailabilityStatus(date, time)
+        var status by remember { mutableStateOf(availabilityStatus) }
+        if (status != availabilityStatus) {
+          status = availabilityStatus
+        }
+        AvailabilityTile(date = date, time = time, availabilityStatus = status) {
+          status = nextAvailabilityStatus(date, time)
+        }
+      }
 }

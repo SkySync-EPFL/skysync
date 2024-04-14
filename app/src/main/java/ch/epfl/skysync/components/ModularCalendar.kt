@@ -40,103 +40,112 @@ import java.util.Locale
  * @return The start date of the week containing the input date.
  */
 fun getStartOfWeek(date: LocalDate): LocalDate {
-    return date.minusDays(date.dayOfWeek.value.toLong() - 1)
-}
-
-
-@Composable
-fun ModularCalendar(bottomButton: @Composable () -> Unit, content: @Composable (date: LocalDate, time: TimeSlot) -> Unit) {
-    var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(LocalDate.now())) }
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp).background(Color.White),
-    ) {
-        WeekView(currentWeekStartDate, content)
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween) {
-            Spacer(modifier = Modifier.width(5.dp))
-            Button(
-                onClick = { currentWeekStartDate = currentWeekStartDate.minusWeeks(1) },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))) {
-                Text(text = "Prev Week", color = Color.DarkGray)
-            }
-            Spacer(modifier = Modifier.width(20.dp))
-            Button(
-                onClick = { currentWeekStartDate = currentWeekStartDate.plusWeeks(1) },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))) {
-                Text(text = "Next Week", color = Color.DarkGray)
-            }
-            Spacer(modifier = Modifier.width(5.dp))
-        }
-        bottomButton()
-    }
+  return date.minusDays(date.dayOfWeek.value.toLong() - 1)
 }
 
 /**
- * Composable function to display a week view with flight information for each day and time slot.
+ * Composable function to display a calendar with a week view
  *
- * @param startOfWeek The start date of the week to be displayed.
+ * @param bottom The composable rendered at the bottom of the calendar
+ * @param tile The composable rendered for each tile
  */
 @Composable
-fun WeekView(startOfWeek: LocalDate, content: @Composable (date: LocalDate, time: TimeSlot) -> Unit) {
-    val weekDays = (0..6).map { startOfWeek.plusDays(it.toLong()) }
-    Column() {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically) {
-            Spacer(modifier = Modifier.fillMaxWidth(0.01f))
-            Box(contentAlignment = Alignment.Center) {
-                Text(text = "AM", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-            }
-            Box(contentAlignment = Alignment.Center) {
-                Text(text = "PM", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-            }
-            Spacer(modifier = Modifier.fillMaxWidth(0.01f))
+fun ModularCalendar(
+    bottom: @Composable () -> Unit,
+    tile: @Composable (date: LocalDate, time: TimeSlot) -> Unit
+) {
+  var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(LocalDate.now())) }
+  Column(
+      modifier = Modifier.fillMaxSize().padding(16.dp).background(Color.White),
+  ) {
+    WeekView(currentWeekStartDate, tile)
+    Spacer(modifier = Modifier.height(8.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween) {
+          Spacer(modifier = Modifier.width(5.dp))
+          Button(
+              onClick = { currentWeekStartDate = currentWeekStartDate.minusWeeks(1) },
+              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))) {
+                Text(text = "Prev Week", color = Color.DarkGray)
+              }
+          Spacer(modifier = Modifier.width(20.dp))
+          Button(
+              onClick = { currentWeekStartDate = currentWeekStartDate.plusWeeks(1) },
+              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))) {
+                Text(text = "Next Week", color = Color.DarkGray)
+              }
+          Spacer(modifier = Modifier.width(5.dp))
+        }
+    bottom()
+  }
+}
+
+/**
+ * Composable function to display a week view with a [tile] for each day and time slot.
+ *
+ * @param startOfWeek The start date of the week to be displayed.
+ * @param tile The composable rendering each tile
+ */
+@Composable
+fun WeekView(startOfWeek: LocalDate, tile: @Composable (date: LocalDate, time: TimeSlot) -> Unit) {
+  val weekDays = (0..6).map { startOfWeek.plusDays(it.toLong()) }
+  Column() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically) {
+          Spacer(modifier = Modifier.fillMaxWidth(0.01f))
+          Box(contentAlignment = Alignment.Center) {
+            Text(text = "AM", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+          }
+          Box(contentAlignment = Alignment.Center) {
+            Text(text = "PM", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+          }
+          Spacer(modifier = Modifier.fillMaxWidth(0.01f))
         }
 
-        weekDays.withIndex().forEach { (i, day) ->
-            val scale = (1f / 10 * 10 / (10 - i))
-            Row(
-                modifier = Modifier.fillMaxWidth().fillMaxHeight(scale),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxHeight().fillMaxWidth(0.3f).background(Color.White),
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center) {
-                        Text(
-                            text = day.format(DateTimeFormatter.ofPattern("EEE", Locale.getDefault())),
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center)
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center) {
-                        Text(
-                            text = day.format(DateTimeFormatter.ofPattern("MM/dd", Locale.getDefault())),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center)
-                    }
-                }
-                Row(
-                    modifier = Modifier.fillMaxSize().background(Color.LightGray),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween) {
-                    content(day, TimeSlot.AM)
-                    content(day, TimeSlot.PM)
-                }
-            }
-            Divider(color = Color.Black, thickness = 1.dp)
+    weekDays.withIndex().forEach { (i, day) ->
+      val scale = (1f / 10 * 10 / (10 - i))
+      Row(
+          modifier = Modifier.fillMaxWidth().fillMaxHeight(scale),
+          verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Column(
+            modifier = Modifier.fillMaxHeight().fillMaxWidth(0.3f).background(Color.White),
+            verticalArrangement = Arrangement.Center,
+        ) {
+          Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.Center) {
+                Text(
+                    text = day.format(DateTimeFormatter.ofPattern("EEE", Locale.getDefault())),
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center)
+              }
+          Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.Center) {
+                Text(
+                    text = day.format(DateTimeFormatter.ofPattern("MM/dd", Locale.getDefault())),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center)
+              }
         }
+        Row(
+            modifier = Modifier.fillMaxSize().background(Color.LightGray),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween) {
+              tile(day, TimeSlot.AM)
+              tile(day, TimeSlot.PM)
+            }
+      }
+      Divider(color = Color.Black, thickness = 1.dp)
     }
+  }
 }

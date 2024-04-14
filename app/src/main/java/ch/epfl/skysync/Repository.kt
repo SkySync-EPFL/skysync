@@ -9,14 +9,13 @@ import ch.epfl.skysync.database.tables.FlightTypeTable
 import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.database.tables.VehicleTable
 
-class Repository(
-    db: FirestoreDatabase
-) {
-    val availabilityTable: AvailabilityTable = AvailabilityTable(db)
-    val balloonTable: BalloonTable = BalloonTable(db)
-    val basketTable: BasketTable = BasketTable(db)
-    val flightTable: FlightTable = FlightTable(db)
-    val flightTypeTable: FlightTypeTable = FlightTypeTable(db)
-    val userTable: UserTable = UserTable(db)
-    val vehicleTable: VehicleTable = VehicleTable(db)
+/** Container class that store all database tables */
+class Repository(db: FirestoreDatabase) {
+  val availabilityTable: AvailabilityTable = AvailabilityTable(db)
+  val balloonTable: BalloonTable = BalloonTable(db)
+  val basketTable: BasketTable = BasketTable(db)
+  val flightTable: FlightTable = FlightTable(db)
+  val flightTypeTable: FlightTypeTable = FlightTypeTable(db)
+  val userTable: UserTable = UserTable(db)
+  val vehicleTable: VehicleTable = VehicleTable(db)
 }

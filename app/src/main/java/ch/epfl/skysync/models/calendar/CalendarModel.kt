@@ -11,8 +11,9 @@ import java.util.SortedSet
  *
  * (mutable class)
  */
-abstract class CalendarModel<T : CalendarViewable>(protected val cells: MutableList<T> = mutableListOf()) {
-
+abstract class CalendarModel<T : CalendarViewable>(
+    protected val cells: MutableList<T> = mutableListOf()
+) {
 
   /** @return number of entries in calendar */
   fun getSize(): Int {

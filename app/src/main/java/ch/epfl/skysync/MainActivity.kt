@@ -8,13 +8,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.database.tables.AvailabilityTable
-import ch.epfl.skysync.database.tables.BalloonTable
-import ch.epfl.skysync.database.tables.BasketTable
-import ch.epfl.skysync.database.tables.FlightTable
-import ch.epfl.skysync.database.tables.FlightTypeTable
-import ch.epfl.skysync.database.tables.UserTable
-import ch.epfl.skysync.database.tables.VehicleTable
 import ch.epfl.skysync.navigation.MainGraph
 import ch.epfl.skysync.ui.theme.SkySyncTheme
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
@@ -51,8 +44,10 @@ class MainActivity : ComponentActivity() {
       SkySyncTheme {
         val navController = rememberNavController()
         MainGraph(
-          repository = repository,
-            navHostController = navController, signInLauncher = signInLauncher, user = user.value)
+            repository = repository,
+            navHostController = navController,
+            signInLauncher = signInLauncher,
+            user = user.value)
       }
     }
   }

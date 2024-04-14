@@ -9,8 +9,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
-import ch.epfl.skysync.screens.ShowFlightCalendar
 import ch.epfl.skysync.components.getStartOfWeek
+import ch.epfl.skysync.screens.ShowFlightCalendar
 import ch.epfl.skysync.viewmodel.UserViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
