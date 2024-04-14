@@ -258,6 +258,18 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                                   onClick = {
                                     flightTypeValue = item
                                     expandedFlightTypeMenu = false
+                                    // It is assumed that these special roles are not used with
+                                    // other flight types
+                                    if (flightTypeValue == FlightType.FONDUE) {
+                                      crewMembers.add(RoleType.MAITRE_FONDUE)
+                                    } else if (crewMembers.contains(RoleType.MAITRE_FONDUE)) {
+                                      crewMembers.remove(RoleType.MAITRE_FONDUE)
+                                    }
+                                    if (flightTypeValue == FlightType.HIGH_ALTITUDE) {
+                                      crewMembers.add(RoleType.OXYGEN_MASTER)
+                                    } else if (crewMembers.contains(RoleType.OXYGEN_MASTER)) {
+                                      crewMembers.remove(RoleType.OXYGEN_MASTER)
+                                    }
                                   },
                                   text = { Text(item.name) })
                             }
@@ -345,10 +357,6 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                       dismissButton = {
                         Button(onClick = { showAddMemberDialog = false }) { Text("Cancel") }
                       })
-                }
-                // Field for the fondue role. Only displayed if the flight type is FONDUE
-                if (flightTypeValue == FlightType.FONDUE) {
-                  crewMembers.add(RoleType.MAITRE_FONDUE)
                 }
 
                 crewMembers.withIndex().forEach() { (id, role) ->
