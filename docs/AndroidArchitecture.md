@@ -1,6 +1,7 @@
 # Android Architecture
 
-> [Official documentation](https://developer.android.com/topic/architecture/intro)
+> [Official documentation](https://developer.android.com/topic/architecture/intro)  
+  See this [sample application](https://github.com/android/architecture-samples/tree/main) for concrete examples
 
 The global architecture is structured in 4 layers:
 

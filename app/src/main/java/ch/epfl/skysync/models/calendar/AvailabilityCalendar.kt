@@ -3,9 +3,7 @@ package ch.epfl.skysync.models.calendar
 import ch.epfl.skysync.models.UNSET_ID
 import java.time.LocalDate
 
-/**
- * Represents the type of a cell difference between two calendar
- */
+/** Represents the type of a cell difference between two calendar */
 enum class CalendarDifferenceType {
   ADDED,
   UPDATED,
@@ -56,9 +54,9 @@ class AvailabilityCalendar(cells: MutableList<Availability> = mutableListOf()) :
   }
 
   /**
-   * Returns the differences between this and the other calendar,
-   * from the point of view of the other calendar (that is, [CalendarDifferenceType.ADDED]
-   * means that [other] has an added availability compared to this)
+   * Returns the differences between this and the other calendar, from the point of view of the
+   * other calendar (that is, [CalendarDifferenceType.ADDED] means that [other] has an added
+   * availability compared to this)
    *
    * @param other The other calendar
    */

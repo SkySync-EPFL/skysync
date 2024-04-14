@@ -95,7 +95,7 @@ class CalendarViewModel(
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    // display error message
+    // TODO: display error message
   }
 
   /**
