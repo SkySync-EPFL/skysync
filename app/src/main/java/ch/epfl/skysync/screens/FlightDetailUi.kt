@@ -1,13 +1,19 @@
 package ch.epfl.skysync.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -22,7 +28,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ch.epfl.skysync.models.UNSET_ID
+import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.flight.FlightType
+import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.ui.theme.lightOrange
@@ -34,13 +45,16 @@ fun FlightDetailUi(
     DeleteClick: () -> Unit,
     EditClick: () -> Unit,
     ConfirmClick: () -> Unit,
-    padding: PaddingValues
+    padding: PaddingValues,
+    flight: PlannedFlight
 ){
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
     ) {
         FlightDetailHead(BackClick = BackClick)
-        FlightdetailBody(LocalDate.now(), "1", 1, Team(listOf()))
+        FlightdetailBody(flight)
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.Bottom,
@@ -55,12 +69,25 @@ fun FlightDetailUi(
 @Composable
 @Preview
 fun FlightDetailUiPreview() {
+    val dummyFlight =
+        PlannedFlight(
+            UNSET_ID,
+            1,
+            Team(listOf()),
+            FlightType.FONDUE,
+            null,
+            null,
+            LocalDate.now(),
+            TimeSlot.AM,
+            listOf())
     FlightDetailUi(
         BackClick = {},
         DeleteClick = {},
         EditClick = {},
         ConfirmClick = {},
-        padding = PaddingValues(0.dp, 0.dp, 0.dp, 0.dp))
+        padding = PaddingValues(0.dp, 0.dp, 0.dp, 0.dp),
+        dummyFlight
+        )
 }
 
 @Composable
@@ -100,14 +127,21 @@ fun FlightDetailHead(BackClick: () -> Unit) {
 }
 
 @Composable
-fun FlightdetailBody(date: LocalDate,flightId: String, nPassengers: Int,pilots : List<Pilot>, crews: List<Crew>){
+fun FlightdetailBody( flight: PlannedFlight){
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
     ){
-        TextBar("Date", date.toString())
-        TextBar("flightId", flightId)
-        TextBar("nPassengers", nPassengers.toString())
+        Spacer(modifier = Modifier.fillMaxHeight(0.05f))
+        TextBar(textLeft = "Flight Id", textRight = flight.id)
+        TextBar(textLeft = "Number Of Pax", textRight = flight.nPassengers.toString())
+        TeamRolesList(team = flight.team)
+        TextBar(textLeft = "Flight ", textRight = flight.flightType.name)
+        TextBar(textLeft = "Ballon", textRight = flight.balloon?.name ?: "None")
+        TextBar(textLeft = "Basket", textRight = flight.basket?.name ?: "None")
+        TextBar(textLeft = "Date", textRight = flight.date.toString())
+        TextBar(textLeft = "Time Slot", textRight = flight.timeSlot.name)
+        VehicleListText(vehicle = flight.vehicles)
     }
 }
 
@@ -117,7 +151,8 @@ fun FlightDetailBottom(DeleteClick: () -> Unit, EditClick: () -> Unit, ConfirmCl
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                bottom = padding.calculateBottomPadding()),
+                bottom = padding.calculateBottomPadding()
+            ),
         contentAlignment = Alignment.BottomCenter)
     {
         Row(
@@ -174,7 +209,9 @@ fun TextBar(textLeft: String, textRight: String) {
             horizontalAlignment = Alignment.CenterHorizontally
         )
         {
-            Text(textLeft)
+            Text(
+                text = textLeft,
+                fontSize = 15.sp)
         }
         Column(
             modifier = Modifier
@@ -182,9 +219,31 @@ fun TextBar(textLeft: String, textRight: String) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(textRight)
+            Text(
+                text = textRight,
+                fontSize = 15.sp)
+        }
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+}
+@Composable
+fun TeamRolesList(team: Team) {
+    LazyColumn {
+        items(team.roles.size) { index ->
+            val role = team.roles[index]
+            TextBar(textLeft = role.roleType.name, "Idk")
         }
     }
 }
+@Composable
+fun VehicleListText(vehicle: List<Vehicle>) {
+    LazyColumn {
+        items(vehicle.size) { index ->
+            val car = vehicle[index]
+            TextBar(textLeft = "Vehicle $index", car.name )
+        }
+    }
+}
+
 
 
