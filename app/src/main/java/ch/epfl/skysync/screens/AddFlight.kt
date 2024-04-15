@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -31,6 +32,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -122,8 +124,21 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
 
           var addNewUserQuery: String by remember { mutableStateOf("") }
 
+          val lazyListState = rememberLazyListState()
+
+          var isError by remember { mutableStateOf(false) }
+
+          // Scroll to the first field with an error
+          LaunchedEffect(isError) {
+            if (nbPassengersValueError) {
+              lazyListState.animateScrollToItem(0)
+            } else if (flightTypeValueError) {
+              lazyListState.animateScrollToItem(3)
+            }
+          }
           LazyColumn(
               modifier = Modifier.padding(padding).weight(1f).testTag("Flight Lazy Column"),
+              state = lazyListState,
               verticalArrangement = Arrangement.SpaceBetween) {
                 // Field getting the number of passengers. Only number can be entered
                 item {
@@ -138,7 +153,9 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                       modifier =
                           Modifier.fillMaxWidth().padding(defaultPadding).testTag("nb Passenger"),
                       isError = nbPassengersValueError,
-                  )
+                      supportingText = {
+                        if (nbPassengersValueError) Text("Please enter a valid number")
+                      })
                 }
                 // The date field is a clickable field that opens a date picker
                 item {
@@ -249,7 +266,10 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                               ExposedDropdownMenuDefaults.TrailingIcon(
                                   expanded = expandedFlightTypeMenu)
                             },
-                            isError = flightTypeValueError)
+                            isError = flightTypeValueError,
+                            supportingText = {
+                              if (flightTypeValueError) Text("Please select a flight type")
+                            })
 
                         DropdownMenu(
                             expanded = expandedFlightTypeMenu,
@@ -581,7 +601,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                 nbPassengersValueError =
                     nbPassengersValue.isEmpty() || nbPassengersValue.toInt() <= 0
                 flightTypeValueError = flightTypeValue == null
-                val isError = flightTypeValueError || nbPassengersValueError
+                isError = nbPassengersValueError || flightTypeValueError
                 if (!isError) {
                   val vehicles: List<Vehicle> =
                       if (vehicle == null) emptyList() else listOf(vehicle!!)
