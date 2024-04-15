@@ -144,12 +144,11 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                 }
                 // The date field is a clickable field that opens a date picker
                 item {
-                  // TODO make sure that we can only select a date in the future
                   if (openDatePicker) {
+                      val today = java.util.Calendar.getInstance().timeInMillis
                     val datePickerState =
                         rememberDatePickerState(
-                            initialSelectedDateMillis =
-                                java.util.Calendar.getInstance().timeInMillis)
+                            initialSelectedDateMillis = today)
 
                     DatePickerDialog(
                         onDismissRequest = {},
@@ -171,7 +170,11 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                         dismissButton = {
                           TextButton(onClick = { openDatePicker = false }) { Text("Cancel") }
                         }) {
-                          DatePicker(state = datePickerState)
+                        // The date picker is only available for the current date and later
+                        val todayDate =  Instant.ofEpochMilli(today)
+                            .atZone(ZoneId.of("GMT"))
+                            .toLocalDate().atStartOfDay(ZoneId.of("GMT")).toInstant().toEpochMilli()
+                          DatePicker(state = datePickerState, dateValidator = { it >= todayDate})
                         }
                   }
 
