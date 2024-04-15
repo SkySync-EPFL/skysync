@@ -1,10 +1,15 @@
 package ch.epfl.skysync.screens
 
+import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -18,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,12 +66,12 @@ fun FlightScreen(navController: NavHostController) {
   // Provides access to the Fused Location Provider API.
   val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
-  // State holding the current location initialized to a default value.
-  var location by remember { mutableStateOf(LatLng(-33.852, 151.211)) }
+  // State holding the current location initialized to Lausanne as default value.
+  var location by remember { mutableStateOf(LatLng(46.516, 6.63282)) }
 
   // Remembers and controls the camera position state for the map.
   val cameraPositionState = rememberCameraPositionState {
-    position = CameraPosition.fromLatLngZoom(location, 12f)
+    position = CameraPosition.fromLatLngZoom(location, 13f)
   }
 
   // Manages the state of the map marker.
@@ -110,15 +116,35 @@ fun FlightScreen(navController: NavHostController) {
         // Floating action button to center the map on the current location.
         if (locationPermission.status.isGranted) {
           Box(
-              modifier = Modifier.fillMaxSize().padding(start = 32.dp, bottom = 16.dp),
+              modifier = Modifier.fillMaxSize().padding(start = 32.dp, bottom = 88.dp),
               contentAlignment = Alignment.BottomStart) {
-                FloatingActionButton(
-                    onClick = {
-                      // Moves the camera to the current location when clicked.
-                      cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(location, 12f))
-                    },
-                    containerColor = lightOrange) {
-                      Icon(Icons.Default.LocationOn, contentDescription = "Locate Me")
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()) {
+                      FloatingActionButton(
+                          onClick = {
+                            // Moves the camera to the current location when clicked.
+                            cameraPositionState.move(
+                                CameraUpdateFactory.newLatLngZoom(location, 13f))
+                          },
+                          containerColor = lightOrange) {
+                            Icon(Icons.Default.LocationOn, contentDescription = "Locate Me")
+                          }
+                      FloatingActionButton(
+                          onClick = {
+                            // Here is where you'd navigate to a new screen. For now, just log a
+                            // message.
+                            Log.d(
+                                "FlightScreen",
+                                "FloatingActionButton clicked. Implement navigation here.")
+                            // Example navigation call: navController.navigate("FlightInfos")
+                          },
+                          containerColor = lightOrange) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = "Flight infos",
+                                tint = Color.White)
+                          }
                     }
               }
         }
