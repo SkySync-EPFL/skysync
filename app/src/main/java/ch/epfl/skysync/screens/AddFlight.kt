@@ -88,7 +88,6 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
           var flightTypeValueError by remember { mutableStateOf(false) }
 
           val vehicle: Vehicle? by remember { mutableStateOf(null) }
-          var expandedVehicleMenu by remember { mutableStateOf(false) }
           // List of all vehicles to be removed when connected to the database
           val allVehicles = listOf<Vehicle>(Vehicle("Car"), Vehicle("Bus"), Vehicle("Bike"))
           val listVehiclesValue = remember { mutableStateListOf<Vehicle>() }
@@ -300,7 +299,6 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                       }
                   // Dialog to add a new crew member and its corresponding field
                   if (showAddMemberDialog) {
-                    // TODO make adjustments in the dialog visuals
                     AlertDialog(
                         onDismissRequest = { showAddMemberDialog = false },
                         title = { Text("Add Crew Member") },
@@ -343,9 +341,12 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                                 }
                             // TODO: Handle correctly the user for now it is just a text field
                             OutlinedTextField(
+                                modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("User Dialog Field"),
                                 value = addNewUserQuery,
                                 onValueChange = { addNewUserQuery = it },
-                                placeholder = { Text("User") })
+                                placeholder = { Text("User") },
+                                singleLine = true
+                            )
                           }
                         },
                         confirmButton = {
@@ -372,7 +373,8 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                     OutlinedTextField(
                         modifier =
                             Modifier.fillMaxWidth()
-                                .padding(horizontal = defaultPadding, vertical = smallPadding),
+                                .padding(horizontal = defaultPadding, vertical = smallPadding)
+                                .testTag("User $id"),
                         value = query,
                         onValueChange = { query = it },
                         placeholder = { Text("User ${id + 1}") },
@@ -404,6 +406,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                 }
                 listVehiclesValue.withIndex().forEach() { (idList, car) ->
                   item {
+                      var expandedVehicleMenu by remember { mutableStateOf(false) }
                     ExposedDropdownMenuBox(
                         modifier =
                             Modifier.fillMaxWidth()
@@ -447,11 +450,12 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                 }
                 if (addVehicle) {
                   item {
+                      var expandedVehicleMenu by remember { mutableStateOf(false) }
                     ExposedDropdownMenuBox(
                         modifier =
                             Modifier.fillMaxWidth()
                                 .clickable { expandedVehicleMenu = true }
-                                .testTag("Vehicle Menu ${listVehiclesValue.size + 1}"),
+                                .testTag("Vehicle Menu ${listVehiclesValue.size}"),
                         expanded = expandedVehicleMenu,
                         onExpandedChange = { expandedVehicleMenu = !expandedVehicleMenu }) {
                           OutlinedTextField(
@@ -531,7 +535,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                       modifier =
                           Modifier.fillMaxWidth()
                               .padding(defaultPadding)
-                              .clickable { expandedVehicleMenu = true }
+                              .clickable { expandedBasketMenu = true }
                               .testTag("Basket Menu"),
                       expanded = expandedBasketMenu,
                       onExpandedChange = { expandedBasketMenu = !expandedBasketMenu }) {

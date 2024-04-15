@@ -91,8 +91,8 @@ class AddFlightTest {
   fun vehicleFieldIsDisplayed() {
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Vehicle Menu 1"))
-    composeTestRule.onNodeWithTag("Vehicle Menu 1").assertIsDisplayed()
+        .performScrollToNode(hasTestTag("Vehicle Menu 0"))
+    composeTestRule.onNodeWithTag("Vehicle Menu 0").assertIsDisplayed()
   }
 
   @Test
@@ -171,8 +171,8 @@ class AddFlightTest {
 
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Vehicle Menu 1"))
-    composeTestRule.onNodeWithTag("Vehicle Menu 1").performClick()
+        .performScrollToNode(hasTestTag("Vehicle Menu 0"))
+    composeTestRule.onNodeWithTag("Vehicle Menu 0").performClick()
     composeTestRule.onNodeWithTag("Vehicle 1").performClick()
 
     composeTestRule
@@ -196,4 +196,30 @@ class AddFlightTest {
     composeTestRule.onNodeWithTag("Add Flight Button").performClick()
     Assert.assertEquals(navController.currentDestination?.route, Route.HOME)
   }
+
+    @Test
+    fun addATeamRoleWorksCorrectly(){
+        composeTestRule.onNodeWithTag("Flight Lazy Column").performScrollToNode(hasTestTag("Add Crew Button"))
+        composeTestRule.onNodeWithTag("Add Crew Button").performClick()
+        composeTestRule.onNodeWithTag("Role Type Menu").performClick()
+        composeTestRule.onNodeWithText(RoleType.SERVICE_ON_BOARD.name).performClick()
+        composeTestRule.onNodeWithTag("User Dialog Field").performClick()
+        composeTestRule.onNodeWithTag("User Dialog Field").performTextInput("test")
+        composeTestRule.onNodeWithTag("User Dialog Field").assertTextContains("test")
+        composeTestRule.onNode(hasText("Add")).performClick()
+        composeTestRule.onNodeWithTag("Flight Lazy Column").performScrollToNode(hasTestTag("User 2"))
+        composeTestRule.onNodeWithText(RoleType.SERVICE_ON_BOARD.name).assertIsDisplayed()
+    }
+
+    @Test
+    fun addAVehicleWorksCorrectly(){
+        composeTestRule.onNodeWithTag("Flight Lazy Column").performScrollToNode(hasTestTag("Vehicle Menu 0"))
+        composeTestRule.onNodeWithTag("Vehicle Menu 0").performClick()
+        composeTestRule.onNodeWithTag("Vehicle 0").performClick()
+        composeTestRule.onNodeWithTag("Flight Lazy Column").performScrollToNode(hasTestTag("Add Vehicle Button"))
+        composeTestRule.onNodeWithTag("Add Vehicle Button").performClick()
+        composeTestRule.onNodeWithTag("Flight Lazy Column").performScrollToNode(hasTestTag("Vehicle Menu 1"))
+        composeTestRule.onNodeWithTag("Vehicle Menu 1").performClick()
+        composeTestRule.onNodeWithTag("Vehicle 1").performClick()
+    }
 }
