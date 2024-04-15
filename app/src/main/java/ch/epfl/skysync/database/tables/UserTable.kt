@@ -97,6 +97,25 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
     deleteAvailabilities(id, { super.delete(id, onCompletion, onError) }, onError)
   }
 
+  /**
+   * Set a new user to the database
+   *
+   * Set item at id (if null a new id is generated) and override any previously set id.
+   *
+   * @param item The user to add to the database
+   * @param id the id of the item (if null a new id is generated)
+   * @param onCompletion Callback called on completion of the operation
+   * @param onError Callback called when an error occurs
+   */
+  fun set(
+      id: String?,
+      item: User,
+      onCompletion: (id: String) -> Unit,
+      onError: (Exception) -> Unit
+  ) {
+    db.setItem(path, id, UserSchema.fromModel(item), onCompletion, onError)
+  }
+
   companion object {
     const val PATH = "user"
   }
