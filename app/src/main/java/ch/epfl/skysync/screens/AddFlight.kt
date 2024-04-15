@@ -122,8 +122,6 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
 
           var addNewUserQuery: String by remember { mutableStateOf("") }
 
-          /* TODO change this Column to a LazyColumn and adapt the code accordingly (including
-          tests)*/
           LazyColumn(
               modifier = Modifier.padding(padding).weight(1f).testTag("Flight Lazy Column"),
               verticalArrangement = Arrangement.SpaceBetween) {
@@ -145,10 +143,8 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                 // The date field is a clickable field that opens a date picker
                 item {
                   if (openDatePicker) {
-                      val today = java.util.Calendar.getInstance().timeInMillis
-                    val datePickerState =
-                        rememberDatePickerState(
-                            initialSelectedDateMillis = today)
+                    val today = java.util.Calendar.getInstance().timeInMillis
+                    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = today)
 
                     DatePickerDialog(
                         onDismissRequest = {},
@@ -170,11 +166,15 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                         dismissButton = {
                           TextButton(onClick = { openDatePicker = false }) { Text("Cancel") }
                         }) {
-                        // The date picker is only available for the current date and later
-                        val todayDate =  Instant.ofEpochMilli(today)
-                            .atZone(ZoneId.of("GMT"))
-                            .toLocalDate().atStartOfDay(ZoneId.of("GMT")).toInstant().toEpochMilli()
-                          DatePicker(state = datePickerState, dateValidator = { it >= todayDate})
+                          // The date picker is only available for the current date and later
+                          val todayDate =
+                              Instant.ofEpochMilli(today)
+                                  .atZone(ZoneId.of("GMT"))
+                                  .toLocalDate()
+                                  .atStartOfDay(ZoneId.of("GMT"))
+                                  .toInstant()
+                                  .toEpochMilli()
+                          DatePicker(state = datePickerState, dateValidator = { it >= todayDate })
                         }
                   }
 
@@ -344,12 +344,14 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                                 }
                             // TODO: Handle correctly the user for now it is just a text field
                             OutlinedTextField(
-                                modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("User Dialog Field"),
+                                modifier =
+                                    Modifier.fillMaxWidth()
+                                        .padding(defaultPadding)
+                                        .testTag("User Dialog Field"),
                                 value = addNewUserQuery,
                                 onValueChange = { addNewUserQuery = it },
                                 placeholder = { Text("User") },
-                                singleLine = true
-                            )
+                                singleLine = true)
                           }
                         },
                         confirmButton = {
@@ -409,7 +411,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                 }
                 listVehiclesValue.withIndex().forEach() { (idList, car) ->
                   item {
-                      var expandedVehicleMenu by remember { mutableStateOf(false) }
+                    var expandedVehicleMenu by remember { mutableStateOf(false) }
                     ExposedDropdownMenuBox(
                         modifier =
                             Modifier.fillMaxWidth()
@@ -453,7 +455,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                 }
                 if (addVehicle) {
                   item {
-                      var expandedVehicleMenu by remember { mutableStateOf(false) }
+                    var expandedVehicleMenu by remember { mutableStateOf(false) }
                     ExposedDropdownMenuBox(
                         modifier =
                             Modifier.fillMaxWidth()
