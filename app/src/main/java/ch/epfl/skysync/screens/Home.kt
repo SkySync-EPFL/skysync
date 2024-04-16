@@ -41,15 +41,27 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.models.UNSET_ID
+import ch.epfl.skysync.models.calendar.AvailabilityCalendar
+import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.flight.Balloon
+import ch.epfl.skysync.models.flight.BalloonQualification
+import ch.epfl.skysync.models.flight.Basket
+import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType.Companion.DISCOVERY
 import ch.epfl.skysync.models.flight.FlightType.Companion.FONDUE
 import ch.epfl.skysync.models.flight.PlannedFlight
+import ch.epfl.skysync.models.flight.Role
+import ch.epfl.skysync.models.flight.RoleType
+import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -60,11 +72,46 @@ val listFlights =
             nPassengers = 4,
             date = LocalDate.of(2024, 3, 19),
             timeSlot = TimeSlot.AM,
+            team = Team(
+                listOf(
+                    Role(RoleType.PILOT,
+                        Crew("1",
+                            "John",
+                            "Doe",
+                            AvailabilityCalendar(),
+                            FlightGroupCalendar()))
+                )
+            ),
             flightType = FONDUE,
-            vehicles = listOf(),
-            balloon = null,
-            basket = null,
+            vehicles = listOf(Vehicle("sprinter", "1234")),
+            balloon = Balloon("qqp", BalloonQualification.LARGE, "12"),
+            basket = Basket("lol", true, "kdf"),
             id = UNSET_ID),
+        ConfirmedFlight(
+            nPassengers = 4,
+            date = LocalDate.of(2024, 3, 19),
+            timeSlot = TimeSlot.AM,
+            team = Team(
+                listOf(
+                    Role(RoleType.PILOT,
+                        Crew("1",
+                            "John",
+                            "Doe",
+                            AvailabilityCalendar(),
+                            FlightGroupCalendar()))
+                )
+            ),
+            flightType = FONDUE,
+            vehicles = listOf(Vehicle("sprinter", "1234")),
+            balloon = Balloon("qqp", BalloonQualification.LARGE, "12"),
+            basket = Basket("lol", true, "kdf"),
+            id = UNSET_ID,
+            remarks = listOf("remark1", "remark2"),
+            meetupTimeTeam = LocalTime.of(12, 1),
+            departureTimeTeam = LocalTime.of(12, 2),
+            meetupTimePassenger = LocalTime.of(12, 3),
+            meetupLocationPassenger = "location"
+            ),
         PlannedFlight(
             nPassengers = 2,
             date = LocalDate.of(2024, 3, 20),
@@ -85,7 +132,7 @@ val listFlights =
             id = UNSET_ID),
     )
 // Sample empty list for preview (to be deleted)
-val emptyList: List<PlannedFlight> = emptyList()
+val emptyList: List<Flight> = emptyList()
 
 @Composable
 fun UpcomingFlights(flights: List<Flight>, onFlightClick: (Flight) -> Unit) {
