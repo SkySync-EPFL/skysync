@@ -195,7 +195,7 @@ secrets {
 
     // A properties file containing default secret values. This file can be
     // checked in version control.
-    defaultPropertiesFileName = "local.properties"
+    propertiesFileName = "secrets.properties"
 
     // Configure which keys should be ignored by the plugin by providing regular expressions.
     // "sdk.dir" is ignored by default.
