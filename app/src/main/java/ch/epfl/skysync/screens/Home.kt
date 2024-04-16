@@ -50,6 +50,7 @@ import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType.Companion.DISCOVERY
 import ch.epfl.skysync.models.flight.FlightType.Companion.FONDUE
+import ch.epfl.skysync.models.flight.FlightType.Companion.PREMIUM
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
@@ -67,9 +68,9 @@ import java.util.Locale
 val listFlights =
     listOf(
         PlannedFlight(
-            nPassengers = 4,
-            date = LocalDate.of(2024, 3, 19),
-            timeSlot = TimeSlot.AM,
+            nPassengers = 1,
+            date = LocalDate.of(2024, 3, 11),
+            timeSlot = TimeSlot.PM,
             team =
                 Team(
                     listOf(
@@ -81,32 +82,32 @@ val listFlights =
                                 "Doe",
                                 AvailabilityCalendar(),
                                 FlightGroupCalendar())))),
-            flightType = FONDUE,
-            vehicles = listOf(Vehicle("sprinter", "1234")),
+            flightType = PREMIUM,
+            vehicles = listOf(Vehicle("sprinter2", "12")),
             balloon = Balloon("qqp", BalloonQualification.LARGE, "12"),
             basket = Basket("lol", true, "kdf"),
             id = UNSET_ID),
         ConfirmedFlight(
-            nPassengers = 4,
-            date = LocalDate.of(2024, 3, 19),
+            nPassengers = 5,
+            date = LocalDate.of(2024, 1, 14),
             timeSlot = TimeSlot.AM,
             team =
                 Team(
                     listOf(
                         Role(
-                            RoleType.PILOT,
+                            RoleType.CREW,
                             Crew(
                                 "1",
-                                "John",
-                                "Doe",
+                                "Ben",
+                                "Frick",
                                 AvailabilityCalendar(),
                                 FlightGroupCalendar())))),
             flightType = FONDUE,
-            vehicles = listOf(Vehicle("sprinter", "1234")),
-            balloon = Balloon("qqp", BalloonQualification.LARGE, "12"),
-            basket = Basket("lol", true, "kdf"),
+            vehicles = listOf(Vehicle("sprinter4", "1")),
+            balloon = Balloon("qqo", BalloonQualification.LARGE, "1"),
+            basket = Basket("lo", true, "kf"),
             id = UNSET_ID,
-            remarks = listOf("remark1", "remark2"),
+            remarks = listOf("r", "rem", "remark3"),
             meetupTimeTeam = LocalTime.of(12, 1),
             departureTimeTeam = LocalTime.of(12, 2),
             meetupTimePassenger = LocalTime.of(12, 3),
