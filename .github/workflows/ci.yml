@@ -34,7 +34,9 @@ jobs:
 
       # Handle secret file
       - name: Load secrets.properties
-        run: echo "${{secrets.SECRETS_PROPERTIES }}" > $GITHUB_WORKSPACE/secrets.properties
+        env:
+            SECRET_PROPERTIES: ${{ secrets.SECRET_PROPERTIES }}
+        run: echo $SECRET_PROPERTIES > $GITHUB_WORKSPACE/secrets.properties
 
       # Install the Firebase CLI
       - name: Install firebase
