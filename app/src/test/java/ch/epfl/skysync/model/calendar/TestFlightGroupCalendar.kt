@@ -29,24 +29,22 @@ class TestFlightGroupCalendar {
         PlannedFlight(
             "y",
             1,
-            Team(listOf()),
             FlightType.FONDUE,
-            null,
-            null,
-            LocalDate.of(2024, 4, 1),
-            TimeSlot.AM,
-            listOf())
+            balloon = null,
+            basket = null,
+            date = LocalDate.of(2024, 4, 1),
+            timeSlot = TimeSlot.AM,
+            vehicles = listOf())
     testFlight2 =
         PlannedFlight(
             "x",
             2,
-            Team(listOf()),
             FlightType.DISCOVERY,
-            null,
-            null,
-            LocalDate.of(2024, 4, 1),
-            TimeSlot.AM,
-            listOf())
+            basket = null,
+            balloon = null,
+            date = LocalDate.of(2024, 4, 1),
+            timeSlot = TimeSlot.AM,
+            vehicles = listOf())
     emptyFlightGroup = FlightGroup(LocalDate.of(2024, 4, 1), TimeSlot.AM, listOf())
     calendar = FlightGroupCalendar()
   }

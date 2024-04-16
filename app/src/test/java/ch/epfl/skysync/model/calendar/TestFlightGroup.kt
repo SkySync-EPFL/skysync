@@ -28,13 +28,12 @@ class TestFlightGroup {
         PlannedFlight(
             UNSET_ID,
             1,
-            Team(listOf()),
             FlightType.FONDUE,
-            null,
-            null,
-            LocalDate.of(2024, 4, 1),
-            TimeSlot.AM,
-            listOf())
+            balloon = null,
+            basket = null,
+            date = LocalDate.of(2024, 4, 1),
+            timeSlot = TimeSlot.AM,
+            vehicles = listOf())
   }
 
   @Test
