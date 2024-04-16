@@ -80,8 +80,7 @@ class UserTableUnitTest {
     SystemClock.sleep(DB_SLEEP_TIME)
 
     // setup the initial db state
-    userTable.set(
-        null,
+    userTable.add(
         admin1,
         { id ->
           admin1 = admin1.copy(id = id)
