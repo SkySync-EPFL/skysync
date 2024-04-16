@@ -5,7 +5,6 @@ import ch.epfl.skysync.models.calendar.FlightGroup
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
-import ch.epfl.skysync.models.flight.Team
 import java.time.LocalDate
 import org.junit.Assert.*
 import org.junit.Before

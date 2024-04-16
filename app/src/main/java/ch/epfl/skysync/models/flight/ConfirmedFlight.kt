@@ -1,6 +1,5 @@
 package ch.epfl.skysync.models.flight
 
-import androidx.compose.ui.graphics.Color
 import ch.epfl.skysync.models.calendar.TimeSlot
 import java.time.LocalDate
 import java.time.LocalTime
@@ -21,7 +20,4 @@ data class ConfirmedFlight(
     val departureTimeTeam: LocalTime,
     val meetupTimePassenger: LocalTime,
     val meetupLocationPassenger: String,
-
-
-) : Flight {
-}
+) : Flight {}

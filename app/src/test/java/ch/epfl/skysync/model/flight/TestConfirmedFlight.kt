@@ -15,11 +15,11 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.User
+import java.time.LocalDate
+import java.time.LocalTime
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDate
-import java.time.LocalTime
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -32,28 +32,27 @@ class TestConfirmedFlight {
 
   @Before
   fun setUp() {
-    user = Crew(
-        id = "1",
-        firstname = "Paul",
-        lastname = "Panzer",
-        availabilities = AvailabilityCalendar(),
-        assignedFlights = FlightGroupCalendar()
-    )
+    user =
+        Crew(
+            id = "1",
+            firstname = "Paul",
+            lastname = "Panzer",
+            availabilities = AvailabilityCalendar(),
+            assignedFlights = FlightGroupCalendar())
   }
 
   @Test
   fun `throw error if tries to confirm flight that is not ready`() {
     val plannedFlight =
-      PlannedFlight(
-        id = "1",
-        nPassengers = 2,
-        flightType = FlightType.DISCOVERY,
-        balloon = Balloon("QQP", BalloonQualification.LARGE, ""),
-        basket = Basket("basket 1", hasDoor = false),
-        date = LocalDate.of(2024, 4, 1),
-        timeSlot = TimeSlot.AM,
-        vehicles = listOf(Vehicle("sprinter 1"))
-      )
+        PlannedFlight(
+            id = "1",
+            nPassengers = 2,
+            flightType = FlightType.DISCOVERY,
+            balloon = Balloon("QQP", BalloonQualification.LARGE, ""),
+            basket = Basket("basket 1", hasDoor = false),
+            date = LocalDate.of(2024, 4, 1),
+            timeSlot = TimeSlot.AM,
+            vehicles = listOf(Vehicle("sprinter 1")))
 
     val meetUpTimeTeam = LocalTime.of(10, 10)
     val departureTimeTeam = LocalTime.of(10, 30)
@@ -61,39 +60,35 @@ class TestConfirmedFlight {
     val meetUpLocation = "EPFL"
     val remarks = listOf("remark 1")
     val color = FlightColor.BLUE
-    assertThrows(
-      IllegalStateException::class.java)
-    {
+    assertThrows(IllegalStateException::class.java) {
       plannedFlight.confirmFlight(
-        meetupTimeTeam = meetUpTimeTeam,
-        departureTimeTeam = departureTimeTeam,
-        meetupTimePassenger = meetUpTimePassenger,
-        meetupLocationPassenger = meetUpLocation,
-        remarks = remarks,
-        color = color
-      )
+          meetupTimeTeam = meetUpTimeTeam,
+          departureTimeTeam = departureTimeTeam,
+          meetupTimePassenger = meetUpTimePassenger,
+          meetupLocationPassenger = meetUpLocation,
+          remarks = remarks,
+          color = color)
     }
   }
 
   @Test
   fun `confirmed flight is correctly created from plannedFlight`() {
-    val completeTeam = Team(
-      listOf(
-        Role(RoleType.PILOT, user),
-      )
-    )
+    val completeTeam =
+        Team(
+            listOf(
+                Role(RoleType.PILOT, user),
+            ))
     val plannedFlight =
-      PlannedFlight(
-        id = "1",
-        nPassengers = 2,
-        flightType = FlightType.DISCOVERY,
-        team = completeTeam,
-        balloon = Balloon("QQP", BalloonQualification.LARGE, ""),
-        basket = Basket("basket 1", hasDoor = false),
-        date = LocalDate.of(2024, 4, 1),
-        timeSlot = TimeSlot.AM,
-        vehicles = listOf(Vehicle("sprinter 1"))
-      )
+        PlannedFlight(
+            id = "1",
+            nPassengers = 2,
+            flightType = FlightType.DISCOVERY,
+            team = completeTeam,
+            balloon = Balloon("QQP", BalloonQualification.LARGE, ""),
+            basket = Basket("basket 1", hasDoor = false),
+            date = LocalDate.of(2024, 4, 1),
+            timeSlot = TimeSlot.AM,
+            vehicles = listOf(Vehicle("sprinter 1")))
 
     val meetUpTimeTeam = LocalTime.of(10, 10)
     val departureTimeTeam = LocalTime.of(10, 30)
@@ -101,14 +96,14 @@ class TestConfirmedFlight {
     val meetUpLocation = "EPFL"
     val remarks = listOf("remark 1")
     val color = FlightColor.BLUE
-    val confirmedFlight = plannedFlight.confirmFlight(
-      meetupTimeTeam = meetUpTimeTeam,
-      departureTimeTeam = departureTimeTeam,
-      meetupTimePassenger = meetUpTimePassenger,
-      meetupLocationPassenger = meetUpLocation,
-      remarks = remarks,
-      color = color
-    )
+    val confirmedFlight =
+        plannedFlight.confirmFlight(
+            meetupTimeTeam = meetUpTimeTeam,
+            departureTimeTeam = departureTimeTeam,
+            meetupTimePassenger = meetUpTimePassenger,
+            meetupLocationPassenger = meetUpLocation,
+            remarks = remarks,
+            color = color)
     assertEquals(plannedFlight.id, confirmedFlight.id)
     assertEquals(plannedFlight.nPassengers, confirmedFlight.nPassengers)
     assertEquals(plannedFlight.flightType, confirmedFlight.flightType)
@@ -125,6 +120,4 @@ class TestConfirmedFlight {
     assertEquals(remarks, confirmedFlight.remarks)
     assertEquals(color, confirmedFlight.color)
   }
-
-
 }
