@@ -6,6 +6,7 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
+import ch.epfl.skysync.models.flight.FlightStatus
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
@@ -48,6 +49,15 @@ class TestPlannedFlight {
             date = LocalDate.of(2024, 4, 1),
             timeSlot = TimeSlot.AM,
             vehicles = listOf(Vehicle("sprinter 1")))
+  }
+
+  @Test
+  fun `getFlightStatus returns correct status`() {
+    val plannedFlight = initFlight
+    assertEquals(plannedFlight.getFlightStatus(), FlightStatus.IN_PLANNING)
+
+    val readyFlight = initFlight.copy(team = Team(listOf(Role(RoleType.PILOT, user))))
+    assertEquals(readyFlight.getFlightStatus(), FlightStatus.READY_FOR_CONFIRMATION)
   }
 
   @Test

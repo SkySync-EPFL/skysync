@@ -6,7 +6,9 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
+import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FlightColor
+import ch.epfl.skysync.models.flight.FlightStatus
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
@@ -29,6 +31,7 @@ import org.junit.Test
 class TestConfirmedFlight {
 
   lateinit var user: User
+  lateinit var confirmedFlight: ConfirmedFlight
 
   @Before
   fun setUp() {
@@ -39,6 +42,29 @@ class TestConfirmedFlight {
             lastname = "Panzer",
             availabilities = AvailabilityCalendar(),
             assignedFlights = FlightGroupCalendar())
+
+    confirmedFlight =
+        ConfirmedFlight(
+            id = "1",
+            nPassengers = 2,
+            team = Team(listOf(Role(RoleType.PILOT, user))),
+            flightType = FlightType.DISCOVERY,
+            balloon = Balloon("QQP", BalloonQualification.LARGE, ""),
+            basket = Basket("basket 1", hasDoor = false),
+            date = LocalDate.of(2024, 4, 1),
+            timeSlot = TimeSlot.AM,
+            vehicles = listOf(Vehicle("sprinter 1")),
+            remarks = listOf("remark 1"),
+            color = FlightColor.BLUE,
+            meetupTimeTeam = LocalTime.of(10, 10),
+            departureTimeTeam = LocalTime.of(10, 30),
+            meetupTimePassenger = LocalTime.of(10, 40),
+            meetupLocationPassenger = "EPFL")
+  }
+
+  @Test
+  fun `getFlightStatus returns correct status`() {
+    assertEquals(confirmedFlight.getFlightStatus(), FlightStatus.CONFIRMED)
   }
 
   @Test
