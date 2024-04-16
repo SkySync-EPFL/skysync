@@ -25,5 +25,4 @@ data class PlannedFlight(
             FlightStatus.IN_PLANNING
         }
     }
-
 }

@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -111,7 +112,7 @@ fun UpcomingFlights(flights: List<Flight>, onFlightClick: (Flight) -> Unit) {
             Text(
                 text = "No upcoming flights",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                color = Color.Gray)
+                color = Color.Yellow)
           }
     } else {
       // Display the flights in a LazyColumn if the list is not empty
@@ -125,12 +126,18 @@ fun FlightRow(flight: Flight, onFlightClick: (Flight) -> Unit) {
   // Card for an individual flight, clickable to navigate to details
   Card(
       modifier =
-          Modifier.fillMaxWidth().clickable { onFlightClick(flight) }.padding(vertical = 4.dp),
+          Modifier
+              .fillMaxWidth()
+              .clickable { onFlightClick(flight) }
+              .padding(vertical = 4.dp),
       elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
   ) {
-    Surface(modifier = Modifier.fillMaxWidth(), color = lightGray) {
+    Surface(modifier = Modifier.fillMaxWidth(),
+        color = flight.getFlightStatus().displayColor) {
       Row(
-          modifier = Modifier.fillMaxWidth().padding(16.dp),
+          modifier = Modifier
+              .fillMaxWidth()
+              .padding(16.dp),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.Start) {
             Text(
@@ -152,6 +159,11 @@ fun FlightRow(flight: Flight, onFlightClick: (Flight) -> Unit) {
               // Text for flight time slot
               Text(text = flight.timeSlot.toString(), color = Color.Gray)
             }
+          Text(
+              text = flight.getFlightStatus().toString(),
+              style = MaterialTheme.typography.bodyMedium,
+              modifier = Modifier.alignByBaseline(),
+              color = Color.Gray)
           }
     }
   }
@@ -185,6 +197,7 @@ fun HomeScreen(navController: NavHostController) {
     }
   }
 }
+
 
 // Preview provider for the Home Screen
 @Composable
