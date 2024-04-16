@@ -14,10 +14,6 @@ interface Flight {
   val vehicles: List<Vehicle>
   val id: String
 
-  /**
-   * @return the status of the flight
-   */
+  /** @return the status of the flight */
   fun getFlightStatus(): FlightStatus
 }
-
-

@@ -60,11 +60,11 @@ data class PlannedFlight(
         meetupLocationPassenger = meetupLocationPassenger)
   }
 
-    override fun getFlightStatus(): FlightStatus {
-        return if (readyToBeConfirmed()) {
-            FlightStatus.READY_FOR_CONFIRMATION
-        } else {
-            FlightStatus.IN_PLANNING
-        }
+  override fun getFlightStatus(): FlightStatus {
+    return if (readyToBeConfirmed()) {
+      FlightStatus.READY_FOR_CONFIRMATION
+    } else {
+      FlightStatus.IN_PLANNING
     }
+  }
 }
