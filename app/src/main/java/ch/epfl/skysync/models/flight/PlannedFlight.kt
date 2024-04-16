@@ -17,4 +17,13 @@ data class PlannedFlight(
   fun readyToBeConfirmed(): Boolean {
     return team.isComplete() && nPassengers > 0 && balloon != null && basket != null
   }
+
+    override fun getFlightStatus(): FlightStatus {
+        return if (readyToBeConfirmed()) {
+            FlightStatus.READY_FOR_CONFIRMATION
+        } else {
+            FlightStatus.IN_PLANNING
+        }
+    }
+
 }

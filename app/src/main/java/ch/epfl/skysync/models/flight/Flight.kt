@@ -13,4 +13,11 @@ interface Flight {
   val timeSlot: TimeSlot
   val vehicles: List<Vehicle>
   val id: String
+
+  /**
+   * @return the status of the flight
+   */
+  fun getFlightStatus(): FlightStatus
 }
+
+
