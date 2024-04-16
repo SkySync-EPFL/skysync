@@ -20,4 +20,8 @@ data class ConfirmedFlight(
     val departureTimeTeam: LocalTime,
     val meetupTimePassenger: LocalTime,
     val meetupLocationPassenger: String,
-) : Flight {}
+) : Flight {
+    override fun getFlightStatus(): FlightStatus {
+        return FlightStatus.CONFIRMED
+    }
+}
