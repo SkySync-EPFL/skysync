@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
@@ -38,6 +39,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
@@ -305,7 +307,8 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                 item {
                   Row(
                       modifier = Modifier.fillMaxWidth(),
-                      horizontalArrangement = Arrangement.SpaceBetween) {
+                      horizontalArrangement = Arrangement.SpaceBetween,
+                      verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             modifier = Modifier.padding(horizontal = defaultPadding),
                             text = "Team",
@@ -395,22 +398,35 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                   item {
                     var query by remember { mutableStateOf("") }
                     Text(modifier = Modifier.padding(horizontal = defaultPadding), text = role.name)
-                    OutlinedTextField(
-                        modifier =
-                            Modifier.fillMaxWidth()
-                                .padding(horizontal = defaultPadding, vertical = smallPadding)
-                                .testTag("User $id"),
-                        value = query,
-                        onValueChange = { query = it },
-                        placeholder = { Text("User ${id + 1}") },
-                        singleLine = true)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically) {
+                          OutlinedTextField(
+                              modifier =
+                                  Modifier.fillMaxWidth()
+                                      .padding(horizontal = defaultPadding)
+                                      .weight(1f)
+                                      .testTag("User $id"),
+                              value = query,
+                              onValueChange = { query = it },
+                              placeholder = { Text("User ${id + 1}") },
+                              singleLine = true)
+                          IconButton(onClick = { crewMembers.removeAt(id) }) {
+                            Icon(
+                                modifier = Modifier.testTag("Delete Crew Member $id"),
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete Crew Member")
+                          }
+                        }
                   }
                 }
                 // Drop down menu for the vehicle
                 item {
                   Row(
                       modifier = Modifier.fillMaxWidth(),
-                      horizontalArrangement = Arrangement.SpaceBetween) {
+                      horizontalArrangement = Arrangement.SpaceBetween,
+                      verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             modifier = Modifier.padding(horizontal = defaultPadding),
                             text = "Vehicles",
@@ -439,16 +455,37 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                                 .testTag("Vehicle Menu $idList"),
                         expanded = expandedVehicleMenu,
                         onExpandedChange = { expandedVehicleMenu = !expandedVehicleMenu }) {
-                          OutlinedTextField(
-                              value = car.name,
-                              modifier =
-                                  Modifier.menuAnchor().fillMaxWidth().padding(defaultPadding),
-                              readOnly = true,
-                              onValueChange = {},
-                              trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                    expanded = expandedVehicleMenu)
-                              })
+                          Row(
+                              modifier = Modifier.fillMaxWidth(),
+                              horizontalArrangement = Arrangement.SpaceBetween,
+                              verticalAlignment = Alignment.CenterVertically) {
+                                OutlinedTextField(
+                                    value = car.name,
+                                    modifier =
+                                        Modifier.menuAnchor()
+                                            .fillMaxWidth()
+                                            .padding(defaultPadding)
+                                            .weight(1f),
+                                    readOnly = true,
+                                    onValueChange = {},
+                                    trailingIcon = {
+                                      ExposedDropdownMenuDefaults.TrailingIcon(
+                                          expanded = expandedVehicleMenu)
+                                    })
+                                IconButton(
+                                    modifier = Modifier.testTag("Delete Vehicle Button"),
+                                    onClick = {
+                                      listVehiclesValue.removeAt(idList)
+                                      if (listVehiclesValue.isEmpty()) {
+                                        addVehicle = true
+                                      }
+                                    },
+                                ) {
+                                  Icon(
+                                      Icons.Default.Delete,
+                                      contentDescription = "Delete Vehicle $idList")
+                                }
+                              }
 
                           DropdownMenu(
                               expanded = expandedVehicleMenu,
