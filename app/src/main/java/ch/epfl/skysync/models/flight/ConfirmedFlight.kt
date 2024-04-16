@@ -24,8 +24,4 @@ data class ConfirmedFlight(
 
 
 ) : Flight {
-
-
-
-
 }

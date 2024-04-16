@@ -7,8 +7,10 @@ import java.time.LocalTime
 data class PlannedFlight(
     override val id: String,
     override val nPassengers: Int,
-    override val team: Team = Team(Role.initRoles(BASE_ROLES)),
     override val flightType: FlightType,
+    override val team: Team = Team(listOf())
+        .addRolesFromRoleType(BASE_ROLES)
+        .addRolesFromRoleType(flightType.specialRoles),
     override val balloon: Balloon?,
     override val basket: Basket?,
     override val date: LocalDate,
@@ -21,10 +23,18 @@ data class PlannedFlight(
             balloon != null &&
             basket != null &&
             vehicles.isNotEmpty()
+
   }
 
+    /**
+     * returns a new flight with a role added to the team for
+     * each roleType in the given list to
+     */
+    fun addRoles(roles: List<RoleType>): PlannedFlight {
+        return copy(team = team.addRolesFromRoleType(roles))
+    }
+
     fun confirmFlight(
-        notReadyToConfirm: ()->Unit,
         meetupTimeTeam: LocalTime,
         departureTimeTeam: LocalTime,
         meetupTimePassenger: LocalTime,
@@ -33,9 +43,10 @@ data class PlannedFlight(
         color: FlightColor
 
 
+
     ): ConfirmedFlight {
         if (!readyToBeConfirmed()) {
-            notReadyToConfirm()
+            throw IllegalStateException("Flight is not ready to be confirmed")
         }
         return ConfirmedFlight(
             id,
