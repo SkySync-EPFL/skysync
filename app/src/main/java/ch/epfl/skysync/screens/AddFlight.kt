@@ -144,12 +144,16 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
               verticalArrangement = Arrangement.SpaceBetween) {
                 // Field getting the number of passengers. Only number can be entered
                 item {
+                  Text(
+                      modifier = Modifier.padding(horizontal = defaultPadding),
+                      text = "Number of passengers",
+                      style = MaterialTheme.typography.headlineSmall)
                   OutlinedTextField(
                       value = nbPassengersValue,
                       onValueChange = { value ->
                         nbPassengersValue = value.filter { it.isDigit() }
                       },
-                      placeholder = { Text("Number of passengers") },
+                      placeholder = { Text("Enter a number bigger than 0") },
                       singleLine = true,
                       keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                       modifier =
@@ -161,6 +165,10 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                 }
                 // The date field is a clickable field that opens a date picker
                 item {
+                  Text(
+                      modifier = Modifier.padding(horizontal = defaultPadding),
+                      text = "Date",
+                      style = MaterialTheme.typography.headlineSmall)
                   if (openDatePicker) {
                     val today = java.util.Calendar.getInstance().timeInMillis
                     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = today)
@@ -214,6 +222,10 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                 }
                 // Drop down menu for the time slot. Only AM and PM are available
                 item {
+                  Text(
+                      modifier = Modifier.padding(horizontal = defaultPadding),
+                      text = "Time Slot",
+                      style = MaterialTheme.typography.headlineSmall)
                   ExposedDropdownMenuBox(
                       modifier =
                           Modifier.fillMaxWidth()
@@ -251,6 +263,10 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                 }
                 // Drop down menu for the flight type
                 item {
+                  Text(
+                      modifier = Modifier.padding(horizontal = defaultPadding),
+                      text = "Flight Type",
+                      style = MaterialTheme.typography.headlineSmall)
                   ExposedDropdownMenuBox(
                       modifier =
                           Modifier.fillMaxWidth()
@@ -405,7 +421,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                           OutlinedTextField(
                               modifier =
                                   Modifier.fillMaxWidth()
-                                      .padding(horizontal = defaultPadding)
+                                      .padding(horizontal = defaultPadding, vertical = smallPadding)
                                       .weight(1f)
                                       .testTag("User $id"),
                               value = query,
@@ -555,6 +571,10 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                 }
                 // Drop down menu for the balloon
                 item {
+                  Text(
+                      modifier = Modifier.padding(horizontal = defaultPadding),
+                      text = "Balloon",
+                      style = MaterialTheme.typography.headlineSmall)
                   ExposedDropdownMenuBox(
                       modifier =
                           Modifier.fillMaxWidth()
@@ -593,6 +613,10 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                 }
                 // Drop down menu for the basket
                 item {
+                  Text(
+                      modifier = Modifier.padding(horizontal = defaultPadding),
+                      text = "Basket",
+                      style = MaterialTheme.typography.headlineSmall)
                   ExposedDropdownMenuBox(
                       modifier =
                           Modifier.fillMaxWidth()
