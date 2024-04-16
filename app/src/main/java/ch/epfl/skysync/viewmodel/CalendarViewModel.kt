@@ -21,8 +21,8 @@ import kotlinx.coroutines.flow.stateIn
 
 data class CalendarUiState(
     val user: User? = null,
-    val availabilityCalendar: AvailabilityCalendar? = null,
-    val flightGroupCalendar: FlightGroupCalendar? = null,
+    val availabilityCalendar: AvailabilityCalendar = AvailabilityCalendar(),
+    val flightGroupCalendar: FlightGroupCalendar = FlightGroupCalendar(),
     val isLoading: Boolean = false,
 )
 
@@ -56,15 +56,19 @@ class CalendarViewModel(
     }
   }
 
-  private val _user: MutableStateFlow<User?> = MutableStateFlow(null)
-  private val _loadingCounter = MutableStateFlow(0)
+  private val user: MutableStateFlow<User?> = MutableStateFlow(null)
+  private val loadingCounter = MutableStateFlow(0)
 
   private val uid: String
   private var originalAvailabilityCalendar = AvailabilityCalendar()
 
   val uiState: StateFlow<CalendarUiState> =
-      combine(_user, _loadingCounter) { user, loadingCounter ->
-            CalendarUiState(user, user?.availabilities, user?.assignedFlights, loadingCounter > 0)
+      combine(user, loadingCounter) { user, loadingCounter ->
+            CalendarUiState(
+                user,
+                user?.availabilities ?: AvailabilityCalendar(),
+                user?.assignedFlights ?: FlightGroupCalendar(),
+                loadingCounter > 0)
           }
           .stateIn(
               scope = viewModelScope,
@@ -78,16 +82,16 @@ class CalendarViewModel(
 
   /** Fetch the user from the database Update asynchronously the [CalendarUiState.user] reference */
   private fun refreshUser() {
-    _loadingCounter.value += 1
+    loadingCounter.value += 1
     userTable.get(
         uid,
         {
           if (it == null) {
             // TODO: display not found message
           } else {
-            _user.value = it
+            user.value = it
             originalAvailabilityCalendar = it.availabilities.copy()
-            _loadingCounter.value -= 1
+            loadingCounter.value -= 1
           }
         },
         this::onError)
@@ -103,17 +107,17 @@ class CalendarViewModel(
    * availabilities as needed
    */
   fun saveAvailabilities() {
-    val user = _user.value ?: return
+    val user = user.value ?: return
     val availabilityCalendar = user.availabilities
 
     val differences =
         originalAvailabilityCalendar.getDifferencesWithOtherCalendar(availabilityCalendar)
 
-    _loadingCounter.value += 1
+    loadingCounter.value += 1
 
     val delayedCallback =
         ParallelOperationsEndCallback(differences.size) {
-          _loadingCounter.value -= 1
+          loadingCounter.value -= 1
           // we refresh the user to have the latest version of the availability calendar
           // as at the moment the Availability.id is lost when changing the availability status
           // (see AvailabilityCalendar.setAvailabilityByDate)

@@ -44,7 +44,7 @@ abstract class CalendarModel<T : CalendarViewable>(
    * @param timeSlot the timeSlot coordinate of the slot
    * @param produceNewValue computes a new value as function of the coordinates and the old value
    */
-  fun setByDate(
+  protected fun setByDate(
       date: LocalDate,
       timeSlot: TimeSlot,
       produceNewValue: (LocalDate, TimeSlot, oldValue: T?) -> T
@@ -59,7 +59,7 @@ abstract class CalendarModel<T : CalendarViewable>(
    * @param timeSlot the timeSlot of the cell to remove
    * @return the removed value if it was found, null otherwise
    */
-  fun removeByDate(date: LocalDate, timeSlot: TimeSlot): T? {
+  protected fun removeByDate(date: LocalDate, timeSlot: TimeSlot): T? {
 
     val oldValue = getByDate(date, timeSlot)
     if (oldValue != null) {
@@ -73,7 +73,7 @@ abstract class CalendarModel<T : CalendarViewable>(
    * @param timeSlot timeSlot coordinate of slot
    * @return slot for given coordinates if found, else null
    */
-  fun getByDate(date: LocalDate, timeSlot: TimeSlot): T? {
+  protected fun getByDate(date: LocalDate, timeSlot: TimeSlot): T? {
     return cells.firstOrNull { it.date == date && it.timeSlot == timeSlot }
   }
 
