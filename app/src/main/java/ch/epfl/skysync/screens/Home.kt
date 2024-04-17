@@ -39,14 +39,100 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import ch.epfl.skysync.models.UNSET_ID
+import ch.epfl.skysync.models.calendar.AvailabilityCalendar
+import ch.epfl.skysync.models.calendar.FlightGroupCalendar
+import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.flight.Balloon
+import ch.epfl.skysync.models.flight.BalloonQualification
+import ch.epfl.skysync.models.flight.Basket
+import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.models.flight.FlightType.Companion.DISCOVERY
+import ch.epfl.skysync.models.flight.FlightType.Companion.FONDUE
+import ch.epfl.skysync.models.flight.FlightType.Companion.PREMIUM
 import ch.epfl.skysync.models.flight.PlannedFlight
+import ch.epfl.skysync.models.flight.Role
+import ch.epfl.skysync.models.flight.RoleType
+import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.navigation.BottomBar
-import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+
+// Sample list for preview (to be deleted)
+val listFlights =
+    listOf(
+        PlannedFlight(
+            nPassengers = 1,
+            date = LocalDate.of(2024, 3, 11),
+            timeSlot = TimeSlot.PM,
+            team =
+                Team(
+                    listOf(
+                        Role(
+                            RoleType.PILOT,
+                            Crew(
+                                "1",
+                                "John",
+                                "Doe",
+                                AvailabilityCalendar(),
+                                FlightGroupCalendar())))),
+            flightType = PREMIUM,
+            vehicles = listOf(Vehicle("sprinter2", "12")),
+            balloon = Balloon("qqp", BalloonQualification.LARGE, "12"),
+            basket = Basket("lol", true, "kdf"),
+            id = UNSET_ID),
+        ConfirmedFlight(
+            nPassengers = 5,
+            date = LocalDate.of(2024, 1, 14),
+            timeSlot = TimeSlot.AM,
+            team =
+                Team(
+                    listOf(
+                        Role(
+                            RoleType.CREW,
+                            Crew(
+                                "1",
+                                "Ben",
+                                "Frick",
+                                AvailabilityCalendar(),
+                                FlightGroupCalendar())))),
+            flightType = FONDUE,
+            vehicles = listOf(Vehicle("sprinter4", "1")),
+            balloon = Balloon("qqo", BalloonQualification.LARGE, "1"),
+            basket = Basket("lo", true, "kf"),
+            id = UNSET_ID,
+            remarks = listOf("r", "rem", "remark3"),
+            meetupTimeTeam = LocalTime.of(12, 1),
+            departureTimeTeam = LocalTime.of(12, 2),
+            meetupTimePassenger = LocalTime.of(12, 3),
+            meetupLocationPassenger = "location"),
+        PlannedFlight(
+            nPassengers = 2,
+            date = LocalDate.of(2024, 3, 20),
+            timeSlot = TimeSlot.AM,
+            flightType = DISCOVERY,
+            vehicles = listOf(),
+            balloon = null,
+            basket = null,
+            id = UNSET_ID),
+        PlannedFlight(
+            nPassengers = 3,
+            date = LocalDate.of(2024, 3, 22),
+            timeSlot = TimeSlot.PM,
+            flightType = DISCOVERY,
+            vehicles = listOf(),
+            balloon = null,
+            basket = null,
+            id = UNSET_ID),
+    )
+// Sample empty list for preview (to be deleted)
+val emptyList: List<Flight> = emptyList()
 
 @Composable
 fun UpcomingFlights(flights: List<Flight>, onFlightClick: (Flight) -> Unit) {
@@ -73,7 +159,7 @@ fun UpcomingFlights(flights: List<Flight>, onFlightClick: (Flight) -> Unit) {
             Text(
                 text = "No upcoming flights",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                color = Color.Gray)
+                color = Color.Yellow)
           }
     } else {
       // Display the flights in a LazyColumn if the list is not empty
@@ -90,7 +176,7 @@ fun FlightRow(flight: Flight, onFlightClick: (Flight) -> Unit) {
           Modifier.fillMaxWidth().clickable { onFlightClick(flight) }.padding(vertical = 4.dp),
       elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
   ) {
-    Surface(modifier = Modifier.fillMaxWidth(), color = lightGray) {
+    Surface(modifier = Modifier.fillMaxWidth(), color = flight.getFlightStatus().displayColor) {
       Row(
           modifier = Modifier.fillMaxWidth().padding(16.dp),
           verticalAlignment = Alignment.CenterVertically,
@@ -114,6 +200,11 @@ fun FlightRow(flight: Flight, onFlightClick: (Flight) -> Unit) {
               // Text for flight time slot
               Text(text = flight.timeSlot.toString(), color = Color.Gray)
             }
+            Text(
+                text = flight.getFlightStatus().toString(),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.alignByBaseline(),
+                color = Color.Gray)
           }
     }
   }
