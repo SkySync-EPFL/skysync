@@ -55,7 +55,7 @@ class AddFlightTest {
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
         .performScrollToNode(hasTestTag("nb Passenger"))
-    composeTestRule.onNodeWithTag("nb Passenger").assertTextContains("Number of passengers")
+    composeTestRule.onNodeWithTag("nb Passenger").assertTextContains("Enter a number bigger than 0")
     composeTestRule.onNodeWithTag("nb Passenger").performClick()
     composeTestRule.onNodeWithTag("nb Passenger").performTextClearance()
     composeTestRule.onNodeWithTag("nb Passenger").performTextInput("1")
