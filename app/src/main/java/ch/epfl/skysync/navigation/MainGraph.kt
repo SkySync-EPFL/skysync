@@ -6,12 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import ch.epfl.skysync.Repository
 import ch.epfl.skysync.screens.LoginScreen
 import com.google.firebase.auth.FirebaseUser
 
 /** Graph of the whole navigation of the app */
 @Composable
 fun MainGraph(
+    repository: Repository,
     navHostController: NavHostController,
     signInLauncher: ActivityResultLauncher<Intent>,
     user: FirebaseUser?
@@ -19,7 +21,7 @@ fun MainGraph(
   NavHost(
       navController = navHostController,
       startDestination = if (user == null) Route.LOGIN else Route.MAIN) {
-        homeGraph(navHostController, user)
+        homeGraph(repository, navHostController, user)
         composable(Route.LOGIN) { LoginScreen(signInLauncher = signInLauncher) }
       }
 }

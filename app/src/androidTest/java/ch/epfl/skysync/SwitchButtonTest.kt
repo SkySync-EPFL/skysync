@@ -8,7 +8,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
-import ch.epfl.skysync.screens.SwitchButton
+import ch.epfl.skysync.components.SwitchButton
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

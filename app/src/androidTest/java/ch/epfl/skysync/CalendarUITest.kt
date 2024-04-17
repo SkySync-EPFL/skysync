@@ -8,10 +8,10 @@ import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
+import ch.epfl.skysync.components.getStartOfWeek
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
-import ch.epfl.skysync.screens.getStartOfWeek
 import java.time.LocalDate
 import org.junit.Assert
 import org.junit.Before
