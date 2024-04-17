@@ -40,8 +40,8 @@ class FlightDetailUiTest {
           PlannedFlight(
               UNSET_ID,
               1,
-              Team(listOf()),
               FlightType.FONDUE,
+              Team(listOf()),
               null,
               null,
               LocalDate.now(),
@@ -225,8 +225,8 @@ class FlightDetailUiTest {
         PlannedFlight(
             UNSET_ID,
             1,
-            Team(teamMembers),
             FlightType.FONDUE,
+            Team(teamMembers),
             null,
             null,
             LocalDate.now(),
