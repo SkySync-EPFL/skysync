@@ -1,5 +1,6 @@
 package ch.epfl.skysync.models.flight
 
+import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import java.time.LocalDate
 import java.time.LocalTime
@@ -67,4 +68,7 @@ data class PlannedFlight(
       FlightStatus.IN_PLANNING
     }
   }
+    fun setId(id: String): PlannedFlight {
+        return copy(id = id)
+    }
 }
