@@ -1,6 +1,9 @@
 package ch.epfl.skysync.viewmodel
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -10,6 +13,7 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.PlannedFlight
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.reflect.KFunction2
 import kotlin.reflect.KFunction3
 
@@ -42,7 +46,7 @@ class FlightsViewModel(
     }
   }
 
-  lateinit var currentFlights: MutableStateFlow<List<Flight>>
+  val currentFlights: MutableStateFlow<List<Flight>> = MutableStateFlow(emptyList())
   private val uid: String
 
 
@@ -82,7 +86,7 @@ class FlightsViewModel(
     flightTable.delete(
       flight.id,
       {
-        currentFlights.value = currentFlights.value - flight
+        currentFlights.value -= flight
         refreshCurrentFlights()
       },
       { exception ->}
@@ -98,10 +102,10 @@ class FlightsViewModel(
       flight,
         {
           val flightWithCurrentId = flight.setId(it)
-          currentFlights.value = currentFlights.value + flightWithCurrentId
-            refreshCurrentFlights()
+          currentFlights.value += flightWithCurrentId
+          refreshCurrentFlights()
         },
-        { exception ->}
+        { exception -> }
     )
 
   }
