@@ -25,6 +25,7 @@ class UserTableUnitTest {
   private val db = FirestoreDatabase(useEmulator = true)
   private val userTable = UserTable(db)
   private val availabilityTable = AvailabilityTable(db)
+  private val customId = "custom-id"
   private var admin1 =
       Admin(
           firstname = "admin-1",
@@ -33,6 +34,7 @@ class UserTableUnitTest {
           assignedFlights = FlightGroupCalendar())
   private var admin2 =
       Admin(
+          id = customId,
           firstname = "admin-2",
           lastname = "lastname",
           availabilities = AvailabilityCalendar(),
@@ -88,7 +90,7 @@ class UserTableUnitTest {
               id, availability2, { id -> availability2 = availability2.copy(id = id) }, {})
         },
         {})
-    userTable.add(admin2, { id -> admin2 = admin2.copy(id = id) }, {})
+    userTable.set(customId, admin2, {}, {})
     userTable.add(
         crew1,
         { id ->
