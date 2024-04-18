@@ -61,10 +61,14 @@ fun FlightDetailUi(
     flight: Flight
 ) {
   Column(
-      modifier = Modifier.fillMaxSize().background(Color.White),
+      modifier = Modifier
+          .fillMaxSize()
+          .background(Color.White),
   ) {
     FlightDetailHead(BackClick = backClick)
-    Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
+    Box(modifier = Modifier
+        .fillMaxHeight()
+        .padding(padding)) {
       FlightdetailBody(flight, padding)
       FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
     }
@@ -108,7 +112,10 @@ fun FlightDetailHead(BackClick: () -> Unit) {
  */
 @Composable
 fun FlightdetailBody(flight: Flight, padding: PaddingValues) {
-  Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f).padding(padding)) {
+  Column(modifier = Modifier
+      .fillMaxWidth()
+      .fillMaxHeight(0.9f)
+      .padding(padding)) {
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
     Row() {
       Column(
@@ -181,28 +188,34 @@ fun FlightDetailBottom(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically) {
-          Button(
-              onClick = { DeleteClick(flightId) },
-              modifier = Modifier.fillMaxWidth(0.3f),
-              colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) {
-                Text(text = "Delete", color = Color.Black, overflow = TextOverflow.Clip)
-              }
-          Button(
-              onClick = { EditClick(flightId) },
-              modifier = Modifier.fillMaxWidth(3 / 7f),
-              colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)) {
-                Text(text = "Edit", color = Color.Black, overflow = TextOverflow.Clip)
-              }
-          Button(
-              onClick = { ConfirmClick(flightId) },
-              modifier = Modifier.fillMaxWidth(0.7f),
-              colors = ButtonDefaults.buttonColors(containerColor = Color.Green)) {
-                Text(text = "Confirm", color = Color.Black, overflow = TextOverflow.Clip)
-              }
+            ClickButton(text = "Delete", onClick = {DeleteClick(flightId)}, modifier = Modifier.fillMaxWidth(0.3f), color = Color.Red)
+            ClickButton(text = "Edit", onClick = {EditClick(flightId)}, modifier = Modifier.fillMaxWidth(3 / 7f), color = Color.Yellow)
+            ClickButton(text = "Confirm", onClick = {ConfirmClick(flightId)}, modifier = Modifier.fillMaxWidth(0.7f), color = Color.Green)
         }
   }
 }
-
+/**
+ * Composable function to create a custom clickable button.
+ *
+ * @param text The text to be displayed on the button.
+ * @param onClick The lambda function to be executed when the button is clicked.
+ * @param modifier The modifier for the button layout.
+ * @param color The color for the button background.
+ */
+@Composable
+fun ClickButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier,
+    color: Color
+) {
+  Button(
+      onClick = onClick,
+      modifier = modifier,
+      colors = ButtonDefaults.buttonColors(containerColor = color)) {
+        Text(text = text, color = Color.Black, overflow = TextOverflow.Clip)
+      }
+}
 /**
  * TextBar is a Composable function that displays a row with two text elements separated by a
  * divider.
@@ -252,7 +265,9 @@ fun TeamRolesList(team: Team) {
           Text(text = "No team member", color = Color.Black)
         }
   } else {
-    LazyColumn(modifier = Modifier.testTag("TeamList").fillMaxHeight(0.5f)) {
+    LazyColumn(modifier = Modifier
+        .testTag("TeamList")
+        .fillMaxHeight(0.5f)) {
       itemsIndexed(team.roles) { index, role ->
         val firstname = role.assignedUser?.firstname ?: ""
         val lastname = role.assignedUser?.lastname ?: ""

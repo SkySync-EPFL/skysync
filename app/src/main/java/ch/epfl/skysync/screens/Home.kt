@@ -177,7 +177,7 @@ fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
           Modifier.fillMaxWidth()
               .clickable { onFlightClick(flight.id) }
               .padding(vertical = 4.dp)
-              .testTag(flight.id),
+              .testTag("flightCard"),
       elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
   ) {
     Surface(modifier = Modifier.fillMaxWidth(), color = flight.getFlightStatus().displayColor) {

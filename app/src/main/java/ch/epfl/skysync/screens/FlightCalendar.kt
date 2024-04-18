@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -66,7 +67,7 @@ fun ShowFlight(
     Button(
         onClick = { navController.navigate(Route.FLIGHT_DETAILS + "/${flight.id}") },
         shape = RectangleShape,
-        modifier = Modifier.fillMaxHeight().fillMaxWidth(weight),
+        modifier = Modifier.fillMaxHeight().fillMaxWidth(weight).testTag("flightButton"),
         colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)) {
           Text(
               text = flight.flightType.name,

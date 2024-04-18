@@ -1,7 +1,9 @@
 package ch.epfl.skysync.flightdetail
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -34,44 +36,28 @@ class IntegrateFlightDetailTest {
   fun backStackIsRightIfClickOnFlight() {
     composeTestRule.onNodeWithText("Calendar").performClick()
     composeTestRule.onNodeWithText("Flight Calendar").performClick()
-    composeTestRule.onNodeWithText("Fondue").performClick()
-    var route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
-
-    composeTestRule.onNodeWithText("Back").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.PERSONAL_FLIGHT_CALENDAR)
-
-    composeTestRule.onNodeWithText("Discovery").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
+    val nodes = composeTestRule.onAllNodesWithTag("flightButton")
+    for (i in 0 until nodes.fetchSemanticsNodes().size) {
+      nodes[i].performClick()
+      var route = navController.currentBackStackEntry?.destination?.route
+      assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
+      composeTestRule.onNodeWithText("Back").performClick()
+      route = navController.currentBackStackEntry?.destination?.route
+      assertEquals(route, Route.PERSONAL_FLIGHT_CALENDAR)
+    }
   }
 
   @Test
   fun backStackIsRightIfClickOnFlightDetails() {
     composeTestRule.onNodeWithText("Home").performClick()
-    composeTestRule.onNodeWithTag("1").performClick()
-    var route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
-
-    composeTestRule.onNodeWithText("Back").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.HOME)
-
-    composeTestRule.onNodeWithTag("2").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
-
-    composeTestRule.onNodeWithText("Back").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.HOME)
-
-    composeTestRule.onNodeWithTag("3").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
-
-    composeTestRule.onNodeWithText("Back").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.HOME)
+    val nodes = composeTestRule.onAllNodesWithTag("flightCard")
+    for (i in 0 until nodes.fetchSemanticsNodes().size) {
+      nodes[i].performClick()
+      var route = navController.currentBackStackEntry?.destination?.route
+      assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
+      composeTestRule.onNodeWithText("Back").performClick()
+      route = navController.currentBackStackEntry?.destination?.route
+      assertEquals(route, Route.HOME)
+    }
   }
 }
