@@ -25,9 +25,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class TestConfirmFlightUI {
+class ConfirmFlightUITest {
   @get:Rule val composeTestRule = createComposeRule()
-  val planedFlight =
+  private val planedFlight =
       PlannedFlight(
           "1234",
           3,
