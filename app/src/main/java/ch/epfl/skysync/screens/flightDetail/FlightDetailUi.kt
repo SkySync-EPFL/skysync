@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.flightDetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
@@ -54,19 +55,23 @@ import ch.epfl.skysync.ui.theme.lightOrange
 @Composable
 fun FlightDetailUi(
     backClick: () -> Unit,
-    deleteClick: () -> Unit,
-    editClick: () -> Unit,
-    confirmClick: () -> Unit,
+    deleteClick: (flightId : String) -> Unit,
+    editClick: (flightId : String) -> Unit,
+    confirmClick: (flightId : String) -> Unit,
     padding: PaddingValues,
-    flight: PlannedFlight
+    flight: Flight
 ) {
   Column(
-      modifier = Modifier.fillMaxSize().background(Color.White),
+      modifier = Modifier
+          .fillMaxSize()
+          .background(Color.White),
   ) {
     FlightDetailHead(BackClick = backClick)
-    Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
+    Box(modifier = Modifier
+        .fillMaxHeight()
+        .padding(padding)) {
       FlightdetailBody(flight, padding)
-      FlightDetailBottom(deleteClick, editClick, confirmClick, padding)
+      FlightDetailBottom(flight.id,deleteClick, editClick, confirmClick)
     }
   }
 }
@@ -106,8 +111,11 @@ fun FlightDetailHead(BackClick: () -> Unit) {
  * @param padding PaddingValues to apply to the content.
  */
 @Composable
-fun FlightdetailBody(flight: PlannedFlight, padding: PaddingValues) {
-  Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f).padding(padding)) {
+fun FlightdetailBody(flight: Flight, padding: PaddingValues) {
+  Column(modifier = Modifier
+      .fillMaxWidth()
+      .fillMaxHeight(0.9f)
+      .padding(padding)) {
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
     Row() {
       Column(
@@ -163,32 +171,32 @@ fun FlightdetailBody(flight: PlannedFlight, padding: PaddingValues) {
  */
 @Composable
 fun FlightDetailBottom(
-    DeleteClick: () -> Unit,
-    EditClick: () -> Unit,
-    ConfirmClick: () -> Unit,
-    padding: PaddingValues
+    flightId: String,
+    DeleteClick: (flightId : String) -> Unit,
+    EditClick: (flightId : String) -> Unit,
+    ConfirmClick: (flightId : String) -> Unit,
 ) {
   Box(
-      modifier = Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding()),
+      modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.BottomCenter) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
               Button(
-                  onClick = DeleteClick,
+                  onClick = {DeleteClick(flightId)},
                   modifier = Modifier.fillMaxWidth(0.3f),
                   colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) {
                     Text(text = "Delete", color = Color.Black, overflow = TextOverflow.Clip)
                   }
               Button(
-                  onClick = EditClick,
+                  onClick = {EditClick(flightId) },
                   modifier = Modifier.fillMaxWidth(3 / 7f),
                   colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)) {
                     Text(text = "Edit", color = Color.Black, overflow = TextOverflow.Clip)
                   }
               Button(
-                  onClick = ConfirmClick,
+                  onClick = {ConfirmClick(flightId)},
                   modifier = Modifier.fillMaxWidth(0.7f),
                   colors = ButtonDefaults.buttonColors(containerColor = Color.Green)) {
                     Text(text = "Confirm", color = Color.Black, overflow = TextOverflow.Clip)
@@ -245,7 +253,9 @@ fun TeamRolesList(team: Team) {
           Text(text = "No team member")
         }
   } else {
-    LazyColumn(modifier = Modifier.testTag("TeamList").fillMaxHeight(0.5f)) {
+    LazyColumn(modifier = Modifier
+        .testTag("TeamList")
+        .fillMaxHeight(0.5f)) {
       itemsIndexed(team.roles) { index, role ->
         val firstname = role.assignedUser?.firstname ?: ""
         val lastname = role.assignedUser?.lastname ?: ""
