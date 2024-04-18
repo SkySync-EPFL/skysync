@@ -103,6 +103,7 @@ fun FlightScreen(navController: NavHostController) {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
       } catch (e: SecurityException) {
         // Exception handling if the permission was rejected.
+        Log.e("FlightScreen", "Failed to request location updates", e)
       }
     }
 
