@@ -15,6 +15,7 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 
 /**
@@ -61,13 +62,64 @@ class FlightsViewModel(
         }
     }
 
-    val currentFlights: MutableStateFlow<List<Flight>> = MutableStateFlow(emptyList())
-    val currentBalloons: MutableStateFlow<List<Balloon>> = MutableStateFlow(emptyList())
-    val currentBaskets: MutableStateFlow<List<Basket>> = MutableStateFlow(emptyList())
-    val currentFlightTypes: MutableStateFlow<List<FlightType>> = MutableStateFlow(emptyList())
+    val _currentFlights: MutableStateFlow<List<Flight>> = MutableStateFlow(emptyList())
+    val _currentBalloons: MutableStateFlow<List<Balloon>> = MutableStateFlow(emptyList())
+    val _currentBaskets: MutableStateFlow<List<Basket>> = MutableStateFlow(emptyList())
+    val _currentFlightTypes: MutableStateFlow<List<FlightType>> = MutableStateFlow(emptyList())
+
+
+    val currentFlights = _currentFlights.asStateFlow()
+    val currentBalloons = _currentBalloons.asStateFlow()
+    val currentBaskets = _currentBaskets.asStateFlow()
+    val currentFlightTypes = _currentFlightTypes.asStateFlow()
 
 
 
+    fun refreshAll(
+    ) {
+        refreshCurrentFlights()
+        refreshCurrentBalloons()
+        refreshCurrentBaskets()
+        refreshCurrentFlightTypes()
+    }
+
+
+
+    fun refreshCurrentBalloons(
+    ) {
+        balloonTable.getAll(
+            { balloons ->
+                _currentBalloons.value = balloons
+            },
+            { exception ->
+                Log.d("Balloonrefresh", exception.toString())
+            }
+        )
+    }
+
+    fun refreshCurrentBaskets(
+    ) {
+        basketTable.getAll(
+            { baskets ->
+                _currentBaskets.value = baskets
+            },
+            { exception ->
+                Log.d("Basketrefresh", exception.toString())
+            }
+        )
+    }
+
+    fun refreshCurrentFlightTypes(
+    ) {
+        flightTypeTable.getAll(
+            { flightTypes ->
+                _currentFlightTypes.value = flightTypes
+            },
+            { exception ->
+                Log.d("FlightTyperefresh", exception.toString())
+            }
+        )
+    }
 
 
     fun refreshCurrentFlights(
@@ -77,7 +129,7 @@ class FlightsViewModel(
 
         flightTable.getAll(
             { flights ->
-                currentFlights.value = flights
+                _currentFlights.value = flights
             },
             { exception ->
                 Log.d("FLightrefresh", exception.toString())
@@ -106,11 +158,15 @@ class FlightsViewModel(
         flightTable.delete(
             flight.id,
             {
-                currentFlights.value -= flight
+                _currentFlights.value -= flight
                 refreshCurrentFlights()
             },
             { exception ->}
         )
+    }
+
+    fun deleteFlight(flightId: String) {
+        getFlightFromId(flightId)?.let { deleteFlight(it) }
     }
 
 
@@ -122,7 +178,7 @@ class FlightsViewModel(
             flight,
             {
                 val flightWithCurrentId = flight.setId(it)
-                currentFlights.value += flightWithCurrentId
+                _currentFlights.value += flightWithCurrentId
                 refreshCurrentFlights()
             },
             { exception -> }
@@ -130,7 +186,15 @@ class FlightsViewModel(
 
     }
 
+
+    /**
+     * return the flight with flight id if it exists in the list of current flights
+     */
+    fun getFlightFromId(flightId: String): Flight? {
+        return currentFlights.value.find { it.id == flightId }
+    }
+
     init {
-        refreshCurrentFlights()
+        refreshAll()
     }
 }
