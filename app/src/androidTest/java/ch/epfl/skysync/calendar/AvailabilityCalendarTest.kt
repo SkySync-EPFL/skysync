@@ -1,24 +1,27 @@
-package ch.epfl.skysync
+package ch.epfl.skysync.calendar
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.ComposeNavigator
-import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
+import ch.epfl.skysync.components.AvailabilityCalendar
 import ch.epfl.skysync.components.getStartOfWeek
+import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.navigation.homeGraph
 import java.time.LocalDate
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class CalendarUITest {
+class AvailabilityCalendarTest {
+
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var navController: TestNavHostController
 
@@ -27,10 +30,13 @@ class CalendarUITest {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(navController, null)
-      }
-      navController.navigate(Route.AVAILABILITY_CALENDAR)
+      AvailabilityCalendar(
+          padding = PaddingValues(0.dp),
+          onFlightCalendarClick = {},
+          getAvailabilityStatus = { _, _ -> AvailabilityStatus.UNDEFINED },
+          nextAvailabilityStatus = { _, _ -> AvailabilityStatus.UNDEFINED },
+          onSave = {},
+      )
     }
   }
 

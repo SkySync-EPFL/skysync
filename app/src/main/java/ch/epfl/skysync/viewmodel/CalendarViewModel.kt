@@ -13,7 +13,6 @@ import ch.epfl.skysync.models.calendar.CalendarDifferenceType
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -29,12 +28,12 @@ data class CalendarUiState(
 /**
  * ViewModel for the Calendar screen
  *
- * @param firebaseUser The Firebase user
+ * @param uid The Firebase authentication uid of the user
  * @param userTable The user table
  * @param availabilityTable The availability table
  */
 class CalendarViewModel(
-    firebaseUser: FirebaseUser,
+    private val uid: String,
     private val userTable: UserTable,
     private val availabilityTable: AvailabilityTable,
 ) : ViewModel() {
@@ -42,7 +41,7 @@ class CalendarViewModel(
     /** Creates a view model by accepting the firebase user as an argument */
     @Composable
     fun createViewModel(
-        firebaseUser: FirebaseUser,
+        uid: String,
         userTable: UserTable,
         availabilityTable: AvailabilityTable,
     ): CalendarViewModel {
@@ -50,7 +49,7 @@ class CalendarViewModel(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return CalendarViewModel(firebaseUser, userTable, availabilityTable) as T
+                  return CalendarViewModel(uid, userTable, availabilityTable) as T
                 }
               })
     }
@@ -59,7 +58,6 @@ class CalendarViewModel(
   private val user: MutableStateFlow<User?> = MutableStateFlow(null)
   private val loadingCounter = MutableStateFlow(0)
 
-  private val uid: String
   private var originalAvailabilityCalendar = AvailabilityCalendar()
 
   val uiState: StateFlow<CalendarUiState> =
@@ -76,7 +74,6 @@ class CalendarViewModel(
               initialValue = CalendarUiState(isLoading = true))
 
   init {
-    uid = firebaseUser.uid
     refreshUser()
   }
 

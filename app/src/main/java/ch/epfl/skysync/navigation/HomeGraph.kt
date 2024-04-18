@@ -8,16 +8,15 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
-import com.google.firebase.auth.FirebaseUser
 
 /** Graph of the main screens of the app */
 fun NavGraphBuilder.homeGraph(
     repository: Repository,
     navController: NavHostController,
-    user: FirebaseUser?
+    uid: String?
 ) {
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
-    personalCalendar(repository, navController, user)
+    personalCalendar(repository, navController, uid)
     composable(Route.CHAT) { ChatScreen(navController) }
     composable(Route.FLIGHT) { FlightScreen(navController) }
     composable(Route.HOME) { HomeScreen(navController) }

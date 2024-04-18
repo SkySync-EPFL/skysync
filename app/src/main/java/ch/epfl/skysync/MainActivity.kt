@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
             repository = repository,
             navHostController = navController,
             signInLauncher = signInLauncher,
-            user = user.value)
+            uid = user.value?.uid)
       }
     }
   }
