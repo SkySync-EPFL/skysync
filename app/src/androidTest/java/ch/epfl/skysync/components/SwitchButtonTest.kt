@@ -21,7 +21,7 @@ class SwitchButtonTest {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      SwitchButton(Side.LEFT, PaddingValues(), "Text left", "Text Right", {}, {})
+      SwitchButton(Side.RIGHT, PaddingValues(), "Text left", "Text right", {}, {})
     }
   }
 
