@@ -15,6 +15,7 @@ import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
+import ch.epfl.skysync.models.flight.Vehicle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -62,23 +63,32 @@ class FlightsViewModel(
   private val _currentBaskets: MutableStateFlow<List<Basket>> = MutableStateFlow(emptyList())
   private val _currentFlightTypes: MutableStateFlow<List<FlightType>> =
       MutableStateFlow(emptyList())
+  private val _currentVehicles: MutableStateFlow<List<Vehicle>> = MutableStateFlow(emptyList())
 
   val currentFlights = _currentFlights.asStateFlow()
   val currentBalloons = _currentBalloons.asStateFlow()
   val currentBaskets = _currentBaskets.asStateFlow()
   val currentFlightTypes = _currentFlightTypes.asStateFlow()
+  val currentVehicles = _currentVehicles.asStateFlow()
 
   fun refreshAll() {
     refreshCurrentFlights()
     refreshCurrentBalloons()
     refreshCurrentBaskets()
     refreshCurrentFlightTypes()
+    refreshCurrentVehicles()
   }
 
   fun refreshCurrentBalloons() {
     balloonTable.getAll(
         { balloons -> _currentBalloons.value = balloons },
         { exception -> Log.d("Balloonrefresh", exception.toString()) })
+  }
+
+  fun refreshCurrentVehicles() {
+    vehicleTable.getAll(
+        { vehicles -> _currentVehicles.value = vehicles },
+        { exception -> Log.d("Vehiclerefresh", exception.toString()) })
   }
 
   fun refreshCurrentBaskets() {
