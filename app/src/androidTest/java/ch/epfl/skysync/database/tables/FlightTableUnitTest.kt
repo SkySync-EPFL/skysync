@@ -99,8 +99,7 @@ class FlightTableUnitTest {
 
     assertEquals(true, isComplete)
     assertEquals(false, isError)
-    println("FLIGHT MEMBERS")
-    println(flightMembers)
+
     assertEquals(1, flightMembers?.size ?: 0)
   }
 

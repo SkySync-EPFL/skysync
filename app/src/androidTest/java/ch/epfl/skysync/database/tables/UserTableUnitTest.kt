@@ -114,9 +114,9 @@ class UserTableUnitTest {
     var isError = false
     var user: User? = null
 
-    val newAdmin2 = admin2.copy(firstname = "new-admin-2")
+    val newAdmin2 = dbs.admin2.copy(firstname = "new-admin-2")
 
-    userTable.update(admin2.id, newAdmin2, { isComplete = true }, { isError = false })
+    userTable.update(newAdmin2.id, newAdmin2, { isComplete = true }, { isError = false })
 
     SystemClock.sleep(DB_SLEEP_TIME)
 
