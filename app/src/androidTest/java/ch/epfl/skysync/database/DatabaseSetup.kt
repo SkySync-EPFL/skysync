@@ -68,6 +68,7 @@ class DatabaseSetup {
           qualification = BalloonQualification.LARGE)
   var pilot2 =
       Pilot(
+          id = "id-pilot-2",
           firstname = "pilot-2",
           lastname = "lastname",
           availabilities = AvailabilityCalendar(),
@@ -89,6 +90,9 @@ class DatabaseSetup {
   var availability4 =
       Availability(
           status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = LocalDate.of(2024, 8, 15))
+    var availability5 =
+        Availability(
+            status = AvailabilityStatus.MAYBE, timeSlot = TimeSlot.PM, date = LocalDate.of(2024, 8, 16))
 
   var balloon1 = Balloon(name = "balloon-1", qualification = BalloonQualification.MEDIUM)
 
@@ -187,12 +191,12 @@ class DatabaseSetup {
               pilot1.id, availability2, { availability2 = availability2.copy(id = it) }, {})
         },
         {})
-    userTable.add(
+    userTable.set(
+        pilot2.id,
         pilot2,
-        { id ->
-          pilot2 = pilot2.copy(id = id)
+        {
           availabilityTable.add(
-              id, availability2, { availability2 = availability2.copy(id = it) }, {})
+              pilot2.id, availability5, { availability5 = availability5.copy(id = it) }, {})
         },
         {})
 
@@ -202,7 +206,7 @@ class DatabaseSetup {
     admin1.availabilities.addCells(listOf(availability3, availability4))
     crew1.availabilities.addCells(listOf(availability1))
     pilot1.availabilities.addCells(listOf(availability2))
-    pilot2.availabilities.addCells(listOf(availability2))
+    pilot2.availabilities.addCells(listOf(availability5))
 
     // re-set all the objects that have been added in the db -> they now have IDs
     flight1 =
