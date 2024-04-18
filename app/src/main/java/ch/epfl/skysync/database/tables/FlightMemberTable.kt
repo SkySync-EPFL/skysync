@@ -22,7 +22,6 @@ class FlightMemberTable(db: FirestoreDatabase) :
   ) {
     db.addItem(path, item, onCompletion, onError)
   }
-
   /**
    * Update a flight member item
    *
