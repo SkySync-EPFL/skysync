@@ -169,7 +169,8 @@ class UserTableUnitTest {
     assertEquals(false, isError)
 
     assertTrue(
-        listOf(dbs.availability2, dbs.availability3, dbs.availability4, dbs.availability5).containsAll(availabilities))
+        listOf(dbs.availability2, dbs.availability3, dbs.availability4, dbs.availability5)
+            .containsAll(availabilities))
 
     var flightMembers = listOf<FlightMemberSchema>()
     isComplete = false

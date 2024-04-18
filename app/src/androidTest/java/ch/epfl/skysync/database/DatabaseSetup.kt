@@ -90,9 +90,11 @@ class DatabaseSetup {
   var availability4 =
       Availability(
           status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = LocalDate.of(2024, 8, 15))
-    var availability5 =
-        Availability(
-            status = AvailabilityStatus.MAYBE, timeSlot = TimeSlot.PM, date = LocalDate.of(2024, 8, 16))
+  var availability5 =
+      Availability(
+          status = AvailabilityStatus.MAYBE,
+          timeSlot = TimeSlot.PM,
+          date = LocalDate.of(2024, 8, 16))
 
   var balloon1 = Balloon(name = "balloon-1", qualification = BalloonQualification.MEDIUM)
 
