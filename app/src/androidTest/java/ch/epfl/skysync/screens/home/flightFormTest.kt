@@ -25,10 +25,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class ModifyFlightTest {
+class FlightFormTest {
 
   @get:Rule val composeTestRule = createComposeRule()
   private lateinit var navController: TestNavHostController
+  private val title: String = "Modify Flight"
 
   @Before
   fun setup() {
@@ -143,8 +144,8 @@ class ModifyFlightTest {
   }
 
   @Test
-  fun addFlightButtonIsDisplayed() {
-    composeTestRule.onNodeWithTag("Add Flight Button").assertIsDisplayed()
+  fun mainButtonIsDisplayed() {
+    composeTestRule.onNodeWithTag("$title Button").assertIsDisplayed()
   }
 
   @Test
@@ -192,7 +193,7 @@ class ModifyFlightTest {
     composeTestRule.onNodeWithTag("Basket Menu").performClick()
     composeTestRule.onNodeWithTag("Basket 1").performClick()
 
-    composeTestRule.onNodeWithTag("Add Flight Button").performClick()
+    composeTestRule.onNodeWithTag("$title Button").performClick()
     Assert.assertEquals(navController.currentDestination?.route, Route.HOME)
   }
 
