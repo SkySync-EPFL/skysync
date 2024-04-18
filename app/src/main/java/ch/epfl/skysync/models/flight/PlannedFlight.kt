@@ -67,4 +67,8 @@ data class PlannedFlight(
       FlightStatus.IN_PLANNING
     }
   }
+
+    fun setId(id: String): PlannedFlight {
+        return copy(id = id)
+    }
 }
