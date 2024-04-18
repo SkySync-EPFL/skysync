@@ -10,11 +10,8 @@ import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.database.tables.FlightTypeTable
 import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.database.tables.VehicleTable
-import ch.epfl.skysync.models.calendar.Availability
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
-import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
@@ -23,7 +20,6 @@ import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
-import java.time.LocalDate
 
 /**
  * Represent a mock database setup
@@ -57,22 +53,6 @@ class DatabaseSetup2 {
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.LARGE)
-  var availability1 =
-      Availability(
-          status = AvailabilityStatus.MAYBE,
-          timeSlot = TimeSlot.AM,
-          date = LocalDate.of(2024, 8, 12))
-  var availability2 =
-      Availability(
-          status = AvailabilityStatus.MAYBE,
-          timeSlot = TimeSlot.AM,
-          date = LocalDate.of(2024, 8, 12))
-  var availability3 =
-      Availability(
-          status = AvailabilityStatus.NO, timeSlot = TimeSlot.AM, date = LocalDate.of(2024, 8, 14))
-  var availability4 =
-      Availability(
-          status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = LocalDate.of(2024, 8, 15))
 
   var balloon1 = Balloon(name = "balloon-1", qualification = BalloonQualification.MEDIUM)
 
