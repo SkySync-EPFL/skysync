@@ -24,8 +24,6 @@ import kotlinx.coroutines.flow.asStateFlow
  * @param firebaseUser: FirebaseUser? the firebase user
  */
 class FlightsViewModel(
-    //  private val firebaseUserId: String,
-    //  private val userTable: UserTable,
     private val flightTable: FlightTable,
     private val balloonTable: BalloonTable,
     private val basketTable: BasketTable,
@@ -103,7 +101,9 @@ class FlightsViewModel(
         { exception -> Log.d("FLightrefresh", exception.toString()) })
   }
 
-  /** modifies the flight by deleting the old flight and adding a new one */
+  /**
+   * modifies the flight by deleting the old flight and adding a new one in the db and the viewmodel
+   */
   fun modifyFlight(
       newFlight: PlannedFlight,
   ) {
@@ -119,6 +119,7 @@ class FlightsViewModel(
         { exception -> })
   }
 
+  /** deletes the given flight from the db and the viewmodel */
   fun deleteFlight(
       flight: Flight,
   ) {
@@ -129,6 +130,7 @@ class FlightsViewModel(
     getFlightFromId(flightId)?.let { deleteFlight(it) }
   }
 
+  /** adds the given flight to the db and the viewmodel */
   fun addFlight(
       flight: PlannedFlight,
   ) {
