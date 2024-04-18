@@ -117,7 +117,6 @@ class DatabaseSetup2 {
     val basketTable = BasketTable(db)
     val vehicleTable = VehicleTable(db)
     val userTable = UserTable(db)
-    val availabilityTable = AvailabilityTable(db)
 
     flightTypeTable.add(flightType1, { flightType1 = flightType1.copy(id = it) }, {})
     flightTypeTable.add(flightType2, { flightType2 = flightType2.copy(id = it) }, {})
@@ -131,40 +130,14 @@ class DatabaseSetup2 {
     vehicleTable.add(vehicle1, { vehicle1 = vehicle1.copy(id = it) }, {})
     vehicleTable.add(vehicle2, { vehicle2 = vehicle2.copy(id = it) }, {})
 
-    userTable.add(
-        admin1,
-        { id ->
-          admin1 = admin1.copy(id = id)
-          availabilityTable.add(
-              id, availability3, { availability3 = availability3.copy(id = it) }, {})
-          availabilityTable.add(
-              id, availability4, { availability4 = availability4.copy(id = it) }, {})
-        },
-        {})
+    userTable.add(admin1, { id -> admin1 = admin1.copy(id = id) }, {})
     userTable.add(admin2, { id -> admin2 = admin2.copy(id = id) }, {})
-    userTable.add(
-        crew1,
-        { id ->
-          crew1 = crew1.copy(id = id)
-          availabilityTable.add(
-              id, availability1, { availability1 = availability1.copy(id = it) }, {})
-        },
-        {})
-    userTable.add(
-        pilot1,
-        { id ->
-          pilot1 = pilot1.copy(id = id)
-          availabilityTable.add(
-              id, availability2, { availability2 = availability2.copy(id = it) }, {})
-        },
-        {})
+    userTable.add(crew1, { id -> crew1 = crew1.copy(id = id) }, {})
+    userTable.add(pilot1, { id -> pilot1 = pilot1.copy(id = id) }, {})
 
     SystemClock.sleep(DB_SLEEP_TIME)
 
     // this needs to be done after setting all the IDs
-    admin1.availabilities.addCells(listOf(availability3, availability4))
-    crew1.availabilities.addCells(listOf(availability1))
-    pilot1.availabilities.addCells(listOf(availability2))
 
     SystemClock.sleep(DB_SLEEP_TIME)
   }
