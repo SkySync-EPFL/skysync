@@ -58,6 +58,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
 import java.time.LocalDate
 import java.time.LocalTime
@@ -213,19 +214,14 @@ fun FlightRow(flight: Flight, onFlightClick: (Flight) -> Unit) {
 // Scaffold wrapper for the Home Screen
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController, listFlights: MutableList<PlannedFlight>) {
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       bottomBar = { BottomBar(navController) },
       floatingActionButton = {
         // Define the FloatingActionButton to create a flight
         FloatingActionButton(
-            onClick = {
-              // Here is where you'd navigate to a new screen. For now, just log a message.
-              Log.d("HomeScreen", "FloatingActionButton clicked. Implement navigation here.")
-              // Example navigation call: navController.navigate("AddFlight")
-            },
-            containerColor = lightOrange) {
+            onClick = { navController.navigate(Route.ADD_FLIGHT) }, containerColor = lightOrange) {
               Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
             }
       },
@@ -245,6 +241,7 @@ fun HomeScreen(navController: NavHostController) {
 fun HomeScreenPreview() {
   // Preview navigation controller
   val navController = rememberNavController()
+  val listFlights = mutableListOf<PlannedFlight>()
   // Preview of Home Screen
-  HomeScreen(navController = navController)
+  HomeScreen(navController = navController, listFlights)
 }

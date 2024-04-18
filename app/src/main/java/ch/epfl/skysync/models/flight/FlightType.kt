@@ -18,6 +18,13 @@ data class FlightType(
     val PREMIUM = FlightType("Premium")
     val FONDUE = FlightType("Fondue", listOf(RoleType.MAITRE_FONDUE))
     val HIGH_ALTITUDE = FlightType("High Altitude", listOf(RoleType.OXYGEN_MASTER))
+    val all_flights =
+        listOf(
+            DISCOVERY,
+            PREMIUM,
+            FONDUE,
+            HIGH_ALTITUDE,
+        )
   }
 }
 
