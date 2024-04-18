@@ -103,11 +103,25 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
    * Set item at id and override any previously set id.
    *
    * @param item The user to add to the database
-   * @param id the id of the item (if null a new id is generated)
+   * @param id The id of the user
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   fun set(id: String, item: User, onCompletion: () -> Unit, onError: (Exception) -> Unit) {
+    db.setItem(path, id, UserSchema.fromModel(item), onCompletion, onError)
+  }
+
+  /**
+   * Update a user
+   *
+   * Update the user at the given id.
+   *
+   * @param item The user to update
+   * @param id The id of the user
+   * @param onCompletion Callback called on completion of the operation
+   * @param onError Callback called when an error occurs
+   */
+  fun update(id: String, item: User, onCompletion: () -> Unit, onError: (Exception) -> Unit) {
     db.setItem(path, id, UserSchema.fromModel(item), onCompletion, onError)
   }
 

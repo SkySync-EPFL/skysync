@@ -23,6 +23,15 @@ class FlightMemberTable(db: FirestoreDatabase) :
     db.addItem(path, item, onCompletion, onError)
   }
 
+  fun set(
+      id: String,
+      item: FlightMemberSchema,
+      onCompletion: () -> Unit,
+      onError: (Exception) -> Unit
+  ) {
+    db.setItem(path, id, item, onCompletion, onError)
+  }
+
   companion object {
     const val PATH = "flight-member"
   }

@@ -56,22 +56,27 @@ class UserTableUnitTest {
       Availability(
           status = AvailabilityStatus.MAYBE,
           timeSlot = TimeSlot.AM,
-          date = LocalDate.now().minusDays(3))
+          date = LocalDate.now().minusDays(4))
   private var availability2 =
       Availability(
           status = AvailabilityStatus.MAYBE,
           timeSlot = TimeSlot.PM,
-          date = LocalDate.now().minusDays(2))
+          date = LocalDate.now().minusDays(3))
   private var availability3 =
       Availability(
           status = AvailabilityStatus.NO,
           timeSlot = TimeSlot.AM,
-          date = LocalDate.now().minusDays(1))
+          date = LocalDate.now().minusDays(2))
   private var availability4 =
       Availability(
           status = AvailabilityStatus.OK,
           timeSlot = TimeSlot.PM,
-          date = LocalDate.now().minusDays(0))
+          date = LocalDate.now().minusDays(1))
+  private var availability5 =
+      Availability(
+          status = AvailabilityStatus.NO,
+          timeSlot = TimeSlot.PM,
+          date = LocalDate.now().minusDays(1))
 
   @Before
   fun testSetup() {
@@ -90,7 +95,16 @@ class UserTableUnitTest {
               id, availability2, { id -> availability2 = availability2.copy(id = id) }, {})
         },
         {})
-    userTable.set(customId, admin2, {}, {})
+
+    userTable.set(
+        admin2.id,
+        admin2,
+        {
+          availabilityTable.add(
+              admin2.id, availability5, { id -> availability5 = availability5.copy(id = id) }, {})
+        },
+        {})
+
     userTable.add(
         crew1,
         { id ->
@@ -111,6 +125,7 @@ class UserTableUnitTest {
 
     // this needs to be done after setting all the IDs
     admin1.availabilities.addCells(listOf(availability1, availability2))
+    admin2.availabilities.addCells(listOf(availability5))
     crew1.availabilities.addCells(listOf(availability3))
     pilot1.availabilities.addCells(listOf(availability4))
   }
@@ -191,6 +206,100 @@ class UserTableUnitTest {
     assertEquals(true, isComplete)
     assertEquals(false, isError)
     assertTrue(listOf(crew1, pilot1).containsAll(users))
+  }
+
+  @Test
+  fun updateTest() {
+    var isComplete = false
+    var isError = false
+    var user: User? = null
+
+    val newAdmin2 =
+        Admin(
+            id = customId,
+            firstname = "new-admin-2",
+            lastname = "lastname",
+            availabilities = AvailabilityCalendar(),
+            assignedFlights = FlightGroupCalendar())
+
+    val newAvailability5 =
+        Availability(
+            status = AvailabilityStatus.OK,
+            timeSlot = TimeSlot.PM,
+            date = LocalDate.now().minusDays(1))
+
+    newAdmin2.availabilities.addCells(listOf(newAvailability5))
+
+    userTable.update(
+        admin2.id,
+        newAdmin2,
+        {
+          availabilityTable.add(
+              admin2.id, availability5, { isComplete = true }, { isError = false })
+        },
+        { isError = true })
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
+
+    isComplete = false
+    isError = false
+
+    userTable.get(
+        newAdmin2.id,
+        {
+          user = it
+          isComplete = true
+        },
+        { isError = true })
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
+    assertEquals(newAdmin2, user)
+
+    var availabilities = listOf<Availability>()
+    isComplete = false
+    isError = false
+    user = null
+
+    availabilityTable.getAll(
+        {
+          availabilities = it
+          isComplete = true
+        },
+        { isError = true })
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
+    assertTrue(
+        listOf(availability1, availability2, availability3, availability4, newAvailability5)
+            .containsAll(availabilities))
+
+    availabilities = listOf<Availability>()
+    isComplete = false
+    isError = false
+    user = null
+
+    /**
+     * userTable.update(admin2.id, admin2, {
+     *
+     * }, {})
+     *
+     * SystemClock.sleep(DB_SLEEP_TIME)
+     *
+     * availabilityTable.getAll( { availabilities = it isComplete = true }, { isError = true })
+     *
+     * SystemClock.sleep(DB_SLEEP_TIME)
+     *
+     * assertEquals(true, isComplete) assertEquals(false, isError) assertTrue( listOf(availability1,
+     * availability2, availability3, availability4) .containsAll(availabilities))
+     */
   }
 
   @Test
