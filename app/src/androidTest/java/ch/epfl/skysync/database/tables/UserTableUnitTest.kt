@@ -109,6 +109,39 @@ class UserTableUnitTest {
   }
 
   @Test
+  fun updateTest() {
+    var isComplete = false
+    var isError = false
+    var user: User? = null
+
+    val newAdmin2 = dbs.admin2.copy(firstname = "new-admin-2")
+
+    userTable.update(newAdmin2.id, newAdmin2, { isComplete = true }, { isError = false })
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
+
+    isComplete = false
+    isError = false
+
+    userTable.get(
+        newAdmin2.id,
+        {
+          user = it
+          isComplete = true
+        },
+        { isError = true })
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
+    assertEquals(newAdmin2, user)
+  }
+
+  @Test
   fun deleteTest() {
     var isComplete = false
     var isError = false
@@ -134,8 +167,10 @@ class UserTableUnitTest {
 
     assertEquals(true, isComplete)
     assertEquals(false, isError)
+
     assertTrue(
-        listOf(dbs.availability2, dbs.availability3, dbs.availability4).containsAll(availabilities))
+        listOf(dbs.availability2, dbs.availability3, dbs.availability4, dbs.availability5)
+            .containsAll(availabilities))
 
     var flightMembers = listOf<FlightMemberSchema>()
     isComplete = false

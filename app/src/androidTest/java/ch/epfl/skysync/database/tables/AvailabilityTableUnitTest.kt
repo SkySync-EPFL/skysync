@@ -80,8 +80,39 @@ class AvailabilityTableUnitTest {
     // the added then retrieved availability should be the same as the initial one
     assertEquals(availability.copy(id = id), getAvailability)
 
-    // Step 3: Delete
+    // Step 3: Update
 
+    isComplete = false
+    isError = false
+
+    val updateAvailability =
+        Availability(
+            id = id, status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = LocalDate.now())
+    table.update(userId, id, updateAvailability, { isComplete = true }, { isError = true })
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
+
+    isComplete = false
+    isError = false
+    table.get(
+        id,
+        {
+          getAvailability = it
+          isComplete = true
+        },
+        { isError = true })
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
+    // the added then retrieved availability should be the same as the initial one
+    assertEquals(updateAvailability, getAvailability)
+
+    // Step 4: delete
     isComplete = false
     isError = false
 
@@ -93,7 +124,7 @@ class AvailabilityTableUnitTest {
     assertEquals(true, isComplete)
     assertEquals(false, isError)
 
-    // Step 4: GetAll
+    // Step 5: GetAll
 
     var getAllSize = -1
     var getAllComplete = false
