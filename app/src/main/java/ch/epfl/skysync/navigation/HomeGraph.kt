@@ -12,6 +12,7 @@ import ch.epfl.skysync.screens.AddFlightScreen
 import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
+import ch.epfl.skysync.screens.ModifyFlightScreen
 import com.google.firebase.auth.FirebaseUser
 import java.time.LocalDate
 
@@ -54,5 +55,8 @@ fun NavGraphBuilder.homeGraph(navController: NavHostController, user: FirebaseUs
     composable(Route.FLIGHT) { FlightScreen(navController) }
     composable(Route.HOME) { HomeScreen(navController, listFlights) }
     composable(Route.ADD_FLIGHT) { AddFlightScreen(navController, listFlights) }
+    composable(Route.MODIFY_FLIGHT) {
+      ModifyFlightScreen(navController, listFlights, listFlights[1])
+    }
   }
 }
