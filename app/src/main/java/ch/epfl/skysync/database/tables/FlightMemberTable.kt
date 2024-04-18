@@ -23,6 +23,25 @@ class FlightMemberTable(db: FirestoreDatabase) :
     db.addItem(path, item, onCompletion, onError)
   }
 
+  /**
+   * Update a flight member item
+   *
+   * This will override the existing item and replace it with the new one
+   *
+   * @param item The item to update
+   * @param id the id of the item
+   * @param onCompletion Callback called on completion of the operation
+   * @param onError Callback called when an error occurs
+   */
+  fun update(
+      id: String,
+      item: FlightMemberSchema,
+      onCompletion: () -> Unit,
+      onError: (Exception) -> Unit
+  ) {
+    db.setItem(path, id, item, onCompletion, onError)
+  }
+
   companion object {
     const val PATH = "flight-member"
   }

@@ -39,26 +39,30 @@ import java.time.LocalDate
 class DatabaseSetup {
   var admin1 =
       Admin(
+          id = "id-admin-1",
           firstname = "admin-1",
           lastname = "lastname",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
   var admin2 =
       Admin(
+          id = "id-admin-2",
           firstname = "admin-2",
           lastname = "lastname",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
   var crew1 =
       Crew(
+          id = "id-crew-1",
           firstname = "crew-1",
-          lastname = "lastname",
+          lastname = "Bob",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
   var pilot1 =
       Pilot(
+          id = "id-pilot-1",
           firstname = "pilot-1",
-          lastname = "lastname",
+          lastname = "Bob",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.LARGE)
@@ -149,31 +153,31 @@ class DatabaseSetup {
     vehicleTable.add(vehicle1, { vehicle1 = vehicle1.copy(id = it) }, {})
     vehicleTable.add(vehicle2, { vehicle2 = vehicle2.copy(id = it) }, {})
 
-    userTable.add(
+    userTable.set(
+        admin1.id,
         admin1,
-        { id ->
-          admin1 = admin1.copy(id = id)
+        {
           availabilityTable.add(
-              id, availability3, { availability3 = availability3.copy(id = it) }, {})
+              admin1.id, availability3, { availability3 = availability3.copy(id = it) }, {})
           availabilityTable.add(
-              id, availability4, { availability4 = availability4.copy(id = it) }, {})
+              admin1.id, availability4, { availability4 = availability4.copy(id = it) }, {})
         },
         {})
-    userTable.add(admin2, { id -> admin2 = admin2.copy(id = id) }, {})
-    userTable.add(
+    userTable.set(admin2.id, admin2, {}, {})
+    userTable.set(
+        crew1.id,
         crew1,
-        { id ->
-          crew1 = crew1.copy(id = id)
+        {
           availabilityTable.add(
-              id, availability1, { availability1 = availability1.copy(id = it) }, {})
+              crew1.id, availability1, { availability1 = availability1.copy(id = it) }, {})
         },
         {})
-    userTable.add(
+    userTable.set(
+        pilot1.id,
         pilot1,
-        { id ->
-          pilot1 = pilot1.copy(id = id)
+        {
           availabilityTable.add(
-              id, availability2, { availability2 = availability2.copy(id = it) }, {})
+              pilot1.id, availability2, { availability2 = availability2.copy(id = it) }, {})
         },
         {})
 
