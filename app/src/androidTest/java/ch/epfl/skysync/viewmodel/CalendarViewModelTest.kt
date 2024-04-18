@@ -83,6 +83,8 @@ class CalendarViewModelTest {
         },
         { isError = true })
 
+    SystemClock.sleep(DB_SLEEP_TIME)
+
     assertEquals(true, isComplete)
     assertEquals(false, isError)
     assertNotNull(user)
@@ -90,6 +92,7 @@ class CalendarViewModelTest {
     assertEquals(
         AvailabilityStatus.OK, user!!.availabilities.getAvailabilityStatus(newDate, TimeSlot.AM))
     assertEquals(
-        null, user!!.availabilities.getAvailabilityStatus(dbs.availability3.date, TimeSlot.AM))
+        AvailabilityStatus.UNDEFINED,
+        user!!.availabilities.getAvailabilityStatus(dbs.availability3.date, TimeSlot.AM))
   }
 }
