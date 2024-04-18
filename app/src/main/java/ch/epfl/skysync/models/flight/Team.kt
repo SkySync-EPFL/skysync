@@ -33,6 +33,15 @@ data class Team(val roles: List<Role>) {
     return Team(newRoles)
   }
 
+  /**
+   * @param rolesToAdd: the roleTypes for which a role will be added to this team
+   * @return new team instance with the added roles
+   */
+  fun addRolesFromRoleType(rolesToAdd: List<RoleType>): Team {
+    if (rolesToAdd.isEmpty()) return this
+    return addRoles(Role.initRoles(rolesToAdd))
+  }
+
   override fun hashCode(): Int {
     return roles.sortedBy { it.roleType }.hashCode()
   }
