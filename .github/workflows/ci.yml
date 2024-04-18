@@ -32,6 +32,12 @@ jobs:
           DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo $DATA | base64 -di > app/google-services.json
 
+      # Handle secret file
+      - name: Load secrets.properties
+        env:
+            SECRET_PROPERTIES: ${{ secrets.SECRET_PROPERTIES }}
+        run: echo $SECRET_PROPERTIES > $GITHUB_WORKSPACE/secrets.properties
+
       # Install the Firebase CLI
       - name: Install firebase
         run: curl -sL https://firebase.tools | bash
