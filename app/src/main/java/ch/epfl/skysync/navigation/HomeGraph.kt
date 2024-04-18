@@ -60,22 +60,20 @@ fun NavGraphBuilder.homeGraph(navController: NavHostController, user: FirebaseUs
     composable(Route.CHAT) { ChatScreen(navController) }
     composable(Route.FLIGHT) { FlightScreen(navController) }
     composable(Route.HOME) {
-        val db = FirestoreDatabase()
-        val flightTable = FlightTable(db)
-        val balloonTable = BalloonTable(db)
-        val basketTable = BasketTable(db)
-        val flightTypeTable = FlightTypeTable(db)
-        val vehicleTable = VehicleTable(db)
-        val viewModel =
-            FlightsViewModel.createViewModel(
-                flightTable = flightTable,
-                balloonTable = balloonTable,
-                basketTable = basketTable,
-                flightTypeTable = flightTypeTable,
-                vehicleTable = vehicleTable
-            )
-        HomeScreen(navController, viewModel)
-
+      val db = FirestoreDatabase()
+      val flightTable = FlightTable(db)
+      val balloonTable = BalloonTable(db)
+      val basketTable = BasketTable(db)
+      val flightTypeTable = FlightTypeTable(db)
+      val vehicleTable = VehicleTable(db)
+      val viewModel =
+          FlightsViewModel.createViewModel(
+              flightTable = flightTable,
+              balloonTable = balloonTable,
+              basketTable = basketTable,
+              flightTypeTable = flightTypeTable,
+              vehicleTable = vehicleTable)
+      HomeScreen(navController, viewModel)
     }
     composable(Route.ADD_FLIGHT) { AddFlightScreen(navController, listFlights) }
   }

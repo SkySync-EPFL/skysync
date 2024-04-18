@@ -30,7 +30,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,149 +68,137 @@ val emptyList: List<Flight> = emptyList()
 
 @Composable
 fun UpcomingFlights(flights: List<Flight>, onFlightClick: (Flight) -> Unit) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
-        Text(
-            text = "Upcoming flights",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            modifier =
-            Modifier
-                .background(
+  Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Text(
+        text = "Upcoming flights",
+        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+        modifier =
+            Modifier.background(
                     color = lightOrange,
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                )
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .fillMaxWidth()
                 .padding(16.dp),
-            color = Color.White,
-            textAlign = TextAlign.Center)
+        color = Color.White,
+        textAlign = TextAlign.Center)
 
-        Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(16.dp))
 
-        if (flights.isEmpty()) {
-            // Handle case when no upcoming flights
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.3f),
-                contentAlignment = Alignment.Center) {
-                Text(
-                    text = "No upcoming flights",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                    color = Color.Black)
-            }
-        } else {
-            // Display the flights in a LazyColumn if the list is not empty
-            LazyColumn { items(flights) { flight -> FlightRow(flight, onFlightClick) } }
-        }
+    if (flights.isEmpty()) {
+      // Handle case when no upcoming flights
+      Box(
+          modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f),
+          contentAlignment = Alignment.Center) {
+            Text(
+                text = "No upcoming flights",
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                color = Color.Black)
+          }
+    } else {
+      // Display the flights in a LazyColumn if the list is not empty
+      LazyColumn { items(flights) { flight -> FlightRow(flight, onFlightClick) } }
     }
+  }
 }
 
 @Composable
 fun FlightRow(flight: Flight, onFlightClick: (Flight) -> Unit) {
-    // Card for an individual flight, clickable to navigate to details
-    Card(
-        modifier =
-        Modifier
-            .fillMaxWidth()
-            .clickable { onFlightClick(flight) }
-            .padding(vertical = 4.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-    ) {
-        Surface(modifier = Modifier.fillMaxWidth(), color = flight.getFlightStatus().displayColor) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start) {
-                Text(
-                    text =
+  // Card for an individual flight, clickable to navigate to details
+  Card(
+      modifier =
+          Modifier.fillMaxWidth().clickable { onFlightClick(flight) }.padding(vertical = 4.dp),
+      elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+  ) {
+    Surface(modifier = Modifier.fillMaxWidth(), color = flight.getFlightStatus().displayColor) {
+      Row(
+          modifier = Modifier.fillMaxWidth().padding(16.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.Start) {
+            Text(
+                text =
                     flight.date.format(
                         DateTimeFormatter.ofPattern("E\ndd").withLocale(Locale.ENGLISH)),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.alignByBaseline(),
-                    color = Color.Black)
-                // Spacer for horizontal separation
-                Spacer(modifier = Modifier.width(16.dp))
-                // Column for flight details
-                Column(modifier = Modifier
-                    .weight(0.7f)
-                    .padding(start = 16.dp)) {
-                    // Text for flight type and passenger count
-                    Text(
-                        text = "${flight.flightType.name} - ${flight.nPassengers} pax",
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black)
-                    // Text for flight time slot
-                    Text(text = flight.timeSlot.toString(), color = Color.Gray)
-                }
-                Text(
-                    text = flight.getFlightStatus().toString(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.alignByBaseline(),
-                    color = Color.Gray)
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.alignByBaseline(),
+                color = Color.Black)
+            // Spacer for horizontal separation
+            Spacer(modifier = Modifier.width(16.dp))
+            // Column for flight details
+            Column(modifier = Modifier.weight(0.7f).padding(start = 16.dp)) {
+              // Text for flight type and passenger count
+              Text(
+                  text = "${flight.flightType.name} - ${flight.nPassengers} pax",
+                  fontWeight = FontWeight.Bold,
+                  color = Color.Black)
+              // Text for flight time slot
+              Text(text = flight.timeSlot.toString(), color = Color.Gray)
             }
-        }
+            Text(
+                text = flight.getFlightStatus().toString(),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.alignByBaseline(),
+                color = Color.Gray)
+          }
     }
+  }
 }
 
 // Scaffold wrapper for the Home Screen
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
-    val flights by viewModel.currentFlights.collectAsStateWithLifecycle()
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        bottomBar = { BottomBar(navController) },
-        floatingActionButton = {
-            // Define the FloatingActionButton to create a flight
-            FloatingActionButton(
-                onClick = {
-                    // Here is where you'd navigate to a new screen. For now, just log a message.
-                    Log.d("HomeScreen", "FloatingActionButton clicked. Implement navigation here.")
-                    // Example navigation call: navController.navigate("AddFlight")
-                    viewModel.addFlight(PlannedFlight(
-                        nPassengers = 1,
-                        date = LocalDate.of(2024, 3, 11),
-                        timeSlot = TimeSlot.PM,
-                        team =
-                        Team(
-                            listOf(
-                                Role(
-                                    RoleType.PILOT,
-                                    Crew(
-                                        "1",
-                                        "John",
-                                        "Doe",
-                                        AvailabilityCalendar(),
-                                        FlightGroupCalendar())))),
-                        flightType = PREMIUM,
-                        vehicles = listOf(Vehicle("sprinter2", "12")),
-                        balloon = Balloon("qqp", BalloonQualification.LARGE, "12"),
-                        basket = Basket("lol", true, "kdf"),
-                        id = UNSET_ID))
-                },
-                containerColor = lightOrange) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
+  val flights by viewModel.currentFlights.collectAsStateWithLifecycle()
+  Scaffold(
+      modifier = Modifier.fillMaxSize(),
+      bottomBar = { BottomBar(navController) },
+      floatingActionButton = {
+        // Define the FloatingActionButton to create a flight
+        FloatingActionButton(
+            onClick = {
+              // Here is where you'd navigate to a new screen. For now, just log a message.
+              Log.d("HomeScreen", "FloatingActionButton clicked. Implement navigation here.")
+              // Example navigation call: navController.navigate("AddFlight")
+              viewModel.addFlight(
+                  PlannedFlight(
+                      nPassengers = 1,
+                      date = LocalDate.of(2024, 3, 11),
+                      timeSlot = TimeSlot.PM,
+                      team =
+                          Team(
+                              listOf(
+                                  Role(
+                                      RoleType.PILOT,
+                                      Crew(
+                                          "1",
+                                          "John",
+                                          "Doe",
+                                          AvailabilityCalendar(),
+                                          FlightGroupCalendar())))),
+                      flightType = PREMIUM,
+                      vehicles = listOf(Vehicle("sprinter2", "12")),
+                      balloon = Balloon("qqp", BalloonQualification.LARGE, "12"),
+                      basket = Basket("lol", true, "kdf"),
+                      id = UNSET_ID))
+            },
+            containerColor = lightOrange) {
+              Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
             }
-        },
-        floatingActionButtonPosition = FabPosition.End,
-    ) { padding ->
-        UpcomingFlights(flights) { selectedFlight ->
-            // Here is where you'd navigate to a new screen. For now, just log a message.
-            Log.d("UpcomingFlights", "Selected flight ID: ${selectedFlight.id}")
-            // Example navigation call: navController.navigate("FlightDetails.id")
-        }
+      },
+      floatingActionButtonPosition = FabPosition.End,
+  ) { padding ->
+    UpcomingFlights(flights) { selectedFlight ->
+      // Here is where you'd navigate to a new screen. For now, just log a message.
+      Log.d("UpcomingFlights", "Selected flight ID: ${selectedFlight.id}")
+      // Example navigation call: navController.navigate("FlightDetails.id")
     }
+  }
 }
 
 // Preview provider for the Home Screen
-//@Composable
-//@Preview
-//fun HomeScreenPreview() {
+// @Composable
+// @Preview
+// fun HomeScreenPreview() {
 //  // Preview navigation controller
 //  val navController = rememberNavController()
 //  // Preview of Home Screen
 //  HomeScreen(navController = navController)
-//}
+// }

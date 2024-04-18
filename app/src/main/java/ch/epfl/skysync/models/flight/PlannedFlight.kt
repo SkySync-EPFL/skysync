@@ -68,7 +68,7 @@ data class PlannedFlight(
     }
   }
 
-    fun setId(id: String): PlannedFlight {
-        return copy(id = id)
-    }
+  fun setId(id: String): PlannedFlight {
+    return copy(id = id)
+  }
 }
