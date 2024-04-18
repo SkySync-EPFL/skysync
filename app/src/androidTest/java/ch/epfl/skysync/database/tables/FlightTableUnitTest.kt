@@ -6,6 +6,9 @@ import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.schemas.FlightMemberSchema
 import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.models.flight.Role
+import ch.epfl.skysync.models.flight.RoleType
+import ch.epfl.skysync.models.flight.Team
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -43,6 +46,62 @@ class FlightTableUnitTest {
     assertEquals(true, isComplete)
     assertEquals(false, isError)
     assertEquals(databaseSetup.flight1, flight)
+  }
+
+  @Test
+  fun updateTest() {
+    var flight: Flight? = null
+    var isComplete = false
+    var isError = false
+
+    val flight1 = databaseSetup.flight1
+
+    assertNotNull(flight1.id)
+
+    val newTeam = Team(roles = listOf(Role(RoleType.PILOT, databaseSetup.pilot2)))
+    val updateFlight1 = flight1.copy(nPassengers = flight1.nPassengers + 1, team = newTeam)
+
+    flightTable.update(flight1.id, updateFlight1, { isComplete = true }, { isError = true })
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
+
+    isComplete = false
+    isError = false
+
+    flightTable.get(
+        flight1.id,
+        {
+          flight = it
+          isComplete = true
+        },
+        { isError = true })
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
+    assertEquals(updateFlight1, flight)
+
+    isComplete = false
+    isError = false
+    var flightMembers: List<FlightMemberSchema>? = null
+    flightMemberTable.getAll(
+        {
+          flightMembers = it
+          isComplete = true
+        },
+        { isError = true })
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+
+    assertEquals(true, isComplete)
+    assertEquals(false, isError)
+    println("FLIGHT MEMBERS")
+    println(flightMembers)
+    assertEquals(1, flightMembers?.size ?: 0)
   }
 
   @Test

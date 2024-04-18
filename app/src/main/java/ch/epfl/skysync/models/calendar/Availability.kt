@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 /** Represent the availability of a person for some period (immutable class) */
 data class Availability(
-    val id: String = UNSET_ID,
+    var id: String = UNSET_ID,
     val status: AvailabilityStatus,
     override val timeSlot: TimeSlot,
     override val date: LocalDate

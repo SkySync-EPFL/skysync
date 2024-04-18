@@ -62,6 +62,13 @@ class DatabaseSetup {
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.LARGE)
+  var pilot2 =
+      Pilot(
+          firstname = "pilot-2",
+          lastname = "lastname",
+          availabilities = AvailabilityCalendar(),
+          assignedFlights = FlightGroupCalendar(),
+          qualification = BalloonQualification.SMALL)
   var availability1 =
       Availability(
           status = AvailabilityStatus.MAYBE,
@@ -176,6 +183,14 @@ class DatabaseSetup {
               id, availability2, { availability2 = availability2.copy(id = it) }, {})
         },
         {})
+    userTable.add(
+        pilot2,
+        { id ->
+          pilot2 = pilot2.copy(id = id)
+          availabilityTable.add(
+              id, availability2, { availability2 = availability2.copy(id = it) }, {})
+        },
+        {})
 
     SystemClock.sleep(DB_SLEEP_TIME)
 
@@ -183,6 +198,7 @@ class DatabaseSetup {
     admin1.availabilities.addCells(listOf(availability3, availability4))
     crew1.availabilities.addCells(listOf(availability1))
     pilot1.availabilities.addCells(listOf(availability2))
+    pilot2.availabilities.addCells(listOf(availability2))
 
     // re-set all the objects that have been added in the db -> they now have IDs
     flight1 =

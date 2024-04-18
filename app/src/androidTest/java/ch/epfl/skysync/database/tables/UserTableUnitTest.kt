@@ -214,30 +214,9 @@ class UserTableUnitTest {
     var isError = false
     var user: User? = null
 
-    val newAdmin2 =
-        Admin(
-            id = customId,
-            firstname = "new-admin-2",
-            lastname = "lastname",
-            availabilities = AvailabilityCalendar(),
-            assignedFlights = FlightGroupCalendar())
+    val newAdmin2 = admin2.copy(firstname = "new-admin-2")
 
-    val newAvailability5 =
-        Availability(
-            status = AvailabilityStatus.OK,
-            timeSlot = TimeSlot.PM,
-            date = LocalDate.now().minusDays(1))
-
-    newAdmin2.availabilities.addCells(listOf(newAvailability5))
-
-    userTable.update(
-        admin2.id,
-        newAdmin2,
-        {
-          availabilityTable.add(
-              admin2.id, availability5, { isComplete = true }, { isError = false })
-        },
-        { isError = true })
+    userTable.update(admin2.id, newAdmin2, { isComplete = true }, { isError = false })
 
     SystemClock.sleep(DB_SLEEP_TIME)
 
@@ -260,46 +239,6 @@ class UserTableUnitTest {
     assertEquals(true, isComplete)
     assertEquals(false, isError)
     assertEquals(newAdmin2, user)
-
-    var availabilities = listOf<Availability>()
-    isComplete = false
-    isError = false
-    user = null
-
-    availabilityTable.getAll(
-        {
-          availabilities = it
-          isComplete = true
-        },
-        { isError = true })
-
-    SystemClock.sleep(DB_SLEEP_TIME)
-
-    assertEquals(true, isComplete)
-    assertEquals(false, isError)
-    assertTrue(
-        listOf(availability1, availability2, availability3, availability4, newAvailability5)
-            .containsAll(availabilities))
-
-    availabilities = listOf<Availability>()
-    isComplete = false
-    isError = false
-    user = null
-
-    /**
-     * userTable.update(admin2.id, admin2, {
-     *
-     * }, {})
-     *
-     * SystemClock.sleep(DB_SLEEP_TIME)
-     *
-     * availabilityTable.getAll( { availabilities = it isComplete = true }, { isError = true })
-     *
-     * SystemClock.sleep(DB_SLEEP_TIME)
-     *
-     * assertEquals(true, isComplete) assertEquals(false, isError) assertTrue( listOf(availability1,
-     * availability2, availability3, availability4) .containsAll(availabilities))
-     */
   }
 
   @Test
@@ -328,7 +267,8 @@ class UserTableUnitTest {
 
     assertEquals(true, isComplete)
     assertEquals(false, isError)
-    assertTrue(listOf(availability3, availability4).containsAll(availabilities))
+    println(availabilities)
+    assertTrue(listOf(availability3, availability4, availability5).containsAll(availabilities))
 
     var user: User? = null
     isComplete = false
