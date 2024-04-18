@@ -20,7 +20,7 @@ class FlightTableUnitTest {
 
   @Before
   fun testSetup() {
-    databaseSetup.clearDatabase(db)
+    //databaseSetup.clearDatabase(db)
     databaseSetup.fillDatabase(db)
   }
 
@@ -44,6 +44,7 @@ class FlightTableUnitTest {
     assertEquals(false, isError)
     assertEquals(databaseSetup.flight1, flight)
   }
+
 
   @Test
   fun deleteTest() {

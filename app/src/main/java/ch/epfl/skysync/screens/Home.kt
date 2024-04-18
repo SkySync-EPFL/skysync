@@ -173,7 +173,7 @@ fun UpcomingFlights(flights: List<Flight>, onFlightClick: (Flight) -> Unit) {
             Text(
                 text = "No upcoming flights",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                color = Color.Yellow)
+                color = Color.Black)
           }
     } else {
       // Display the flights in a LazyColumn if the list is not empty
@@ -246,6 +246,26 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
               // Here is where you'd navigate to a new screen. For now, just log a message.
               Log.d("HomeScreen", "FloatingActionButton clicked. Implement navigation here.")
               // Example navigation call: navController.navigate("AddFlight")
+                viewModel.addFlight(PlannedFlight(
+                    nPassengers = 1,
+                    date = LocalDate.of(2024, 3, 11),
+                    timeSlot = TimeSlot.PM,
+                    team =
+                    Team(
+                        listOf(
+                            Role(
+                                RoleType.PILOT,
+                                Crew(
+                                    "1",
+                                    "John",
+                                    "Doe",
+                                    AvailabilityCalendar(),
+                                    FlightGroupCalendar())))),
+                    flightType = PREMIUM,
+                    vehicles = listOf(Vehicle("sprinter2", "12")),
+                    balloon = Balloon("qqp", BalloonQualification.LARGE, "12"),
+                    basket = Basket("lol", true, "kdf"),
+                    id = UNSET_ID))
             },
             containerColor = lightOrange) {
               Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)

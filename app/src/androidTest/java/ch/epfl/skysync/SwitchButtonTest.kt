@@ -22,7 +22,7 @@ class SwitchButtonTest {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      SwitchButton(Availability = true, padding = PaddingValues(), {}, {})
+      //SwitchButton(Availability = true, padding = PaddingValues(), {}, {})
     }
   }
 

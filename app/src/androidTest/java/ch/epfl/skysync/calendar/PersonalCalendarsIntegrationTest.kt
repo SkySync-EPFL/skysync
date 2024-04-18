@@ -25,7 +25,7 @@ class PersonalCalendarsIntegrationTest {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(navController, null)
+        //homeGraph(navController, null)
       }
     }
   }

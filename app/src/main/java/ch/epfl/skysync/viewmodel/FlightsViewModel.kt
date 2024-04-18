@@ -1,5 +1,6 @@
 package ch.epfl.skysync.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
@@ -9,7 +10,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.database.tables.UserTable
+import ch.epfl.skysync.models.flight.Balloon
+import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,16 +27,14 @@ import kotlin.reflect.KFunction3
  * @param firebaseUser: FirebaseUser? the firebase user
  */
 class FlightsViewModel(
-  firebaseUser: FirebaseUser,
-  private val userTable: UserTable,
+//  private val firebaseUserId: String,
+//  private val userTable: UserTable,
   private val flightTable: FlightTable,
 ) : ViewModel() {
   companion object {
     /** creates a view model by accepting the firebase user as an argument */
     @Composable
     fun createViewModel(
-      firebaseUser: FirebaseUser,
-      userTable: UserTable,
       flightTable: FlightTable
 
     ): FlightsViewModel {
@@ -40,14 +42,19 @@ class FlightsViewModel(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return FlightsViewModel(firebaseUser, userTable, flightTable) as T
+                  return FlightsViewModel(flightTable) as T
                 }
               })
     }
   }
 
   val currentFlights: MutableStateFlow<List<Flight>> = MutableStateFlow(emptyList())
-  private val uid: String
+  val currentBalloons: MutableStateFlow<List<Balloon>> = MutableStateFlow(emptyList())
+  val currentBaskets: MutableStateFlow<List<Basket>> = MutableStateFlow(emptyList())
+  val currentFlightTypes: MutableStateFlow<List<FlightType>> = MutableStateFlow(emptyList())
+
+
+
 
 
   fun refreshCurrentFlights(
@@ -60,7 +67,7 @@ class FlightsViewModel(
         currentFlights.value = flights
       },
       { exception ->
-        // TODO: display connection error msg
+        Log.d("FLightrefresh", exception.toString())
       }
     )
   }
@@ -111,7 +118,7 @@ class FlightsViewModel(
   }
 
   init {
-    uid = firebaseUser.uid // directly pass as
+    refreshCurrentFlights()
   }
 }
 
