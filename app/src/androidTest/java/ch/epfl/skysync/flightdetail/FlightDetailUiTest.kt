@@ -1,4 +1,4 @@
-package ch.epfl.skysync
+package ch.epfl.skysync.flightdetail
 
 import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues

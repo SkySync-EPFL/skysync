@@ -51,7 +51,12 @@ import java.util.Locale
  * @param onClick Lambda function representing the action to perform when the button is clicked.
  */
 @Composable
-fun ShowFlight(date: LocalDate, time: TimeSlot, viewModel: UserViewModel) {
+fun ShowFlight(
+    date: LocalDate,
+    time: TimeSlot,
+    viewModel: UserViewModel,
+    navController: NavHostController
+) {
   val flight = viewModel.user.value.assignedFlights.getFirstFlightByDate(date, time)
   var weight = 0.5f
   if (time == TimeSlot.PM) {
@@ -59,7 +64,7 @@ fun ShowFlight(date: LocalDate, time: TimeSlot, viewModel: UserViewModel) {
   }
   if (flight != null) {
     Button(
-        onClick = {},
+        onClick = { navController.navigate(Route.FLIGHT_DETAILS + "/${flight.id}") },
         shape = RectangleShape,
         modifier = Modifier.fillMaxHeight().fillMaxWidth(weight),
         colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)) {
@@ -191,8 +196,8 @@ fun WeekView(startOfWeek: LocalDate, viewModel: UserViewModel, navController: Na
             modifier = Modifier.fillMaxSize().background(Color.LightGray),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
-              ShowFlight(day, TimeSlot.AM, viewModel)
-              ShowFlight(day, TimeSlot.PM, viewModel)
+              ShowFlight(day, TimeSlot.AM, viewModel, navController)
+              ShowFlight(day, TimeSlot.PM, viewModel, navController)
             }
       }
       Divider(color = Color.Black, thickness = 1.dp)

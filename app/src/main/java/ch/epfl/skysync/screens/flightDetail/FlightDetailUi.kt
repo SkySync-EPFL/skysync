@@ -36,7 +36,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.models.flight.Flight
-import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.ui.theme.lightOrange
@@ -55,23 +54,19 @@ import ch.epfl.skysync.ui.theme.lightOrange
 @Composable
 fun FlightDetailUi(
     backClick: () -> Unit,
-    deleteClick: (flightId : String) -> Unit,
-    editClick: (flightId : String) -> Unit,
-    confirmClick: (flightId : String) -> Unit,
+    deleteClick: (flightId: String) -> Unit,
+    editClick: (flightId: String) -> Unit,
+    confirmClick: (flightId: String) -> Unit,
     padding: PaddingValues,
     flight: Flight
 ) {
   Column(
-      modifier = Modifier
-          .fillMaxSize()
-          .background(Color.White),
+      modifier = Modifier.fillMaxSize().background(Color.White),
   ) {
     FlightDetailHead(BackClick = backClick)
-    Box(modifier = Modifier
-        .fillMaxHeight()
-        .padding(padding)) {
+    Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
       FlightdetailBody(flight, padding)
-      FlightDetailBottom(flight.id,deleteClick, editClick, confirmClick)
+      FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
     }
   }
 }
@@ -99,6 +94,7 @@ fun FlightDetailHead(BackClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally) {
           Text(
               text = "Flight Detail",
+              color = Color.Black,
               fontSize = 30.sp,
           )
         }
@@ -112,20 +108,22 @@ fun FlightDetailHead(BackClick: () -> Unit) {
  */
 @Composable
 fun FlightdetailBody(flight: Flight, padding: PaddingValues) {
-  Column(modifier = Modifier
-      .fillMaxWidth()
-      .fillMaxHeight(0.9f)
-      .padding(padding)) {
+  Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f).padding(padding)) {
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
     Row() {
       Column(
           modifier = Modifier.fillMaxWidth(0.7f),
           verticalArrangement = Arrangement.Center,
           horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = flight.flightType.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = flight.flightType.name,
+                color = Color.Black,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold)
             Text(
                 text = flight.nPassengers.toString() + " Pax",
                 fontSize = 20.sp,
+                color = Color.Black,
                 fontWeight = FontWeight.Bold)
           }
       Column(
@@ -134,9 +132,11 @@ fun FlightdetailBody(flight: Flight, padding: PaddingValues) {
             Text(
                 flight.date.toString(),
                 fontSize = 15.sp,
+                color = Color.Black,
             )
             Text(
                 flight.timeSlot.name,
+                color = Color.Black,
                 fontSize = 15.sp,
             )
           }
@@ -172,37 +172,35 @@ fun FlightdetailBody(flight: Flight, padding: PaddingValues) {
 @Composable
 fun FlightDetailBottom(
     flightId: String,
-    DeleteClick: (flightId : String) -> Unit,
-    EditClick: (flightId : String) -> Unit,
-    ConfirmClick: (flightId : String) -> Unit,
+    DeleteClick: (flightId: String) -> Unit,
+    EditClick: (flightId: String) -> Unit,
+    ConfirmClick: (flightId: String) -> Unit,
 ) {
-  Box(
-      modifier = Modifier.fillMaxSize(),
-      contentAlignment = Alignment.BottomCenter) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically) {
-              Button(
-                  onClick = {DeleteClick(flightId)},
-                  modifier = Modifier.fillMaxWidth(0.3f),
-                  colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) {
-                    Text(text = "Delete", color = Color.Black, overflow = TextOverflow.Clip)
-                  }
-              Button(
-                  onClick = {EditClick(flightId) },
-                  modifier = Modifier.fillMaxWidth(3 / 7f),
-                  colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)) {
-                    Text(text = "Edit", color = Color.Black, overflow = TextOverflow.Clip)
-                  }
-              Button(
-                  onClick = {ConfirmClick(flightId)},
-                  modifier = Modifier.fillMaxWidth(0.7f),
-                  colors = ButtonDefaults.buttonColors(containerColor = Color.Green)) {
-                    Text(text = "Confirm", color = Color.Black, overflow = TextOverflow.Clip)
-                  }
-            }
-      }
+  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically) {
+          Button(
+              onClick = { DeleteClick(flightId) },
+              modifier = Modifier.fillMaxWidth(0.3f),
+              colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) {
+                Text(text = "Delete", color = Color.Black, overflow = TextOverflow.Clip)
+              }
+          Button(
+              onClick = { EditClick(flightId) },
+              modifier = Modifier.fillMaxWidth(3 / 7f),
+              colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)) {
+                Text(text = "Edit", color = Color.Black, overflow = TextOverflow.Clip)
+              }
+          Button(
+              onClick = { ConfirmClick(flightId) },
+              modifier = Modifier.fillMaxWidth(0.7f),
+              colors = ButtonDefaults.buttonColors(containerColor = Color.Green)) {
+                Text(text = "Confirm", color = Color.Black, overflow = TextOverflow.Clip)
+              }
+        }
+  }
 }
 
 /**
@@ -222,7 +220,7 @@ fun TextBar(textLeft: String, textRight: String) {
             modifier = Modifier.fillMaxWidth(0.5f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally) {
-              Text(text = textLeft, fontSize = 15.sp)
+              Text(text = textLeft, color = Color.Black, fontSize = 15.sp)
             }
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -231,6 +229,7 @@ fun TextBar(textLeft: String, textRight: String) {
               Text(
                   text = textRight,
                   fontSize = 15.sp,
+                  color = Color.Black,
                   modifier = Modifier.testTag(textLeft + textRight))
             }
       }
@@ -250,12 +249,10 @@ fun TeamRolesList(team: Team) {
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
-          Text(text = "No team member")
+          Text(text = "No team member", color = Color.Black)
         }
   } else {
-    LazyColumn(modifier = Modifier
-        .testTag("TeamList")
-        .fillMaxHeight(0.5f)) {
+    LazyColumn(modifier = Modifier.testTag("TeamList").fillMaxHeight(0.5f)) {
       itemsIndexed(team.roles) { index, role ->
         val firstname = role.assignedUser?.firstname ?: ""
         val lastname = role.assignedUser?.lastname ?: ""
@@ -277,7 +274,10 @@ fun VehicleListText(vehicle: List<Vehicle>) {
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
-          Text(text = "No vehicle")
+          Text(
+              text = "No vehicle",
+              color = Color.Black,
+          )
         }
   } else {
     LazyColumn(modifier = Modifier.testTag("VehicleList")) {

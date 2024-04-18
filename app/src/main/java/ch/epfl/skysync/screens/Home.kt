@@ -33,13 +33,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
@@ -87,7 +87,7 @@ val listFlights =
             vehicles = listOf(Vehicle("sprinter2", "12")),
             balloon = Balloon("qqp", BalloonQualification.LARGE, "12"),
             basket = Basket("lol", true, "kdf"),
-            id = UNSET_ID),
+            id = 10.toString()),
         ConfirmedFlight(
             nPassengers = 5,
             date = LocalDate.of(2024, 1, 14),
@@ -107,7 +107,7 @@ val listFlights =
             vehicles = listOf(Vehicle("sprinter4", "1")),
             balloon = Balloon("qqo", BalloonQualification.LARGE, "1"),
             basket = Basket("lo", true, "kf"),
-            id = UNSET_ID,
+            id = 1.toString(),
             remarks = listOf("r", "rem", "remark3"),
             meetupTimeTeam = LocalTime.of(12, 1),
             departureTimeTeam = LocalTime.of(12, 2),
@@ -121,7 +121,7 @@ val listFlights =
             vehicles = listOf(),
             balloon = null,
             basket = null,
-            id = UNSET_ID),
+            id = 2.toString()),
         PlannedFlight(
             nPassengers = 3,
             date = LocalDate.of(2024, 3, 22),
@@ -130,13 +130,13 @@ val listFlights =
             vehicles = listOf(),
             balloon = null,
             basket = null,
-            id = UNSET_ID),
+            id = 3.toString()),
     )
 // Sample empty list for preview (to be deleted)
 val emptyList: List<Flight> = emptyList()
 
 @Composable
-fun UpcomingFlights(flights: List<Flight>, onFlightClick: (Flight) -> Unit) {
+fun UpcomingFlights(flights: List<Flight>, onFlightClick: (String) -> Unit) {
   Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
     Text(
         text = "Upcoming flights",
@@ -170,11 +170,14 @@ fun UpcomingFlights(flights: List<Flight>, onFlightClick: (Flight) -> Unit) {
 }
 
 @Composable
-fun FlightRow(flight: Flight, onFlightClick: (Flight) -> Unit) {
+fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
   // Card for an individual flight, clickable to navigate to details
   Card(
       modifier =
-          Modifier.fillMaxWidth().clickable { onFlightClick(flight) }.padding(vertical = 4.dp),
+          Modifier.fillMaxWidth()
+              .clickable { onFlightClick(flight.id) }
+              .padding(vertical = 4.dp)
+              .testTag(flight.id),
       elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
   ) {
     Surface(modifier = Modifier.fillMaxWidth(), color = flight.getFlightStatus().displayColor) {
@@ -229,7 +232,8 @@ fun HomeScreen(navController: NavHostController, listFlights: MutableList<Planne
   ) { padding ->
     UpcomingFlights(listFlights) { selectedFlight ->
       // Here is where you'd navigate to a new screen. For now, just log a message.
-      Log.d("UpcomingFlights", "Selected flight ID: ${selectedFlight.id}")
+      Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
+      navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
       // Example navigation call: navController.navigate("FlightDetails.id")
     }
   }

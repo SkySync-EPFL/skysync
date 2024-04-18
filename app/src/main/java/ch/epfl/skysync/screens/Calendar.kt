@@ -5,7 +5,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -26,7 +25,7 @@ fun CalendarScreen(
     } else if (calendarType == Route.PERSONAL_FLIGHT_CALENDAR) {
       val dummyFlight =
           PlannedFlight(
-              UNSET_ID,
+              1.toString(),
               1,
               FlightType.FONDUE,
               balloon = null,
@@ -36,7 +35,7 @@ fun CalendarScreen(
               vehicles = listOf())
       val dummyFlight2 =
           PlannedFlight(
-              UNSET_ID,
+              2.toString(),
               1,
               FlightType.DISCOVERY,
               balloon = null,

@@ -2,7 +2,9 @@ package ch.epfl.skysync.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
@@ -12,6 +14,8 @@ import ch.epfl.skysync.screens.AddFlightScreen
 import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
+import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
+import ch.epfl.skysync.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseUser
 import java.time.LocalDate
 
@@ -28,7 +32,7 @@ fun NavGraphBuilder.homeGraph(navController: NavHostController, user: FirebaseUs
               vehicles = listOf(),
               balloon = null,
               basket = null,
-              id = UNSET_ID),
+              id = 1.toString()),
           PlannedFlight(
               nPassengers = 2,
               date = LocalDate.of(2024, 3, 20),
@@ -37,7 +41,7 @@ fun NavGraphBuilder.homeGraph(navController: NavHostController, user: FirebaseUs
               vehicles = listOf(),
               balloon = null,
               basket = null,
-              id = UNSET_ID),
+              id = 2.toString()),
           PlannedFlight(
               nPassengers = 3,
               date = LocalDate.of(2024, 3, 22),
@@ -46,13 +50,22 @@ fun NavGraphBuilder.homeGraph(navController: NavHostController, user: FirebaseUs
               vehicles = listOf(),
               balloon = null,
               basket = null,
-              id = UNSET_ID),
+              id = 3.toString()),
       )
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
     personalCalendar(navController, user)
     composable(Route.CHAT) { ChatScreen(navController) }
     composable(Route.FLIGHT) { FlightScreen(navController) }
     composable(Route.HOME) { HomeScreen(navController, listFlights) }
+    composable(
+        Route.FLIGHT_DETAILS + "/{Flight ID}",
+        arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
+          ->
+          val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
+          val viewModel = UserViewModel.createViewModel(user)
+          FlightDetailScreen(
+              navController = navController, flightId = flightId, viewModel = viewModel)
+        }
     composable(Route.ADD_FLIGHT) { AddFlightScreen(navController, listFlights) }
   }
 }

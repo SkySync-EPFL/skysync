@@ -18,34 +18,32 @@ import java.time.LocalDate
 
 @Composable
 fun FlightDetailScreen(navController: NavHostController, flightId: String, viewModel: ViewModel) {
-  val fakeFlight = PlannedFlight(
-      flightId,
-      1,
-      FlightType.FONDUE,
-      Team(listOf()),
-      null,
-        null,
-      LocalDate.now(),
-        TimeSlot.AM,
-      listOf()
-  )
+  val fakeFlight =
+      PlannedFlight(
+          flightId,
+          1,
+          FlightType.FONDUE,
+          Team(listOf()),
+          null,
+          null,
+          LocalDate.now(),
+          TimeSlot.AM,
+          listOf())
   Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
     FlightDetailUi(
-        backClick = {navController.popBackStack()},
-        deleteClick = {},
+        backClick = { navController.popBackStack() },
+        deleteClick = { navController.popBackStack() },
         editClick = {},
         confirmClick = {},
         padding = padding,
-        flight = fakeFlight
-
-    )
+        flight = fakeFlight)
   }
 }
 
 @Composable
 @Preview
 fun FlightDetailScreenPreview() {
-    val navController = rememberNavController()
-    val viewModel = UserViewModel.createViewModel(firebaseUser = null)
+  val navController = rememberNavController()
+  val viewModel = UserViewModel.createViewModel(firebaseUser = null)
   FlightDetailScreen(navController = navController, flightId = "1", viewModel = viewModel)
 }
