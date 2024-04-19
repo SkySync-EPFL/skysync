@@ -4,6 +4,12 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.database.tables.BalloonTable
+import ch.epfl.skysync.database.tables.BasketTable
+import ch.epfl.skysync.database.tables.FlightTable
+import ch.epfl.skysync.database.tables.FlightTypeTable
+import ch.epfl.skysync.database.tables.VehicleTable
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.FlightType
@@ -12,6 +18,7 @@ import ch.epfl.skysync.screens.AddFlightScreen
 import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
+import ch.epfl.skysync.viewmodel.FlightsViewModel
 import com.google.firebase.auth.FirebaseUser
 import java.time.LocalDate
 
@@ -52,7 +59,22 @@ fun NavGraphBuilder.homeGraph(navController: NavHostController, user: FirebaseUs
     personalCalendar(navController, user)
     composable(Route.CHAT) { ChatScreen(navController) }
     composable(Route.FLIGHT) { FlightScreen(navController) }
-    composable(Route.HOME) { HomeScreen(navController, listFlights) }
+    composable(Route.HOME) {
+      val db = FirestoreDatabase(useEmulator = true)
+      val flightTable = FlightTable(db)
+      val balloonTable = BalloonTable(db)
+      val basketTable = BasketTable(db)
+      val flightTypeTable = FlightTypeTable(db)
+      val vehicleTable = VehicleTable(db)
+      val viewModel =
+          FlightsViewModel.createViewModel(
+              flightTable = flightTable,
+              balloonTable = balloonTable,
+              basketTable = basketTable,
+              flightTypeTable = flightTypeTable,
+              vehicleTable = vehicleTable)
+      HomeScreen(navController, viewModel)
+    }
     composable(Route.ADD_FLIGHT) { AddFlightScreen(navController, listFlights) }
   }
 }
