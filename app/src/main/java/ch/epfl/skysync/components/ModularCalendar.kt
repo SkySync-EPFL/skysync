@@ -1,10 +1,9 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -25,87 +24,41 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.viewmodel.UserViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
- * Composable function to display flight information based on a given date and time slot.
+ * Function to calculate the start date of the week for the given date.
  *
- * @param date The date for which the flight information is requested.
- * @param time The time slot AM or PM.
- * @param getFlightByDate A function that retrieves flight information based on date and time. It
- *   takes a LocalDate and a TimeSlot as input parameters and returns a Flight object representing
- *   the flight information for the specified date and time slot, or null if no flight exists for
- *   that date and time slot.
- * @param onClick Lambda function representing the action to perform when the button is clicked.
+ * @param date The input LocalDate for which the start date of the week is to be calculated.
+ * @return The start date of the week containing the input date.
  */
-@Composable
-fun ShowFlight(date: LocalDate, time: TimeSlot, viewModel: UserViewModel) {
-  val flight = viewModel.user.value.assignedFlights.getFirstFlightByDate(date, time)
-  var weight = 0.5f
-  if (time == TimeSlot.PM) {
-    weight = 1f
-  }
-  if (flight != null) {
-    Button(
-        onClick = {},
-        shape = RectangleShape,
-        modifier = Modifier.fillMaxHeight().fillMaxWidth(weight),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)) {
-          Text(
-              text = flight.flightType.name,
-              fontSize = 12.sp,
-              color = Color.Black,
-              overflow = TextOverflow.Clip,
-              maxLines = 1,
-              modifier = Modifier.width(120.dp),
-              textAlign = TextAlign.Center)
-        }
-  } else {
-    Box(
-        modifier = Modifier.fillMaxHeight().fillMaxWidth(weight),
-        contentAlignment = Alignment.Center) {}
-  }
-}
-/**
- * Composable function to display the flight calendar screen.
- *
- * @param navController The navigation controller used for navigating to different destinations
- *   within the app.
- */
-@Composable
-fun ShowFlightCalendar(
-    navController: NavHostController,
-    padding: PaddingValues,
-    viewModel: UserViewModel
-) {
-  Calendar(navController, padding, viewModel)
+fun getStartOfWeek(date: LocalDate): LocalDate {
+  return date.minusDays(date.dayOfWeek.value.toLong() - 1)
 }
 
 /**
- * Composable function to display a calendar with flight information for each date and time slot.
+ * Composable function to display a calendar with a week view
  *
- * @param navController The navigation controller used for navigating to different destinations
- *   within the app.
+ * @param bottom The composable rendered at the bottom of the calendar
+ * @param tile The composable rendered for each tile
  */
 @Composable
-fun Calendar(navController: NavHostController, padding: PaddingValues, viewModel: UserViewModel) {
+fun ModularCalendar(
+    bottom: @Composable () -> Unit,
+    tile: @Composable (date: LocalDate, time: TimeSlot) -> Unit
+) {
   var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(LocalDate.now())) }
   Column(
       modifier = Modifier.fillMaxSize().padding(16.dp).background(Color.White),
   ) {
-    WeekView(currentWeekStartDate, viewModel, navController)
+    WeekView(currentWeekStartDate, tile)
     Spacer(modifier = Modifier.height(8.dp))
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
@@ -124,21 +77,18 @@ fun Calendar(navController: NavHostController, padding: PaddingValues, viewModel
               }
           Spacer(modifier = Modifier.width(5.dp))
         }
-    SwitchButton(
-        Availability = false,
-        padding = padding,
-        onClick = {},
-        onClickRight = { navController.navigate(Route.AVAILABILITY_CALENDAR) })
+    bottom()
   }
 }
 
 /**
- * Composable function to display a week view with flight information for each day and time slot.
+ * Composable function to display a week view with a [tile] for each day and time slot.
  *
  * @param startOfWeek The start date of the week to be displayed.
+ * @param tile The composable rendering each tile
  */
 @Composable
-fun WeekView(startOfWeek: LocalDate, viewModel: UserViewModel, navController: NavHostController) {
+fun WeekView(startOfWeek: LocalDate, tile: @Composable (date: LocalDate, time: TimeSlot) -> Unit) {
   val weekDays = (0..6).map { startOfWeek.plusDays(it.toLong()) }
   Column() {
     Row(
@@ -191,8 +141,8 @@ fun WeekView(startOfWeek: LocalDate, viewModel: UserViewModel, navController: Na
             modifier = Modifier.fillMaxSize().background(Color.LightGray),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
-              ShowFlight(day, TimeSlot.AM, viewModel)
-              ShowFlight(day, TimeSlot.PM, viewModel)
+              tile(day, TimeSlot.AM)
+              tile(day, TimeSlot.PM)
             }
       }
       Divider(color = Color.Black, thickness = 1.dp)

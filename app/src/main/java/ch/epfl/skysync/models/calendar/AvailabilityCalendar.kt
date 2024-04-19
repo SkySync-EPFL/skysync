@@ -3,8 +3,16 @@ package ch.epfl.skysync.models.calendar
 import ch.epfl.skysync.models.UNSET_ID
 import java.time.LocalDate
 
+/** Represents the type of a cell difference between two calendar */
+enum class CalendarDifferenceType {
+  ADDED,
+  UPDATED,
+  DELETED,
+}
+
 /** represents a calendar for availabilities */
-class AvailabilityCalendar : CalendarModel<Availability>() {
+class AvailabilityCalendar(cells: MutableList<Availability> = mutableListOf()) :
+    CalendarModel<Availability>(cells = cells) {
 
   /**
    * changes the status of the availability of given date and timeSlot if found in the calendar
@@ -43,5 +51,46 @@ class AvailabilityCalendar : CalendarModel<Availability>() {
       setAvailabilityByDate(date, timeSlot, nextAvailabilityStatus)
     }
     return nextAvailabilityStatus
+  }
+
+  /**
+   * Returns the differences between this and the other calendar, from the point of view of the
+   * other calendar (that is, [CalendarDifferenceType.ADDED] means that [other] has an added
+   * availability compared to this)
+   *
+   * @param other The other calendar
+   */
+  fun getDifferencesWithOtherCalendar(
+      other: AvailabilityCalendar
+  ): List<Pair<CalendarDifferenceType, Availability>> {
+    val differences = mutableListOf<Pair<CalendarDifferenceType, Availability>>()
+    for (otherAvailability in other.cells) {
+      val date = otherAvailability.date
+      val timeSlot = otherAvailability.timeSlot
+      val thisAvailability = getByDate(date, timeSlot)
+      if (otherAvailability == thisAvailability) {
+        continue
+      }
+      if (thisAvailability == null || thisAvailability.status == AvailabilityStatus.UNDEFINED) {
+        differences.add(Pair(CalendarDifferenceType.ADDED, otherAvailability))
+      } else if (otherAvailability.status == AvailabilityStatus.UNDEFINED) {
+        differences.add(Pair(CalendarDifferenceType.DELETED, thisAvailability))
+      } else {
+        differences.add(Pair(CalendarDifferenceType.UPDATED, otherAvailability))
+      }
+    }
+    for (thisAvailability in cells) {
+      val date = thisAvailability.date
+      val timeSlot = thisAvailability.timeSlot
+      val otherAvailability = other.getByDate(date, timeSlot)
+      if (otherAvailability == null) {
+        differences.add(Pair(CalendarDifferenceType.DELETED, thisAvailability))
+      }
+    }
+    return differences
+  }
+
+  fun copy(): AvailabilityCalendar {
+    return AvailabilityCalendar(cells.toMutableList())
   }
 }

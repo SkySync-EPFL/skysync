@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,18 +21,34 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+enum class Side {
+  LEFT,
+  RIGHT,
+}
+
+/**
+ * Composable function to display a switch button
+ *
+ * @param currentSide The currently selected side
+ * @param textLeft The text displayed on the left side
+ * @param textRight The text displayed on the right side
+ * @param onClickLeft Callback called when clicking on the left side
+ * @param onClickRight Callback called when clicking on the right side
+ */
 @Composable
 fun SwitchButton(
-    Availability: Boolean,
+    currentSide: Side,
     padding: PaddingValues,
-    onClick: () -> Unit,
+    textLeft: String,
+    textRight: String,
+    onClickLeft: () -> Unit,
     onClickRight: () -> Unit
 ) {
   var leftColor = Color.White
   var leftTextColor = Color(0xFFFFA500)
   var rightTextColor = Color.Black
   var rightColor = Color.LightGray
-  if (Availability) {
+  if (currentSide == Side.RIGHT) {
     leftColor = Color.LightGray
     leftTextColor = Color.Black
     rightColor = Color.White
@@ -50,24 +66,24 @@ fun SwitchButton(
                     .border(1.dp, Color.Gray, RoundedCornerShape(100.dp)),
         ) {
           Button(
-              onClick,
+              onClick = onClickLeft,
               colors = ButtonDefaults.buttonColors(containerColor = leftColor),
               modifier = Modifier.fillMaxWidth(0.5f).fillMaxHeight(),
           ) {
             Text(
-                text = "Flight Calendar",
+                text = textLeft,
                 fontSize = 12.sp,
                 color = leftTextColor,
                 modifier = Modifier,
                 overflow = TextOverflow.Clip)
           }
           Button(
-              onClickRight,
+              onClick = onClickRight,
               colors = ButtonDefaults.buttonColors(containerColor = rightColor),
               modifier = Modifier.fillMaxWidth(1f).fillMaxHeight(),
           ) {
             Text(
-                text = "Availability Calendar",
+                text = textRight,
                 fontSize = 12.sp,
                 color = rightTextColor,
                 overflow = TextOverflow.Clip,
