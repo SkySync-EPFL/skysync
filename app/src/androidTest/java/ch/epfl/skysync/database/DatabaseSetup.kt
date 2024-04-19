@@ -252,14 +252,20 @@ class DatabaseSetup {
     vehicleTable.add(vehicle1, { vehicle1 = vehicle1.copy(id = it) }, {})
     vehicleTable.add(vehicle2, { vehicle2 = vehicle2.copy(id = it) }, {})
 
-    userTable.add(admin1, { id -> admin1 = admin1.copy(id = id) }, {})
-    userTable.add(admin2, { id -> admin2 = admin2.copy(id = id) }, {})
-    userTable.add(crew1, { id -> crew1 = crew1.copy(id = id) }, {})
-    userTable.add(pilot1, { id -> pilot1 = pilot1.copy(id = id) }, {})
-
-    SystemClock.sleep(DB_SLEEP_TIME)
-
-    // this needs to be done after setting all the IDs
+    userTable.set(
+        admin1.id,
+        admin1,
+        {},
+        {}
+    )
+    userTable.set(
+        admin2.id,
+        admin2,
+        {},
+        {})
+    userTable.set(crew1.id,
+        crew1, {}, {})
+    userTable.set(pilot1.id, pilot1, {}, {})
 
     SystemClock.sleep(DB_SLEEP_TIME)
   }
