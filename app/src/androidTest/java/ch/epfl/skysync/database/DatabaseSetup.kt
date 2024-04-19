@@ -206,4 +206,35 @@ class DatabaseSetup {
 
     SystemClock.sleep(DB_SLEEP_TIME)
   }
+
+  fun fillDatabase2(db: FirestoreDatabase) {
+    val flightTypeTable = FlightTypeTable(db)
+    val balloonTable = BalloonTable(db)
+    val basketTable = BasketTable(db)
+    val vehicleTable = VehicleTable(db)
+    val userTable = UserTable(db)
+
+    flightTypeTable.add(flightType1, { flightType1 = flightType1.copy(id = it) }, {})
+    flightTypeTable.add(flightType2, { flightType2 = flightType2.copy(id = it) }, {})
+
+    balloonTable.add(balloon1, { balloon1 = balloon1.copy(id = it) }, {})
+    balloonTable.add(balloon2, { balloon2 = balloon2.copy(id = it) }, {})
+
+    basketTable.add(basket1, { basket1 = basket1.copy(id = it) }, {})
+    basketTable.add(basket2, { basket2 = basket2.copy(id = it) }, {})
+
+    vehicleTable.add(vehicle1, { vehicle1 = vehicle1.copy(id = it) }, {})
+    vehicleTable.add(vehicle2, { vehicle2 = vehicle2.copy(id = it) }, {})
+
+    userTable.add(admin1, { id -> admin1 = admin1.copy(id = id) }, {})
+    userTable.add(admin2, { id -> admin2 = admin2.copy(id = id) }, {})
+    userTable.add(crew1, { id -> crew1 = crew1.copy(id = id) }, {})
+    userTable.add(pilot1, { id -> pilot1 = pilot1.copy(id = id) }, {})
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+
+    // this needs to be done after setting all the IDs
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+  }
 }

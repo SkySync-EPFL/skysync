@@ -1,9 +1,8 @@
 package ch.epfl.skysync.viewmodel
 
 import android.os.SystemClock
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.test.junit4.createComposeRule
-import ch.epfl.skysync.database.DatabaseSetup2
+import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.tables.BalloonTable
 import ch.epfl.skysync.database.tables.BasketTable
@@ -26,7 +25,7 @@ import org.junit.Test
 class FlightsViewModelTest {
 
   private val db = FirestoreDatabase(useEmulator = true)
-  private val dbSetup = DatabaseSetup2()
+  private val dbSetup = DatabaseSetup()
   private val flightTable = FlightTable(db)
   private val basketTable = BasketTable(db)
   private val balloonTable = BalloonTable(db)
@@ -39,7 +38,7 @@ class FlightsViewModelTest {
   @Before
   fun setUp() {
     dbSetup.clearDatabase(db)
-    dbSetup.fillDatabase(db)
+    dbSetup.fillDatabase2(db)
     composeTestRule.setContent {
       viewModel =
           FlightsViewModel.createViewModel(
