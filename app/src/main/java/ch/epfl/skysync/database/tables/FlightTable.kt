@@ -75,6 +75,22 @@ class FlightTable(db: FirestoreDatabase) :
   }
 
   /**
+   * Set items to the flight-member relation for each role defined in the team, whether or not it
+   * has a user assigned.
+   */
+  private fun setTeam(
+      flightId: String,
+      team: Team,
+      onCompletion: () -> Unit,
+      onError: (Exception) -> Unit
+  ) {
+    flightMemberTable.queryDelete(
+        Filter.equalTo("flightId", flightId),
+        { addTeam(flightId, team, onCompletion, onError) },
+        onError)
+  }
+
+  /**
    * Retrieve the team members of the flight
    *
    * First query the flight-member relation then for the roles which have a user assigned, query the
@@ -310,6 +326,25 @@ class FlightTable(db: FirestoreDatabase) :
         path,
         FlightSchema.fromModel(item),
         { flightId -> addTeam(flightId, item.team, { onCompletion(flightId) }, onError) },
+        onError)
+  }
+
+  /**
+   * Update a flight
+   *
+   * This will overwrite the flight at the given id.
+   *
+   * @param id The id of the flight
+   * @param item The flight to update in the database
+   * @param onCompletion Callback called on completion of the operation
+   * @param onError Callback called when an error occurs
+   */
+  fun update(id: String, item: Flight, onCompletion: () -> Unit, onError: (Exception) -> Unit) {
+    db.setItem(
+        path,
+        id,
+        FlightSchema.fromModel(item),
+        { setTeam(id, item.team, onCompletion, onError) },
         onError)
   }
 

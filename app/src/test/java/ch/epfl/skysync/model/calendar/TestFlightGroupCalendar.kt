@@ -6,7 +6,6 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
-import ch.epfl.skysync.models.flight.Team
 import java.time.LocalDate
 import org.junit.Assert.*
 import org.junit.Before
@@ -29,24 +28,22 @@ class TestFlightGroupCalendar {
         PlannedFlight(
             "y",
             1,
-            Team(listOf()),
             FlightType.FONDUE,
-            null,
-            null,
-            LocalDate.of(2024, 4, 1),
-            TimeSlot.AM,
-            listOf())
+            balloon = null,
+            basket = null,
+            date = LocalDate.of(2024, 4, 1),
+            timeSlot = TimeSlot.AM,
+            vehicles = listOf())
     testFlight2 =
         PlannedFlight(
             "x",
             2,
-            Team(listOf()),
             FlightType.DISCOVERY,
-            null,
-            null,
-            LocalDate.of(2024, 4, 1),
-            TimeSlot.AM,
-            listOf())
+            basket = null,
+            balloon = null,
+            date = LocalDate.of(2024, 4, 1),
+            timeSlot = TimeSlot.AM,
+            vehicles = listOf())
     emptyFlightGroup = FlightGroup(LocalDate.of(2024, 4, 1), TimeSlot.AM, listOf())
     calendar = FlightGroupCalendar()
   }
