@@ -60,7 +60,7 @@ fun NavGraphBuilder.homeGraph(navController: NavHostController, user: FirebaseUs
     composable(Route.CHAT) { ChatScreen(navController) }
     composable(Route.FLIGHT) { FlightScreen(navController) }
     composable(Route.HOME) {
-      val db = FirestoreDatabase()
+      val db = FirestoreDatabase(useEmulator = true)
       val flightTable = FlightTable(db)
       val balloonTable = BalloonTable(db)
       val basketTable = BasketTable(db)
