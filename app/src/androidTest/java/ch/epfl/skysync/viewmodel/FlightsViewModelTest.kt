@@ -172,7 +172,7 @@ class FlightsViewModelTest {
     viewModel.refreshCurrentFlights()
 
     SystemClock.sleep(DB_SLEEP_TIME)
-    viewModel.deleteFlight(flight1)
+    viewModel.deleteFlight(flight1.id)
     SystemClock.sleep(DB_SLEEP_TIME)
     Assert.assertEquals(viewModel.currentFlights.value.size, 1)
     Assert.assertTrue(viewModel.currentFlights.value.contains(flight2))

@@ -39,25 +39,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
-import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.flight.Balloon
-import ch.epfl.skysync.models.flight.BalloonQualification
-import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.Flight
-import ch.epfl.skysync.models.flight.FlightType.Companion.PREMIUM
-import ch.epfl.skysync.models.flight.PlannedFlight
-import ch.epfl.skysync.models.flight.Role
-import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.flight.Team
-import ch.epfl.skysync.models.flight.Vehicle
-import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.FlightsViewModel
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -157,27 +142,6 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
               // Here is where you'd navigate to a new screen. For now, just log a message.
               Log.d("HomeScreen", "FloatingActionButton clicked. Implement navigation here.")
               // Example navigation call: navController.navigate("AddFlight")
-              viewModel.addFlight(
-                  PlannedFlight(
-                      nPassengers = 1,
-                      date = LocalDate.of(2024, 3, 11),
-                      timeSlot = TimeSlot.PM,
-                      team =
-                          Team(
-                              listOf(
-                                  Role(
-                                      RoleType.PILOT,
-                                      Crew(
-                                          "1",
-                                          "John",
-                                          "Doe",
-                                          AvailabilityCalendar(),
-                                          FlightGroupCalendar())))),
-                      flightType = PREMIUM,
-                      vehicles = listOf(Vehicle("sprinter2", "12")),
-                      balloon = Balloon("qqp", BalloonQualification.LARGE, "12"),
-                      basket = Basket("lol", true, "kdf"),
-                      id = UNSET_ID))
             },
             containerColor = lightOrange) {
               Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
