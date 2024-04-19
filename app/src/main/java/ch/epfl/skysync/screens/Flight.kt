@@ -1,6 +1,7 @@
 package ch.epfl.skysync.screens
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,11 +9,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -66,16 +69,18 @@ fun FlightScreen(navController: NavHostController) {
   // Provides access to the Fused Location Provider API.
   val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
-  // State holding the current location initialized to Lausanne as default value.
-  var location by remember { mutableStateOf(LatLng(46.516, 6.63282)) }
+  // State holding the current location.
+  var location by remember { mutableStateOf<LatLng?>(null) }
 
   // Remembers and controls the camera position state for the map.
-  val cameraPositionState = rememberCameraPositionState {
-    position = CameraPosition.fromLatLngZoom(location, 13f)
-  }
+  val cameraPositionState = rememberCameraPositionState()
 
   // Manages the state of the map marker.
-  val markerState = rememberMarkerState(position = location)
+  val markerState = location?.let { rememberMarkerState(position = it) }
+
+  var speed by remember { mutableStateOf(0f) } // Speed in meters/second
+
+  var altitude by remember { mutableStateOf(0.0) } // Altitude in meters
 
   // DisposableEffect to handle location updates and permissions.
   DisposableEffect(locationPermission) {
@@ -91,8 +96,16 @@ fun FlightScreen(navController: NavHostController) {
         object : LocationCallback() {
           override fun onLocationResult(locationResult: LocationResult) {
             locationResult.lastLocation?.let {
-              location = LatLng(it.latitude, it.longitude)
-              markerState.position = location // Updates marker position on the map.
+              val newLocation = LatLng(it.latitude, it.longitude)
+              if (location == null) { // Initial setup
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(newLocation, 13f)
+              }
+              location = newLocation
+              if (markerState != null) {
+                markerState.position = newLocation
+              } // Updates marker position on the map
+              speed = it.speed // Update speed
+              altitude = it.altitude // Update altitude
             }
           }
         }
@@ -125,8 +138,9 @@ fun FlightScreen(navController: NavHostController) {
                       FloatingActionButton(
                           onClick = {
                             // Moves the camera to the current location when clicked.
-                            cameraPositionState.move(
-                                CameraUpdateFactory.newLatLngZoom(location, 13f))
+                            location
+                                ?.let { CameraUpdateFactory.newLatLngZoom(it, 13f) }
+                                ?.let { cameraPositionState.move(it) }
                           },
                           containerColor = lightOrange) {
                             Icon(Icons.Default.LocationOn, contentDescription = "Locate Me")
@@ -152,12 +166,23 @@ fun FlightScreen(navController: NavHostController) {
       },
       bottomBar = { BottomBar(navController) }) { padding ->
         // Renders the Google Map or a permission request message based on the permission status.
-        if (locationPermission.status.isGranted) {
+        if (locationPermission.status.isGranted && location != null) {
           GoogleMap(
               modifier = Modifier.fillMaxSize().padding(padding).testTag("Map"),
               cameraPositionState = cameraPositionState) {
-                Marker(state = markerState, title = "Your Location", snippet = "You are here")
+                if (markerState != null) {
+                  Marker(state = markerState, title = "Your Location", snippet = "You are here")
+                }
               }
+          Text(
+              text =
+                  "Speed: ${speed * 3.6} km/h\nAltitude: ${altitude} m", // Display speed in km/h
+                                                                         // and altitude in meters
+              style = MaterialTheme.typography.bodyLarge,
+              modifier =
+                  Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
+                      .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                      .padding(6.dp))
         } else {
           // Displays a message if location permission is denied.
           Box(
