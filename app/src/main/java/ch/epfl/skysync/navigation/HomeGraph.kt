@@ -13,6 +13,8 @@ import ch.epfl.skysync.screens.AddFlightScreen
 import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
+import ch.epfl.skysync.viewmodel.FlightsViewModel
+import com.google.firebase.auth.FirebaseUser
 import java.time.LocalDate
 
 /** Graph of the main screens of the app */
@@ -56,7 +58,16 @@ fun NavGraphBuilder.homeGraph(
     personalCalendar(repository, navController, uid)
     composable(Route.CHAT) { ChatScreen(navController) }
     composable(Route.FLIGHT) { FlightScreen(navController) }
-    composable(Route.HOME) { HomeScreen(navController, listFlights) }
+    composable(Route.HOME) {
+      val viewModel =
+          FlightsViewModel.createViewModel(
+              flightTable = repository.flightTable,
+              balloonTable = repository.balloonTable,
+              basketTable = repository.basketTable,
+              flightTypeTable = repository.flightTypeTable,
+              vehicleTable = repository.vehicleTable)
+      HomeScreen(navController, viewModel)
+    }
     composable(Route.ADD_FLIGHT) { AddFlightScreen(navController, listFlights) }
   }
 }

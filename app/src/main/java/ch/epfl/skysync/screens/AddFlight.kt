@@ -292,7 +292,7 @@ fun AddFlightScreen(navController: NavHostController, flights: MutableList<Plann
                         DropdownMenu(
                             expanded = expandedFlightTypeMenu,
                             onDismissRequest = { expandedFlightTypeMenu = false }) {
-                              FlightType.all_flights.withIndex().forEach { (id, item) ->
+                              FlightType.ALL_FLIGHTS.withIndex().forEach { (id, item) ->
                                 DropdownMenuItem(
                                     modifier =
                                         Modifier.fillMaxWidth()
