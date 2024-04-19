@@ -14,7 +14,6 @@ import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
 import ch.epfl.skysync.viewmodel.FlightsViewModel
-import com.google.firebase.auth.FirebaseUser
 import java.time.LocalDate
 
 /** Graph of the main screens of the app */
