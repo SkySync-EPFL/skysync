@@ -252,19 +252,9 @@ class DatabaseSetup {
     vehicleTable.add(vehicle1, { vehicle1 = vehicle1.copy(id = it) }, {})
     vehicleTable.add(vehicle2, { vehicle2 = vehicle2.copy(id = it) }, {})
 
-    userTable.set(
-        admin1.id,
-        admin1,
-        {},
-        {}
-    )
-    userTable.set(
-        admin2.id,
-        admin2,
-        {},
-        {})
-    userTable.set(crew1.id,
-        crew1, {}, {})
+    userTable.set(admin1.id, admin1, {}, {})
+    userTable.set(admin2.id, admin2, {}, {})
+    userTable.set(crew1.id, crew1, {}, {})
     userTable.set(pilot1.id, pilot1, {}, {})
 
     SystemClock.sleep(DB_SLEEP_TIME)
