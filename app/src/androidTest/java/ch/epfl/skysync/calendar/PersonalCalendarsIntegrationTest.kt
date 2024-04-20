@@ -7,6 +7,8 @@ import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
+import ch.epfl.skysync.Repository
+import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import org.junit.Assert
@@ -22,10 +24,11 @@ class PersonalCalendarsIntegrationTest {
   @Before
   fun setUpNavHost() {
     composeTestRule.setContent {
+      val repository = Repository(FirestoreDatabase(useEmulator = true))
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(navController, null)
+        homeGraph(repository, navController, "__unset_id__")
       }
     }
   }

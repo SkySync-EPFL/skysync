@@ -39,29 +39,41 @@ import java.time.LocalDate
 class DatabaseSetup {
   var admin1 =
       Admin(
+          id = "id-admin-1",
           firstname = "admin-1",
           lastname = "lastname",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
   var admin2 =
       Admin(
+          id = "id-admin-2",
           firstname = "admin-2",
           lastname = "lastname",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
   var crew1 =
       Crew(
+          id = "id-crew-1",
           firstname = "crew-1",
-          lastname = "lastname",
+          lastname = "Bob",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
   var pilot1 =
       Pilot(
+          id = "id-pilot-1",
           firstname = "pilot-1",
-          lastname = "lastname",
+          lastname = "Bob",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.LARGE)
+  var pilot2 =
+      Pilot(
+          id = "id-pilot-2",
+          firstname = "pilot-2",
+          lastname = "lastname",
+          availabilities = AvailabilityCalendar(),
+          assignedFlights = FlightGroupCalendar(),
+          qualification = BalloonQualification.SMALL)
   var availability1 =
       Availability(
           status = AvailabilityStatus.MAYBE,
@@ -78,6 +90,11 @@ class DatabaseSetup {
   var availability4 =
       Availability(
           status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = LocalDate.of(2024, 8, 15))
+  var availability5 =
+      Availability(
+          status = AvailabilityStatus.MAYBE,
+          timeSlot = TimeSlot.PM,
+          date = LocalDate.of(2024, 8, 16))
 
   var balloon1 = Balloon(name = "balloon-1", qualification = BalloonQualification.MEDIUM)
 
@@ -149,31 +166,39 @@ class DatabaseSetup {
     vehicleTable.add(vehicle1, { vehicle1 = vehicle1.copy(id = it) }, {})
     vehicleTable.add(vehicle2, { vehicle2 = vehicle2.copy(id = it) }, {})
 
-    userTable.add(
+    userTable.set(
+        admin1.id,
         admin1,
-        { id ->
-          admin1 = admin1.copy(id = id)
+        {
           availabilityTable.add(
-              id, availability3, { availability3 = availability3.copy(id = it) }, {})
+              admin1.id, availability3, { availability3 = availability3.copy(id = it) }, {})
           availabilityTable.add(
-              id, availability4, { availability4 = availability4.copy(id = it) }, {})
+              admin1.id, availability4, { availability4 = availability4.copy(id = it) }, {})
         },
         {})
-    userTable.add(admin2, { id -> admin2 = admin2.copy(id = id) }, {})
-    userTable.add(
+    userTable.set(admin2.id, admin2, {}, {})
+    userTable.set(
+        crew1.id,
         crew1,
-        { id ->
-          crew1 = crew1.copy(id = id)
+        {
           availabilityTable.add(
-              id, availability1, { availability1 = availability1.copy(id = it) }, {})
+              crew1.id, availability1, { availability1 = availability1.copy(id = it) }, {})
         },
         {})
-    userTable.add(
+    userTable.set(
+        pilot1.id,
         pilot1,
-        { id ->
-          pilot1 = pilot1.copy(id = id)
+        {
           availabilityTable.add(
-              id, availability2, { availability2 = availability2.copy(id = it) }, {})
+              pilot1.id, availability2, { availability2 = availability2.copy(id = it) }, {})
+        },
+        {})
+    userTable.set(
+        pilot2.id,
+        pilot2,
+        {
+          availabilityTable.add(
+              pilot2.id, availability5, { availability5 = availability5.copy(id = it) }, {})
         },
         {})
 
@@ -183,6 +208,7 @@ class DatabaseSetup {
     admin1.availabilities.addCells(listOf(availability3, availability4))
     crew1.availabilities.addCells(listOf(availability1))
     pilot1.availabilities.addCells(listOf(availability2))
+    pilot2.availabilities.addCells(listOf(availability5))
 
     // re-set all the objects that have been added in the db -> they now have IDs
     flight1 =
@@ -203,6 +229,33 @@ class DatabaseSetup {
               )
         },
         {})
+
+    SystemClock.sleep(DB_SLEEP_TIME)
+  }
+
+  fun fillDatabase2(db: FirestoreDatabase) {
+    val flightTypeTable = FlightTypeTable(db)
+    val balloonTable = BalloonTable(db)
+    val basketTable = BasketTable(db)
+    val vehicleTable = VehicleTable(db)
+    val userTable = UserTable(db)
+
+    flightTypeTable.add(flightType1, { flightType1 = flightType1.copy(id = it) }, {})
+    flightTypeTable.add(flightType2, { flightType2 = flightType2.copy(id = it) }, {})
+
+    balloonTable.add(balloon1, { balloon1 = balloon1.copy(id = it) }, {})
+    balloonTable.add(balloon2, { balloon2 = balloon2.copy(id = it) }, {})
+
+    basketTable.add(basket1, { basket1 = basket1.copy(id = it) }, {})
+    basketTable.add(basket2, { basket2 = basket2.copy(id = it) }, {})
+
+    vehicleTable.add(vehicle1, { vehicle1 = vehicle1.copy(id = it) }, {})
+    vehicleTable.add(vehicle2, { vehicle2 = vehicle2.copy(id = it) }, {})
+
+    userTable.set(admin1.id, admin1, {}, {})
+    userTable.set(admin2.id, admin2, {}, {})
+    userTable.set(crew1.id, crew1, {}, {})
+    userTable.set(pilot1.id, pilot1, {}, {})
 
     SystemClock.sleep(DB_SLEEP_TIME)
   }

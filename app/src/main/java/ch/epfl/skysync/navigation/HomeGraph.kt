@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import ch.epfl.skysync.Repository
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.FlightType
@@ -13,11 +14,15 @@ import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
 import ch.epfl.skysync.screens.ModifyFlightScreen
-import com.google.firebase.auth.FirebaseUser
+import ch.epfl.skysync.viewmodel.FlightsViewModel
 import java.time.LocalDate
 
 /** Graph of the main screens of the app */
-fun NavGraphBuilder.homeGraph(navController: NavHostController, user: FirebaseUser?) {
+fun NavGraphBuilder.homeGraph(
+    repository: Repository,
+    navController: NavHostController,
+    uid: String?
+) {
   // Only there for preview purposes. It will then be integrated in a model view
   val listFlights =
       mutableListOf(
@@ -50,10 +55,19 @@ fun NavGraphBuilder.homeGraph(navController: NavHostController, user: FirebaseUs
               id = UNSET_ID),
       )
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
-    personalCalendar(navController, user)
+    personalCalendar(repository, navController, uid)
     composable(Route.CHAT) { ChatScreen(navController) }
     composable(Route.FLIGHT) { FlightScreen(navController) }
-    composable(Route.HOME) { HomeScreen(navController, listFlights) }
+    composable(Route.HOME) {
+      val viewModel =
+          FlightsViewModel.createViewModel(
+              flightTable = repository.flightTable,
+              balloonTable = repository.balloonTable,
+              basketTable = repository.basketTable,
+              flightTypeTable = repository.flightTypeTable,
+              vehicleTable = repository.vehicleTable)
+      HomeScreen(navController, viewModel)
+    }
     composable(Route.ADD_FLIGHT) { AddFlightScreen(navController, listFlights) }
     composable(Route.MODIFY_FLIGHT) {
       ModifyFlightScreen(navController, listFlights, listFlights[1])

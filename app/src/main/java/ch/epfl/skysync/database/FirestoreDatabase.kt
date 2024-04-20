@@ -63,6 +63,37 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
   }
 
   /**
+   * Set a new item to the database
+   *
+   * Set item at id and override any previously set id.
+   *
+   * @param path A filesystem-like path that specify the location of the table
+   * @param item The item to set to the database, the types of the attributes have to be Firestore
+   * @param id the id of the item
+   * @param onCompletion Callback called on completion of the operation
+   * @param onError Callback called when an error occurs
+   */
+  fun <T : Any> setItem(
+      path: String,
+      id: String,
+      item: T,
+      onCompletion: () -> Unit,
+      onError: (Exception) -> Unit
+  ) {
+    db.collection(path)
+        .document(id)
+        .set(item)
+        .addOnSuccessListener {
+          Log.d(TAG, "Created $path/${id}")
+          onCompletion()
+        }
+        .addOnFailureListener { exception ->
+          Log.e(TAG, "Error creating document: ", exception)
+          onError(exception)
+        }
+  }
+
+  /**
    * Get an item from the database
    *
    * @param path A filesystem-like path that specify the location of the table

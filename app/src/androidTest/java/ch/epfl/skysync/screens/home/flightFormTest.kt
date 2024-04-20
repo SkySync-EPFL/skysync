@@ -17,6 +17,8 @@ import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
+import ch.epfl.skysync.Repository
+import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
@@ -34,10 +36,11 @@ class FlightFormTest {
   @Before
   fun setup() {
     composeTestRule.setContent {
+      val repository = Repository(FirestoreDatabase(useEmulator = true))
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(navController, null)
+        homeGraph(repository, navController, null)
       }
       navController.navigate(Route.MODIFY_FLIGHT)
     }
