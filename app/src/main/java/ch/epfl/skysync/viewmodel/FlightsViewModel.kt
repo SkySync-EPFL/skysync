@@ -1,9 +1,9 @@
 package ch.epfl.skysync.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.database.tables.BalloonTable
 import ch.epfl.skysync.database.tables.BasketTable
@@ -18,12 +18,9 @@ import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Vehicle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-/**
- * ViewModel for the user
- *
- * @param firebaseUser: FirebaseUser? the firebase user
- */
+/** ViewModel for the user */
 class FlightsViewModel(
     private val flightTable: FlightTable,
     private val balloonTable: BalloonTable,
@@ -32,7 +29,6 @@ class FlightsViewModel(
     private val vehicleTable: VehicleTable,
 ) : ViewModel() {
   companion object {
-    /** creates a view model by accepting the firebase user as an argument */
     @Composable
     fun createViewModel(
         flightTable: FlightTable,
@@ -71,7 +67,7 @@ class FlightsViewModel(
   val currentFlightTypes = _currentFlightTypes.asStateFlow()
   val currentVehicles = _currentVehicles.asStateFlow()
 
-  fun refreshAll() {
+  fun refresh() {
     refreshCurrentFlights()
     refreshCurrentBalloons()
     refreshCurrentBaskets()
@@ -79,88 +75,81 @@ class FlightsViewModel(
     refreshCurrentVehicles()
   }
 
-  fun refreshCurrentBalloons() {
-    balloonTable.getAll(
-        { balloons -> _currentBalloons.value = balloons },
-        { exception -> Log.d("Balloonrefresh", exception.toString()) })
-  }
+  fun refreshCurrentBalloons() =
+      viewModelScope.launch {
+        _currentBalloons.value = balloonTable.getAll(onError = { onError(it) })
+      }
 
-  fun refreshCurrentVehicles() {
-    vehicleTable.getAll(
-        { vehicles -> _currentVehicles.value = vehicles },
-        { exception -> Log.d("Vehiclerefresh", exception.toString()) })
-  }
+  fun refreshCurrentVehicles() =
+      viewModelScope.launch {
+        _currentVehicles.value = vehicleTable.getAll(onError = { onError(it) })
+      }
 
-  fun refreshCurrentBaskets() {
-    basketTable.getAll(
-        { baskets -> _currentBaskets.value = baskets },
-        { exception -> Log.d("Basketrefresh", exception.toString()) })
-  }
+  fun refreshCurrentBaskets() =
+      viewModelScope.launch {
+        _currentBaskets.value = basketTable.getAll(onError = { onError(it) })
+      }
 
-  fun refreshCurrentFlightTypes() {
-    flightTypeTable.getAll(
-        { flightTypes -> _currentFlightTypes.value = flightTypes },
-        { exception -> Log.d("FlightTyperefresh", exception.toString()) })
-  }
+  fun refreshCurrentFlightTypes() =
+      viewModelScope.launch {
+        _currentFlightTypes.value = flightTypeTable.getAll(onError = { onError(it) })
+      }
 
-  fun refreshCurrentFlights() {
-    // todo: check for dirty data (flights added/modified/deleted while offline)
-
-    flightTable.getAll(
-        { flights -> _currentFlights.value = flights },
-        { exception -> Log.d("FLightrefresh", exception.toString()) })
-  }
+  fun refreshCurrentFlights() =
+      viewModelScope.launch {
+        // todo: check for dirty data (flights added/modified/deleted while offline)
+        _currentFlights.value = flightTable.getAll(onError = { onError(it) })
+      }
 
   /**
    * modifies the flight by deleting the old flight and adding a new one in the db and the viewmodel
    */
   fun modifyFlight(
       newFlight: PlannedFlight,
-  ) {
-    flightTable.delete(
-        newFlight.id,
-        {
-          val oldFlight = getFlightFromId(newFlight.id)
-          if (oldFlight != null) {
-            _currentFlights.value -= oldFlight
-          }
-          addFlight(newFlight)
-        },
-        { exception -> })
-  }
+  ) =
+      viewModelScope.launch {
+        flightTable.update(newFlight.id, newFlight)
+        _currentFlights.value =
+            _currentFlights.value.map { if (it.id == newFlight.id) newFlight else it }
+      }
 
   /** deletes the given flight from the db and the viewmodel */
   fun deleteFlight(
       flight: Flight,
-  ) {
-    flightTable.delete(flight.id, { _currentFlights.value -= flight }, { exception -> })
-  }
+  ) =
+      viewModelScope.launch {
+        flightTable.delete(flight.id, onError = { onError(it) })
+        _currentFlights.value -= flight
+      }
 
-  fun deleteFlight(flightId: String) {
-    getFlightFromId(flightId)?.let { deleteFlight(it) }
-  }
+  fun deleteFlight(flightId: String) =
+      viewModelScope.launch {
+        flightTable.delete(flightId, onError = { onError(it) })
+        _currentFlights.value = currentFlights.value.filter { it.id != flightId }
+      }
 
   /** adds the given flight to the db and the viewmodel */
   fun addFlight(
       flight: PlannedFlight,
-  ) {
+  ) =
+      viewModelScope.launch {
+        val flightId = flightTable.add(flight, onError = { onError(it) })
 
-    flightTable.add(
-        flight,
-        {
-          val flightWithCurrentId = flight.setId(it)
-          _currentFlights.value += flightWithCurrentId
-          refreshCurrentFlights()
-        },
-        { exception -> })
-  }
+        _currentFlights.value += flight.setId(flightId)
+        refreshCurrentFlights()
+      }
 
   /** return the flight with flight id if it exists in the list of current flights */
   fun getFlightFromId(flightId: String): Flight? {
     return currentFlights.value.find { it.id == flightId }
   }
 
+  /** Callback executed when an error occurs on database-related operations */
+  private fun onError(e: Exception) {
+    // TODO: display error message
+  }
+
   init {
-    refreshAll()
+    refresh()
   }
 }

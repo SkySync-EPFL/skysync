@@ -15,12 +15,8 @@ class FlightMemberTable(db: FirestoreDatabase) :
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  fun add(
-      item: FlightMemberSchema,
-      onCompletion: (id: String) -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    db.addItem(path, item, onCompletion, onError)
+  suspend fun add(item: FlightMemberSchema, onError: ((Exception) -> Unit)? = null): String {
+    return withErrorCallback(onError) { db.addItem(path, item) }
   }
   /**
    * Update a flight member item
@@ -32,13 +28,8 @@ class FlightMemberTable(db: FirestoreDatabase) :
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  fun update(
-      id: String,
-      item: FlightMemberSchema,
-      onCompletion: () -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    db.setItem(path, id, item, onCompletion, onError)
+  suspend fun update(id: String, item: FlightMemberSchema, onError: ((Exception) -> Unit)? = null) {
+    return withErrorCallback(onError) { db.setItem(path, id, item) }
   }
 
   companion object {

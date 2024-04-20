@@ -17,6 +17,11 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.Filter
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 /** Represent the "flight" table */
 class FlightTable(db: FirestoreDatabase) :
@@ -58,36 +63,31 @@ class FlightTable(db: FirestoreDatabase) :
    * Add items to the flight-member relation for each role defined in the team, whether or not it
    * has a user assigned.
    */
-  private fun addTeam(
+  private suspend fun addTeam(
       flightId: String,
       team: Team,
-      onCompletion: () -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    val delayedCallback = ParallelOperationsEndCallback(team.roles.size) { onCompletion() }
-    for (role in team.roles) {
-      flightMemberTable.add(
-          FlightMemberSchema(
-              userId = role.assignedUser?.id, flightId = flightId, roleType = role.roleType),
-          { delayedCallback.run() },
-          onError)
-    }
+  ): Unit = coroutineScope {
+    team.roles
+        .map { role ->
+          async {
+            flightMemberTable.add(
+                FlightMemberSchema(
+                    userId = role.assignedUser?.id, flightId = flightId, roleType = role.roleType))
+          }
+        }
+        .awaitAll()
   }
 
   /**
    * Set items to the flight-member relation for each role defined in the team, whether or not it
    * has a user assigned.
    */
-  private fun setTeam(
+  private suspend fun setTeam(
       flightId: String,
       team: Team,
-      onCompletion: () -> Unit,
-      onError: (Exception) -> Unit
   ) {
-    flightMemberTable.queryDelete(
-        Filter.equalTo("flightId", flightId),
-        { addTeam(flightId, team, onCompletion, onError) },
-        onError)
+    flightMemberTable.queryDelete(Filter.equalTo("flightId", flightId))
+    addTeam(flightId, team)
   }
 
   /**
@@ -96,220 +96,121 @@ class FlightTable(db: FirestoreDatabase) :
    * First query the flight-member relation then for the roles which have a user assigned, query the
    * user table.
    */
-  private fun retrieveTeam(
-      schema: FlightSchema,
-      onCompletion: (Team) -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    flightMemberTable.query(
-        Filter.equalTo("flightId", schema.id),
-        { members ->
-          val roles = mutableListOf<Role>()
-          val numUserRequests = members.filter { it.userId != null }.size
-
-          // in case no user is assigned yet, do not rely on the delayed callback
-          // as it would be run immediately (see doc) returning an empty list of roles
-          // which is not the case in general
-          if (numUserRequests == 0) {
-            onCompletion(Team(members.map { Role(it.roleType!!, null) }))
-            return@query
-          }
-          val delayedCallback =
-              ParallelOperationsEndCallback(numUserRequests) { onCompletion(Team(roles)) }
-          for (member in members) {
-            if (member.userId == null) {
-              roles.add(Role(member.roleType!!, null))
-              continue
+  private suspend fun retrieveTeam(schema: FlightSchema): Team = coroutineScope {
+    val members = flightMemberTable.query(Filter.equalTo("flightId", schema.id))
+    val roles = mutableListOf<Role>()
+    val deferreds = mutableListOf<Job>()
+    for (member in members) {
+      if (member.userId == null) {
+        roles.add(Role(member.roleType!!, null))
+        continue
+      }
+      deferreds.add(
+          launch {
+            val user = userTable.get(member.userId)
+            if (user == null) {
+              // report
+            } else {
+              roles.add(Role(member.roleType!!, user))
             }
-            userTable.get(
-                member.userId,
-                {
-                  if (it == null) {
-                    // report
-                  } else {
-                    roles.add(Role(member.roleType!!, it))
-                    delayedCallback.run()
-                  }
-                },
-                onError)
-          }
-        },
-        onError)
+          })
+    }
+    deferreds.forEach { it.join() }
+    Team(roles)
   }
 
   /** Retrieve the vehicles linked to the flight */
-  private fun retrieveVehicles(
-      schema: FlightSchema,
-      onCompletion: (List<Vehicle>) -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    var vehicles = mutableListOf<Vehicle>()
-    var delayedCallback =
-        ParallelOperationsEndCallback(schema.vehicleIds!!.size) { onCompletion(vehicles) }
-    for (vehicleId in schema.vehicleIds!!) {
-      vehicleTable.get(
-          vehicleId,
-          {
-            if (it == null) {
+  private suspend fun retrieveVehicles(schema: FlightSchema): List<Vehicle> = coroutineScope {
+    schema.vehicleIds!!
+        .map { vehicleId ->
+          async {
+            val vehicle = vehicleTable.get(vehicleId)
+            if (vehicle == null) {
               // report
-            } else {
-              vehicles.add(it)
-              delayedCallback.run()
             }
-          },
-          onError)
-    }
+            vehicle
+          }
+        }
+        .awaitAll()
+        .filterNotNull()
   }
 
   /** Retrieve all the entities linked to the flight */
-  private fun retrieveFlight(
-      flightSchema: FlightSchema,
-      onCompletion: (Flight?) -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    var schema = flightSchema
+  private suspend fun retrieveFlight(flightSchema: FlightSchema): Flight? = coroutineScope {
     var flightType: FlightType? = null
     var balloon: Balloon? = null
     var basket: Basket? = null
     var vehicles: List<Vehicle>? = null
     var team: Team? = null
+    val jobs =
+        listOf(
+            launch {
+              flightType = flightTypeTable.get(flightSchema.flightTypeId!!)
+              if (flightType == null) {
+                // report
+              }
+            },
+            launch {
+              if (flightSchema.balloonId == null) return@launch
+              balloon = balloonTable.get(flightSchema.balloonId!!)
+              if (balloon == null) {
+                // report
+              }
+            },
+            launch {
+              if (flightSchema.basketId == null) return@launch
+              basket = basketTable.get(flightSchema.basketId!!)
+              if (basket == null) {
+                // report
+              }
+            },
+            launch { vehicles = retrieveVehicles(flightSchema) },
+            launch { team = retrieveTeam(flightSchema) })
+    jobs.forEach { it.join() }
+    makeFlight(flightSchema, flightType!!, balloon, basket, vehicles!!, team!!)
+  }
 
-    // the number of requests that will be executed depends
-    // on if balloon/basket IDs are defined
-    var numEntitiesRequests = 3
-    if (flightSchema.balloonId != null) numEntitiesRequests += 1
-    if (flightSchema.basketId != null) numEntitiesRequests += 1
+  override suspend fun get(id: String, onError: ((Exception) -> Unit)?): Flight? {
+    return withErrorCallback(onError) {
+      val schema = db.getItem(path, id, clazz) ?: return@withErrorCallback null
+      retrieveFlight(schema)
+    }
+  }
 
-    val delayedOnCompletion =
-        ParallelOperationsEndCallback(numEntitiesRequests) {
-          onCompletion(makeFlight(schema, flightType!!, balloon, basket, vehicles!!, team!!))
+  override suspend fun getAll(onError: ((Exception) -> Unit)?): List<Flight> = coroutineScope {
+    withErrorCallback(onError) {
+      val schemas = db.getAll(path, clazz)
+      schemas
+          .map { schema ->
+            async {
+              val flight = retrieveFlight(schema)
+              if (flight == null) {
+                // report
+              }
+              flight!!
+            }
+          }
+          .awaitAll()
+    }
+  }
+
+  override suspend fun query(filter: Filter, onError: ((Exception) -> Unit)?): List<Flight> =
+      coroutineScope {
+        withErrorCallback(onError) {
+          val schemas = db.query(path, filter, clazz)
+          schemas
+              .map { schema ->
+                async {
+                  val flight = retrieveFlight(schema)
+                  if (flight == null) {
+                    // report
+                  }
+                  flight!!
+                }
+              }
+              .awaitAll()
         }
-    flightTypeTable.get(
-        schema.flightTypeId!!,
-        {
-          if (it == null) {
-            onCompletion(null)
-          } else {
-            flightType = it
-            delayedOnCompletion.run()
-          }
-        },
-        onError)
-
-    if (flightSchema.balloonId != null) {
-      balloonTable.get(
-          schema.balloonId!!,
-          {
-            if (it == null) {
-              onCompletion(null)
-            } else {
-              balloon = it
-              delayedOnCompletion.run()
-            }
-          },
-          onError)
-    }
-
-    if (flightSchema.basketId != null) {
-      basketTable.get(
-          schema.basketId!!,
-          {
-            if (it == null) {
-              onCompletion(null)
-            } else {
-              basket = it
-              delayedOnCompletion.run()
-            }
-          },
-          onError)
-    }
-
-    retrieveVehicles(
-        schema,
-        {
-          vehicles = it
-          delayedOnCompletion.run()
-        },
-        onError)
-
-    retrieveTeam(
-        schema,
-        {
-          team = it
-          delayedOnCompletion.run()
-        },
-        onError)
-  }
-
-  override fun get(id: String, onCompletion: (Flight?) -> Unit, onError: (Exception) -> Unit) {
-    db.getItem(
-        path,
-        id,
-        clazz,
-        { schema ->
-          if (schema == null) {
-            onCompletion(null)
-          } else {
-            retrieveFlight(schema, onCompletion, onError)
-          }
-        },
-        onError)
-  }
-
-  override fun getAll(onCompletion: (List<Flight>) -> Unit, onError: (Exception) -> Unit) {
-    db.getAll(
-        path,
-        clazz,
-        { schemas ->
-          val flights = mutableListOf<Flight>()
-          val delayedCallback =
-              ParallelOperationsEndCallback(schemas.size) { onCompletion(flights) }
-          for (schema in schemas) {
-            retrieveFlight(
-                schema,
-                {
-                  if (it == null) {
-                    // report
-                  } else {
-                    flights.add(it)
-                    delayedCallback.run()
-                  }
-                },
-                onError)
-          }
-        },
-        onError)
-  }
-
-  override fun query(
-      filter: Filter,
-      onCompletion: (List<Flight>) -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    db.query(
-        path,
-        filter,
-        clazz,
-        { schemas ->
-          val flights = mutableListOf<Flight>()
-          val delayedCallback =
-              ParallelOperationsEndCallback(schemas.size) { onCompletion(flights) }
-          for (schema in schemas) {
-            retrieveFlight(
-                schema,
-                {
-                  if (it == null) {
-                    // report
-                  } else {
-                    flights.add(it)
-                    delayedCallback.run()
-                  }
-                },
-                onError)
-          }
-        },
-        onError)
-  }
+      }
 
   /**
    * Add a new flight to the database
@@ -321,12 +222,12 @@ class FlightTable(db: FirestoreDatabase) :
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  fun add(item: Flight, onCompletion: (id: String) -> Unit, onError: (Exception) -> Unit) {
-    db.addItem(
-        path,
-        FlightSchema.fromModel(item),
-        { flightId -> addTeam(flightId, item.team, { onCompletion(flightId) }, onError) },
-        onError)
+  suspend fun add(item: Flight, onError: ((Exception) -> Unit)? = null): String {
+    return withErrorCallback(onError) {
+      val flightId = db.addItem(path, FlightSchema.fromModel(item))
+      addTeam(flightId, item.team)
+      flightId
+    }
   }
 
   /**
@@ -339,22 +240,23 @@ class FlightTable(db: FirestoreDatabase) :
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  fun update(id: String, item: Flight, onCompletion: () -> Unit, onError: (Exception) -> Unit) {
-    db.setItem(
-        path,
-        id,
-        FlightSchema.fromModel(item),
-        { setTeam(id, item.team, onCompletion, onError) },
-        onError)
-  }
+  suspend fun update(id: String, item: Flight, onError: ((Exception) -> Unit)? = null) =
+      coroutineScope {
+        withErrorCallback(onError) {
+          listOf(
+                  launch { db.setItem(path, id, FlightSchema.fromModel(item)) },
+                  launch { setTeam(id, item.team) })
+              .forEach { it.join() }
+        }
+      }
 
-  override fun delete(
-      id: String,
-      onCompletion: () -> Unit,
-      onError: (java.lang.Exception) -> Unit
-  ) {
-    flightMemberTable.queryDelete(
-        Filter.equalTo("flightId", id), { super.delete(id, onCompletion, onError) }, onError)
+  override suspend fun delete(id: String, onError: ((Exception) -> Unit)?) = coroutineScope {
+    withErrorCallback(onError) {
+      listOf(
+              launch { super.delete(id, onError = null) },
+              launch { flightMemberTable.queryDelete(Filter.equalTo("flightId", id)) })
+          .forEach { it.join() }
+    }
   }
 
   companion object {

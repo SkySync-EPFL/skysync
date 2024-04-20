@@ -4,9 +4,13 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.ParallelOperationsEndCallback
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.UserSchema
+import ch.epfl.skysync.models.calendar.Availability
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.Filter
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 /** Represent the "user" table */
 class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema::class, PATH) {
@@ -14,27 +18,13 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
   private val flightMemberTable = FlightMemberTable(db)
 
   /** Retrieve and set all availabilities linked to the user */
-  private fun retrieveAvailabilities(
-      user: User,
-      onCompletion: (User?) -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    availabilityTable.query(
-        Filter.equalTo("userId", user.id),
-        { availabilities ->
-          user.availabilities.addCells(availabilities)
-          onCompletion(user)
-        },
-        onError)
+  private suspend fun retrieveAvailabilities(userId: String): List<Availability> {
+    return availabilityTable.query(Filter.equalTo("userId", userId))
   }
 
   /** Delete all availabilities linked to the user */
-  private fun deleteAvailabilities(
-      id: String,
-      onCompletion: () -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    availabilityTable.queryDelete(Filter.equalTo("userId", id), onCompletion, onError)
+  private suspend fun deleteAvailabilities(id: String) {
+    availabilityTable.queryDelete(Filter.equalTo("userId", id))
   }
 
   /**
@@ -46,51 +36,37 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  fun retrieveAssignedFlights(
+  suspend fun retrieveAssignedFlights(
       flightTable: FlightTable,
       id: String,
-      onCompletion: (List<Flight>) -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    flightMemberTable.query(
-        Filter.equalTo("userId", id),
-        { memberships ->
-          var flights = mutableListOf<Flight>()
-          val delayedCallback =
-              ParallelOperationsEndCallback(memberships.size) { onCompletion(flights) }
-          for (membership in memberships) {
-            flightTable.get(
-                membership.flightId!!,
-                { flight ->
+      onError: ((Exception) -> Unit)? = null
+  ): List<Flight> = coroutineScope {
+    withErrorCallback(onError) {
+      val memberships = flightMemberTable.query(Filter.equalTo("userId", id), onError = null)
+      val flights =
+          memberships
+              .map { membership ->
+                async {
+                  val flight = flightTable.get(membership.flightId!!)
                   if (flight == null) {
                     // report
-                  } else {
-                    flights.add(flight)
                   }
-                  delayedCallback.run()
-                },
-                onError)
-          }
-        },
-        onError)
+                  flight
+                }
+              }
+              .awaitAll()
+      flights.filterNotNull()
+    }
   }
 
   /** Remove user from all its flight assignments */
-  private fun removeUserFromFlightMemberSchemas(
-      id: String,
-      onCompletion: () -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    flightMemberTable.query(
-        Filter.equalTo("userId", id),
-        { memberships ->
-          val delayedCallback = ParallelOperationsEndCallback(memberships.size) { onCompletion() }
-          for (membership in memberships) {
-            flightMemberTable.update(
-                membership.id!!, membership.copy(userId = null), { delayedCallback.run() }, onError)
-          }
-        },
-        onError)
+  private suspend fun removeUserFromFlightMemberSchemas(id: String): Unit = coroutineScope {
+    val memberships = flightMemberTable.query(Filter.equalTo("userId", id))
+    memberships
+        .map { membership ->
+          async { flightMemberTable.update(membership.id!!, membership.copy(userId = null)) }
+        }
+        .awaitAll()
   }
 
   /**
@@ -103,55 +79,46 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  override fun get(id: String, onCompletion: (User?) -> Unit, onError: (Exception) -> Unit) {
-    super.get(
-        id,
-        { user ->
-          if (user == null) {
-            onCompletion(null)
-          } else {
-            retrieveAvailabilities(user, { onCompletion(it) }, onError)
-          }
-        },
-        onError)
+  override suspend fun get(id: String, onError: ((Exception) -> Unit)?): User? {
+    return withErrorCallback(onError) {
+      val user = super.get(id, onError = null) ?: return@withErrorCallback null
+      user.availabilities.addCells(retrieveAvailabilities(user.id))
+      user
+    }
   }
 
-  override fun getAll(onCompletion: (List<User>) -> Unit, onError: (Exception) -> Unit) {
-    super.getAll(
-        { users ->
-          val delayedCallback = ParallelOperationsEndCallback(users.size) { onCompletion(users) }
-          for (user in users) {
-            retrieveAvailabilities(user, { delayedCallback.run() }, onError)
-          }
-        },
-        onError)
+  override suspend fun getAll(onError: ((Exception) -> Unit)?): List<User> = coroutineScope {
+    withErrorCallback(onError) {
+      val users = super.getAll(onError = null)
+      users
+          .map { user -> async { user.availabilities.addCells(retrieveAvailabilities(user.id)) } }
+          .awaitAll()
+      users
+    }
   }
 
-  override fun query(
-      filter: Filter,
-      onCompletion: (List<User>) -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    super.query(
-        filter,
-        { users ->
-          val delayedCallback = ParallelOperationsEndCallback(users.size) { onCompletion(users) }
-          for (user in users) {
-            retrieveAvailabilities(user, { delayedCallback.run() }, onError)
-          }
-        },
-        onError)
-  }
+  override suspend fun query(filter: Filter, onError: ((Exception) -> Unit)?): List<User> =
+      coroutineScope {
+        withErrorCallback(onError) {
+          val users = super.query(filter, onError = null)
+          users
+              .map { user ->
+                async { user.availabilities.addCells(retrieveAvailabilities(user.id)) }
+              }
+              .awaitAll()
+          users
+        }
+      }
 
-  override fun delete(
-      id: String,
-      onCompletion: () -> Unit,
-      onError: (java.lang.Exception) -> Unit
-  ) {
-    val delayedCallback = ParallelOperationsEndCallback(3) { onCompletion() }
-    super.delete(id, { delayedCallback.run() }, onError)
-    deleteAvailabilities(id, { delayedCallback.run() }, onError)
-    removeUserFromFlightMemberSchemas(id, { delayedCallback.run() }, onError)
+  override suspend fun delete(id: String, onError: ((Exception) -> Unit)?): Unit = coroutineScope {
+    withErrorCallback(onError) {
+      listOf(
+              async { super.delete(id, onError = null) },
+              async { deleteAvailabilities(id) },
+              async { removeUserFromFlightMemberSchemas(id) },
+          )
+          .awaitAll()
+    }
   }
 
   /**
@@ -165,8 +132,8 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  fun set(id: String, item: User, onCompletion: () -> Unit, onError: (Exception) -> Unit) {
-    db.setItem(path, id, UserSchema.fromModel(item), onCompletion, onError)
+  suspend fun set(id: String, item: User, onError: ((Exception) -> Unit)? = null) {
+    return withErrorCallback(onError) { db.setItem(path, id, UserSchema.fromModel(item)) }
   }
 
   /**
@@ -179,8 +146,8 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  fun update(id: String, item: User, onCompletion: () -> Unit, onError: (Exception) -> Unit) {
-    db.setItem(path, id, UserSchema.fromModel(item), onCompletion, onError)
+  suspend fun update(id: String, item: User, onError: ((Exception) -> Unit)? = null) {
+    return withErrorCallback(onError) { db.setItem(path, id, UserSchema.fromModel(item)) }
   }
 
   companion object {

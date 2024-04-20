@@ -16,6 +16,20 @@ abstract class Table<M, S : Schema<M>>(
     protected val path: String
 ) {
 
+  protected suspend fun <T> withErrorCallback(
+      onError: ((Exception) -> Unit)?,
+      run: suspend () -> T
+  ): T {
+    try {
+      return run()
+    } catch (e: Exception) {
+      if (onError != null) {
+        onError(e)
+      }
+      throw e
+    }
+  }
+
   /**
    * Get an item by ID
    *
@@ -23,8 +37,8 @@ abstract class Table<M, S : Schema<M>>(
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  open fun get(id: String, onCompletion: (M?) -> Unit, onError: (Exception) -> Unit) {
-    db.getItem(path, id, clazz, { onCompletion(it?.toModel()) }, onError)
+  open suspend fun get(id: String, onError: ((Exception) -> Unit)? = null): M? {
+    return db.getItem(path, id, clazz)?.toModel()
   }
 
   /**
@@ -33,8 +47,8 @@ abstract class Table<M, S : Schema<M>>(
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  open fun getAll(onCompletion: (List<M>) -> Unit, onError: (Exception) -> Unit) {
-    db.getAll(path, clazz, { schemas -> onCompletion(schemas.map { it.toModel() }) }, onError)
+  open suspend fun getAll(onError: ((Exception) -> Unit)? = null): List<M> {
+    return db.getAll(path, clazz).map { it.toModel() }
   }
 
   /**
@@ -44,9 +58,8 @@ abstract class Table<M, S : Schema<M>>(
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  open fun query(filter: Filter, onCompletion: (List<M>) -> Unit, onError: (Exception) -> Unit) {
-    db.query(
-        path, filter, clazz, { schemas -> onCompletion(schemas.map { it.toModel() }) }, onError)
+  open suspend fun query(filter: Filter, onError: ((Exception) -> Unit)? = null): List<M> {
+    return db.query(path, filter, clazz).map { it.toModel() }
   }
 
   /**
@@ -56,8 +69,8 @@ abstract class Table<M, S : Schema<M>>(
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  open fun delete(id: String, onCompletion: () -> Unit, onError: (java.lang.Exception) -> Unit) {
-    db.deleteItem(path, id, onCompletion, onError)
+  open suspend fun delete(id: String, onError: ((Exception) -> Unit)? = null) {
+    db.deleteItem(path, id)
   }
 
   /**
@@ -70,10 +83,9 @@ abstract class Table<M, S : Schema<M>>(
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  open fun queryDelete(filter: Filter, onCompletion: () -> Unit, onError: (Exception) -> Unit) {
-    db.queryDelete(path, filter, onCompletion, onError)
+  open suspend fun queryDelete(filter: Filter, onError: ((Exception) -> Unit)? = null) {
+    db.queryDelete(path, filter)
   }
-
   /**
    * Delete the table
    *
@@ -81,7 +93,7 @@ abstract class Table<M, S : Schema<M>>(
    *
    * @param onError Callback called when an error occurs
    */
-  open fun deleteTable(onError: (Exception) -> Unit) {
-    db.deleteTable(path, onError)
+  open suspend fun deleteTable(onError: ((Exception) -> Unit)? = null) {
+    db.deleteTable(path)
   }
 }

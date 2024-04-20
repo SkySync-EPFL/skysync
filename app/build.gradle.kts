@@ -173,7 +173,12 @@ dependencies {
     // Accompanist Permissions
     implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
 
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1") {
+
+    }
+
 }
+
 
 tasks.register("jacocoTestReport", JacocoReport::class) {
     mustRunAfter("testDebugUnitTest", "connectedDebugAndroidTest")

@@ -16,8 +16,8 @@ class FlightTypeTable(db: FirestoreDatabase) :
    * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  fun add(item: FlightType, onCompletion: (id: String) -> Unit, onError: (Exception) -> Unit) {
-    db.addItem(path, FlightTypeSchema.fromModel(item), onCompletion, onError)
+  suspend fun add(item: FlightType, onError: ((Exception) -> Unit)? = null): String {
+    return withErrorCallback(onError) { db.addItem(path, FlightTypeSchema.fromModel(item)) }
   }
 
   companion object {
