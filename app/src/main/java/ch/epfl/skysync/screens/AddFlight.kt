@@ -6,7 +6,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.models.flight.PlannedFlight
-import ch.epfl.skysync.ui.components.FlightForm
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
