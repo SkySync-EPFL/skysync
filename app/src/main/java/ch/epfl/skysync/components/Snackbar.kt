@@ -13,7 +13,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -35,7 +34,7 @@ object SnackbarManager {
 
 // Composable function that hosts a Snackbar. It listens for messages from the SnackbarManager.
 @Composable
-fun GlobalSnackbarHost(snackbarColor: Color = Color.Black) {
+fun GlobalSnackbarHost() {
   // Remember a SnackbarHostState which controls the snackbar queue.
   val snackbarHostState = remember { SnackbarHostState() }
   val snackbarManager = SnackbarManager
@@ -45,15 +44,10 @@ fun GlobalSnackbarHost(snackbarColor: Color = Color.Black) {
     snackbarManager.messagesFlow.collect { message -> snackbarHostState.showSnackbar(message) }
   }
 
-  // The actual SnackbarHost that will display the snackbars. Colors and other UI properties can be
-  // customized here.
+  // The actual SnackbarHost that will display the snackbars.
   SnackbarHost(
       hostState = snackbarHostState,
-      snackbar = { snackbarData ->
-        // Customize the appearance of Snackbar. Here, the container color can be dynamically
-        // changed.
-        Snackbar(snackbarData = snackbarData, containerColor = snackbarColor)
-      })
+      snackbar = { snackbarData -> Snackbar(snackbarData = snackbarData) })
 }
 
 // Preview of how the snackbar system works within a Scaffold. Useful for seeing the behavior in the
@@ -62,7 +56,7 @@ fun GlobalSnackbarHost(snackbarColor: Color = Color.Black) {
 @Composable
 fun SnackbarPreview() {
   MaterialTheme {
-    Scaffold(snackbarHost = { GlobalSnackbarHost(snackbarColor = Color.Red) }) { innerPadding ->
+    Scaffold(snackbarHost = { GlobalSnackbarHost() }) { innerPadding ->
       Box(
           modifier = Modifier.fillMaxSize().padding(innerPadding),
           contentAlignment = Alignment.Center) {
