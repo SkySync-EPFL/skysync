@@ -482,7 +482,8 @@ fun FlightForm(
                       title = balloonTitle,
                       value = balloonValue,
                       onclickMenu = { item -> balloonValue = item },
-                      items = balloons)
+                      items = balloons,
+                      showString = { it?.name ?: "Choose the balloon" })
                 }
                 // Drop down menu for the basket
                 item {
@@ -496,7 +497,8 @@ fun FlightForm(
                       title = basketTitle,
                       value = basketValue,
                       onclickMenu = { item -> basketValue = item },
-                      items = baskets)
+                      items = baskets,
+                      showString = { it?.name ?: "Choose the basket" })
                 }
               }
           // Button to add the flight to the list of flights
