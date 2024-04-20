@@ -233,7 +233,7 @@ fun FlightForm(
                           crewMembers.removeAt(specialRoleId)
                         }
                       },
-                      items = FlightType.all_flights,
+                      items = FlightType.ALL_FLIGHTS,
                       showString = { it?.name ?: "Choose the flightType" },
                       isError = flightTypeValueError,
                       messageError = "Please choose a flight type")
