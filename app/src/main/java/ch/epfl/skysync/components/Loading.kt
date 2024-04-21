@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.epfl.skysync.ui.theme.lightOrange
@@ -39,12 +40,14 @@ fun LoadingComponent(
   SwipeRefresh(
       state = rememberSwipeRefreshState(isLoading),
       onRefresh = onRefresh, // Use the passed onRefresh function here
+      modifier = Modifier.testTag("SwipeRefreshLayout"),
       indicator = { state, trigger ->
         // This ensures the CircularProgressIndicator is part of the layer but does not obscure
         // content layout
         if (state.isRefreshing) {
           Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(modifier = Modifier.size(50.dp), color = lightOrange)
+            CircularProgressIndicator(
+                modifier = Modifier.size(50.dp).testTag("ProgressIndicator"), color = lightOrange)
           }
         }
       }) {
@@ -53,7 +56,8 @@ fun LoadingComponent(
   // true
   if (isLoading) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-      CircularProgressIndicator(modifier = Modifier.size(50.dp), color = lightOrange)
+      CircularProgressIndicator(
+          modifier = Modifier.size(50.dp).testTag("LoadingIndicator"), color = lightOrange)
     }
   }
 }
