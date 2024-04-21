@@ -102,10 +102,13 @@ fun AvailabilityCalendar(
     onSave: () -> Unit
 ) {
   ModularCalendar(
+      padding = padding,
       bottom = {
         Column {
           // TODO: Proper UI for this button
-          Button(onClick = onSave) { Text(text = "Save") }
+          Button(onClick = onSave, modifier = Modifier.testTag("AvailabilityCalendarSaveButton")) {
+            Text(text = "Save")
+          }
           SwitchButton(
               currentSide = Side.RIGHT,
               padding = padding,
