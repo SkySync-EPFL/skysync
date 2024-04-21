@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,24 +64,26 @@ fun SwitchButton(
         Row(
             modifier =
                 Modifier.background(Color.LightGray, RoundedCornerShape(100.dp))
-                    .border(1.dp, Color.Gray, RoundedCornerShape(100.dp)),
+                    .border(1.dp, Color.Gray, RoundedCornerShape(100.dp))
+                    .testTag("SwitchButton"),
         ) {
           Button(
               onClick = onClickLeft,
               colors = ButtonDefaults.buttonColors(containerColor = leftColor),
-              modifier = Modifier.fillMaxWidth(0.5f).fillMaxHeight(),
+              modifier =
+                  Modifier.fillMaxWidth(0.5f).fillMaxHeight().testTag("SwitchButtonLeftButton"),
           ) {
             Text(
                 text = textLeft,
                 fontSize = 12.sp,
                 color = leftTextColor,
-                modifier = Modifier,
                 overflow = TextOverflow.Clip)
           }
           Button(
               onClick = onClickRight,
               colors = ButtonDefaults.buttonColors(containerColor = rightColor),
-              modifier = Modifier.fillMaxWidth(1f).fillMaxHeight(),
+              modifier =
+                  Modifier.fillMaxWidth(1f).fillMaxHeight().testTag("SwitchButtonRightButton"),
           ) {
             Text(
                 text = textRight,
