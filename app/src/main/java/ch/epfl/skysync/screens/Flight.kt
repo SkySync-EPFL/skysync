@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.ui.components.Timer
 import ch.epfl.skysync.ui.theme.lightOrange
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -117,8 +118,10 @@ fun FlightScreen(navController: NavHostController) {
         // Floating action button to center the map on the current location.
         if (locationPermission.status.isGranted) {
           Box(
-              modifier = Modifier.fillMaxSize().padding(start = 32.dp, bottom = 88.dp),
+              modifier =
+                  Modifier.fillMaxSize().padding(start = 32.dp, bottom = 88.dp, top = 100.dp),
               contentAlignment = Alignment.BottomStart) {
+                Timer(Modifier.align(Alignment.TopEnd))
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()) {
