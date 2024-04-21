@@ -16,7 +16,6 @@ class AvailabilityTable(db: FirestoreDatabase) :
    *
    * @param userId The ID of the user whose availability it is
    * @param item The availability to add to the database
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   suspend fun add(
@@ -37,7 +36,6 @@ class AvailabilityTable(db: FirestoreDatabase) :
    * @param userId The ID of the user whose availability it is
    * @param availabilityId The id of the availability to update
    * @param item The new availability item
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   suspend fun update(

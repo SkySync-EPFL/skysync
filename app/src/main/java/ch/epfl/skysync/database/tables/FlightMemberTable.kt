@@ -12,7 +12,6 @@ class FlightMemberTable(db: FirestoreDatabase) :
    * Add a new flight member to the database
    *
    * @param item The flight member to add to the database
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   suspend fun add(item: FlightMemberSchema, onError: ((Exception) -> Unit)? = null): String {
@@ -25,7 +24,6 @@ class FlightMemberTable(db: FirestoreDatabase) :
    *
    * @param item The item to update
    * @param id the id of the item
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   suspend fun update(id: String, item: FlightMemberSchema, onError: ((Exception) -> Unit)? = null) {

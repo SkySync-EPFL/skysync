@@ -8,9 +8,8 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.firestoreSettings
 import java.lang.UnsupportedOperationException
 import kotlin.reflect.KClass
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 /**
@@ -44,8 +43,6 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    * @param path A filesystem-like path that specify the location of the table
    * @param item The item to add to the database, the types of the attributes have to be Firestore
    *   types
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
   suspend fun <T : Any> addItem(
       path: String,
@@ -64,8 +61,6 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    * @param path A filesystem-like path that specify the location of the table
    * @param item The item to set to the database, the types of the attributes have to be Firestore
    * @param id the id of the item
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
   suspend fun <T : Any> setItem(
       path: String,
@@ -82,8 +77,6 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    * @param path A filesystem-like path that specify the location of the table
    * @param id The id of the item
    * @param clazz The class of the item, this is used to reconstruct an instance of the item class
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
   suspend fun <T : Any> getItem(
       path: String,
@@ -101,8 +94,6 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    *
    * @param path A filesystem-like path that specify the location of the table
    * @param clazz The class of the item, this is used to reconstruct an instance of the item class
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
   suspend fun <T : Any> getAll(
       path: String,
@@ -126,8 +117,6 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    * @param path A filesystem-like path that specify the location of the table
    * @param filter The filter to apply to the query
    * @param clazz The class of the item, this is used to reconstruct an instance of the item class
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
   suspend fun <T : Any> query(
       path: String,
@@ -151,8 +140,6 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    *
    * @param path A filesystem-like path that specify the location of the table
    * @param id The id of the item
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
   suspend fun deleteItem(
       path: String,
@@ -167,8 +154,6 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    *
    * @param path A filesystem-like path that specify the location of the table
    * @param filter The filter to apply to the query
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
   suspend fun queryDelete(
       path: String,
@@ -177,14 +162,14 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
     coroutineScope {
       val querySnapshot = db.collection(path).where(filter).get().await()
 
-      val deferreds =
-          querySnapshot.documents.map { document ->
-            async {
+      querySnapshot.documents
+          .map { document ->
+            launch {
               document.reference.delete().await()
               Log.d(TAG, "Deleted $path/${document.id}")
             }
           }
-      deferreds.awaitAll()
+          .forEach { it.join() }
     }
   }
 
@@ -194,7 +179,6 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    * This is only used for testing, as such it is only supported if using the emulator.
    *
    * @param path A filesystem-like path that specify the location of the table
-   * @param onError Callback called when an error occurs
    */
   suspend fun deleteTable(path: String) {
     if (!useEmulator) {
@@ -204,9 +188,9 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
       val querySnapshot = db.collection(path).get().await()
 
       Log.d(TAG, "Delete table $path")
-      val deferreds =
-          querySnapshot.documents.map { document -> async { document.reference.delete().await() } }
-      deferreds.awaitAll()
+      querySnapshot.documents
+          .map { document -> launch { document.reference.delete().await() } }
+          .forEach { it.join() }
     }
   }
 }

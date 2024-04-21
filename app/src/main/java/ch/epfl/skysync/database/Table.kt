@@ -16,6 +16,14 @@ abstract class Table<M, S : Schema<M>>(
     protected val path: String
 ) {
 
+  /**
+   * Wrap the [run] code in a try/catch block and, if given, call the [onError] callback when an
+   * exception is thrown in [run], in any case throw the exception
+   *
+   * @param onError The callback called when an exception is thrown
+   * @param run The code to run in the try/catch
+   * @throws Exception Any exception thrown in [run]
+   */
   protected suspend fun <T> withErrorCallback(
       onError: ((Exception) -> Unit)?,
       run: suspend () -> T
@@ -34,7 +42,6 @@ abstract class Table<M, S : Schema<M>>(
    * Get an item by ID
    *
    * @param id The id of the item
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   open suspend fun get(id: String, onError: ((Exception) -> Unit)? = null): M? {
@@ -44,7 +51,6 @@ abstract class Table<M, S : Schema<M>>(
   /**
    * Get all the items
    *
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   open suspend fun getAll(onError: ((Exception) -> Unit)? = null): List<M> {
@@ -55,7 +61,6 @@ abstract class Table<M, S : Schema<M>>(
    * Query items based on a filter
    *
    * @param filter The filter to apply to the query
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   open suspend fun query(filter: Filter, onError: ((Exception) -> Unit)? = null): List<M> {
@@ -66,7 +71,6 @@ abstract class Table<M, S : Schema<M>>(
    * Delete an item
    *
    * @param id The id of the item
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   open suspend fun delete(id: String, onError: ((Exception) -> Unit)? = null) {
@@ -80,12 +84,12 @@ abstract class Table<M, S : Schema<M>>(
    * dependencies, call [query], then [delete] for each item.
    *
    * @param filter The filter to apply to the query
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   open suspend fun queryDelete(filter: Filter, onError: ((Exception) -> Unit)? = null) {
     db.queryDelete(path, filter)
   }
+
   /**
    * Delete the table
    *

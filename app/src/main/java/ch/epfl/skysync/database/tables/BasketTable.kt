@@ -13,7 +13,6 @@ class BasketTable(db: FirestoreDatabase) :
    * Add a new basket to the database
    *
    * @param item The basket to add to the database
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   suspend fun add(item: Basket, onError: ((Exception) -> Unit)? = null): String {

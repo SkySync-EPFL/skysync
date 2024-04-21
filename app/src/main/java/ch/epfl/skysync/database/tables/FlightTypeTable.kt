@@ -13,7 +13,6 @@ class FlightTypeTable(db: FirestoreDatabase) :
    * Add a new flight type to the database
    *
    * @param item The flight type to add to the database
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   suspend fun add(item: FlightType, onError: ((Exception) -> Unit)? = null): String {

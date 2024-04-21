@@ -1,7 +1,6 @@
 package ch.epfl.skysync.database.tables
 
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.database.ParallelOperationsEndCallback
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.UserSchema
 import ch.epfl.skysync.models.calendar.Availability
@@ -33,7 +32,6 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
    * @param flightTable The flight table is passed as dependency injection to prevent a circular
    *   reference between [FlightTable] and [UserTable]
    * @param id The id of the user
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   suspend fun retrieveAssignedFlights(
@@ -76,7 +74,6 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
    * separately using [retrieveAssignedFlights].
    *
    * @param id The id of the user
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   override suspend fun get(id: String, onError: ((Exception) -> Unit)?): User? {
@@ -129,7 +126,6 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
    *
    * @param item The user to add to the database
    * @param id The id of the user
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   suspend fun set(id: String, item: User, onError: ((Exception) -> Unit)? = null) {
@@ -143,7 +139,6 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
    *
    * @param item The user to update
    * @param id The id of the user
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   suspend fun update(id: String, item: User, onError: ((Exception) -> Unit)? = null) {

@@ -3,7 +3,6 @@ package ch.epfl.skysync.database.tables
 import ch.epfl.skysync.database.DateLocalDateConverter
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.FlightStatus
-import ch.epfl.skysync.database.ParallelOperationsEndCallback
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.FlightMemberSchema
 import ch.epfl.skysync.database.schemas.FlightSchema
@@ -219,7 +218,6 @@ class FlightTable(db: FirestoreDatabase) :
    * create the [Flight.team] (and in the process the [User.assignedFlights])
    *
    * @param item The flight to add to the database
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   suspend fun add(item: Flight, onError: ((Exception) -> Unit)? = null): String {
@@ -237,7 +235,6 @@ class FlightTable(db: FirestoreDatabase) :
    *
    * @param id The id of the flight
    * @param item The flight to update in the database
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
   suspend fun update(id: String, item: Flight, onError: ((Exception) -> Unit)? = null) =
