@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens.home
+package ch.epfl.skysync.components
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
@@ -15,13 +15,13 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.testing.TestNavHostController
-import ch.epfl.skysync.components.FlightForm
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Vehicle
+import io.mockk.mockk
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,7 +29,7 @@ import org.junit.Test
 class FlightFormTest {
 
   @get:Rule val composeTestRule = createComposeRule()
-  private lateinit var navController: TestNavHostController
+  private var navController: TestNavHostController = mockk("navController", relaxed = true)
   private val title: String = "Modify Flight"
 
   @Before
@@ -215,6 +215,8 @@ class FlightFormTest {
         .performScrollToNode(hasTestTag("Basket Menu"))
     composeTestRule.onNodeWithTag("Basket Menu").performClick()
     composeTestRule.onNodeWithTag("Basket 1").performClick()
+
+    composeTestRule.onNodeWithTag("$title Button").performClick()
   }
 
   @Test
