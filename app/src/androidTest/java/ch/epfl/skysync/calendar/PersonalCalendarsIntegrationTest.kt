@@ -1,9 +1,15 @@
 package ch.epfl.skysync.calendar
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
@@ -31,21 +37,42 @@ class PersonalCalendarsIntegrationTest {
         homeGraph(repository, navController, "__unset_id__")
       }
     }
+    composeTestRule.onNodeWithText("Calendar").performClick()
+  }
+
+  @Test
+  fun startingRouteIsAvailabilityCalendar() {
+    val route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(Route.AVAILABILITY_CALENDAR, route)
+  }
+
+  @Test
+  fun saveButtonCorrectlyDisplayed() {
+    composeTestRule.onNodeWithTag("AvailabilityCalendarSaveButton").performScrollTo()
+    composeTestRule.onNodeWithTag("AvailabilityCalendarSaveButton").performScrollTo()
+    composeTestRule.onNodeWithTag("AvailabilityCalendarSaveButton").assertIsDisplayed()
+  }
+
+  @Test
+  fun saveButtonCorrectlyHasClickAction() {
+    composeTestRule.onNodeWithTag("AvailabilityCalendarSaveButton").performScrollTo()
+    composeTestRule.onNodeWithTag("AvailabilityCalendarSaveButton").performScrollTo()
+    composeTestRule.onNodeWithTag("AvailabilityCalendarSaveButton").assertHasClickAction()
   }
 
   @Test
   fun switchBetweenCalendars() {
-    composeTestRule.onNodeWithText("Calendar").performClick()
+    composeTestRule.onNodeWithTag("ModularCalendar").assert(hasScrollAction())
+    composeTestRule.onNodeWithTag("SwitchButtonLeftButton").performScrollTo()
+    composeTestRule.onNodeWithTag("SwitchButtonLeftButton").performClick()
+
     var route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
+    Assert.assertEquals(Route.PERSONAL_FLIGHT_CALENDAR, route)
 
-    composeTestRule.onNodeWithText("Flight Calendar").performClick()
+    composeTestRule.onNodeWithTag("SwitchButtonRightButton").performScrollTo()
+    composeTestRule.onNodeWithTag("SwitchButtonRightButton").performClick()
     route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.PERSONAL_FLIGHT_CALENDAR)
-
-    composeTestRule.onNodeWithText("Availability Calendar").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
+    Assert.assertEquals(Route.AVAILABILITY_CALENDAR, route)
 
     composeTestRule.onNodeWithText("Flight").performClick()
     route = navController.currentBackStackEntry?.destination?.route
