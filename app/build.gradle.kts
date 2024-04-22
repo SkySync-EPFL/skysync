@@ -173,6 +173,10 @@ dependencies {
     // Accompanist Permissions
     implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
 
+    // Loading purposes
+    implementation ("com.google.accompanist:accompanist-swiperefresh:0.24.6-alpha")
+
+
 }
 
 tasks.register("jacocoTestReport", JacocoReport::class) {
