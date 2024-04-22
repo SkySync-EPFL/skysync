@@ -22,16 +22,40 @@ import java.time.LocalDate
 fun NavGraphBuilder.homeGraph(
     repository: Repository,
     navController: NavHostController,
-    flightsViewModel: FlightsViewModel,
     uid: String?
 ) {
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
     personalCalendar(repository, navController, uid)
     composable(Route.CHAT) { ChatScreen(navController) }
     composable(Route.FLIGHT) { FlightScreen(navController) }
-    composable(Route.HOME) { HomeScreen(navController, flightsViewModel) }
-    composable(Route.ADD_FLIGHT) { AddFlightScreen(navController, flightsViewModel) }
+    composable(Route.HOME) {
+      val flightsViewModel =
+          FlightsViewModel.createViewModel(
+              flightTable = repository.flightTable,
+              balloonTable = repository.balloonTable,
+              basketTable = repository.basketTable,
+              flightTypeTable = repository.flightTypeTable,
+              vehicleTable = repository.vehicleTable)
+      HomeScreen(navController, flightsViewModel)
+    }
+    composable(Route.ADD_FLIGHT) {
+      val flightsViewModel =
+          FlightsViewModel.createViewModel(
+              flightTable = repository.flightTable,
+              balloonTable = repository.balloonTable,
+              basketTable = repository.basketTable,
+              flightTypeTable = repository.flightTypeTable,
+              vehicleTable = repository.vehicleTable)
+      AddFlightScreen(navController, flightsViewModel)
+    }
     composable(Route.MODIFY_FLIGHT) {
+      val flightsViewModel =
+          FlightsViewModel.createViewModel(
+              flightTable = repository.flightTable,
+              balloonTable = repository.balloonTable,
+              basketTable = repository.basketTable,
+              flightTypeTable = repository.flightTypeTable,
+              vehicleTable = repository.vehicleTable)
       ModifyFlightScreen(
           navController,
           flightsViewModel,
