@@ -4,14 +4,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.epfl.skysync.ui.theme.lightOrange
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -66,18 +62,18 @@ fun LoadingComponent(
  * Preview of the LoadingComponent. This preview function helps visualize how the LoadingComponent
  * will look in the UI.
  */
-@Preview(showBackground = true)
-@Composable
-fun LoadingContentPreview() {
-  Surface(modifier = Modifier.fillMaxSize()) {
+// @Preview(showBackground = true)
+// @Composable
+// fun LoadingContentPreview() {
+ // Surface(modifier = Modifier.fillMaxSize()) {
     // Instantiate the LoadingComponent with a simple Text inside.
-    LoadingComponent(
-        isLoading = true,
-        onRefresh = { /* Define what happens on refresh here, e.g., viewModel.loadData() */},
-        content = {
-          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("Content goes here", style = MaterialTheme.typography.bodyLarge)
-          }
-        })
-  }
-}
+ //   LoadingComponent(
+ //       isLoading = true,
+ //       onRefresh = { /* Define what happens on refresh here, e.g., viewModel.loadData() */},
+ //       content = {
+//          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+ //           Text("Content goes here", style = MaterialTheme.typography.bodyLarge)
+//          }
+//       })
+//  }
+// }
