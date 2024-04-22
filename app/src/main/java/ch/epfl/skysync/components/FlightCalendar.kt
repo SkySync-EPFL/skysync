@@ -75,6 +75,7 @@ fun FlightCalendar(
     onFlightClick: (Flight) -> Unit
 ) {
   ModularCalendar(
+      padding = padding,
       bottom = {
         SwitchButton(
             currentSide = Side.LEFT,
