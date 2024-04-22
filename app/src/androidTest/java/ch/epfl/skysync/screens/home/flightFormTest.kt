@@ -250,4 +250,19 @@ class FlightFormTest {
     composeTestRule.onNodeWithTag("Vehicle 1 Menu").performClick()
     composeTestRule.onNodeWithTag("Vehicle 1 1").performClick()
   }
+
+  @Test
+  fun isErrorDisplayedCorrectly() {
+    composeTestRule.onNodeWithTag("$title Button").performClick()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("nb Passenger"))
+    composeTestRule.onNodeWithText("Please enter a valid number", true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("nb Passenger").performTextInput("1")
+    composeTestRule.onNodeWithTag("$title Button").performClick()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Flight Type Menu"))
+    composeTestRule.onNodeWithText("Please choose a flight type", true).assertIsDisplayed()
+  }
 }
