@@ -106,7 +106,7 @@ abstract class Table<M, S : Schema<M>>(
    */
   open fun queryListener(
       filter: Filter,
-      onChange: (adds: List<S>, updates: List<S>, deletes: List<S>) -> Unit,
+      onChange: (ListenerUpdate<S>) -> Unit,
       limit: Long? = null,
       orderBy: String? = null,
       orderByDirection: Query.Direction = Query.Direction.ASCENDING,

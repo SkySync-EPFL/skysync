@@ -1,6 +1,7 @@
 package ch.epfl.skysync.database.tables
 
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.MessageGroupSchema
 import ch.epfl.skysync.models.message.Message
@@ -26,19 +27,22 @@ class MessageGroupTable(db: FirestoreDatabase) :
    */
   fun addGroupListener(
       groupId: String,
-      onChange: (adds: List<Message>, updates: List<Message>, deletes: List<Message>) -> Unit,
+      onChange: (ListenerUpdate<Message>) -> Unit,
   ): ListenerRegistration {
     return messageTable.queryListener(
         Filter.equalTo("groupId", groupId),
         limit = 10,
         orderBy = "date",
         orderByDirection = Query.Direction.DESCENDING,
-        onChange = { adds, updates, deletes ->
+        onChange = { update ->
           onChange(
-              adds.map { it.toModel() },
-              updates.map { it.toModel() },
-              deletes.map { it.toModel() },
-          )
+              ListenerUpdate(
+                  isFirstUpdate = update.isFirstUpdate,
+                  isLocalUpdate = update.isLocalUpdate,
+                  adds = update.adds.map { it.toModel() }.toSet(),
+                  updates = update.updates.map { it.toModel() }.toSet(),
+                  deletes = update.deletes.map { it.toModel() }.toSet(),
+              ))
         })
   }
 

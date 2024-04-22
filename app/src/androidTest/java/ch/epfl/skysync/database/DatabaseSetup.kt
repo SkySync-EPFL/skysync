@@ -6,6 +6,8 @@ import ch.epfl.skysync.database.tables.BasketTable
 import ch.epfl.skysync.database.tables.FlightMemberTable
 import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.database.tables.FlightTypeTable
+import ch.epfl.skysync.database.tables.MessageGroupTable
+import ch.epfl.skysync.database.tables.MessageTable
 import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.database.tables.VehicleTable
 import ch.epfl.skysync.models.UNSET_ID
@@ -23,10 +25,14 @@ import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.message.Message
+import ch.epfl.skysync.models.message.MessageGroup
 import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
+import java.time.Instant
 import java.time.LocalDate
+import java.util.Date
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -122,6 +128,11 @@ class DatabaseSetup {
           vehicles = listOf(vehicle1),
           id = UNSET_ID)
 
+  var messageGroup1 = MessageGroup()
+
+  var message1 = Message(date = Date.from(Instant.now()), content = "Hello")
+  var message2 = Message(date = Date.from(Instant.now()), content = "World")
+
   /**
    * Delete all items in all tables of the database
    *
@@ -137,6 +148,8 @@ class DatabaseSetup {
             launch { UserTable(db).deleteTable(onError = null) },
             launch { FlightTable(db).deleteTable(onError = null) },
             launch { AvailabilityTable(db).deleteTable(onError = null) },
+            launch { MessageTable(db).deleteTable(onError = null) },
+            launch { MessageGroupTable(db).deleteTable(onError = null) },
         )
         .forEach { it.join() }
   }
@@ -154,6 +167,8 @@ class DatabaseSetup {
     val userTable = UserTable(db)
     val flightTable = FlightTable(db)
     val availabilityTable = AvailabilityTable(db)
+    val messageTable = MessageTable(db)
+    val messageGroupTable = MessageGroupTable(db)
 
     listOf(
             launch { flightType1 = flightType1.copy(id = flightTypeTable.add(flightType1)) },
@@ -164,6 +179,9 @@ class DatabaseSetup {
             launch { basket2 = basket2.copy(id = basketTable.add(basket2)) },
             launch { vehicle1 = vehicle1.copy(id = vehicleTable.add(vehicle1)) },
             launch { vehicle2 = vehicle2.copy(id = vehicleTable.add(vehicle2)) },
+            launch {
+              messageGroup1 = messageGroup1.copy(id = messageGroupTable.add(messageGroup1))
+            },
             launch {
               userTable.set(admin1.id, admin1)
               availability3 =
@@ -203,8 +221,21 @@ class DatabaseSetup {
             basket = basket1,
             vehicles = listOf(vehicle1),
         )
+    messageGroup1 =
+        messageGroup1.copy(
+            userIds = setOf(admin2.id, pilot1.id, crew1.id),
+        )
 
-    // now that the IDs are set, add the flight to the db
-    flight1 = flight1.copy(id = flightTable.add(flight1))
+    // now that the IDs are set, add the flights/messages
+    listOf(
+            launch { flight1 = flight1.copy(id = flightTable.add(flight1)) },
+            launch {
+              message1 = message1.copy(id = messageTable.add(messageGroup1.id, admin2.id, message1))
+            },
+            launch {
+              message2 = message2.copy(id = messageTable.add(messageGroup1.id, pilot1.id, message2))
+            },
+        )
+        .forEach { it.join() }
   }
 }

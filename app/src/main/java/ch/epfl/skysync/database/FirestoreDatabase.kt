@@ -209,7 +209,7 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
       path: String,
       filter: Filter,
       clazz: KClass<T>,
-      onChange: (adds: List<T>, updates: List<T>, deletes: List<T>) -> Unit,
+      onChange: (ListenerUpdate<T>) -> Unit,
       limit: Long? = null,
       orderBy: String? = null,
       orderByDirection: Query.Direction = Query.Direction.ASCENDING,
@@ -222,6 +222,7 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
       query = query.limit(limit)
     }
 
+    var isFirstUpdate = true
     val listener =
         query.addSnapshotListener { snapshot, e ->
           if (e != null) {
@@ -233,9 +234,9 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
             Log.d(TAG, "Listen null ($path)")
             return@addSnapshotListener
           }
-          val adds = mutableListOf<T>()
-          val updates = mutableListOf<T>()
-          val deletes = mutableListOf<T>()
+          val adds = mutableSetOf<T>()
+          val updates = mutableSetOf<T>()
+          val deletes = mutableSetOf<T>()
           for (dc in snapshot.documentChanges) {
             when (dc.type) {
               DocumentChange.Type.ADDED -> adds.add(dc.document.toObject(clazz.java))
@@ -243,7 +244,18 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
               DocumentChange.Type.REMOVED -> deletes.add(dc.document.toObject(clazz.java))
             }
           }
-          onChange(adds, updates, deletes)
+          val listenerUpdate =
+              ListenerUpdate(
+                  isFirstUpdate = isFirstUpdate,
+                  isLocalUpdate = snapshot.metadata.hasPendingWrites(),
+                  adds = adds,
+                  updates = updates,
+                  deletes = deletes)
+
+          Log.d(TAG, "Listen update: x${adds.size} x${updates.size} x${deletes.size} ($path)")
+
+          isFirstUpdate = false
+          onChange(listenerUpdate)
         }
     Log.d(TAG, "Added listener ($path)")
     return listener
