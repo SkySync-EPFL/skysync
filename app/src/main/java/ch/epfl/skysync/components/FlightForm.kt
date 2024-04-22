@@ -1,4 +1,4 @@
-package ch.epfl.skysync.ui.components
+package ch.epfl.skysync.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +36,6 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,7 +52,6 @@ import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.BASE_ROLES
 import ch.epfl.skysync.models.flight.Balloon
-import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -61,7 +59,6 @@ import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
-import ch.epfl.skysync.navigation.Route
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -71,9 +68,14 @@ import java.util.Calendar
 @Composable
 fun FlightForm(
     navController: NavHostController,
-    flights: MutableList<PlannedFlight>,
     currentFlight: PlannedFlight?,
-    title: String
+    title: String,
+    allFlightTypes: List<FlightType>,
+    allRoleTypes: List<RoleType>,
+    allVehicles: List<Vehicle>,
+    allBalloons: List<Balloon>,
+    allBaskets: List<Basket>,
+    flightAction: (PlannedFlight) -> Unit
 ) {
   Scaffold(
       modifier = Modifier.fillMaxSize(),
@@ -102,8 +104,6 @@ fun FlightForm(
           var flightTypeValueError by remember { mutableStateOf(false) }
 
           val vehicle: Vehicle? by remember { mutableStateOf(null) }
-          // List of all vehicles to be removed when connected to the database
-          val allVehicles = listOf<Vehicle>(Vehicle("Car"), Vehicle("Bus"), Vehicle("Bike"))
           val listVehiclesValue = remember {
             mutableStateListOf(*currentFlight?.vehicles?.toTypedArray() ?: emptyArray())
           }
@@ -114,26 +114,16 @@ fun FlightForm(
           }
 
           var balloonValue: Balloon? by remember { mutableStateOf(currentFlight?.balloon) }
-          // List of all balloons to be removed when connected to the database
-          val balloons: List<Balloon> =
-              listOf(
-                  Balloon("Balloon1", BalloonQualification.LARGE),
-                  Balloon("Balloon2", BalloonQualification.MEDIUM),
-                  Balloon("Balloon3", BalloonQualification.SMALL))
 
           var basketValue: Basket? by remember { mutableStateOf(currentFlight?.basket) }
-          // List of all baskets to be removed when connected to the database
-          val baskets: List<Basket> =
-              listOf(
-                  Basket("Basket1", hasDoor = false),
-                  Basket("Basket2", hasDoor = true),
-                  Basket("Basket3", hasDoor = true))
 
           val crewMembers = remember {
             mutableStateListOf(
                 *currentFlight?.team?.roles?.toTypedArray()
                     ?: Role.initRoles(BASE_ROLES).toTypedArray())
           }
+          val specialRoles: MutableList<Role> = remember { mutableStateListOf() }
+
           var showAddMemberDialog by remember { mutableStateOf(false) }
           var addNewRole: RoleType? by remember { mutableStateOf(null) }
           var addNewRoleError by remember { mutableStateOf(false) }
@@ -144,9 +134,6 @@ fun FlightForm(
           val lazyListState = rememberLazyListState()
 
           var isError by remember { mutableStateOf(false) }
-
-          var specialRoleAdded by remember { mutableStateOf(false) }
-          var specialRoleId by remember { mutableIntStateOf(0) }
 
           // Scroll to the first field with an error
           LaunchedEffect(isError) {
@@ -172,7 +159,7 @@ fun FlightForm(
                 }
                 // The date field is a clickable field that opens a date picker
                 item {
-                  val today = java.util.Calendar.getInstance().timeInMillis
+                  val today = Calendar.getInstance().timeInMillis
                   val datePickerState = rememberDatePickerState(initialSelectedDateMillis = today)
                   DatePickerField(
                       dateValue = dateValue,
@@ -218,22 +205,8 @@ fun FlightForm(
                       defaultPadding = defaultPadding,
                       title = flightTypeTitle,
                       value = flightTypeValue,
-                      onclickMenu = { item ->
-                        flightTypeValue = item
-                        if (flightTypeValue == FlightType.FONDUE) {
-                          crewMembers.add(Role(RoleType.MAITRE_FONDUE))
-                          specialRoleAdded = true
-                          specialRoleId = crewMembers.size - 1
-                        } else if (flightTypeValue == FlightType.HIGH_ALTITUDE) {
-                          crewMembers.add(Role(RoleType.OXYGEN_MASTER))
-                          specialRoleAdded = true
-                          specialRoleId = crewMembers.size - 1
-                        } else if (specialRoleAdded) {
-                          specialRoleAdded = false
-                          crewMembers.removeAt(specialRoleId)
-                        }
-                      },
-                      items = FlightType.ALL_FLIGHTS,
+                      onclickMenu = { item -> flightTypeValue = item },
+                      items = allFlightTypes,
                       showString = { it?.name ?: "Choose the flightType" },
                       isError = flightTypeValueError,
                       messageError = "Please choose a flight type")
@@ -265,41 +238,14 @@ fun FlightForm(
                         title = { Text("Add Crew Member") },
                         text = {
                           Column {
-                            ExposedDropdownMenuBox(
-                                modifier =
-                                    Modifier.fillMaxWidth()
-                                        .padding(defaultPadding)
-                                        .clickable { expandedAddNewRole = true }
-                                        .testTag("Role Type Menu"),
-                                expanded = expandedAddNewRole,
-                                onExpandedChange = { expandedAddNewRole = !expandedAddNewRole }) {
-                                  OutlinedTextField(
-                                      value = addNewRole?.name ?: "Role Type",
-                                      modifier = Modifier.menuAnchor().fillMaxWidth(),
-                                      readOnly = true,
-                                      onValueChange = {},
-                                      trailingIcon = {
-                                        ExposedDropdownMenuDefaults.TrailingIcon(
-                                            expanded = expandedAddNewRole)
-                                      })
-
-                                  DropdownMenu(
-                                      expanded = expandedAddNewRole,
-                                      onDismissRequest = { expandedAddNewRole = false }) {
-                                        RoleType.entries.withIndex().forEach { (id, item) ->
-                                          DropdownMenuItem(
-                                              modifier =
-                                                  Modifier.fillMaxWidth()
-                                                      .padding(horizontal = defaultPadding)
-                                                      .testTag("Role Type $id"),
-                                              onClick = {
-                                                addNewRole = item
-                                                expandedAddNewRole = false
-                                              },
-                                              text = { Text(item.name) })
-                                        }
-                                      }
-                                }
+                            MenuDropDown(
+                                defaultPadding = defaultPadding,
+                                title = "Role Type",
+                                value = addNewRole,
+                                onclickMenu = { item -> addNewRole = item },
+                                items = allRoleTypes,
+                                showString = { it?.name ?: "Choose a role" },
+                            )
                             // TODO: Handle correctly the user for now it is just a text field
                             OutlinedTextField(
                                 modifier =
@@ -330,38 +276,14 @@ fun FlightForm(
                   }
                 }
                 crewMembers.withIndex().forEach() { (id, role) ->
-                  item {
-                    var query by remember { mutableStateOf("") }
-                    Text(
-                        modifier = Modifier.padding(horizontal = defaultPadding),
-                        text = role.roleType.name)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically) {
-                          OutlinedTextField(
-                              modifier =
-                                  Modifier.fillMaxWidth()
-                                      .padding(horizontal = defaultPadding, vertical = smallPadding)
-                                      .weight(1f)
-                                      .testTag("User $id"),
-                              value = query,
-                              onValueChange = { query = it },
-                              placeholder = { Text("User ${id + 1}") },
-                              singleLine = true)
-                          IconButton(
-                              onClick = {
-                                crewMembers.removeAt(id)
-                                if (specialRoleAdded && id == specialRoleId) {
-                                  specialRoleAdded = false
-                                }
-                              }) {
-                                Icon(
-                                    modifier = Modifier.testTag("Delete Crew Member $id"),
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete Crew Member")
-                              }
-                        }
+                  item { RoleField(defaultPadding, smallPadding, role, id, crewMembers) }
+                }
+                if (flightTypeValue != null) {
+                  flightTypeValue!!.specialRoles.withIndex().forEach { (id, roleType) ->
+                    item {
+                      RoleField(
+                          defaultPadding, smallPadding, Role(roleType), id, specialRoles, "Special")
+                    }
                   }
                 }
                 // Drop down menu for the vehicle
@@ -390,83 +312,60 @@ fun FlightForm(
                 }
                 listVehiclesValue.withIndex().forEach() { (idList, car) ->
                   item {
-                    var expandedVehicleMenu by remember { mutableStateOf(false) }
-                    ExposedDropdownMenuBox(
-                        modifier =
-                            Modifier.fillMaxWidth()
-                                .clickable { expandedVehicleMenu = true }
-                                .testTag("Vehicle Menu $idList"),
-                        expanded = expandedVehicleMenu,
-                        onExpandedChange = { expandedVehicleMenu = !expandedVehicleMenu }) {
-                          Row(
-                              modifier = Modifier.fillMaxWidth(),
-                              horizontalArrangement = Arrangement.SpaceBetween,
-                              verticalAlignment = Alignment.CenterVertically) {
-                                MenuDropDown(
-                                    defaultPadding = defaultPadding,
-                                    title = "Vehicle",
-                                    value = car,
-                                    onclickMenu = { item -> listVehiclesValue[idList] = item },
-                                    items = allVehicles,
-                                    showString = { it.name })
-                                IconButton(
-                                    modifier = Modifier.testTag("Delete Vehicle Button"),
-                                    onClick = {
-                                      listVehiclesValue.removeAt(idList)
-                                      if (listVehiclesValue.isEmpty()) {
-                                        addVehicle = true
-                                      }
-                                    },
-                                ) {
-                                  Icon(
-                                      Icons.Default.Delete,
-                                      contentDescription = "Delete Vehicle $idList")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically) {
+                          MenuDropDown(
+                              defaultPadding = defaultPadding,
+                              title = "Vehicle $idList",
+                              value = car,
+                              onclickMenu = { item -> listVehiclesValue[idList] = item },
+                              items = allVehicles,
+                              showString = { it.name })
+                          IconButton(
+                              modifier = Modifier.testTag("Delete Vehicle $idList Button"),
+                              onClick = {
+                                listVehiclesValue.removeAt(idList)
+                                if (listVehiclesValue.isEmpty()) {
+                                  addVehicle = true
                                 }
-                              }
+                              },
+                          ) {
+                            Icon(
+                                Icons.Default.Delete, contentDescription = "Delete Vehicle $idList")
+                          }
                         }
                   }
                 }
                 if (addVehicle) {
                   item {
-                    var expandedVehicleMenu by remember { mutableStateOf(false) }
-
-                    ExposedDropdownMenuBox(
-                        modifier =
-                            Modifier.fillMaxWidth()
-                                .clickable { expandedVehicleMenu = true }
-                                .testTag("Vehicle Menu ${listVehiclesValue.size}"),
-                        expanded = expandedVehicleMenu,
-                        onExpandedChange = { expandedVehicleMenu = !expandedVehicleMenu }) {
-                          OutlinedTextField(
-                              value = vehicle?.name ?: "Vehicle ${listVehiclesValue.size + 1}",
-                              modifier =
-                                  Modifier.menuAnchor().fillMaxWidth().padding(defaultPadding),
-                              readOnly = true,
-                              onValueChange = {},
-                              trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                    expanded = expandedVehicleMenu)
-                              })
-
-                          DropdownMenu(
-                              expanded = expandedVehicleMenu,
-                              onDismissRequest = { expandedVehicleMenu = false }) {
-                                allVehicles.withIndex().forEach { (id, item) ->
-                                  if (!listVehiclesValue.contains(item)) {
-                                    DropdownMenuItem(
-                                        modifier =
-                                            Modifier.fillMaxWidth()
-                                                .padding(defaultPadding)
-                                                .testTag("Vehicle $id"),
-                                        onClick = {
-                                          listVehiclesValue.add(item)
-                                          expandedVehicleMenu = false
-                                          addVehicle = false
-                                        },
-                                        text = { Text(item.name) })
-                                  }
+                    val id = listVehiclesValue.size
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically) {
+                          MenuDropDown(
+                              defaultPadding = defaultPadding,
+                              title = "Vehicle $id",
+                              value = vehicle,
+                              onclickMenu = { item ->
+                                addVehicle = false
+                                listVehiclesValue.add(item!!)
+                              },
+                              items = allVehicles,
+                              showString = { it?.name ?: "Choose a vehicle" })
+                          IconButton(
+                              modifier = Modifier.testTag("Delete Vehicle $id Button"),
+                              onClick = {
+                                listVehiclesValue.removeAt(id)
+                                if (listVehiclesValue.isEmpty()) {
+                                  addVehicle = true
                                 }
-                              }
+                              },
+                          ) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete Vehicle $id")
+                          }
                         }
                   }
                 }
@@ -482,7 +381,7 @@ fun FlightForm(
                       title = balloonTitle,
                       value = balloonValue,
                       onclickMenu = { item -> balloonValue = item },
-                      items = balloons,
+                      items = allBalloons,
                       showString = { it?.name ?: "Choose the balloon" })
                 }
                 // Drop down menu for the basket
@@ -497,7 +396,7 @@ fun FlightForm(
                       title = basketTitle,
                       value = basketValue,
                       onclickMenu = { item -> basketValue = item },
-                      items = baskets,
+                      items = allBaskets,
                       showString = { it?.name ?: "Choose the basket" })
                 }
               }
@@ -505,14 +404,14 @@ fun FlightForm(
           Button(
               modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("$title Button"),
               onClick = {
-                nbPassengersValueError =
-                    nbPassengersValue.isEmpty() || nbPassengersValue.toInt() <= 0
-                flightTypeValueError = flightTypeValue == null
-                isError = nbPassengersValueError || flightTypeValueError
+                nbPassengersValueError = nbPassengerInputValidation(nbPassengersValue)
+                flightTypeValueError = flightTypeInputValidation(flightTypeValue)
+                isError = inputValidation(nbPassengersValueError, flightTypeValueError)
                 if (!isError) {
                   val vehicles: List<Vehicle> =
                       if (vehicle == null) emptyList() else listOf(vehicle!!)
-                  val team = Team(crewMembers.toList())
+                  val allRoles = crewMembers.toList() + specialRoles
+                  val team = Team(allRoles)
                   val newFlight =
                       PlannedFlight(
                           nPassengers = nbPassengersValue.toInt(),
@@ -524,11 +423,8 @@ fun FlightForm(
                           vehicles = vehicles,
                           team = team,
                           id = currentFlight?.id ?: "unset id")
-                  flights.add(newFlight)
-                  navController.navigate(Route.HOME) {
-                    launchSingleTop = true
-                    popUpTo(Route.ADD_FLIGHT) { inclusive = true }
-                  }
+                  flightAction(newFlight)
+                  navController.popBackStack()
                 }
               }) {
                 Text(title)
@@ -650,6 +546,52 @@ fun <T> MenuDropDown(
   }
 }
 
+fun nbPassengerInputValidation(nbPassengersValue: String): Boolean {
+  return nbPassengersValue.isEmpty() || nbPassengersValue.toInt() <= 0
+}
+
+fun flightTypeInputValidation(flightTypeValue: FlightType?): Boolean {
+  return flightTypeValue == null
+}
+
+fun inputValidation(nbPassengersValueError: Boolean, flightTypeValueError: Boolean): Boolean {
+  return nbPassengersValueError || flightTypeValueError
+}
+
+@Composable
+fun RoleField(
+    defaultPadding: Dp,
+    smallPadding: Dp,
+    role: Role,
+    id: Int,
+    crewMembers: MutableList<Role>,
+    specialName: String = ""
+) {
+  var query by remember { mutableStateOf("") }
+  Text(modifier = Modifier.padding(horizontal = defaultPadding), text = role.roleType.name)
+  Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically) {
+        OutlinedTextField(
+            modifier =
+                Modifier.fillMaxWidth()
+                    .padding(horizontal = defaultPadding, vertical = smallPadding)
+                    .weight(1f)
+                    .testTag("$specialName User $id"),
+            value = query,
+            onValueChange = { query = it },
+            placeholder = { Text("User ${id + 1}") },
+            singleLine = true)
+        IconButton(onClick = { crewMembers.removeAt(id) }) {
+          Icon(
+              modifier = Modifier.testTag("Delete $specialName Crew Member $id"),
+              imageVector = Icons.Default.Delete,
+              contentDescription = "Delete $specialName Crew Member")
+        }
+      }
+}
+
 @Composable
 @Preview
 fun FlightFormPreview() {
@@ -664,5 +606,14 @@ fun FlightFormPreview() {
           balloon = null,
           basket = null,
           id = "testId")
-  FlightForm(navController = navController, flights = mutableListOf(), currentFlight, "Flight Form")
+  FlightForm(
+      navController = navController,
+      currentFlight,
+      "Flight Form",
+      emptyList(),
+      emptyList(),
+      emptyList(),
+      emptyList(),
+      emptyList(),
+      flightAction = {})
 }

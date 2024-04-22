@@ -14,15 +14,14 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import androidx.navigation.compose.ComposeNavigator
-import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
-import ch.epfl.skysync.Repository
-import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.components.FlightForm
+import ch.epfl.skysync.models.flight.Balloon
+import ch.epfl.skysync.models.flight.BalloonQualification
+import ch.epfl.skysync.models.flight.Basket
+import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.navigation.homeGraph
-import org.junit.Assert
+import ch.epfl.skysync.models.flight.Vehicle
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -36,13 +35,34 @@ class FlightFormTest {
   @Before
   fun setup() {
     composeTestRule.setContent {
-      val repository = Repository(FirestoreDatabase(useEmulator = true))
+      val allFlights = FlightType.ALL_FLIGHTS
+      val allVehicles =
+          listOf(
+              Vehicle("Vehicle 1"),
+              Vehicle("Vehicle 2"),
+          )
+      val allBalloons =
+          listOf(
+              Balloon("Balloon 1", BalloonQualification.SMALL),
+              Balloon("Balloon 2", BalloonQualification.MEDIUM),
+          )
+      val allBaskets =
+          listOf(
+              Basket("Basket 1", true),
+              Basket("Basket 2", false),
+          )
+      val allRoleTypes = RoleType.entries
       navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
-      NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, null)
-      }
-      navController.navigate(Route.MODIFY_FLIGHT)
+      FlightForm(
+          navController,
+          null,
+          title,
+          allFlights,
+          allRoleTypes,
+          allVehicles,
+          allBalloons,
+          allBaskets) { _ ->
+          }
     }
   }
 
@@ -94,8 +114,8 @@ class FlightFormTest {
   fun vehicleFieldIsDisplayed() {
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Vehicle Menu 0"))
-    composeTestRule.onNodeWithTag("Vehicle Menu 0").assertIsDisplayed()
+        .performScrollToNode(hasTestTag("Vehicle 0 Menu"))
+    composeTestRule.onNodeWithTag("Vehicle 0 Menu").assertIsDisplayed()
   }
 
   @Test
@@ -174,9 +194,9 @@ class FlightFormTest {
 
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Vehicle Menu 0"))
-    composeTestRule.onNodeWithTag("Vehicle Menu 0").performClick()
-    composeTestRule.onNodeWithTag("Vehicle 1").performClick()
+        .performScrollToNode(hasTestTag("Vehicle 0 Menu"))
+    composeTestRule.onNodeWithTag("Vehicle 0 Menu").performClick()
+    composeTestRule.onNodeWithTag("Vehicle 0 1").performClick()
 
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
@@ -195,9 +215,6 @@ class FlightFormTest {
         .performScrollToNode(hasTestTag("Basket Menu"))
     composeTestRule.onNodeWithTag("Basket Menu").performClick()
     composeTestRule.onNodeWithTag("Basket 1").performClick()
-
-    composeTestRule.onNodeWithTag("$title Button").performClick()
-    Assert.assertEquals(navController.currentDestination?.route, Route.HOME)
   }
 
   @Test
@@ -212,7 +229,7 @@ class FlightFormTest {
     composeTestRule.onNodeWithTag("User Dialog Field").performTextInput("test")
     composeTestRule.onNodeWithTag("User Dialog Field").assertTextContains("test")
     composeTestRule.onNode(hasText("Add")).performClick()
-    composeTestRule.onNodeWithTag("Flight Lazy Column").performScrollToNode(hasTestTag("User 2"))
+    composeTestRule.onNodeWithTag("Flight Lazy Column").performScrollToNode(hasTestTag(" User 2"))
     composeTestRule.onNodeWithText(RoleType.SERVICE_ON_BOARD.name).assertIsDisplayed()
   }
 
@@ -220,17 +237,17 @@ class FlightFormTest {
   fun addAVehicleWorksCorrectly() {
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Vehicle Menu 0"))
-    composeTestRule.onNodeWithTag("Vehicle Menu 0").performClick()
-    composeTestRule.onNodeWithTag("Vehicle 0").performClick()
+        .performScrollToNode(hasTestTag("Vehicle 0 Menu"))
+    composeTestRule.onNodeWithTag("Vehicle 0 Menu").performClick()
+    composeTestRule.onNodeWithTag("Vehicle 0 0").performClick()
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
         .performScrollToNode(hasTestTag("Add Vehicle Button"))
     composeTestRule.onNodeWithTag("Add Vehicle Button").performClick()
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Vehicle Menu 1"))
-    composeTestRule.onNodeWithTag("Vehicle Menu 1").performClick()
-    composeTestRule.onNodeWithTag("Vehicle 1").performClick()
+        .performScrollToNode(hasTestTag("Vehicle 1 Menu"))
+    composeTestRule.onNodeWithTag("Vehicle 1 Menu").performClick()
+    composeTestRule.onNodeWithTag("Vehicle 1 1").performClick()
   }
 }

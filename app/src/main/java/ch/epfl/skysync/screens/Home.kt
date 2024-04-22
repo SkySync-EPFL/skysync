@@ -41,15 +41,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-
-// Sample list for preview (to be deleted)
-
-// Sample empty list for preview (to be deleted)
-val emptyList: List<Flight> = emptyList()
 
 @Composable
 fun UpcomingFlights(flights: List<Flight>, onFlightClick: (Flight) -> Unit) {
@@ -138,11 +134,7 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
       floatingActionButton = {
         // Define the FloatingActionButton to create a flight
         FloatingActionButton(
-            onClick = {
-              // Here is where you'd navigate to a new screen. For now, just log a message.
-              Log.d("HomeScreen", "FloatingActionButton clicked. Implement navigation here.")
-              // Example navigation call: navController.navigate("AddFlight")
-            },
+            onClick = { navController.navigate(Route.ADD_FLIGHT) { launchSingleTop = true } },
             containerColor = lightOrange) {
               Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
             }
