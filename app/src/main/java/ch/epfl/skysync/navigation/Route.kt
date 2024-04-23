@@ -9,6 +9,7 @@ object Route {
   const val PERSONAL_FLIGHT_CALENDAR = "Personal Flight Calendar"
   const val FLIGHT = "Flight"
   const val ADD_FLIGHT = "Add Flight"
+  const val MODIFY_FLIGHT = "Modify Flight"
   const val CHAT = "Chat"
   const val FLIGHT_DETAILS = "Flight Details"
 
