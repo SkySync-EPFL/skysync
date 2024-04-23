@@ -130,7 +130,7 @@ class DatabaseSetup {
 
   var messageGroup1 = MessageGroup()
 
-  var message1 = Message(date = Date.from(Instant.now()), content = "Hello")
+  var message1 = Message(date = Date.from(Instant.now().minusSeconds(10)), content = "Hello")
   var message2 = Message(date = Date.from(Instant.now()), content = "World")
 
   /**

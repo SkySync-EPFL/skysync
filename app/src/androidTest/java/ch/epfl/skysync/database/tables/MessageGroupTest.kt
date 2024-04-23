@@ -66,7 +66,7 @@ class MessageGroupTest {
         ListenerUpdate(
             isFirstUpdate = false,
             isLocalUpdate = true,
-            adds = listOf(dbs.message1, dbs.message2),
+            adds = listOf(dbs.message2, dbs.message1),
             updates = listOf(),
             deletes = listOf()),
         listenerUpdates[1])
