@@ -1,4 +1,4 @@
-package ch.epfl.skysync.components
+package ch.epfl.skysync.components.forms
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -183,11 +183,7 @@ fun FlightForm(
                 // Drop down menu for the time slot. Only AM and PM are available
                 item {
                   val timeSlotTitle = "Time Slot"
-                  Text(
-                      modifier = Modifier.padding(horizontal = defaultPadding),
-                      text = timeSlotTitle,
-                      style = MaterialTheme.typography.headlineSmall)
-                  MenuDropDown(
+                  TitledInputTextField(
                       defaultPadding = defaultPadding,
                       title = timeSlotTitle,
                       value = timeSlotValue,
@@ -197,11 +193,7 @@ fun FlightForm(
                 // Drop down menu for the flight type
                 item {
                   val flightTypeTitle = "Flight Type"
-                  Text(
-                      modifier = Modifier.padding(horizontal = defaultPadding),
-                      text = flightTypeTitle,
-                      style = MaterialTheme.typography.headlineSmall)
-                  MenuDropDown(
+                  TitledInputTextField(
                       defaultPadding = defaultPadding,
                       title = flightTypeTitle,
                       value = flightTypeValue,
@@ -238,7 +230,7 @@ fun FlightForm(
                         title = { Text("Add Crew Member") },
                         text = {
                           Column {
-                            MenuDropDown(
+                            CustomDropDownMenu(
                                 defaultPadding = defaultPadding,
                                 title = "Role Type",
                                 value = addNewRole,
@@ -316,7 +308,7 @@ fun FlightForm(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically) {
-                          MenuDropDown(
+                          CustomDropDownMenu(
                               defaultPadding = defaultPadding,
                               title = "Vehicle $idList",
                               value = car,
@@ -345,7 +337,7 @@ fun FlightForm(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically) {
-                          MenuDropDown(
+                          CustomDropDownMenu(
                               defaultPadding = defaultPadding,
                               title = "Vehicle $id",
                               value = vehicle,
@@ -372,11 +364,7 @@ fun FlightForm(
                 // Drop down menu for the balloon
                 item {
                   val balloonTitle = "Balloon"
-                  Text(
-                      modifier = Modifier.padding(horizontal = defaultPadding),
-                      text = balloonTitle,
-                      style = MaterialTheme.typography.headlineSmall)
-                  MenuDropDown(
+                  TitledInputTextField(
                       defaultPadding = defaultPadding,
                       title = balloonTitle,
                       value = balloonValue,
@@ -387,11 +375,7 @@ fun FlightForm(
                 // Drop down menu for the basket
                 item {
                   val basketTitle = "Basket"
-                  Text(
-                      modifier = Modifier.padding(horizontal = defaultPadding),
-                      text = basketTitle,
-                      style = MaterialTheme.typography.headlineSmall)
-                  MenuDropDown(
+                  TitledInputTextField(
                       defaultPadding = defaultPadding,
                       title = basketTitle,
                       value = basketValue,
@@ -504,7 +488,7 @@ fun DatePickerField(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T> MenuDropDown(
+fun <T> CustomDropDownMenu(
     defaultPadding: Dp,
     title: String,
     value: T,
@@ -590,6 +574,32 @@ fun RoleField(
               contentDescription = "Delete $specialName Crew Member")
         }
       }
+}
+
+@Composable
+fun <T> TitledInputTextField(
+    defaultPadding: Dp,
+    title: String,
+    value: T,
+    onclickMenu: (T) -> Unit,
+    items: List<T>,
+    showString: (T) -> String = { it.toString() },
+    isError: Boolean = false,
+    messageError: String = ""
+) {
+  Text(
+      modifier = Modifier.padding(horizontal = defaultPadding),
+      text = title,
+      style = MaterialTheme.typography.headlineSmall)
+  CustomDropDownMenu(
+      defaultPadding = defaultPadding,
+      title = title,
+      value = value,
+      onclickMenu = onclickMenu,
+      items = items,
+      showString = showString,
+      isError = isError,
+      messageError = messageError)
 }
 
 @Composable

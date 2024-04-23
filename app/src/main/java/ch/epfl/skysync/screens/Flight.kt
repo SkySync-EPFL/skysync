@@ -30,8 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import ch.epfl.skysync.components.Timer
 import ch.epfl.skysync.navigation.BottomBar
-import ch.epfl.skysync.ui.components.Timer
 import ch.epfl.skysync.ui.theme.lightOrange
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted

@@ -1,4 +1,4 @@
-package ch.epfl.skysync.ui.components
+package ch.epfl.skysync.components.forms
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.clickable

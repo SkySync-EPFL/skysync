@@ -12,8 +12,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import ch.epfl.skysync.components.forms.SearchBarCustom
 import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.ui.components.SearchBarCustom
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
