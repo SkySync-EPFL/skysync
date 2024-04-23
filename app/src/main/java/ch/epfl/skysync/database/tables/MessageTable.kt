@@ -14,19 +14,11 @@ class MessageTable(db: FirestoreDatabase) :
    * This will generate a new id for this message and disregard any previously set id.
    *
    * @param groupId The ID of the group the message is sent to
-   * @param userId The ID of the user who sent the message
    * @param item The message to add to the database
    * @param onError Callback called when an error occurs
    */
-  suspend fun add(
-      groupId: String,
-      userId: String,
-      item: Message,
-      onError: ((Exception) -> Unit)? = null
-  ): String {
-    return withErrorCallback(onError) {
-      db.addItem(path, MessageSchema.fromModel(groupId, userId, item))
-    }
+  suspend fun add(groupId: String, item: Message, onError: ((Exception) -> Unit)? = null): String {
+    return withErrorCallback(onError) { db.addItem(path, MessageSchema.fromModel(groupId, item)) }
   }
 
   companion object {
