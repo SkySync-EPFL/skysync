@@ -14,9 +14,11 @@ import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -26,15 +28,19 @@ class PersonalCalendarsIntegrationTest {
 
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var navController: TestNavHostController
+  val dbs = DatabaseSetup()
 
   @Before
-  fun setUpNavHost() {
+  fun setUpNavHost() = runTest{
+    val db = FirestoreDatabase(useEmulator = true)
+    val repository = Repository(db)
+    dbs.clearDatabase(db)
+    dbs.fillDatabase(db)
     composeTestRule.setContent {
-      val repository = Repository(FirestoreDatabase(useEmulator = true))
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, "__unset_id__")
+        homeGraph(repository, navController, dbs.admin1.id)
       }
     }
     composeTestRule.onNodeWithText("Calendar").performClick()
