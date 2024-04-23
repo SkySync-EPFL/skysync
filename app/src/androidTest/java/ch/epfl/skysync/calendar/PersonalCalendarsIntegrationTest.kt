@@ -31,7 +31,7 @@ class PersonalCalendarsIntegrationTest {
   val dbs = DatabaseSetup()
 
   @Before
-  fun setUpNavHost() = runTest{
+  fun setUpNavHost() = runTest {
     val db = FirestoreDatabase(useEmulator = true)
     val repository = Repository(db)
     dbs.clearDatabase(db)
