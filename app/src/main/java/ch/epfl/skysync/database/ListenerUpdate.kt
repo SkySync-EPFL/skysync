@@ -15,7 +15,7 @@ package ch.epfl.skysync.database
 data class ListenerUpdate<T : Any>(
     val isFirstUpdate: Boolean,
     val isLocalUpdate: Boolean,
-    val adds: Set<T>,
-    val updates: Set<T>,
-    val deletes: Set<T>
+    val adds: List<T>,
+    val updates: List<T>,
+    val deletes: List<T>
 )

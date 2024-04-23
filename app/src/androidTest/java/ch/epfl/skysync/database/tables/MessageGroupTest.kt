@@ -66,33 +66,33 @@ class MessageGroupTest {
         ListenerUpdate(
             isFirstUpdate = false,
             isLocalUpdate = true,
-            adds = setOf(dbs.message1, dbs.message2),
-            updates = setOf(),
-            deletes = setOf()),
+            adds = listOf(dbs.message1, dbs.message2),
+            updates = listOf(),
+            deletes = listOf()),
         listenerUpdates[1])
     assertEquals(
         ListenerUpdate(
             isFirstUpdate = true,
             isLocalUpdate = true,
-            adds = setOf(newMessage1),
-            updates = setOf(),
-            deletes = setOf()),
+            adds = listOf(newMessage1),
+            updates = listOf(),
+            deletes = listOf()),
         listenerUpdates[0])
     assertEquals(
         ListenerUpdate(
             isFirstUpdate = false,
             isLocalUpdate = false,
-            adds = setOf(),
-            updates = setOf(),
-            deletes = setOf(newMessage1)),
+            adds = listOf(),
+            updates = listOf(),
+            deletes = listOf(newMessage1)),
         listenerUpdates[2])
     assertEquals(
         ListenerUpdate(
             isFirstUpdate = false,
             isLocalUpdate = true,
-            adds = setOf(newMessage2),
-            updates = setOf(),
-            deletes = setOf()),
+            adds = listOf(newMessage2),
+            updates = listOf(),
+            deletes = listOf()),
         listenerUpdates[3])
 
     listener.remove()

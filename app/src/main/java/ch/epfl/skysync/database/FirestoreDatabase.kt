@@ -234,9 +234,9 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
             Log.d(TAG, "Listen null ($path)")
             return@addSnapshotListener
           }
-          val adds = mutableSetOf<T>()
-          val updates = mutableSetOf<T>()
-          val deletes = mutableSetOf<T>()
+          val adds = mutableListOf<T>()
+          val updates = mutableListOf<T>()
+          val deletes = mutableListOf<T>()
           for (dc in snapshot.documentChanges) {
             when (dc.type) {
               DocumentChange.Type.ADDED -> adds.add(dc.document.toObject(clazz.java))

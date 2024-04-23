@@ -29,9 +29,16 @@ class MessageGroupTable(db: FirestoreDatabase) :
       groupId: String,
       onChange: (ListenerUpdate<Message>) -> Unit,
   ): ListenerRegistration {
+    // the query limit is there to avoid wasting resources
+    // as the callback will receive the result of the query
+    // the first time it is triggered, we could theoretically
+    // set the limit to 1 as the callback is called on each new
+    // message, for now set 10 as a safety precaution for if
+    // multiple messages get sent at the same time
+    val limit = 10L
     return messageTable.queryListener(
         Filter.equalTo("groupId", groupId),
-        limit = 10,
+        limit = limit,
         orderBy = "date",
         orderByDirection = Query.Direction.DESCENDING,
         onChange = { update ->
@@ -39,9 +46,9 @@ class MessageGroupTable(db: FirestoreDatabase) :
               ListenerUpdate(
                   isFirstUpdate = update.isFirstUpdate,
                   isLocalUpdate = update.isLocalUpdate,
-                  adds = update.adds.map { it.toModel() }.toSet(),
-                  updates = update.updates.map { it.toModel() }.toSet(),
-                  deletes = update.deletes.map { it.toModel() }.toSet(),
+                  adds = update.adds.map { it.toModel() },
+                  updates = update.updates.map { it.toModel() },
+                  deletes = update.deletes.map { it.toModel() },
               ))
         })
   }
