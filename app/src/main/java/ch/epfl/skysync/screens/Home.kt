@@ -34,12 +34,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
@@ -130,7 +132,7 @@ fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(navController: NavHostController, listFlights: MutableList<PlannedFlight>, viewModel: FlightsViewModel) {
-    val flights by viewModel.currentFlights.collectAsStateWithLifecycle()
+    //val flights by viewModel.currentFlights.collectAsStateWithLifecycle()
     Scaffold(
       modifier = Modifier.fillMaxSize(),
       bottomBar = { BottomBar(navController) },
