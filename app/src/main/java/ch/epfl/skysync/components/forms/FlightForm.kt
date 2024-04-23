@@ -1,4 +1,4 @@
-package ch.epfl.skysync.components
+package ch.epfl.skysync.components.forms
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,11 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -183,11 +179,7 @@ fun FlightForm(
                 // Drop down menu for the time slot. Only AM and PM are available
                 item {
                   val timeSlotTitle = "Time Slot"
-                  Text(
-                      modifier = Modifier.padding(horizontal = defaultPadding),
-                      text = timeSlotTitle,
-                      style = MaterialTheme.typography.headlineSmall)
-                  MenuDropDown(
+                  TitledDropDownMenu(
                       defaultPadding = defaultPadding,
                       title = timeSlotTitle,
                       value = timeSlotValue,
@@ -197,11 +189,7 @@ fun FlightForm(
                 // Drop down menu for the flight type
                 item {
                   val flightTypeTitle = "Flight Type"
-                  Text(
-                      modifier = Modifier.padding(horizontal = defaultPadding),
-                      text = flightTypeTitle,
-                      style = MaterialTheme.typography.headlineSmall)
-                  MenuDropDown(
+                  TitledDropDownMenu(
                       defaultPadding = defaultPadding,
                       title = flightTypeTitle,
                       value = flightTypeValue,
@@ -238,7 +226,7 @@ fun FlightForm(
                         title = { Text("Add Crew Member") },
                         text = {
                           Column {
-                            MenuDropDown(
+                            CustomDropDownMenu(
                                 defaultPadding = defaultPadding,
                                 title = "Role Type",
                                 value = addNewRole,
@@ -316,7 +304,7 @@ fun FlightForm(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically) {
-                          MenuDropDown(
+                          CustomDropDownMenu(
                               defaultPadding = defaultPadding,
                               title = "Vehicle $idList",
                               value = car,
@@ -345,7 +333,7 @@ fun FlightForm(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically) {
-                          MenuDropDown(
+                          CustomDropDownMenu(
                               defaultPadding = defaultPadding,
                               title = "Vehicle $id",
                               value = vehicle,
@@ -372,11 +360,7 @@ fun FlightForm(
                 // Drop down menu for the balloon
                 item {
                   val balloonTitle = "Balloon"
-                  Text(
-                      modifier = Modifier.padding(horizontal = defaultPadding),
-                      text = balloonTitle,
-                      style = MaterialTheme.typography.headlineSmall)
-                  MenuDropDown(
+                  TitledDropDownMenu(
                       defaultPadding = defaultPadding,
                       title = balloonTitle,
                       value = balloonValue,
@@ -387,11 +371,7 @@ fun FlightForm(
                 // Drop down menu for the basket
                 item {
                   val basketTitle = "Basket"
-                  Text(
-                      modifier = Modifier.padding(horizontal = defaultPadding),
-                      text = basketTitle,
-                      style = MaterialTheme.typography.headlineSmall)
-                  MenuDropDown(
+                  TitledDropDownMenu(
                       defaultPadding = defaultPadding,
                       title = basketTitle,
                       value = basketValue,
@@ -500,50 +480,6 @@ fun DatePickerField(
           String.format(
               "%02d/%02d/%04d", dateValue.dayOfMonth, dateValue.monthValue, dateValue.year),
       onValueChange = {})
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun <T> MenuDropDown(
-    defaultPadding: Dp,
-    title: String,
-    value: T,
-    onclickMenu: (T) -> Unit,
-    items: List<T>,
-    showString: (T) -> String = { it.toString() },
-    isError: Boolean = false,
-    messageError: String = "",
-) {
-
-  var expanded by remember { mutableStateOf(false) }
-  ExposedDropdownMenuBox(
-      modifier =
-          Modifier.fillMaxWidth()
-              .padding(defaultPadding)
-              .clickable(onClick = { expanded = true })
-              .testTag("$title Menu"),
-      expanded = expanded,
-      onExpandedChange = { expanded = !expanded }) {
-        OutlinedTextField(
-            value = showString(value),
-            modifier = Modifier.menuAnchor().fillMaxWidth(),
-            readOnly = true,
-            onValueChange = {},
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            isError = isError,
-            supportingText = { if (isError) Text(messageError) })
-      }
-  DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-    items.withIndex().forEach { (id, item) ->
-      DropdownMenuItem(
-          modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("$title $id"),
-          onClick = {
-            onclickMenu(item)
-            expanded = false
-          },
-          text = { Text(showString(item)) })
-    }
-  }
 }
 
 fun nbPassengerInputValidation(nbPassengersValue: String): Boolean {
