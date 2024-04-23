@@ -1,5 +1,6 @@
 package ch.epfl.skysync.components.forms
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,7 +20,7 @@ fun <T> TitledDropDownMenu(
     messageError: String = ""
 ) {
   Text(
-      modifier = Modifier.padding(horizontal = defaultPadding),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
       text = title,
       style = MaterialTheme.typography.headlineSmall)
   CustomDropDownMenu(
