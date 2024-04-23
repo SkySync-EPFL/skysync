@@ -13,11 +13,14 @@ import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.navigation.BottomBar
-import ch.epfl.skysync.viewmodel.UserViewModel
 import java.time.LocalDate
 
 @Composable
-fun FlightDetailScreen(navController: NavHostController, flightId: String, viewModel: ViewModel) {
+fun FlightDetailScreen(
+    navController: NavHostController,
+    flightId: String,
+    //viewModel: ViewModel
+    ) {
   val fakeFlight =
       PlannedFlight(
           flightId,
@@ -40,10 +43,10 @@ fun FlightDetailScreen(navController: NavHostController, flightId: String, viewM
   }
 }
 
-@Composable
-@Preview
-fun FlightDetailScreenPreview() {
-  val navController = rememberNavController()
-  val viewModel = UserViewModel.createViewModel(firebaseUser = null)
-  FlightDetailScreen(navController = navController, flightId = "1", viewModel = viewModel)
-}
+//@Composable
+//@Preview
+//fun FlightDetailScreenPreview() {
+//  val navController = rememberNavController()
+//  val viewModel = UserViewModel.createViewModel(firebaseUser = null)
+//  FlightDetailScreen(navController = navController, flightId = "1", viewModel = viewModel)
+//}
