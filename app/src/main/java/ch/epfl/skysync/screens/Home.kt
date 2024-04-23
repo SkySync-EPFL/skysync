@@ -38,31 +38,32 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Flight
-import ch.epfl.skysync.models.flight.FlightType
-import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.FlightsViewModel
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
 fun UpcomingFlights(flights: List<Flight>, onFlightClick: (String) -> Unit) {
-  Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+  Column(modifier = Modifier
+      .fillMaxSize()
+      .padding(16.dp)) {
     Text(
         text = "Upcoming flights",
         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
         modifier =
-            Modifier.background(
-                    color = lightOrange,
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                .fillMaxWidth()
-                .padding(16.dp),
+        Modifier
+            .background(
+                color = lightOrange,
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            )
+            .fillMaxWidth()
+            .padding(16.dp),
         color = Color.White,
         textAlign = TextAlign.Center)
 
@@ -71,7 +72,9 @@ fun UpcomingFlights(flights: List<Flight>, onFlightClick: (String) -> Unit) {
     if (flights.isEmpty()) {
       // Handle case when no upcoming flights
       Box(
-          modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f),
+          modifier = Modifier
+              .fillMaxWidth()
+              .fillMaxHeight(0.3f),
           contentAlignment = Alignment.Center) {
             Text(
                 text = "No upcoming flights",
@@ -90,15 +93,18 @@ fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
   // Card for an individual flight, clickable to navigate to details
   Card(
       modifier =
-          Modifier.fillMaxWidth()
-              .clickable { onFlightClick(flight.id) }
-              .padding(vertical = 4.dp)
-              .testTag("flightCard"),
+      Modifier
+          .fillMaxWidth()
+          .clickable { onFlightClick(flight.id) }
+          .padding(vertical = 4.dp)
+          .testTag("flightCard"),
       elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
   ) {
     Surface(modifier = Modifier.fillMaxWidth(), color = flight.getFlightStatus().displayColor) {
       Row(
-          modifier = Modifier.fillMaxWidth().padding(16.dp),
+          modifier = Modifier
+              .fillMaxWidth()
+              .padding(16.dp),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.Start) {
             Text(
@@ -111,7 +117,9 @@ fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
             // Spacer for horizontal separation
             Spacer(modifier = Modifier.width(16.dp))
             // Column for flight details
-            Column(modifier = Modifier.weight(0.7f).padding(start = 16.dp)) {
+            Column(modifier = Modifier
+                .weight(0.7f)
+                .padding(start = 16.dp)) {
               // Text for flight type and passenger count
               Text(
                   text = "${flight.flightType.name} - ${flight.nPassengers} pax",
@@ -134,37 +142,37 @@ fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
-  // val flights by viewModel.currentFlights.collectAsStateWithLifecycle()
-  val listFlights =
-      mutableListOf(
-          PlannedFlight(
-              nPassengers = 4,
-              date = LocalDate.of(2024, 3, 19),
-              timeSlot = TimeSlot.AM,
-              flightType = FlightType.FONDUE,
-              vehicles = listOf(),
-              balloon = null,
-              basket = null,
-              id = 1.toString()),
-          PlannedFlight(
-              nPassengers = 2,
-              date = LocalDate.of(2024, 3, 20),
-              timeSlot = TimeSlot.AM,
-              flightType = FlightType.DISCOVERY,
-              vehicles = listOf(),
-              balloon = null,
-              basket = null,
-              id = 2.toString()),
-          PlannedFlight(
-              nPassengers = 3,
-              date = LocalDate.of(2024, 3, 22),
-              timeSlot = TimeSlot.PM,
-              flightType = FlightType.DISCOVERY,
-              vehicles = listOf(),
-              balloon = null,
-              basket = null,
-              id = 3.toString()),
-      )
+    val currentFlights by viewModel.currentFlights.collectAsStateWithLifecycle()
+//  val listFlights =
+//      mutableListOf(
+//          PlannedFlight(
+//              nPassengers = 4,
+//              date = LocalDate.of(2024, 3, 19),
+//              timeSlot = TimeSlot.AM,
+//              flightType = FlightType.FONDUE,
+//              vehicles = listOf(),
+//              balloon = null,
+//              basket = null,
+//              id = 1.toString()),
+//          PlannedFlight(
+//              nPassengers = 2,
+//              date = LocalDate.of(2024, 3, 20),
+//              timeSlot = TimeSlot.AM,
+//              flightType = FlightType.DISCOVERY,
+//              vehicles = listOf(),
+//              balloon = null,
+//              basket = null,
+//              id = 2.toString()),
+//          PlannedFlight(
+//              nPassengers = 3,
+//              date = LocalDate.of(2024, 3, 22),
+//              timeSlot = TimeSlot.PM,
+//              flightType = FlightType.DISCOVERY,
+//              vehicles = listOf(),
+//              balloon = null,
+//              basket = null,
+//              id = 3.toString()),
+//      )
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       bottomBar = { BottomBar(navController) },
@@ -178,9 +186,11 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
       },
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
-    UpcomingFlights(listFlights) { selectedFlight ->
+    UpcomingFlights(currentFlights) { selectedFlight ->
       // Here is where you'd navigate to a new screen. For now, just log a message.
+        val some = viewModel
       Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
+
       navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
       // Example navigation call: navController.navigate("FlightDetails.id")
     }

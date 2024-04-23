@@ -4,20 +4,29 @@ import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.database.tables.BalloonTable
 import ch.epfl.skysync.database.tables.BasketTable
 import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.database.tables.FlightTypeTable
 import ch.epfl.skysync.database.tables.VehicleTable
+import ch.epfl.skysync.models.calendar.AvailabilityCalendar
+import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.util.WhileUiSubscribed
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 /**
  * ViewModel for the user
@@ -70,7 +79,6 @@ class FlightsViewModel(
   val currentBaskets = _currentBaskets.asStateFlow()
   val currentFlightTypes = _currentFlightTypes.asStateFlow()
   val currentVehicles = _currentVehicles.asStateFlow()
-
   fun refreshAll() {
     refreshCurrentFlights()
     refreshCurrentBalloons()
@@ -107,7 +115,9 @@ class FlightsViewModel(
     // todo: check for dirty data (flights added/modified/deleted while offline)
 
     flightTable.getAll(
-        { flights -> _currentFlights.value = flights },
+        { flights ->
+            _currentFlights.value = flights
+        },
         { exception -> Log.d("FLightrefresh", exception.toString()) })
   }
 
@@ -156,9 +166,20 @@ class FlightsViewModel(
   }
 
   /** return the flight with flight id if it exists in the list of current flights */
-  fun getFlightFromId(flightId: String): Flight? {
+  private fun getFlightFromId(flightId: String): Flight? {
     return currentFlights.value.find { it.id == flightId }
   }
+    fun getFlight(flightId: String): StateFlow<Flight?> {
+        return _currentFlights.map{
+            it.find { it.id == flightId }
+        }.stateIn(
+            scope = viewModelScope,
+            started = WhileUiSubscribed,
+            initialValue = null
+        )
+
+
+    }
 
   init {
     refreshAll()
