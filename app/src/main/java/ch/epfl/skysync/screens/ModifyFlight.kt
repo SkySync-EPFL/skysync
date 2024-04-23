@@ -10,7 +10,11 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
 @Composable
-fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewModel) {
+fun ModifyFlightScreen(
+    navController: NavHostController,
+    viewModel: FlightsViewModel,
+    currentFlight: PlannedFlight
+) {
   val allFlightTypes by viewModel.currentFlightTypes.collectAsStateWithLifecycle()
   val allBalloons by viewModel.currentBalloons.collectAsStateWithLifecycle()
   val allBaskets by viewModel.currentBaskets.collectAsStateWithLifecycle()
@@ -18,8 +22,8 @@ fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewMode
   val allRoleTypes = RoleType.entries
   FlightForm(
       navController = navController,
-      currentFlight = null,
-      title = "Add Flight",
+      currentFlight = currentFlight,
+      title = "Modify Flight",
       allFlightTypes = allFlightTypes,
       allRoleTypes = allRoleTypes,
       allVehicles = allVehicles,

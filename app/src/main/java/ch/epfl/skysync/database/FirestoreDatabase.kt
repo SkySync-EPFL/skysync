@@ -6,9 +6,11 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.MemoryCacheSettings
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.firestoreSettings
-import java.lang.Exception
 import java.lang.UnsupportedOperationException
 import kotlin.reflect.KClass
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 /**
  * Represent a connection to a Firestore database
@@ -41,25 +43,14 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    * @param path A filesystem-like path that specify the location of the table
    * @param item The item to add to the database, the types of the attributes have to be Firestore
    *   types
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
-  fun <T : Any> addItem(
+  suspend fun <T : Any> addItem(
       path: String,
       item: T,
-      onCompletion: (id: String) -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    db.collection(path)
-        .add(item)
-        .addOnSuccessListener {
-          Log.d(TAG, "Added $path/${it.id}")
-          onCompletion(it.id)
-        }
-        .addOnFailureListener { exception ->
-          Log.e(TAG, "Error adding document: ", exception)
-          onError(exception)
-        }
+  ): String {
+    val res = db.collection(path).add(item).await()
+    Log.d(TAG, "Added $path/${res.id}")
+    return res.id
   }
 
   /**
@@ -70,27 +61,14 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    * @param path A filesystem-like path that specify the location of the table
    * @param item The item to set to the database, the types of the attributes have to be Firestore
    * @param id the id of the item
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
-  fun <T : Any> setItem(
+  suspend fun <T : Any> setItem(
       path: String,
       id: String,
       item: T,
-      onCompletion: () -> Unit,
-      onError: (Exception) -> Unit
   ) {
-    db.collection(path)
-        .document(id)
-        .set(item)
-        .addOnSuccessListener {
-          Log.d(TAG, "Created $path/${id}")
-          onCompletion()
-        }
-        .addOnFailureListener { exception ->
-          Log.e(TAG, "Error creating document: ", exception)
-          onError(exception)
-        }
+    db.collection(path).document(id).set(item).await()
+    Log.d(TAG, "Created $path/${id}")
   }
 
   /**
@@ -99,27 +77,16 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    * @param path A filesystem-like path that specify the location of the table
    * @param id The id of the item
    * @param clazz The class of the item, this is used to reconstruct an instance of the item class
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
-  fun <T : Any> getItem(
+  suspend fun <T : Any> getItem(
       path: String,
       id: String,
       clazz: KClass<T>,
-      onCompletion: (T?) -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    db.collection(path)
-        .document(id)
-        .get()
-        .addOnSuccessListener { documentSnapshot ->
-          Log.d(TAG, "Got $path/${documentSnapshot.id}")
-          onCompletion(documentSnapshot.toObject(clazz.java))
-        }
-        .addOnFailureListener { exception ->
-          Log.e(TAG, "Error getting document: ", exception)
-          onError(exception)
-        }
+  ): T? {
+    val documentSnapshot = db.collection(path).document(id).get().await()
+
+    Log.d(TAG, "Got $path/${documentSnapshot.id}")
+    return documentSnapshot.toObject(clazz.java)
   }
 
   /**
@@ -127,32 +94,21 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    *
    * @param path A filesystem-like path that specify the location of the table
    * @param clazz The class of the item, this is used to reconstruct an instance of the item class
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
-  fun <T : Any> getAll(
+  suspend fun <T : Any> getAll(
       path: String,
       clazz: KClass<T>,
-      onCompletion: (List<T>) -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    db.collection(path)
-        .get()
-        .addOnSuccessListener { querySnapshot ->
-          Log.d(TAG, "Got $path (x${querySnapshot.size()})")
-          onCompletion(
-              querySnapshot.documents.mapNotNull {
-                val res = it.toObject(clazz.java)
-                if (res == null) {
-                  Log.w(TAG, "Casting failed for $path/${it.id}")
-                }
-                res
-              })
-        }
-        .addOnFailureListener { exception ->
-          Log.e(TAG, "Error getting document: ", exception)
-          onError(exception)
-        }
+  ): List<T> {
+    val querySnapshot = db.collection(path).get().await()
+
+    Log.d(TAG, "Got $path (x${querySnapshot.size()})")
+    return querySnapshot.documents.mapNotNull {
+      val res = it.toObject(clazz.java)
+      if (res == null) {
+        Log.w(TAG, "Casting failed for $path/${it.id}")
+      }
+      res
+    }
   }
 
   /**
@@ -161,34 +117,22 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    * @param path A filesystem-like path that specify the location of the table
    * @param filter The filter to apply to the query
    * @param clazz The class of the item, this is used to reconstruct an instance of the item class
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
-  fun <T : Any> query(
+  suspend fun <T : Any> query(
       path: String,
       filter: Filter,
       clazz: KClass<T>,
-      onCompletion: (List<T>) -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    db.collection(path)
-        .where(filter)
-        .get()
-        .addOnSuccessListener { querySnapshot ->
-          Log.d(TAG, "Got $path (x${querySnapshot.size()})")
-          onCompletion(
-              querySnapshot.documents.mapNotNull {
-                val res = it.toObject(clazz.java)
-                if (res == null) {
-                  Log.w(TAG, "Casting failed for $path/${it.id}")
-                }
-                res
-              })
-        }
-        .addOnFailureListener { exception ->
-          Log.e(TAG, "Error getting document: ", exception)
-          onError(exception)
-        }
+  ): List<T> {
+    val querySnapshot = db.collection(path).where(filter).get().await()
+
+    Log.d(TAG, "Got $path (x${querySnapshot.size()})")
+    return querySnapshot.documents.mapNotNull {
+      val res = it.toObject(clazz.java)
+      if (res == null) {
+        Log.w(TAG, "Casting failed for $path/${it.id}")
+      }
+      res
+    }
   }
 
   /**
@@ -196,21 +140,13 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    *
    * @param path A filesystem-like path that specify the location of the table
    * @param id The id of the item
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
-  fun deleteItem(path: String, id: String, onCompletion: () -> Unit, onError: (Exception) -> Unit) {
-    db.collection(path)
-        .document(id)
-        .delete()
-        .addOnSuccessListener {
-          Log.d(TAG, "Deleted $path/$id")
-          onCompletion()
-        }
-        .addOnFailureListener { exception ->
-          Log.e(TAG, "Error deleting document: ", exception)
-          onError(exception)
-        }
+  suspend fun deleteItem(
+      path: String,
+      id: String,
+  ) {
+    db.collection(path).document(id).delete().await()
+    Log.d(TAG, "Deleted $path/$id")
   }
 
   /**
@@ -218,36 +154,23 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    *
    * @param path A filesystem-like path that specify the location of the table
    * @param filter The filter to apply to the query
-   * @param onCompletion Callback called on completion of the operation
-   * @param onError Callback called when an error occurs
    */
-  fun queryDelete(
+  suspend fun queryDelete(
       path: String,
       filter: Filter,
-      onCompletion: () -> Unit,
-      onError: (Exception) -> Unit
   ) {
-    db.collection(path)
-        .where(filter)
-        .get()
-        .addOnSuccessListener { querySnapshot ->
-          Log.d(TAG, "Delete $path (x${querySnapshot.size()})")
-          val delayedCallback =
-              ParallelOperationsEndCallback(querySnapshot.size()) { onCompletion() }
-          for (document in querySnapshot.documents) {
-            document.reference
-                .delete()
-                .addOnSuccessListener { delayedCallback.run() }
-                .addOnFailureListener { exception ->
-                  Log.e(TAG, "Error deleting document: ", exception)
-                  onError(exception)
-                }
+    coroutineScope {
+      val querySnapshot = db.collection(path).where(filter).get().await()
+
+      querySnapshot.documents
+          .map { document ->
+            launch {
+              document.reference.delete().await()
+              Log.d(TAG, "Deleted $path/${document.id}")
+            }
           }
-        }
-        .addOnFailureListener { exception ->
-          Log.e(TAG, "Error getting document: ", exception)
-          onError(exception)
-        }
+          .forEach { it.join() }
+    }
   }
 
   /**
@@ -256,18 +179,18 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
    * This is only used for testing, as such it is only supported if using the emulator.
    *
    * @param path A filesystem-like path that specify the location of the table
-   * @param onError Callback called when an error occurs
    */
-  fun deleteTable(path: String, onError: (Exception) -> Unit) {
+  suspend fun deleteTable(path: String) {
     if (!useEmulator) {
       throw UnsupportedOperationException("Can only delete collection on the emulator.")
     }
-    db.collection(path)
-        .get()
-        .addOnSuccessListener {
-          Log.d(TAG, "Delete table $path")
-          for (d in it.documents) d.reference.delete()
-        }
-        .addOnFailureListener { exception -> onError(exception) }
+    coroutineScope {
+      val querySnapshot = db.collection(path).get().await()
+
+      Log.d(TAG, "Delete table $path")
+      querySnapshot.documents
+          .map { document -> launch { document.reference.delete().await() } }
+          .forEach { it.join() }
+    }
   }
 }
