@@ -19,11 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -183,7 +179,7 @@ fun FlightForm(
                 // Drop down menu for the time slot. Only AM and PM are available
                 item {
                   val timeSlotTitle = "Time Slot"
-                  TitledInputTextField(
+                  TitledDropDownMenu(
                       defaultPadding = defaultPadding,
                       title = timeSlotTitle,
                       value = timeSlotValue,
@@ -193,7 +189,7 @@ fun FlightForm(
                 // Drop down menu for the flight type
                 item {
                   val flightTypeTitle = "Flight Type"
-                  TitledInputTextField(
+                  TitledDropDownMenu(
                       defaultPadding = defaultPadding,
                       title = flightTypeTitle,
                       value = flightTypeValue,
@@ -364,7 +360,7 @@ fun FlightForm(
                 // Drop down menu for the balloon
                 item {
                   val balloonTitle = "Balloon"
-                  TitledInputTextField(
+                  TitledDropDownMenu(
                       defaultPadding = defaultPadding,
                       title = balloonTitle,
                       value = balloonValue,
@@ -375,7 +371,7 @@ fun FlightForm(
                 // Drop down menu for the basket
                 item {
                   val basketTitle = "Basket"
-                  TitledInputTextField(
+                  TitledDropDownMenu(
                       defaultPadding = defaultPadding,
                       title = basketTitle,
                       value = basketValue,
@@ -486,50 +482,6 @@ fun DatePickerField(
       onValueChange = {})
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun <T> CustomDropDownMenu(
-    defaultPadding: Dp,
-    title: String,
-    value: T,
-    onclickMenu: (T) -> Unit,
-    items: List<T>,
-    showString: (T) -> String = { it.toString() },
-    isError: Boolean = false,
-    messageError: String = "",
-) {
-
-  var expanded by remember { mutableStateOf(false) }
-  ExposedDropdownMenuBox(
-      modifier =
-          Modifier.fillMaxWidth()
-              .padding(defaultPadding)
-              .clickable(onClick = { expanded = true })
-              .testTag("$title Menu"),
-      expanded = expanded,
-      onExpandedChange = { expanded = !expanded }) {
-        OutlinedTextField(
-            value = showString(value),
-            modifier = Modifier.menuAnchor().fillMaxWidth(),
-            readOnly = true,
-            onValueChange = {},
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            isError = isError,
-            supportingText = { if (isError) Text(messageError) })
-      }
-  DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-    items.withIndex().forEach { (id, item) ->
-      DropdownMenuItem(
-          modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("$title $id"),
-          onClick = {
-            onclickMenu(item)
-            expanded = false
-          },
-          text = { Text(showString(item)) })
-    }
-  }
-}
-
 fun nbPassengerInputValidation(nbPassengersValue: String): Boolean {
   return nbPassengersValue.isEmpty() || nbPassengersValue.toInt() <= 0
 }
@@ -574,32 +526,6 @@ fun RoleField(
               contentDescription = "Delete $specialName Crew Member")
         }
       }
-}
-
-@Composable
-fun <T> TitledInputTextField(
-    defaultPadding: Dp,
-    title: String,
-    value: T,
-    onclickMenu: (T) -> Unit,
-    items: List<T>,
-    showString: (T) -> String = { it.toString() },
-    isError: Boolean = false,
-    messageError: String = ""
-) {
-  Text(
-      modifier = Modifier.padding(horizontal = defaultPadding),
-      text = title,
-      style = MaterialTheme.typography.headlineSmall)
-  CustomDropDownMenu(
-      defaultPadding = defaultPadding,
-      title = title,
-      value = value,
-      onclickMenu = onclickMenu,
-      items = items,
-      showString = showString,
-      isError = isError,
-      messageError = messageError)
 }
 
 @Composable
