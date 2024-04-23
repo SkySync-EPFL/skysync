@@ -2,7 +2,9 @@ package ch.epfl.skysync.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.models.UNSET_ID
@@ -15,6 +17,7 @@ import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
 import ch.epfl.skysync.screens.ModifyFlightScreen
+import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import java.time.LocalDate
 
@@ -38,6 +41,24 @@ fun NavGraphBuilder.homeGraph(
               vehicleTable = repository.vehicleTable)
       HomeScreen(navController, flightsViewModel)
     }
+    composable(
+        Route.FLIGHT_DETAILS + "/{Flight ID}",
+        arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
+          ->
+          val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
+          //      val flightsViewModel =
+          //      FlightsViewModel.createViewModel(
+          //          flightTable = repository.flightTable,
+          //          balloonTable = repository.balloonTable,
+          //          basketTable = repository.basketTable,
+          //          flightTypeTable = repository.flightTypeTable,
+          //          vehicleTable = repository.vehicleTable)
+          FlightDetailScreen(
+              navController = navController,
+              flightId = flightId,
+              // viewModel = flightsViewModel
+          )
+        }
     composable(Route.ADD_FLIGHT) {
       val flightsViewModel =
           FlightsViewModel.createViewModel(

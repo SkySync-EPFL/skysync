@@ -11,6 +11,7 @@ object Route {
   const val ADD_FLIGHT = "Add Flight"
   const val MODIFY_FLIGHT = "Modify Flight"
   const val CHAT = "Chat"
+  const val FLIGHT_DETAILS = "Flight Details"
 
   const val LOGIN = "Login"
 }
