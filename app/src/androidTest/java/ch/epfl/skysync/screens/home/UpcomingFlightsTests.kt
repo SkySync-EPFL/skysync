@@ -59,7 +59,7 @@ class UpcomingFlightsTests {
             id = "testFlightId")
 
     composeTestRule.setContent {
-      UpcomingFlights(flights = listOf(testFlight)) { wasClicked = it.id == testFlight.id }
+      UpcomingFlights(flights = listOf(testFlight)) { wasClicked = it == testFlight.id }
     }
 
     composeTestRule.onNodeWithText("Discovery - 1 pax").performClick()

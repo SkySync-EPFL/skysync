@@ -34,25 +34,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.models.flight.FlightType
+import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.FlightsViewModel
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-// Sample list for preview (to be deleted)
-
-// Sample empty list for preview (to be deleted)
-val emptyList: List<Flight> = emptyList()
-
 @Composable
-fun UpcomingFlights(flights: List<Flight>, onFlightClick: (Flight) -> Unit) {
+fun UpcomingFlights(flights: List<Flight>, onFlightClick: (String) -> Unit) {
   Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
     Text(
         text = "Upcoming flights",
@@ -86,11 +86,14 @@ fun UpcomingFlights(flights: List<Flight>, onFlightClick: (Flight) -> Unit) {
 }
 
 @Composable
-fun FlightRow(flight: Flight, onFlightClick: (Flight) -> Unit) {
+fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
   // Card for an individual flight, clickable to navigate to details
   Card(
       modifier =
-          Modifier.fillMaxWidth().clickable { onFlightClick(flight) }.padding(vertical = 4.dp),
+          Modifier.fillMaxWidth()
+              .clickable { onFlightClick(flight.id) }
+              .padding(vertical = 4.dp)
+              .testTag("flightCard"),
       elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
   ) {
     Surface(modifier = Modifier.fillMaxWidth(), color = flight.getFlightStatus().displayColor) {
@@ -131,27 +134,54 @@ fun FlightRow(flight: Flight, onFlightClick: (Flight) -> Unit) {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
-  val flights by viewModel.currentFlights.collectAsStateWithLifecycle()
+  // val flights by viewModel.currentFlights.collectAsStateWithLifecycle()
+  val listFlights =
+      mutableListOf(
+          PlannedFlight(
+              nPassengers = 4,
+              date = LocalDate.of(2024, 3, 19),
+              timeSlot = TimeSlot.AM,
+              flightType = FlightType.FONDUE,
+              vehicles = listOf(),
+              balloon = null,
+              basket = null,
+              id = 1.toString()),
+          PlannedFlight(
+              nPassengers = 2,
+              date = LocalDate.of(2024, 3, 20),
+              timeSlot = TimeSlot.AM,
+              flightType = FlightType.DISCOVERY,
+              vehicles = listOf(),
+              balloon = null,
+              basket = null,
+              id = 2.toString()),
+          PlannedFlight(
+              nPassengers = 3,
+              date = LocalDate.of(2024, 3, 22),
+              timeSlot = TimeSlot.PM,
+              flightType = FlightType.DISCOVERY,
+              vehicles = listOf(),
+              balloon = null,
+              basket = null,
+              id = 3.toString()),
+      )
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       bottomBar = { BottomBar(navController) },
       floatingActionButton = {
         // Define the FloatingActionButton to create a flight
         FloatingActionButton(
-            onClick = {
-              // Here is where you'd navigate to a new screen. For now, just log a message.
-              Log.d("HomeScreen", "FloatingActionButton clicked. Implement navigation here.")
-              // Example navigation call: navController.navigate("AddFlight")
-            },
+            onClick = { navController.navigate(Route.ADD_FLIGHT) { launchSingleTop = true } },
             containerColor = lightOrange) {
               Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
             }
       },
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
-    UpcomingFlights(flights) { selectedFlight ->
+    UpcomingFlights(listFlights) { selectedFlight ->
       // Here is where you'd navigate to a new screen. For now, just log a message.
-      Log.d("UpcomingFlights", "Selected flight ID: ${selectedFlight.id}")
+      Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
+      navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
       // Example navigation call: navController.navigate("FlightDetails.id")
     }
   }
