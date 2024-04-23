@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -33,6 +35,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,7 +63,11 @@ fun GroupChat(GroupsImageLastmsgLastmsgtime: List<Quadruple<String,ImageVector,S
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .testTag("Search"))
+                .testTag("Search"),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            )
+        )
         val filteredGroups = GroupsImageLastmsgLastmsgtime.filter { it.first.contains(searchQuery, ignoreCase = true) }
         Spacer(modifier = Modifier.fillMaxHeight(0.05f))
         GroupChatBody(Groups = filteredGroups, onClick = onClick)
@@ -72,7 +79,7 @@ fun GroupChat(GroupsImageLastmsgLastmsgtime: List<Quadruple<String,ImageVector,S
 fun GroupChatPreview() {
     val image: ImageVector? = null
     val groups = listOf(Quadruple("Group 1", image, "Last message", "Last message time"),
-        Quadruple("Group 2",image, "zebi", "Last message time"),
+        Quadruple("Group 2",image, "Last message", "Last message time"),
         Quadruple("Group 3",image,"Last message", "Last message time")
     )
   GroupChat(GroupsImageLastmsgLastmsgtime = groups, onClick = {}, paddingValues = PaddingValues(0.dp))
