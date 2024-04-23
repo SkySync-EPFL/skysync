@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.flightDetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ch.epfl.skysync.models.flight.PlannedFlight
+import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.ui.theme.lightOrange
@@ -54,11 +54,11 @@ import ch.epfl.skysync.ui.theme.lightOrange
 @Composable
 fun FlightDetailUi(
     backClick: () -> Unit,
-    deleteClick: () -> Unit,
-    editClick: () -> Unit,
-    confirmClick: () -> Unit,
+    deleteClick: (flightId: String) -> Unit,
+    editClick: (flightId: String) -> Unit,
+    confirmClick: (flightId: String) -> Unit,
     padding: PaddingValues,
-    flight: PlannedFlight
+    flight: Flight
 ) {
   Column(
       modifier = Modifier.fillMaxSize().background(Color.White),
@@ -66,7 +66,7 @@ fun FlightDetailUi(
     FlightDetailHead(BackClick = backClick)
     Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
       FlightdetailBody(flight, padding)
-      FlightDetailBottom(deleteClick, editClick, confirmClick, padding)
+      FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
     }
   }
 }
@@ -94,6 +94,7 @@ fun FlightDetailHead(BackClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally) {
           Text(
               text = "Flight Detail",
+              color = Color.Black,
               fontSize = 30.sp,
           )
         }
@@ -106,7 +107,7 @@ fun FlightDetailHead(BackClick: () -> Unit) {
  * @param padding PaddingValues to apply to the content.
  */
 @Composable
-fun FlightdetailBody(flight: PlannedFlight, padding: PaddingValues) {
+fun FlightdetailBody(flight: Flight, padding: PaddingValues) {
   Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f).padding(padding)) {
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
     Row() {
@@ -114,10 +115,15 @@ fun FlightdetailBody(flight: PlannedFlight, padding: PaddingValues) {
           modifier = Modifier.fillMaxWidth(0.7f),
           verticalArrangement = Arrangement.Center,
           horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = flight.flightType.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = flight.flightType.name,
+                color = Color.Black,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold)
             Text(
                 text = flight.nPassengers.toString() + " Pax",
                 fontSize = 20.sp,
+                color = Color.Black,
                 fontWeight = FontWeight.Bold)
           }
       Column(
@@ -126,9 +132,11 @@ fun FlightdetailBody(flight: PlannedFlight, padding: PaddingValues) {
             Text(
                 flight.date.toString(),
                 fontSize = 15.sp,
+                color = Color.Black,
             )
             Text(
                 flight.timeSlot.name,
+                color = Color.Black,
                 fontSize = 15.sp,
             )
           }
@@ -163,40 +171,51 @@ fun FlightdetailBody(flight: PlannedFlight, padding: PaddingValues) {
  */
 @Composable
 fun FlightDetailBottom(
-    DeleteClick: () -> Unit,
-    EditClick: () -> Unit,
-    ConfirmClick: () -> Unit,
-    padding: PaddingValues
+    flightId: String,
+    DeleteClick: (flightId: String) -> Unit,
+    EditClick: (flightId: String) -> Unit,
+    ConfirmClick: (flightId: String) -> Unit,
 ) {
-  Box(
-      modifier = Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding()),
-      contentAlignment = Alignment.BottomCenter) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically) {
-              Button(
-                  onClick = DeleteClick,
-                  modifier = Modifier.fillMaxWidth(0.3f),
-                  colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) {
-                    Text(text = "Delete", color = Color.Black, overflow = TextOverflow.Clip)
-                  }
-              Button(
-                  onClick = EditClick,
-                  modifier = Modifier.fillMaxWidth(3 / 7f),
-                  colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)) {
-                    Text(text = "Edit", color = Color.Black, overflow = TextOverflow.Clip)
-                  }
-              Button(
-                  onClick = ConfirmClick,
-                  modifier = Modifier.fillMaxWidth(0.7f),
-                  colors = ButtonDefaults.buttonColors(containerColor = Color.Green)) {
-                    Text(text = "Confirm", color = Color.Black, overflow = TextOverflow.Clip)
-                  }
-            }
+  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically) {
+          ClickButton(
+              text = "Delete",
+              onClick = { DeleteClick(flightId) },
+              modifier = Modifier.fillMaxWidth(0.3f),
+              color = Color.Red)
+          ClickButton(
+              text = "Edit",
+              onClick = { EditClick(flightId) },
+              modifier = Modifier.fillMaxWidth(3 / 7f),
+              color = Color.Yellow)
+          ClickButton(
+              text = "Confirm",
+              onClick = { ConfirmClick(flightId) },
+              modifier = Modifier.fillMaxWidth(0.7f),
+              color = Color.Green)
+        }
+  }
+}
+/**
+ * Composable function to create a custom clickable button.
+ *
+ * @param text The text to be displayed on the button.
+ * @param onClick The lambda function to be executed when the button is clicked.
+ * @param modifier The modifier for the button layout.
+ * @param color The color for the button background.
+ */
+@Composable
+fun ClickButton(text: String, onClick: () -> Unit, modifier: Modifier, color: Color) {
+  Button(
+      onClick = onClick,
+      modifier = modifier,
+      colors = ButtonDefaults.buttonColors(containerColor = color)) {
+        Text(text = text, color = Color.Black, overflow = TextOverflow.Clip)
       }
 }
-
 /**
  * TextBar is a Composable function that displays a row with two text elements separated by a
  * divider.
@@ -214,7 +233,7 @@ fun TextBar(textLeft: String, textRight: String) {
             modifier = Modifier.fillMaxWidth(0.5f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally) {
-              Text(text = textLeft, fontSize = 15.sp)
+              Text(text = textLeft, color = Color.Black, fontSize = 15.sp)
             }
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -223,6 +242,7 @@ fun TextBar(textLeft: String, textRight: String) {
               Text(
                   text = textRight,
                   fontSize = 15.sp,
+                  color = Color.Black,
                   modifier = Modifier.testTag(textLeft + textRight))
             }
       }
@@ -242,7 +262,7 @@ fun TeamRolesList(team: Team) {
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
-          Text(text = "No team member")
+          Text(text = "No team member", color = Color.Black)
         }
   } else {
     LazyColumn(modifier = Modifier.testTag("TeamList").fillMaxHeight(0.5f)) {
@@ -267,7 +287,10 @@ fun VehicleListText(vehicle: List<Vehicle>) {
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
-          Text(text = "No vehicle")
+          Text(
+              text = "No vehicle",
+              color = Color.Black,
+          )
         }
   } else {
     LazyColumn(modifier = Modifier.testTag("VehicleList")) {
