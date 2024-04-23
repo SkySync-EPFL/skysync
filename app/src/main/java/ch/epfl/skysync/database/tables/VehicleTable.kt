@@ -13,11 +13,10 @@ class VehicleTable(db: FirestoreDatabase) :
    * Add a new vehicle to the database
    *
    * @param item The vehicle to add to the database
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  fun add(item: Vehicle, onCompletion: (id: String) -> Unit, onError: (Exception) -> Unit) {
-    db.addItem(path, VehicleSchema.fromModel(item), onCompletion, onError)
+  suspend fun add(item: Vehicle, onError: ((Exception) -> Unit)? = null): String {
+    return withErrorCallback(onError) { db.addItem(path, VehicleSchema.fromModel(item)) }
   }
 
   companion object {

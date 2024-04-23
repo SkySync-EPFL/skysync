@@ -16,16 +16,16 @@ class AvailabilityTable(db: FirestoreDatabase) :
    *
    * @param userId The ID of the user whose availability it is
    * @param item The availability to add to the database
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  fun add(
+  suspend fun add(
       userId: String,
       item: Availability,
-      onCompletion: (id: String) -> Unit,
-      onError: (Exception) -> Unit
-  ) {
-    db.addItem(path, AvailabilitySchema.fromModel(userId, item), onCompletion, onError)
+      onError: ((Exception) -> Unit)? = null
+  ): String {
+    return withErrorCallback(onError) {
+      db.addItem(path, AvailabilitySchema.fromModel(userId, item))
+    }
   }
 
   /**
@@ -36,18 +36,17 @@ class AvailabilityTable(db: FirestoreDatabase) :
    * @param userId The ID of the user whose availability it is
    * @param availabilityId The id of the availability to update
    * @param item The new availability item
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  fun update(
+  suspend fun update(
       userId: String,
       availabilityId: String,
       item: Availability,
-      onCompletion: () -> Unit,
-      onError: (Exception) -> Unit
+      onError: ((Exception) -> Unit)? = null
   ) {
-    db.setItem(
-        path, availabilityId, AvailabilitySchema.fromModel(userId, item), onCompletion, onError)
+    return withErrorCallback(onError) {
+      db.setItem(path, availabilityId, AvailabilitySchema.fromModel(userId, item))
+    }
   }
 
   companion object {
