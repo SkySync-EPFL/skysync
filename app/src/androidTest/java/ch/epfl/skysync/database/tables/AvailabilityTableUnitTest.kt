@@ -1,12 +1,12 @@
 package ch.epfl.skysync.database.tables
 
-import android.os.SystemClock
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.calendar.Availability
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
 import java.time.LocalDate
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -21,8 +21,7 @@ class AvailabilityTableUnitTest {
 
   @Before
   fun testSetup() {
-    table.deleteTable {}
-    SystemClock.sleep(DB_SLEEP_TIME)
+    runTest { table.deleteTable() }
   }
 
   /**
@@ -32,117 +31,42 @@ class AvailabilityTableUnitTest {
    */
   @Test
   fun integrationTest() {
-    val userId = "userId"
-    val availability =
-        Availability(
-            status = AvailabilityStatus.MAYBE, timeSlot = TimeSlot.PM, date = LocalDate.now())
+    runTest {
+      val userId = "userId"
+      val availability =
+          Availability(
+              status = AvailabilityStatus.MAYBE, timeSlot = TimeSlot.PM, date = LocalDate.now())
 
-    // Step 1: Add
+      // add an availability
+      val id = table.add(userId, availability)
 
-    var id = "__invalid_id__"
-    var isComplete = false
-    var isError = false
+      // retrieve the added availability
+      var getAvailability = table.get(id)
 
-    // add an availability
-    table.add(
-        userId,
-        availability,
-        {
-          id = it
-          isComplete = true
-        },
-        { isError = true })
+      // the added then retrieved availability should be the same as the initial one
+      assertEquals(availability.copy(id = id), getAvailability)
 
-    SystemClock.sleep(DB_SLEEP_TIME)
+      val updateAvailability =
+          Availability(
+              id = id,
+              status = AvailabilityStatus.OK,
+              timeSlot = TimeSlot.PM,
+              date = LocalDate.now())
+      table.update(userId, id, updateAvailability)
 
-    assertEquals(true, isComplete)
-    assertEquals(false, isError)
+      getAvailability = table.get(id)
 
-    // Step 2: Get
+      // the updated availability should be the same as the initial one
+      assertEquals(updateAvailability, getAvailability)
 
-    var getAvailability: Availability? = null
-    isComplete = false
-    isError = false
+      // delete the availability
+      table.delete(id)
 
-    // retrieve the added availability
-    table.get(
-        id,
-        {
-          getAvailability = it
-          isComplete = true
-        },
-        { isError = true })
+      // get all the availabilities
+      val availabilities = table.getAll()
 
-    SystemClock.sleep(DB_SLEEP_TIME)
-
-    assertEquals(true, isComplete)
-    assertEquals(false, isError)
-    // the added then retrieved availability should be the same as the initial one
-    assertEquals(availability.copy(id = id), getAvailability)
-
-    // Step 3: Update
-
-    isComplete = false
-    isError = false
-
-    val updateAvailability =
-        Availability(
-            id = id, status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = LocalDate.now())
-    table.update(userId, id, updateAvailability, { isComplete = true }, { isError = true })
-
-    SystemClock.sleep(DB_SLEEP_TIME)
-
-    assertEquals(true, isComplete)
-    assertEquals(false, isError)
-
-    isComplete = false
-    isError = false
-    table.get(
-        id,
-        {
-          getAvailability = it
-          isComplete = true
-        },
-        { isError = true })
-
-    SystemClock.sleep(DB_SLEEP_TIME)
-
-    assertEquals(true, isComplete)
-    assertEquals(false, isError)
-    // the added then retrieved availability should be the same as the initial one
-    assertEquals(updateAvailability, getAvailability)
-
-    // Step 4: delete
-    isComplete = false
-    isError = false
-
-    // delete the availability
-    table.delete(id, { isComplete = true }, { isError = true })
-
-    SystemClock.sleep(DB_SLEEP_TIME)
-
-    assertEquals(true, isComplete)
-    assertEquals(false, isError)
-
-    // Step 5: GetAll
-
-    var getAllSize = -1
-    var getAllComplete = false
-    var getAllError = false
-
-    // get all the availabilities
-    table.getAll(
-        {
-          getAllSize = it.size
-          getAllComplete = true
-        },
-        { getAllError = true })
-
-    SystemClock.sleep(DB_SLEEP_TIME)
-
-    assertEquals(true, getAllComplete)
-    assertEquals(false, getAllError)
-    // there should not be any availabilities left
-    assertEquals(0, getAllSize)
+      // there should not be any availabilities left
+      assertEquals(0, availabilities.size)
+    }
   }
 }

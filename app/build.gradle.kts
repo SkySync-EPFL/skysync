@@ -177,7 +177,12 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-swiperefresh:0.24.6-alpha")
 
 
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1") {
+
+    }
+
 }
+
 
 tasks.register("jacocoTestReport", JacocoReport::class) {
     mustRunAfter("testDebugUnitTest", "connectedDebugAndroidTest")

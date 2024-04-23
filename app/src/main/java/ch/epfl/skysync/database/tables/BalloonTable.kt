@@ -13,11 +13,10 @@ class BalloonTable(db: FirestoreDatabase) :
    * Add a new balloon to the database
    *
    * @param item The balloon to add to the database
-   * @param onCompletion Callback called on completion of the operation
    * @param onError Callback called when an error occurs
    */
-  fun add(item: Balloon, onCompletion: (id: String) -> Unit, onError: (Exception) -> Unit) {
-    db.addItem(path, BalloonSchema.fromModel(item), onCompletion, onError)
+  suspend fun add(item: Balloon, onError: ((Exception) -> Unit)? = null): String {
+    return withErrorCallback(onError) { db.addItem(path, BalloonSchema.fromModel(item)) }
   }
 
   companion object {
