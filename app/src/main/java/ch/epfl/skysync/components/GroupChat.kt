@@ -45,13 +45,12 @@ data class GroupDetail(
     val groupImage: ImageVector?,
     val lastMessage: String,
     val lastMessageTime: String
-
 )
 /**
  * Composable function to display a group chat UI.
  *
- * @param groupList A list of quadruples representing group data containing
- *   group name, image, last message, and last message time.
+ * @param groupList A list of quadruples representing group data containing group name, image, last
+ *   message, and last message time.
  * @param onClick Callback triggered when a group is clicked.
  * @param paddingValues Padding values for the column.
  */
@@ -75,8 +74,7 @@ fun GroupChat(
                 focusedBorderColor = lightOrange, focusedLabelColor = lightOrange),
         modifier = Modifier.fillMaxWidth().testTag("Search"),
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done))
-    val filteredGroups =
-        groupList.filter { it.groupName.contains(searchQuery, ignoreCase = true) }
+    val filteredGroups = groupList.filter { it.groupName.contains(searchQuery, ignoreCase = true) }
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
     GroupChatBody(groupList = filteredGroups, onClick = onClick)
   }
@@ -147,12 +145,21 @@ fun GroupCard(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween) {
-                      Text(text = group, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-                      Text(text = lastMsgTime,
+                      Text(
+                          text = group,
+                          fontSize = 16.sp,
+                          fontWeight = FontWeight.Bold,
+                          color = Color.Black)
+                      Text(
+                          text = lastMsgTime,
                           color = Color.Gray,
-                          style = MaterialTheme.typography.bodyMedium,)
+                          style = MaterialTheme.typography.bodyMedium,
+                      )
                     }
-                Text(text = lastMsg, color = Color.Black, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = lastMsg,
+                    color = Color.Black,
+                    style = MaterialTheme.typography.bodyMedium)
               }
         }
       }
@@ -165,10 +172,7 @@ fun GroupCard(
  * @param onClick Callback triggered when a group card is clicked.
  */
 @Composable
-fun GroupChatBody(
-    groupList: List<GroupDetail>,
-    onClick: (String) -> Unit
-) {
+fun GroupChatBody(groupList: List<GroupDetail>, onClick: (String) -> Unit) {
   LazyColumn(modifier = Modifier.testTag("GroupChatBody")) {
     items(groupList.size) { index ->
       GroupCard(
