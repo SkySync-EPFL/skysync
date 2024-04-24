@@ -17,6 +17,7 @@ import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
 import ch.epfl.skysync.screens.ModifyFlightScreen
+import ch.epfl.skysync.screens.confirmationScreenHardCoded
 import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import java.time.LocalDate
@@ -69,6 +70,7 @@ fun NavGraphBuilder.homeGraph(
               vehicleTable = repository.vehicleTable)
       AddFlightScreen(navController, flightsViewModel)
     }
+    composable(Route.CONFIRM_FLIGHT) { confirmationScreenHardCoded(navController) }
     composable(Route.MODIFY_FLIGHT) {
       val flightsViewModel =
           FlightsViewModel.createViewModel(
