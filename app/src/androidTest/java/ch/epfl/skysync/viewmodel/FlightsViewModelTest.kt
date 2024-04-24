@@ -12,6 +12,7 @@ import ch.epfl.skysync.database.tables.FlightTypeTable
 import ch.epfl.skysync.database.tables.VehicleTable
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
@@ -35,8 +36,28 @@ class FlightsViewModelTest {
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var viewModel: FlightsViewModel
 
+
+  lateinit var defaultFlight1: PlannedFlight
+
   @Before
   fun setUp() {
+      defaultFlight1 = PlannedFlight(
+          nPassengers = 2,
+          team =
+          Team(
+              roles =
+              listOf(
+                  Role(RoleType.PILOT, dbSetup.pilot1),
+                  Role(RoleType.CREW, dbSetup.crew1))),
+          flightType = dbSetup.flightType1,
+          balloon = dbSetup.balloon1,
+          basket = dbSetup.basket2,
+          date = LocalDate.of(2024, 8, 12),
+          timeSlot = TimeSlot.AM,
+          vehicles = listOf(dbSetup.vehicle1),
+          id = UNSET_ID)
+
+
     dbSetup.clearDatabase(db)
     dbSetup.fillDatabase2(db)
     composeTestRule.setContent {
@@ -207,5 +228,20 @@ class FlightsViewModelTest {
     SystemClock.sleep(DB_SLEEP_TIME)
     Assert.assertEquals(viewModel.currentFlights.value.size, 1)
     Assert.assertEquals(viewModel.currentFlights.value.get(0).nPassengers, 3)
+  }
+
+  @Test
+  fun testGetFlight(){
+      var persistedFlight : PlannedFlight? = null
+        flightTable.add(defaultFlight1,
+            { persistedFlight = defaultFlight1.copy(it)},
+            {})
+      SystemClock.sleep(DB_SLEEP_TIME)
+      viewModel.refreshCurrentFlights()
+      SystemClock.sleep(DB_SLEEP_TIME)
+      val foundFlight  = viewModel.getFlight(persistedFlight?.id?: "noid")
+      Assert.assertEquals(persistedFlight, foundFlight.value)
+
+
   }
 }
