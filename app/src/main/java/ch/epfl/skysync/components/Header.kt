@@ -12,6 +12,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.sp
 
+/**
+ * Composable function representing a header with a back button and title.
+ *
+ * @param BackClick Callback function to be invoked when the back button is clicked.
+ * @param title Title text to be displayed in the header.
+ */
 @Composable
 fun Header(BackClick: () -> Unit, title: String) {
   Row(

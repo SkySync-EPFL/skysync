@@ -13,6 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import ch.epfl.skysync.ui.theme.lightOrange
 
+/**
+ * Composable function representing a back button with an arrow icon and text.
+ *
+ * @param BackClick Callback function to be invoked when the back button is clicked.
+ */
 @Composable
 fun backbutton(BackClick: () -> Unit) {
   IconButton(onClick = BackClick, modifier = Modifier.fillMaxWidth(0.2f).testTag("BackButton")) {

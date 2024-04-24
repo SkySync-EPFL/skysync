@@ -1,4 +1,4 @@
-package ch.epfl.skysync
+package ch.epfl.skysync.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -9,7 +9,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
-import ch.epfl.skysync.components.ChatText
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

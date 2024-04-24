@@ -40,11 +40,20 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.ui.theme.lightOrange
 
+/**
+ * Composable function representing a chat screen.
+ *
+ * @param groupName Name of the group or chat.
+ * @param ListofPairSenderImagePairMsgTime List of chat messages with sender information, message
+ *   content, and timestamp.
+ * @param backClick Callback function to be invoked when the back button is clicked.
+ * @param sendClick Callback function to be invoked when a message is sent.
+ * @param paddingValues Padding values to be applied to the chat screen.
+ */
 @Composable
 fun ChatText(
     groupName: String,
@@ -61,63 +70,68 @@ fun ChatText(
   }
 }
 
-@Composable
-@Preview
-fun Preview() {
-  val image: ImageVector? = null
-  val fakeText = Pair(Pair("him", image), Pair("Hi", "11:11"))
-  val myFakeText = Pair(Pair("me", image), Pair("Hello", "12:12"))
-  val last = Pair(Pair("me", image), Pair("bye", "12:12"))
-  val list =
-      listOf(
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          last)
-  ChatText("Group 1", list, backClick = {}, sendClick = {}, paddingValues = PaddingValues(0.dp))
-}
-
+// @Composable
+// @Preview
+// fun Preview() {
+//  val image: ImageVector? = null
+//  val fakeText = Pair(Pair("him", image), Pair("Hi", "11:11"))
+//  val myFakeText = Pair(Pair("me", image), Pair("Hello", "12:12"))
+//  val last = Pair(Pair("me", image), Pair("bye", "12:12"))
+//  val list =
+//      listOf(
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          fakeText,
+//          myFakeText,
+//          last)
+//  ChatText("Group 1", list, backClick = {}, sendClick = {}, paddingValues = PaddingValues(0.dp))
+// }
+/**
+ * Composable function representing the body of a chat screen, displaying chat bubbles.
+ *
+ * @param ListofPairSenderImagePairMsgTime List of chat messages with sender information, message
+ *   content, and timestamp.
+ */
 @Composable
 fun ChatTextBody(
     ListofPairSenderImagePairMsgTime: List<Pair<Pair<String, ImageVector?>, Pair<String, String>>>
@@ -135,7 +149,15 @@ fun ChatTextBody(
   }
   LaunchedEffect(Unit) { lazyListState.scrollToItem(ListofPairSenderImagePairMsgTime.size - 1) }
 }
-
+/**
+ * Composable function representing a chat bubble.
+ *
+ * @param sender The sender of the message.
+ * @param image The image associated with the sender.
+ * @param message The message content.
+ * @param time The timestamp of the message.
+ * @param index The index of the chat bubble.
+ */
 @Composable
 fun ChatBubble(sender: String, image: ImageVector?, message: String, time: String, index: String) {
   var isMyMessage = false
@@ -188,7 +210,12 @@ fun ChatBubble(sender: String, image: ImageVector?, message: String, time: Strin
             }
       }
 }
-
+/**
+ * Composable function representing an input field for typing and sending messages.
+ *
+ * @param onSend Callback function to be invoked when a message is sent. It takes the message as a
+ *   parameter.
+ */
 @Composable
 fun ChatInput(onSend: (String) -> Unit) {
   var text by remember { mutableStateOf("") }
