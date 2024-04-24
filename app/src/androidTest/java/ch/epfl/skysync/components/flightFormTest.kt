@@ -71,19 +71,19 @@ class FlightFormTest {
   fun nbPassengerFieldIsDisplayed() {
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("nb Passenger"))
-    composeTestRule.onNodeWithTag("nb Passenger").assertIsDisplayed()
+        .performScrollToNode(hasTestTag("Number of passengers"))
+    composeTestRule.onNodeWithTag("Number of passengers").assertIsDisplayed()
   }
 
   @Test
   fun nbPassengerFieldWorksCorrectly() {
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("nb Passenger"))
-    composeTestRule.onNodeWithTag("nb Passenger").performClick()
-    composeTestRule.onNodeWithTag("nb Passenger").performTextClearance()
-    composeTestRule.onNodeWithTag("nb Passenger").performTextInput("1")
-    composeTestRule.onNodeWithTag("nb Passenger").assertTextEquals("1")
+        .performScrollToNode(hasTestTag("Number of passengers"))
+    composeTestRule.onNodeWithTag("Number of passengers").performClick()
+    composeTestRule.onNodeWithTag("Number of passengers").performTextClearance()
+    composeTestRule.onNodeWithTag("Number of passengers").performTextInput("1")
+    composeTestRule.onNodeWithTag("Number of passengers").assertTextEquals("1")
   }
 
   @Test
@@ -176,10 +176,10 @@ class FlightFormTest {
   fun checkAddAFlightWorksCorrectly() {
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("nb Passenger"))
-    composeTestRule.onNodeWithTag("nb Passenger").performClick()
-    composeTestRule.onNodeWithTag("nb Passenger").performTextClearance()
-    composeTestRule.onNodeWithTag("nb Passenger").performTextInput("1")
+        .performScrollToNode(hasTestTag("Number of passengers"))
+    composeTestRule.onNodeWithTag("Number of passengers").performClick()
+    composeTestRule.onNodeWithTag("Number of passengers").performTextClearance()
+    composeTestRule.onNodeWithTag("Number of passengers").performTextInput("1")
 
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
@@ -259,9 +259,9 @@ class FlightFormTest {
     composeTestRule.onNodeWithTag("$title Button").performClick()
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("nb Passenger"))
+        .performScrollToNode(hasTestTag("Number of passengers"))
     composeTestRule.onNodeWithText("Please enter a valid number", true).assertIsDisplayed()
-    composeTestRule.onNodeWithTag("nb Passenger").performTextInput("1")
+    composeTestRule.onNodeWithTag("Number of passengers").performTextInput("1")
     composeTestRule.onNodeWithTag("$title Button").performClick()
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
