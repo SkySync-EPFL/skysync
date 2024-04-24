@@ -19,7 +19,7 @@ fun MainGraph(
 ) {
   NavHost(
       navController = navHostController,
-      startDestination = if (uid == null) Route.LOGIN else Route.MAIN) {
+      startDestination = if (uid == null) Route.MAIN else Route.MAIN) {
         homeGraph(repository, navHostController, uid)
         composable(Route.LOGIN) { LoginScreen(signInLauncher = signInLauncher) }
       }
