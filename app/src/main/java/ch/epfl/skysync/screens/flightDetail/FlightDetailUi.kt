@@ -64,15 +64,14 @@ fun FlightDetailUi(
       modifier = Modifier.fillMaxSize().background(Color.White),
   ) {
     FlightDetailHead(BackClick = backClick)
-      if (flight == null){
-          Text("flight details loading ...")
+    if (flight == null) {
+      Text("flight details loading ...")
+    } else {
+      Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
+        FlightdetailBody(flight, padding)
+        FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
       }
-      else{
-        Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
-          FlightdetailBody(flight, padding)
-          FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
-        }
-      }
+    }
   }
 }
 
