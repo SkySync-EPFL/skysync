@@ -4,10 +4,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
@@ -167,6 +169,7 @@ class ConfirmFlightUITest {
     val wantedHour = wantedTimeSet.hour
     val wantedMinute = wantedTimeSet.minute
     val tag = "Departure"
+    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextClearance()
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextInput(wantedHour.toString())
     composeTestRule.onNodeWithTag(tag + "/Minutes").performTextClearance()
