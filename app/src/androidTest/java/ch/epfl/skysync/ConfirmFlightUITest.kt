@@ -49,7 +49,6 @@ class ConfirmFlightUITest {
 
   @Before
   fun setUpNavHost() {
-
     composeTestRule.setContent {
       val repository = Repository(FirestoreDatabase(useEmulator = true))
       navController = TestNavHostController(LocalContext.current)
