@@ -176,6 +176,10 @@ dependencies {
     // Loading purposes
     implementation ("com.google.accompanist:accompanist-swiperefresh:0.24.6-alpha")
 
+    // Permission testing
+    androidTestImplementation ("androidx.test.uiautomator:uiautomator:2.2.0")
+
+
 
 }
 
