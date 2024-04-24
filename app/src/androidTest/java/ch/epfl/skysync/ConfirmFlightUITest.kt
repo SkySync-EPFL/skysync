@@ -56,7 +56,7 @@ class ConfirmFlightUITest {
       confirmationScreen(plannedFlight = planedFlight.value, navController = navController) {}
     }
   }
-  // test of info to verify by user
+  // test of info to verify by a user
   @Test
   fun verifyTitle() {
     val id = planedFlight.value.id
