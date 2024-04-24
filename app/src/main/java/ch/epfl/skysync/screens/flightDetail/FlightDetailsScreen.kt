@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
 @Composable
@@ -23,7 +24,8 @@ fun FlightDetailScreen(
     FlightDetailUi(
         backClick = { navController.popBackStack() },
         deleteClick = { navController.popBackStack() },
-        editClick = {},
+        editClick = {
+            navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}")},
         confirmClick = {},
         padding = padding,
         flight = flight)

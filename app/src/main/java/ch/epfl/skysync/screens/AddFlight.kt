@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.forms.FlightForm
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.RoleType
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
 @Composable
@@ -19,11 +20,16 @@ fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewMode
   FlightForm(
       navController = navController,
       currentFlight = null,
+      modifyMode = false,
       title = "Add Flight",
       allFlightTypes = allFlightTypes,
       allRoleTypes = allRoleTypes,
       allVehicles = allVehicles,
       allBalloons = allBalloons,
       allBaskets = allBaskets,
-      flightAction = { flight: PlannedFlight -> viewModel.addFlight(flight) })
+      flightAction = {
+          flight: PlannedFlight -> viewModel.addFlight(flight)
+          navController.navigate(Route.HOME)
+      }
+  )
 }

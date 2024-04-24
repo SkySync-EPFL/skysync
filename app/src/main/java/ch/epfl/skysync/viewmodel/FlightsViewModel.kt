@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.tables.BalloonTable
 import ch.epfl.skysync.database.tables.BasketTable
 import ch.epfl.skysync.database.tables.FlightTable
@@ -27,31 +28,19 @@ import kotlinx.coroutines.launch
 
 /** ViewModel for the user */
 class FlightsViewModel(
-    private val flightTable: FlightTable,
-    private val balloonTable: BalloonTable,
-    private val basketTable: BasketTable,
-    private val flightTypeTable: FlightTypeTable,
-    private val vehicleTable: VehicleTable,
+    val repository: Repository,
 ) : ViewModel() {
   companion object {
     @Composable
     fun createViewModel(
-        flightTable: FlightTable,
-        balloonTable: BalloonTable,
-        basketTable: BasketTable,
-        flightTypeTable: FlightTypeTable,
-        vehicleTable: VehicleTable,
+        repository: Repository,
     ): FlightsViewModel {
       return viewModel<FlightsViewModel>(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                   return FlightsViewModel(
-                      flightTable,
-                      balloonTable,
-                      basketTable,
-                      flightTypeTable,
-                      vehicleTable,
+                      repository
                   )
                       as T
                 }
@@ -82,38 +71,38 @@ class FlightsViewModel(
 
   fun refreshCurrentBalloons() =
       viewModelScope.launch {
-        _currentBalloons.value = balloonTable.getAll(onError = { onError(it) })
+        _currentBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
       }
 
   fun refreshCurrentVehicles() =
       viewModelScope.launch {
-        _currentVehicles.value = vehicleTable.getAll(onError = { onError(it) })
+        _currentVehicles.value = repository.vehicleTable.getAll(onError = { onError(it) })
       }
 
   fun refreshCurrentBaskets() =
       viewModelScope.launch {
-        _currentBaskets.value = basketTable.getAll(onError = { onError(it) })
+        _currentBaskets.value = repository.basketTable.getAll(onError = { onError(it) })
       }
 
   fun refreshCurrentFlightTypes() =
       viewModelScope.launch {
-        _currentFlightTypes.value = flightTypeTable.getAll(onError = { onError(it) })
+        _currentFlightTypes.value = repository.flightTypeTable.getAll(onError = { onError(it) })
       }
 
   fun refreshCurrentFlights() =
       viewModelScope.launch {
         // todo: check for dirty data (flights added/modified/deleted while offline)
-        _currentFlights.value = flightTable.getAll(onError = { onError(it) })
+        _currentFlights.value = repository.flightTable.getAll(onError = { onError(it) })
       }
 
   /**
    * modifies the flight by deleting the old flight and adding a new one in the db and the viewmodel
    */
   fun modifyFlight(
-      newFlight: PlannedFlight,
+      newFlight: Flight,
   ) =
       viewModelScope.launch {
-        flightTable.update(newFlight.id, newFlight)
+          repository.flightTable.update(newFlight.id, newFlight)
         _currentFlights.value =
             _currentFlights.value.map { if (it.id == newFlight.id) newFlight else it }
       }
@@ -123,13 +112,13 @@ class FlightsViewModel(
       flight: Flight,
   ) =
       viewModelScope.launch {
-        flightTable.delete(flight.id, onError = { onError(it) })
+          repository.flightTable.delete(flight.id, onError = { onError(it) })
         _currentFlights.value -= flight
       }
 
   fun deleteFlight(flightId: String) =
       viewModelScope.launch {
-        flightTable.delete(flightId, onError = { onError(it) })
+          repository.flightTable.delete(flightId, onError = { onError(it) })
         _currentFlights.value = currentFlights.value.filter { it.id != flightId }
       }
 
@@ -138,7 +127,7 @@ class FlightsViewModel(
       flight: PlannedFlight,
   ) =
       viewModelScope.launch {
-        val flightId = flightTable.add(flight, onError = { onError(it) })
+        val flightId = repository.flightTable.add(flight, onError = { onError(it) })
 
         _currentFlights.value += flight.setId(flightId)
         refreshCurrentFlights()
