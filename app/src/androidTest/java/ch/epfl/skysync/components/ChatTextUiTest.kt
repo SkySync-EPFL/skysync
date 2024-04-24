@@ -16,8 +16,20 @@ import org.junit.Test
 class ChatTextUiTest {
   @get:Rule val composeTestRule = createComposeRule()
   val image: ImageVector? = null
-  private val fakeText = Pair(Pair("him", image), Pair("Hi", "11:11"))
-  private val myFakeText = Pair(Pair("me", image), Pair("Hello", "12:12"))
+  private val fakeText =
+      ChatMessage(
+          "him",
+          image,
+          "Hi",
+          "11:11",
+      )
+  private val myFakeText =
+      ChatMessage(
+          "me",
+          image,
+          "Hello",
+          "12:12",
+      )
   private val list =
       listOf(
           fakeText,
@@ -71,7 +83,7 @@ class ChatTextUiTest {
     composeTestRule.setContent {
       ChatText(
           groupName = "Name",
-          ListofPairSenderImagePairMsgTime = list,
+          msgList = list,
           backClick = {},
           sendClick = {},
           paddingValues = PaddingValues(0.dp))

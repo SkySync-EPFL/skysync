@@ -44,12 +44,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.ui.theme.lightOrange
 
+data class ChatMessage(
+    val sender: String,
+    val profilePicture: ImageVector?,
+    val message: String,
+    val time: String
+)
+
 /**
  * Composable function representing a chat screen.
  *
  * @param groupName Name of the group or chat.
- * @param ListofPairSenderImagePairMsgTime List of chat messages with sender information, message
- *   content, and timestamp.
+ * @param msgList List of chat messages with sender information, message content, and timestamp.
  * @param backClick Callback function to be invoked when the back button is clicked.
  * @param sendClick Callback function to be invoked when a message is sent.
  * @param paddingValues Padding values to be applied to the chat screen.
@@ -57,7 +63,7 @@ import ch.epfl.skysync.ui.theme.lightOrange
 @Composable
 fun ChatText(
     groupName: String,
-    ListofPairSenderImagePairMsgTime: List<Pair<Pair<String, ImageVector?>, Pair<String, String>>>,
+    msgList: List<ChatMessage>,
     backClick: () -> Unit,
     sendClick: (String) -> Unit,
     paddingValues: PaddingValues
@@ -65,32 +71,30 @@ fun ChatText(
   Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
     Header(BackClick = backClick, title = groupName)
     Spacer(modifier = Modifier.size(1.dp))
-    ChatTextBody(ListofPairSenderImagePairMsgTime)
+    ChatTextBody(msgList)
     ChatInput(sendClick)
   }
 }
 /**
  * Composable function representing the body of a chat screen, displaying chat bubbles.
  *
- * @param ListofPairSenderImagePairMsgTime List of chat messages with sender name, sender profile
- *   picture, message content, and timestamp.
+ * @param msgList List of chat messages with sender name, sender profile picture, message content,
+ *   and timestamp.
  */
 @Composable
-fun ChatTextBody(
-    ListofPairSenderImagePairMsgTime: List<Pair<Pair<String, ImageVector?>, Pair<String, String>>>
-) {
+fun ChatTextBody(msgList: List<ChatMessage>) {
   val lazyListState = rememberLazyListState()
   LazyColumn(Modifier.fillMaxHeight(0.875f).testTag("ChatTextBody"), state = lazyListState) {
-    items(ListofPairSenderImagePairMsgTime.size) { index ->
+    items(msgList.size) { index ->
       ChatBubble(
-          sender = ListofPairSenderImagePairMsgTime[index].first.first,
-          image = ListofPairSenderImagePairMsgTime[index].first.second,
-          message = ListofPairSenderImagePairMsgTime[index].second.first,
-          time = ListofPairSenderImagePairMsgTime[index].second.second,
+          sender = msgList[index].sender,
+          image = msgList[index].profilePicture,
+          message = msgList[index].message,
+          time = msgList[index].time,
           index = "$index")
     }
   }
-  LaunchedEffect(Unit) { lazyListState.scrollToItem(ListofPairSenderImagePairMsgTime.size - 1) }
+  LaunchedEffect(Unit) { lazyListState.scrollToItem(msgList.size - 1) }
 }
 /**
  * Composable function representing a chat bubble.
