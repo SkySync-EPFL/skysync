@@ -42,22 +42,19 @@ fun NavGraphBuilder.homeGraph(
       HomeScreen(navController, flightsViewModel)
     }
     composable(
-        Route.FLIGHT_DETAILS + "/{Flight ID}",
+        route = Route.FLIGHT_DETAILS + "/{Flight ID}",
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          //      val flightsViewModel =
-          //      FlightsViewModel.createViewModel(
-          //          flightTable = repository.flightTable,
-          //          balloonTable = repository.balloonTable,
-          //          basketTable = repository.basketTable,
-          //          flightTypeTable = repository.flightTypeTable,
-          //          vehicleTable = repository.vehicleTable)
+          val flightsViewModel =
+              FlightsViewModel.createViewModel(
+                  flightTable = repository.flightTable,
+                  balloonTable = repository.balloonTable,
+                  basketTable = repository.basketTable,
+                  flightTypeTable = repository.flightTypeTable,
+                  vehicleTable = repository.vehicleTable)
           FlightDetailScreen(
-              navController = navController,
-              flightId = flightId,
-              // viewModel = flightsViewModel
-          )
+              navController = navController, flightId = flightId, viewModel = flightsViewModel)
         }
     composable(Route.ADD_FLIGHT)
     {

@@ -16,8 +16,13 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.util.WhileUiSubscribed
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /** ViewModel for the user */
@@ -140,8 +145,14 @@ class FlightsViewModel(
       }
 
   /** return the flight with flight id if it exists in the list of current flights */
-  fun getFlightFromId(flightId: String): Flight? {
+  private fun getFlightFromId(flightId: String): Flight? {
     return currentFlights.value.find { it.id == flightId }
+  }
+
+  fun getFlight(flightId: String): StateFlow<Flight?> {
+    return _currentFlights
+        .map { flights -> flights.find { it.id == flightId } }
+        .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
   }
 
   /** Callback executed when an error occurs on database-related operations */

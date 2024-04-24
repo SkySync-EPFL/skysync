@@ -58,15 +58,19 @@ fun FlightDetailUi(
     editClick: (flightId: String) -> Unit,
     confirmClick: (flightId: String) -> Unit,
     padding: PaddingValues,
-    flight: Flight
+    flight: Flight?
 ) {
   Column(
       modifier = Modifier.fillMaxSize().background(Color.White),
   ) {
     FlightDetailHead(BackClick = backClick)
-    Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
-      FlightdetailBody(flight, padding)
-      FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
+    if (flight == null) {
+      Text("flight details loading ...")
+    } else {
+      Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
+        FlightdetailBody(flight, padding)
+        FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
+      }
     }
   }
 }

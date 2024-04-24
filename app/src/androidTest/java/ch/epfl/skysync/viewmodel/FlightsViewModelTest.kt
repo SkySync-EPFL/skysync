@@ -39,9 +39,27 @@ class FlightsViewModelTest {
 
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var viewModel: FlightsViewModel
+  lateinit var defaultFlight1: PlannedFlight
 
   @Before
   fun setUp() = runTest {
+    defaultFlight1 =
+        PlannedFlight(
+            nPassengers = 2,
+            team =
+                Team(
+                    roles =
+                        listOf(
+                            Role(RoleType.PILOT, dbSetup.pilot1),
+                            Role(RoleType.CREW, dbSetup.crew1))),
+            flightType = dbSetup.flightType1,
+            balloon = dbSetup.balloon1,
+            basket = dbSetup.basket2,
+            date = LocalDate.of(2024, 8, 12),
+            timeSlot = TimeSlot.AM,
+            vehicles = listOf(dbSetup.vehicle1),
+            id = UNSET_ID)
+
     dbSetup.clearDatabase(db)
     dbSetup.fillDatabase(db)
     composeTestRule.setContent {
@@ -209,5 +227,17 @@ class FlightsViewModelTest {
 
     assertEquals(2, viewModel.currentFlights.value.size)
     assertTrue(viewModel.currentFlights.value.contains(modifiedFlight))
+  }
+
+  @Test
+  fun testGetFlight() {
+    runTest {
+      val persistedFlight =
+          defaultFlight1.copy(id = flightTable.add(defaultFlight1, onError = { assertNull(it) }))
+      viewModel.refreshCurrentFlights().join()
+      val foundFlight = viewModel.getFlight(persistedFlight.id)
+      // foundFlight.collectAsStateWithLifecycle()
+      // assertEquals(persistedFlight, foundFlight.value)
+    }
   }
 }
