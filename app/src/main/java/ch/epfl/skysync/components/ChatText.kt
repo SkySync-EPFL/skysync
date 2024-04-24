@@ -72,8 +72,8 @@ fun ChatText(
 /**
  * Composable function representing the body of a chat screen, displaying chat bubbles.
  *
- * @param ListofPairSenderImagePairMsgTime List of chat messages with sender information, message
- *   content, and timestamp.
+ * @param ListofPairSenderImagePairMsgTime List of chat messages with sender name, sender profile
+ *   picture, message content, and timestamp.
  */
 @Composable
 fun ChatTextBody(
