@@ -1,6 +1,8 @@
 package ch.epfl.skysync.database
 
 import com.google.firebase.firestore.Filter
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 import kotlin.reflect.KClass
 
 /**
@@ -88,6 +90,28 @@ abstract class Table<M, S : Schema<M>>(
    */
   open suspend fun queryDelete(filter: Filter, onError: ((Exception) -> Unit)? = null) {
     db.queryDelete(path, filter)
+  }
+
+  /**
+   * Add a listener on a query
+   *
+   * The listener will be triggered each time the result of the query changes on the database.
+   *
+   * @param filter The filter to apply to the query
+   * @param onChange Callback called each time the listener is triggered, passed the adds, updates,
+   *   deletes that happened since the last listener trigger.
+   * @param limit If specified, the maximum number of items to includes in the query
+   * @param orderBy If specified, sort the items of the query by the given field
+   * @param orderByDirection The direction to sort
+   */
+  open fun queryListener(
+      filter: Filter,
+      onChange: (ListenerUpdate<S>) -> Unit,
+      limit: Long? = null,
+      orderBy: String? = null,
+      orderByDirection: Query.Direction = Query.Direction.ASCENDING,
+  ): ListenerRegistration {
+    return db.queryListener(path, filter, clazz, onChange, limit, orderBy, orderByDirection)
   }
 
   /**
