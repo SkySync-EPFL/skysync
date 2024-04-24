@@ -15,19 +15,10 @@ import ch.epfl.skysync.ui.theme.lightOrange
 
 @Composable
 fun backbutton(BackClick: () -> Unit) {
-    IconButton(
-        onClick = BackClick,
-        modifier = Modifier
-            .fillMaxWidth(0.2f)
-            .testTag("BackButton")
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = lightOrange
-            )
-            Text(text = "Back", color = lightOrange)
-        }
+  IconButton(onClick = BackClick, modifier = Modifier.fillMaxWidth(0.2f).testTag("BackButton")) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = lightOrange)
+      Text(text = "Back", color = lightOrange)
     }
+  }
 }

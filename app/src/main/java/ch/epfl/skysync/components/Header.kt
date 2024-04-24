@@ -14,22 +14,20 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun Header(BackClick: () -> Unit, title: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        backbutton(BackClick)
-        Column(
-            modifier = Modifier.fillMaxWidth(0.75f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = title,
-                color = Color.Black,
-                fontSize = 30.sp,
-                modifier = Modifier.testTag("HeaderTitle")
-            )
+  Row(
+      modifier = Modifier.fillMaxWidth(),
+      verticalAlignment = Alignment.CenterVertically,
+  ) {
+    backbutton(BackClick)
+    Column(
+        modifier = Modifier.fillMaxWidth(0.75f),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally) {
+          Text(
+              text = title,
+              color = Color.Black,
+              fontSize = 30.sp,
+              modifier = Modifier.testTag("HeaderTitle"))
         }
-    }
+  }
 }
