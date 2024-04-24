@@ -99,7 +99,7 @@ fun FlightScreen(navController: NavHostController) {
           fastestInterval = 2000 // Fastest interval for location updates.
         }
 
-    // Callback to receive location updates.
+    // Callback to receive location updates
     val locationCallback =
         object : LocationCallback() {
           override fun onLocationResult(locationResult: LocationResult) {
