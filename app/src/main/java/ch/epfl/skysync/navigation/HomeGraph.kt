@@ -92,8 +92,6 @@ fun NavGraphBuilder.homeGraph(
               basket = null,
               team = Team(roles = emptyList())))
     }
-      composable(Route.TEXT){
-        TextScreen(navController)
-      }
+    composable(Route.TEXT) { TextScreen(navController) }
   }
 }
