@@ -69,63 +69,6 @@ fun ChatText(
     ChatInput(sendClick)
   }
 }
-
-// @Composable
-// @Preview
-// fun Preview() {
-//  val image: ImageVector? = null
-//  val fakeText = Pair(Pair("him", image), Pair("Hi", "11:11"))
-//  val myFakeText = Pair(Pair("me", image), Pair("Hello", "12:12"))
-//  val last = Pair(Pair("me", image), Pair("bye", "12:12"))
-//  val list =
-//      listOf(
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          fakeText,
-//          myFakeText,
-//          last)
-//  ChatText("Group 1", list, backClick = {}, sendClick = {}, paddingValues = PaddingValues(0.dp))
-// }
 /**
  * Composable function representing the body of a chat screen, displaying chat bubbles.
  *
