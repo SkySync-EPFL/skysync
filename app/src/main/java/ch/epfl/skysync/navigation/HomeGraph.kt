@@ -59,7 +59,8 @@ fun NavGraphBuilder.homeGraph(
               // viewModel = flightsViewModel
           )
         }
-    composable(Route.ADD_FLIGHT) {
+    composable(Route.ADD_FLIGHT)
+    {
       val flightsViewModel =
           FlightsViewModel.createViewModel(
               flightTable = repository.flightTable,
@@ -69,7 +70,11 @@ fun NavGraphBuilder.homeGraph(
               vehicleTable = repository.vehicleTable)
       AddFlightScreen(navController, flightsViewModel)
     }
-    composable(Route.MODIFY_FLIGHT) {
+      composable(Route.MODIFY_FLIGHT + "/{Flight ID}",
+          arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })
+      ) {
+
+          val flightId = it.arguments?.getString("Flight ID") ?: UNSET_ID
       val flightsViewModel =
           FlightsViewModel.createViewModel(
               flightTable = repository.flightTable,
