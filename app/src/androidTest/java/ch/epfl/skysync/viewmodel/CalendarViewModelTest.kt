@@ -1,6 +1,5 @@
 package ch.epfl.skysync.viewmodel
 
-import android.os.SystemClock
 import androidx.compose.material.Text
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -8,12 +7,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.tables.AvailabilityTable
-import ch.epfl.skysync.database.tables.DB_SLEEP_TIME
 import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.user.User
 import java.time.LocalDate
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
@@ -30,7 +28,7 @@ class CalendarViewModelTest {
   private lateinit var calendarViewModel: CalendarViewModel
 
   @Before
-  fun testSetup() {
+  fun testSetup() = runTest {
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
     composeTestRule.setContent {
@@ -42,8 +40,9 @@ class CalendarViewModelTest {
   }
 
   @Test
-  fun testSaveAvailabilities() {
-    SystemClock.sleep(DB_SLEEP_TIME)
+  fun testSaveAvailabilities() = runTest {
+    calendarViewModel.refresh().join()
+
     val availabilityCalendar = calendarViewModel.uiState.value.availabilityCalendar
 
     assertEquals(
@@ -67,26 +66,10 @@ class CalendarViewModelTest {
 
     assertEquals(AvailabilityStatus.UNDEFINED, status)
 
-    calendarViewModel.saveAvailabilities()
+    calendarViewModel.saveAvailabilities().join()
 
-    SystemClock.sleep(DB_SLEEP_TIME)
+    val user = userTable.get(dbs.admin1.id, onError = { assertNull(it) })
 
-    var user: User? = null
-    var isComplete = false
-    var isError = false
-
-    userTable.get(
-        dbs.admin1.id,
-        {
-          user = it
-          isComplete = true
-        },
-        { isError = true })
-
-    SystemClock.sleep(DB_SLEEP_TIME)
-
-    assertEquals(true, isComplete)
-    assertEquals(false, isError)
     assertNotNull(user)
 
     assertEquals(

@@ -1,13 +1,13 @@
 package ch.epfl.skysync.database
 
-import android.os.SystemClock
 import ch.epfl.skysync.database.tables.AvailabilityTable
 import ch.epfl.skysync.database.tables.BalloonTable
 import ch.epfl.skysync.database.tables.BasketTable
-import ch.epfl.skysync.database.tables.DB_SLEEP_TIME
 import ch.epfl.skysync.database.tables.FlightMemberTable
 import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.database.tables.FlightTypeTable
+import ch.epfl.skysync.database.tables.MessageGroupTable
+import ch.epfl.skysync.database.tables.MessageTable
 import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.database.tables.VehicleTable
 import ch.epfl.skysync.models.UNSET_ID
@@ -25,10 +25,16 @@ import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.message.Message
+import ch.epfl.skysync.models.message.MessageGroup
 import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
+import java.time.Instant
 import java.time.LocalDate
+import java.util.Date
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * Represent a mock database setup
@@ -122,22 +128,38 @@ class DatabaseSetup {
           vehicles = listOf(vehicle1),
           id = UNSET_ID)
 
+  var messageGroup1 = MessageGroup(userIds = setOf(admin2.id, pilot1.id, crew1.id))
+  var messageGroup2 = MessageGroup(userIds = setOf(admin1.id, admin2.id))
+
+  var message1 =
+      Message(
+          userId = admin2.id, date = Date.from(Instant.now().minusSeconds(20)), content = "Hello")
+  var message2 =
+      Message(
+          userId = pilot1.id, date = Date.from(Instant.now().minusSeconds(10)), content = "World")
+
+  var message3 =
+      Message(userId = admin2.id, date = Date.from(Instant.now()), content = "Some stuff")
+
   /**
    * Delete all items in all tables of the database
    *
    * @param db Firestore database instance
    */
-  fun clearDatabase(db: FirestoreDatabase) {
-    FlightTypeTable(db).deleteTable {}
-    BalloonTable(db).deleteTable {}
-    BasketTable(db).deleteTable {}
-    VehicleTable(db).deleteTable {}
-    FlightMemberTable(db).deleteTable {}
-    UserTable(db).deleteTable {}
-    FlightTable(db).deleteTable {}
-    AvailabilityTable(db).deleteTable {}
-
-    SystemClock.sleep(DB_SLEEP_TIME)
+  suspend fun clearDatabase(db: FirestoreDatabase) = coroutineScope {
+    listOf(
+            launch { FlightTypeTable(db).deleteTable(onError = null) },
+            launch { BalloonTable(db).deleteTable(onError = null) },
+            launch { BasketTable(db).deleteTable(onError = null) },
+            launch { VehicleTable(db).deleteTable(onError = null) },
+            launch { FlightMemberTable(db).deleteTable(onError = null) },
+            launch { UserTable(db).deleteTable(onError = null) },
+            launch { FlightTable(db).deleteTable(onError = null) },
+            launch { AvailabilityTable(db).deleteTable(onError = null) },
+            launch { MessageTable(db).deleteTable(onError = null) },
+            launch { MessageGroupTable(db).deleteTable(onError = null) },
+        )
+        .forEach { it.join() }
   }
 
   /**
@@ -145,7 +167,7 @@ class DatabaseSetup {
    *
    * @param db Firestore database instance
    */
-  fun fillDatabase(db: FirestoreDatabase) {
+  suspend fun fillDatabase(db: FirestoreDatabase) = coroutineScope {
     val flightTypeTable = FlightTypeTable(db)
     val balloonTable = BalloonTable(db)
     val basketTable = BasketTable(db)
@@ -153,62 +175,53 @@ class DatabaseSetup {
     val userTable = UserTable(db)
     val flightTable = FlightTable(db)
     val availabilityTable = AvailabilityTable(db)
+    val messageTable = MessageTable(db)
+    val messageGroupTable = MessageGroupTable(db)
 
-    flightTypeTable.add(flightType1, { flightType1 = flightType1.copy(id = it) }, {})
-    flightTypeTable.add(flightType2, { flightType2 = flightType2.copy(id = it) }, {})
-
-    balloonTable.add(balloon1, { balloon1 = balloon1.copy(id = it) }, {})
-    balloonTable.add(balloon2, { balloon2 = balloon2.copy(id = it) }, {})
-
-    basketTable.add(basket1, { basket1 = basket1.copy(id = it) }, {})
-    basketTable.add(basket2, { basket2 = basket2.copy(id = it) }, {})
-
-    vehicleTable.add(vehicle1, { vehicle1 = vehicle1.copy(id = it) }, {})
-    vehicleTable.add(vehicle2, { vehicle2 = vehicle2.copy(id = it) }, {})
-
-    userTable.set(
-        admin1.id,
-        admin1,
-        {
-          availabilityTable.add(
-              admin1.id, availability3, { availability3 = availability3.copy(id = it) }, {})
-          availabilityTable.add(
-              admin1.id, availability4, { availability4 = availability4.copy(id = it) }, {})
-        },
-        {})
-    userTable.set(admin2.id, admin2, {}, {})
-    userTable.set(
-        crew1.id,
-        crew1,
-        {
-          availabilityTable.add(
-              crew1.id, availability1, { availability1 = availability1.copy(id = it) }, {})
-        },
-        {})
-    userTable.set(
-        pilot1.id,
-        pilot1,
-        {
-          availabilityTable.add(
-              pilot1.id, availability2, { availability2 = availability2.copy(id = it) }, {})
-        },
-        {})
-    userTable.set(
-        pilot2.id,
-        pilot2,
-        {
-          availabilityTable.add(
-              pilot2.id, availability5, { availability5 = availability5.copy(id = it) }, {})
-        },
-        {})
-
-    SystemClock.sleep(DB_SLEEP_TIME)
-
-    // this needs to be done after setting all the IDs
-    admin1.availabilities.addCells(listOf(availability3, availability4))
-    crew1.availabilities.addCells(listOf(availability1))
-    pilot1.availabilities.addCells(listOf(availability2))
-    pilot2.availabilities.addCells(listOf(availability5))
+    listOf(
+            launch { flightType1 = flightType1.copy(id = flightTypeTable.add(flightType1)) },
+            launch { flightType2 = flightType2.copy(id = flightTypeTable.add(flightType2)) },
+            launch { balloon1 = balloon1.copy(id = balloonTable.add(balloon1)) },
+            launch { balloon2 = balloon2.copy(id = balloonTable.add(balloon2)) },
+            launch { basket1 = basket1.copy(id = basketTable.add(basket1)) },
+            launch { basket2 = basket2.copy(id = basketTable.add(basket2)) },
+            launch { vehicle1 = vehicle1.copy(id = vehicleTable.add(vehicle1)) },
+            launch { vehicle2 = vehicle2.copy(id = vehicleTable.add(vehicle2)) },
+            launch {
+              messageGroup1 = messageGroup1.copy(id = messageGroupTable.add(messageGroup1))
+            },
+            launch {
+              messageGroup2 = messageGroup2.copy(id = messageGroupTable.add(messageGroup2))
+            },
+            launch {
+              userTable.set(admin1.id, admin1)
+              availability3 =
+                  availability3.copy(id = availabilityTable.add(admin1.id, availability3))
+              availability4 =
+                  availability4.copy(id = availabilityTable.add(admin1.id, availability4))
+              admin1.availabilities.addCells(listOf(availability3, availability4))
+            },
+            launch { userTable.set(admin2.id, admin2) },
+            launch {
+              userTable.set(crew1.id, crew1)
+              availability1 =
+                  availability1.copy(id = availabilityTable.add(crew1.id, availability1))
+              crew1.availabilities.addCells(listOf(availability1))
+            },
+            launch {
+              userTable.set(pilot1.id, pilot1)
+              availability2 =
+                  availability2.copy(id = availabilityTable.add(pilot1.id, availability2))
+              pilot1.availabilities.addCells(listOf(availability2))
+            },
+            launch {
+              userTable.set(pilot2.id, pilot2)
+              availability5 =
+                  availability5.copy(id = availabilityTable.add(pilot2.id, availability5))
+              pilot2.availabilities.addCells(listOf(availability5))
+            },
+        )
+        .forEach { it.join() }
 
     // re-set all the objects that have been added in the db -> they now have IDs
     flight1 =
@@ -220,43 +233,13 @@ class DatabaseSetup {
             vehicles = listOf(vehicle1),
         )
 
-    flightTable.add(
-        flight1,
-        { id ->
-          flight1 =
-              flight1.copy(
-                  id = id,
-              )
-        },
-        {})
-
-    SystemClock.sleep(DB_SLEEP_TIME)
-  }
-
-  fun fillDatabase2(db: FirestoreDatabase) {
-    val flightTypeTable = FlightTypeTable(db)
-    val balloonTable = BalloonTable(db)
-    val basketTable = BasketTable(db)
-    val vehicleTable = VehicleTable(db)
-    val userTable = UserTable(db)
-
-    flightTypeTable.add(flightType1, { flightType1 = flightType1.copy(id = it) }, {})
-    flightTypeTable.add(flightType2, { flightType2 = flightType2.copy(id = it) }, {})
-
-    balloonTable.add(balloon1, { balloon1 = balloon1.copy(id = it) }, {})
-    balloonTable.add(balloon2, { balloon2 = balloon2.copy(id = it) }, {})
-
-    basketTable.add(basket1, { basket1 = basket1.copy(id = it) }, {})
-    basketTable.add(basket2, { basket2 = basket2.copy(id = it) }, {})
-
-    vehicleTable.add(vehicle1, { vehicle1 = vehicle1.copy(id = it) }, {})
-    vehicleTable.add(vehicle2, { vehicle2 = vehicle2.copy(id = it) }, {})
-
-    userTable.set(admin1.id, admin1, {}, {})
-    userTable.set(admin2.id, admin2, {}, {})
-    userTable.set(crew1.id, crew1, {}, {})
-    userTable.set(pilot1.id, pilot1, {}, {})
-
-    SystemClock.sleep(DB_SLEEP_TIME)
+    // now that the IDs are set, add the flights/messages
+    listOf(
+            launch { flight1 = flight1.copy(id = flightTable.add(flight1)) },
+            launch { message1 = message1.copy(id = messageTable.add(messageGroup1.id, message1)) },
+            launch { message2 = message2.copy(id = messageTable.add(messageGroup1.id, message2)) },
+            launch { message3 = message3.copy(id = messageTable.add(messageGroup2.id, message3)) },
+        )
+        .forEach { it.join() }
   }
 }
