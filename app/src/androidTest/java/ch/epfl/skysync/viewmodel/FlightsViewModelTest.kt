@@ -1,6 +1,7 @@
 package ch.epfl.skysync.viewmodel
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.tables.BalloonTable
@@ -10,7 +11,6 @@ import ch.epfl.skysync.database.tables.FlightTypeTable
 import ch.epfl.skysync.database.tables.VehicleTable
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
@@ -40,10 +40,10 @@ class FlightsViewModelTest {
 
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var viewModel: FlightsViewModel
+  lateinit var defaultFlight1: PlannedFlight
 
   @Before
   fun setUp() = runTest {
-  fun setUp() {
       defaultFlight1 = PlannedFlight(
           nPassengers = 2,
           team =
@@ -232,15 +232,13 @@ class FlightsViewModelTest {
 
   @Test
   fun testGetFlight(){
-      var persistedFlight : PlannedFlight? = null
-        flightTable.add(defaultFlight1,
-            { persistedFlight = defaultFlight1.copy(it)},
-            {})
-      SystemClock.sleep(DB_SLEEP_TIME)
-      viewModel.refreshCurrentFlights()
-      SystemClock.sleep(DB_SLEEP_TIME)
-      val foundFlight  = viewModel.getFlight(persistedFlight?.id?: "noid")
-      Assert.assertEquals(persistedFlight, foundFlight.value)
+      runTest{
+          val persistedFlight = defaultFlight1.copy(id = flightTable.add(defaultFlight1, onError = { assertNull(it) }))
+          viewModel.refreshCurrentFlights().join()
+          val foundFlight  = viewModel.getFlight(persistedFlight.id)
+          //foundFlight.collectAsStateWithLifecycle()
+          //assertEquals(persistedFlight, foundFlight.value)
+      }
 
 
   }

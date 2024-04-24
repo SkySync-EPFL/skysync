@@ -152,8 +152,8 @@ class FlightsViewModel(
     return currentFlights.value.find { it.id == flightId }
   }
     fun getFlight(flightId: String): StateFlow<Flight?> {
-        return _currentFlights.map{
-            it.find { it.id == flightId }
+        return _currentFlights.map{flights ->
+            flights.find { it.id == flightId }
         }.stateIn(
             scope = viewModelScope,
             started = WhileUiSubscribed,
