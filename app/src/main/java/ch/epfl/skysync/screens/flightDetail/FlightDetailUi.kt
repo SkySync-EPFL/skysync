@@ -35,6 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ch.epfl.skysync.components.Header
+import ch.epfl.skysync.components.backbutton
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
@@ -61,43 +63,17 @@ fun FlightDetailUi(
     flight: Flight
 ) {
   Column(
-      modifier = Modifier.fillMaxSize().background(Color.White),
+      modifier = Modifier
+          .fillMaxSize()
+          .background(Color.White),
   ) {
-    FlightDetailHead(BackClick = backClick)
-    Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
+    Header(BackClick = backClick, title = "Flight Detail" )
+    Box(modifier = Modifier
+        .fillMaxHeight()
+        .padding(padding)) {
       FlightdetailBody(flight, padding)
       FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
     }
-  }
-}
-
-/**
- * FlightDetailHead is a Composable function that displays the header of the flight detail screen.
- *
- * @param BackClick Callback function invoked when the back button is clicked.
- */
-@Composable
-fun FlightDetailHead(BackClick: () -> Unit) {
-  Row(
-      modifier = Modifier.fillMaxWidth(),
-      verticalAlignment = Alignment.CenterVertically,
-  ) {
-    IconButton(onClick = BackClick, modifier = Modifier.fillMaxWidth(0.2f)) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = lightOrange)
-        Text(text = "Back", color = lightOrange)
-      }
-    }
-    Column(
-        modifier = Modifier.fillMaxWidth(0.75f),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally) {
-          Text(
-              text = "Flight Detail",
-              color = Color.Black,
-              fontSize = 30.sp,
-          )
-        }
   }
 }
 /**
@@ -108,7 +84,10 @@ fun FlightDetailHead(BackClick: () -> Unit) {
  */
 @Composable
 fun FlightdetailBody(flight: Flight, padding: PaddingValues) {
-  Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f).padding(padding)) {
+  Column(modifier = Modifier
+      .fillMaxWidth()
+      .fillMaxHeight(0.9f)
+      .padding(padding)) {
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
     Row() {
       Column(
@@ -265,7 +244,9 @@ fun TeamRolesList(team: Team) {
           Text(text = "No team member", color = Color.Black)
         }
   } else {
-    LazyColumn(modifier = Modifier.testTag("TeamList").fillMaxHeight(0.5f)) {
+    LazyColumn(modifier = Modifier
+        .testTag("TeamList")
+        .fillMaxHeight(0.5f)) {
       itemsIndexed(team.roles) { index, role ->
         val firstname = role.assignedUser?.firstname ?: ""
         val lastname = role.assignedUser?.lastname ?: ""
