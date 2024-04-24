@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -36,20 +37,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
 
-data class Quadruple<A, B, C, D>(val first: A, val second: B?, val third: C, val fourth: D)
+data class GroupDetail(
+    val groupName: String,
+    val groupImage: ImageVector?,
+    val lastMessage: String,
+    val lastMessageTime: String
+
+)
 /**
  * Composable function to display a group chat UI.
  *
- * @param GroupsImageLastmsgLastmsgtime A list of quadruples representing group data containing
+ * @param groupList A list of quadruples representing group data containing
  *   group name, image, last message, and last message time.
  * @param onClick Callback triggered when a group is clicked.
  * @param paddingValues Padding values for the column.
  */
 @Composable
 fun GroupChat(
-    GroupsImageLastmsgLastmsgtime: List<Quadruple<String, ImageVector, String, String>>,
+    groupList: List<GroupDetail>,
     onClick: (String) -> Unit,
     paddingValues: PaddingValues
 ) {
@@ -68,9 +76,9 @@ fun GroupChat(
         modifier = Modifier.fillMaxWidth().testTag("Search"),
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done))
     val filteredGroups =
-        GroupsImageLastmsgLastmsgtime.filter { it.first.contains(searchQuery, ignoreCase = true) }
+        groupList.filter { it.groupName.contains(searchQuery, ignoreCase = true) }
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
-    GroupChatBody(Groups = filteredGroups, onClick = onClick)
+    GroupChatBody(groupList = filteredGroups, onClick = onClick)
   }
 }
 /** Composable function to display the top bar of the group chat UI. */
@@ -113,12 +121,13 @@ fun GroupCard(
     lastMsgTime: String,
     testTag: String
 ) {
+
   Card(
       modifier = Modifier.clickable(onClick = onClick).fillMaxWidth().testTag(testTag),
       shape = RectangleShape,
       colors =
           CardDefaults.cardColors(
-              containerColor = Color.White,
+              containerColor = lightGray,
           )) {
         Row {
           if (groupImage != null) {
@@ -138,10 +147,12 @@ fun GroupCard(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween) {
-                      Text(text = group, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                      Text(text = lastMsgTime, color = Color.Gray)
+                      Text(text = group, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                      Text(text = lastMsgTime,
+                          color = Color.Gray,
+                          style = MaterialTheme.typography.bodyMedium,)
                     }
-                Text(text = lastMsg)
+                Text(text = lastMsg, color = Color.Black, style = MaterialTheme.typography.bodyMedium)
               }
         }
       }
@@ -155,17 +166,17 @@ fun GroupCard(
  */
 @Composable
 fun GroupChatBody(
-    Groups: List<Quadruple<String, ImageVector, String, String>>,
+    groupList: List<GroupDetail>,
     onClick: (String) -> Unit
 ) {
   LazyColumn(modifier = Modifier.testTag("GroupChatBody")) {
-    items(Groups.size) { index ->
+    items(groupList.size) { index ->
       GroupCard(
-          group = Groups[index].first,
-          onClick = { onClick(Groups[index].first) },
-          groupImage = Groups[index].second,
-          lastMsg = Groups[index].third,
-          lastMsgTime = Groups[index].fourth,
+          group = groupList[index].groupName,
+          onClick = { onClick(groupList[index].groupName) },
+          groupImage = groupList[index].groupImage,
+          lastMsg = groupList[index].lastMessage,
+          lastMsgTime = groupList[index].lastMessageTime,
           testTag = "GroupCard$index")
       Spacer(modifier = Modifier.size(1.dp))
     }

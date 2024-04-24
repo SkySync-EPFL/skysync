@@ -13,7 +13,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.unit.dp
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.components.GroupChat
-import ch.epfl.skysync.components.Quadruple
+import ch.epfl.skysync.components.GroupDetail
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -22,34 +22,34 @@ class GroupChatTest {
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var navController: TestNavHostController
   val image: ImageVector? = null
-  val quad = Quadruple("Group", image, "Last message", "Last message time")
-  val searchGroup = Quadruple("GroupSearch", image, "Last message", "Last message time")
+  val group = GroupDetail("Group", image, "Last message", "Last message time")
+  val searchGroup = GroupDetail("GroupSearch", image, "Last message", "Last message time")
   val groups =
       listOf(
-          quad,
-          quad,
-          quad,
-          quad,
-          quad,
-          quad,
-          quad,
-          quad,
-          quad,
-          quad,
-          quad,
-          quad,
-          quad,
-          quad,
-          quad,
-          quad,
-          quad,
+          group,
+          group,
+          group,
+          group,
+          group,
+          group,
+          group,
+          group,
+          group,
+          group,
+          group,
+          group,
+          group,
+          group,
+          group,
+          group,
+          group,
           searchGroup)
 
   @Before
   fun setUpNavHost() {
     composeTestRule.setContent {
       GroupChat(
-          GroupsImageLastmsgLastmsgtime = groups, onClick = {}, paddingValues = PaddingValues(0.dp))
+          groupList = groups, onClick = {}, paddingValues = PaddingValues(0.dp))
     }
   }
 
