@@ -30,6 +30,7 @@ data class UserSchema(
               lastname = lastname!!,
               availabilities = AvailabilityCalendar(),
               assignedFlights = FlightGroupCalendar(),
+              roleTypes = roleTypes!!.toSet(),
           )
       UserRole.CREW ->
           Crew(
@@ -38,6 +39,7 @@ data class UserSchema(
               lastname = lastname!!,
               availabilities = AvailabilityCalendar(),
               assignedFlights = FlightGroupCalendar(),
+              roleTypes = roleTypes!!.toSet(),
           )
       UserRole.PILOT ->
           Pilot(
@@ -46,6 +48,7 @@ data class UserSchema(
               lastname = lastname!!,
               availabilities = AvailabilityCalendar(),
               assignedFlights = FlightGroupCalendar(),
+              roleTypes = roleTypes!!.toSet(),
               qualification = balloonQualification!!)
     }
   }
@@ -66,7 +69,7 @@ data class UserSchema(
           userRole = userRole,
           firstname = model.firstname,
           lastname = model.lastname,
-          roleTypes = listOf(),
+          roleTypes = model.roleTypes.toList(),
           balloonQualification = qualification)
     }
   }
