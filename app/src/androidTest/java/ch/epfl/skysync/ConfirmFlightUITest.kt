@@ -4,15 +4,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
-import ch.epfl.skysync.components.confirmationScreen
+import ch.epfl.skysync.components.confirmation
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
@@ -38,7 +40,7 @@ class ConfirmFlightUITest {
       mutableStateOf(
           PlannedFlight(
               "1234",
-              3,
+              26,
               FlightType.DISCOVERY,
               Team(listOf(Role(RoleType.CREW))),
               Balloon("Ballon Name", BalloonQualification.LARGE, "Ballon Name"),
@@ -49,15 +51,14 @@ class ConfirmFlightUITest {
 
   @Before
   fun setUpNavHost() {
-
     composeTestRule.setContent {
       val repository = Repository(FirestoreDatabase(useEmulator = true))
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      confirmationScreen(plannedFlight = planedFlight.value, navController = navController) {}
+      confirmation(plannedFlight = planedFlight.value) {}
     }
   }
-  // test of info to verify by user
+  // test of info to verify by a user
   @Test
   fun verifyTitle() {
     val id = planedFlight.value.id
@@ -168,6 +169,7 @@ class ConfirmFlightUITest {
     val wantedHour = wantedTimeSet.hour
     val wantedMinute = wantedTimeSet.minute
     val tag = "Departure"
+    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextClearance()
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextInput(wantedHour.toString())
     composeTestRule.onNodeWithTag(tag + "/Minutes").performTextClearance()

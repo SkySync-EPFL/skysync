@@ -17,7 +17,8 @@ import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
 import ch.epfl.skysync.screens.ModifyFlightScreen
-import ch.epfl.skysync.screens.confirmationScreenHardCoded
+import ch.epfl.skysync.screens.TextScreen
+import ch.epfl.skysync.screens.confirmationScreen
 import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import java.time.LocalDate
@@ -70,7 +71,20 @@ fun NavGraphBuilder.homeGraph(
               vehicleTable = repository.vehicleTable)
       AddFlightScreen(navController, flightsViewModel)
     }
-    composable(Route.CONFIRM_FLIGHT) { confirmationScreenHardCoded(navController) }
+    composable(
+        Route.CONFIRM_FLIGHT + "/{Flight ID}",
+        arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
+          ->
+          val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
+          val flightsViewModel =
+              FlightsViewModel.createViewModel(
+                  flightTable = repository.flightTable,
+                  balloonTable = repository.balloonTable,
+                  basketTable = repository.basketTable,
+                  flightTypeTable = repository.flightTypeTable,
+                  vehicleTable = repository.vehicleTable)
+          confirmationScreen(navController, flightId, flightsViewModel)
+        }
     composable(Route.MODIFY_FLIGHT) {
       val flightsViewModel =
           FlightsViewModel.createViewModel(
@@ -93,5 +107,12 @@ fun NavGraphBuilder.homeGraph(
               basket = null,
               team = Team(roles = emptyList())))
     }
+    composable(
+        Route.TEXT + "/{Group Name}",
+        arguments = listOf(navArgument("Group Name") { type = NavType.StringType })) {
+            backStackEntry ->
+          val groupName = backStackEntry.arguments?.getString("Group Name") ?: "No Name"
+          TextScreen(navController, groupName)
+        }
   }
 }

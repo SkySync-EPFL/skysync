@@ -47,7 +47,7 @@ class ConfirmFlightScreenTest {
       composeTestRule.onNodeWithText("Confirm").performClick()
       composeTestRule.waitForIdle()
       route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.CONFIRM_FLIGHT, route)
+      Assert.assertEquals(Route.CONFIRM_FLIGHT + "/{Flight ID}", route)
       composeTestRule
           .onNodeWithTag("LazyList")
           .performScrollToNode(hasText("Confirm"))
