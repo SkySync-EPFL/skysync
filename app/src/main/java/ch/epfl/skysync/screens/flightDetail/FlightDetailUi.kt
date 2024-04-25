@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
@@ -61,13 +62,19 @@ fun FlightDetailUi(
     flight: Flight?
 ) {
   Column(
-      modifier = Modifier.fillMaxSize().background(Color.White),
+      modifier = Modifier
+          .fillMaxSize()
+          .background(Color.White),
   ) {
     FlightDetailHead(BackClick = backClick)
     if (flight == null) {
-      Text("flight details loading ...")
+      LoadingComponent(isLoading = true, onRefresh = {}) {
+
+      }
     } else {
-      Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
+      Box(modifier = Modifier
+          .fillMaxHeight()
+          .padding(padding)) {
         FlightdetailBody(flight, padding)
         FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
       }
@@ -112,7 +119,10 @@ fun FlightDetailHead(BackClick: () -> Unit) {
  */
 @Composable
 fun FlightdetailBody(flight: Flight, padding: PaddingValues) {
-  Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f).padding(padding)) {
+  Column(modifier = Modifier
+      .fillMaxWidth()
+      .fillMaxHeight(0.9f)
+      .padding(padding)) {
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
     Row() {
       Column(
@@ -269,7 +279,9 @@ fun TeamRolesList(team: Team) {
           Text(text = "No team member", color = Color.Black)
         }
   } else {
-    LazyColumn(modifier = Modifier.testTag("TeamList").fillMaxHeight(0.5f)) {
+    LazyColumn(modifier = Modifier
+        .testTag("TeamList")
+        .fillMaxHeight(0.5f)) {
       itemsIndexed(team.roles) { index, role ->
         val firstname = role.assignedUser?.firstname ?: ""
         val lastname = role.assignedUser?.lastname ?: ""
