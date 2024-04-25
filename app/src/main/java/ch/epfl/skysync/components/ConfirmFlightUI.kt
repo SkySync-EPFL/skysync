@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Column
@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +31,7 @@ import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.screens.flightDetail.ClickButton
 import ch.epfl.skysync.ui.theme.lightOrange
 import java.time.LocalDate
 import java.time.LocalTime
@@ -41,7 +43,7 @@ import java.time.format.DateTimeFormatter
  * @param plannedFlight The planned flight for which the confirmation screen is displayed.
  */
 @Composable
-fun confirmationScreen(plannedFlight: PlannedFlight) {
+fun confirmation(plannedFlight: PlannedFlight, confirmClick: () -> Unit) {
   val id: String = plannedFlight.id
   val nPassengers: Int = plannedFlight.nPassengers
   val flightType: FlightType = plannedFlight.flightType
@@ -61,7 +63,7 @@ fun confirmationScreen(plannedFlight: PlannedFlight) {
 
   val fontSize = 17.sp
 
-  LazyColumn {
+  LazyColumn(Modifier.testTag("LazyList")) {
     item {
       Text(
           modifier = Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 25.dp),
@@ -208,6 +210,13 @@ fun confirmationScreen(plannedFlight: PlannedFlight) {
                 remarkList += (remark)
               }
             })
+      }
+      Box(modifier = Modifier.fillMaxWidth().padding(2.dp), contentAlignment = Alignment.Center) {
+        ClickButton(
+            text = "Confirm",
+            onClick = { confirmClick() },
+            modifier = Modifier.fillMaxWidth(0.7f),
+            color = Color.Green)
       }
     }
   }
@@ -398,18 +407,3 @@ fun AddElementComposable(
         }
       }
 }
-//    @Composable
-//    @Preview()
-//    fun confirmationScreenPreview(){
-//        val dummy = PlannedFlight(
-//            "1234",
-//            3,
-//            FlightType.DISCOVERY,
-//            Team(listOf(Role(RoleType.CREW))),
-//            Balloon("Balloon Name", BalloonQualification.LARGE,"Ballon Name"),
-//            Basket("Basket Name",true,"1234"),
-//            LocalDate.now().plusDays(3),
-//            TimeSlot.PM,
-//            listOf(Vehicle("Peugeot 308","1234")))
-//        confirmationScreen(dummy)
-//    }

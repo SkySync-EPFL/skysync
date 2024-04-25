@@ -10,6 +10,7 @@ import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.navigation.Route
 import java.time.LocalDate
 
 @Composable
@@ -34,7 +35,7 @@ fun FlightDetailScreen(
         backClick = { navController.popBackStack() },
         deleteClick = { navController.popBackStack() },
         editClick = {},
-        confirmClick = {},
+        confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
         padding = padding,
         flight = fakeFlight)
   }
