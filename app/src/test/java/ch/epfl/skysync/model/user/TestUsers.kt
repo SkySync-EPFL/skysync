@@ -4,17 +4,14 @@ import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.BalloonQualification
+import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 class TestUsers {
 
   @Before fun setUp() {}
@@ -28,7 +25,14 @@ class TestUsers {
             UNSET_ID,
             AvailabilityCalendar(),
             FlightGroupCalendar(),
+            setOf(RoleType.PILOT, RoleType.CREW),
             BalloonQualification.LARGE)
+
+    val pilotWithRoleType = pilot.addRoleType(RoleType.MAITRE_FONDUE)
+    assertEquals(false, pilot.canAssumeRole(RoleType.MAITRE_FONDUE))
+    assertEquals(true, pilotWithRoleType.canAssumeRole(RoleType.MAITRE_FONDUE))
+    assertEquals(
+        setOf(RoleType.PILOT, RoleType.CREW, RoleType.MAITRE_FONDUE), pilotWithRoleType.roleTypes)
   }
 
   @Test
