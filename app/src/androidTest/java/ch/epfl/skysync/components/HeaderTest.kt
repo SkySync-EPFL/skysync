@@ -14,7 +14,7 @@ class HeaderTest {
 
   @Before
   fun setUpNavHost() {
-    composeTestRule.setContent { Header(BackClick = {}, title = "Test Title") }
+    composeTestRule.setContent { Header(backClick = {}, title = "Test Title") }
   }
 
   @Test

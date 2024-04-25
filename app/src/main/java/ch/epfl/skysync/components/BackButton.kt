@@ -16,11 +16,11 @@ import ch.epfl.skysync.ui.theme.lightOrange
 /**
  * Composable function representing a back button with an arrow icon and text.
  *
- * @param BackClick Callback function to be invoked when the back button is clicked.
+ * @param backClick Callback function to be invoked when the back button is clicked.
  */
 @Composable
-fun backbutton(BackClick: () -> Unit) {
-  IconButton(onClick = BackClick, modifier = Modifier.fillMaxWidth(0.2f).testTag("BackButton")) {
+fun Backbutton(backClick: () -> Unit) {
+  IconButton(onClick = backClick, modifier = Modifier.fillMaxWidth(0.2f).testTag("BackButton")) {
     Row(verticalAlignment = Alignment.CenterVertically) {
       Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = lightOrange)
       Text(text = "Back", color = lightOrange)

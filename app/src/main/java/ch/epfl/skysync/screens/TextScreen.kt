@@ -9,23 +9,24 @@ import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ChatMessage
 import ch.epfl.skysync.components.ChatText
+import ch.epfl.skysync.components.MessageType
 import ch.epfl.skysync.navigation.BottomBar
 
 @Composable
 fun TextScreen(navController: NavHostController, groupName: String) {
   val hardCoded =
       listOf(
-          ChatMessage("Sender", null, "Message", "11:11"),
-          ChatMessage("me", null, "Message", "12:12"),
+          ChatMessage("Sender", MessageType.RECEIVED, null, "Message", "11:11"),
+          ChatMessage("me", MessageType.SENT, null, "Message", "12:12"),
       )
   Scaffold(
       modifier = Modifier.fillMaxSize().testTag("ChatScreenScaffold"),
       bottomBar = { BottomBar(navController) }) { padding ->
         ChatText(
             groupName = groupName,
-            msgList = hardCoded,
-            backClick = { navController.popBackStack() },
-            sendClick = { /*TODO*/},
+            messages = hardCoded,
+            onBack = { navController.popBackStack() },
+            onSend = { /*TODO*/},
             paddingValues = padding)
       }
 }

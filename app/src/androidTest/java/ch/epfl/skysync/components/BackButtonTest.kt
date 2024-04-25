@@ -15,7 +15,7 @@ class BackButtonTest {
 
   @Before
   fun setUpNavHost() {
-    composeTestRule.setContent { backbutton(BackClick = {}) }
+    composeTestRule.setContent { Backbutton(backClick = {}) }
   }
 
   @Test

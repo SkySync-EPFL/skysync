@@ -19,12 +19,12 @@ import androidx.compose.ui.unit.sp
  * @param title Title text to be displayed in the header.
  */
 @Composable
-fun Header(BackClick: () -> Unit, title: String) {
+fun Header(backClick: () -> Unit, title: String) {
   Row(
       modifier = Modifier.fillMaxWidth(),
       verticalAlignment = Alignment.CenterVertically,
   ) {
-    backbutton(BackClick)
+    Backbutton(backClick)
     Column(
         modifier = Modifier.fillMaxWidth(0.75f),
         verticalArrangement = Arrangement.Center,

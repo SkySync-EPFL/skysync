@@ -59,7 +59,7 @@ fun FlightDetailUi(
   Column(
       modifier = Modifier.fillMaxSize().background(Color.White),
   ) {
-    Header(BackClick = backClick, title = "Flight Detail")
+    Header(backClick = backClick, title = "Flight Detail")
     Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
       FlightdetailBody(flight, padding)
       FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)

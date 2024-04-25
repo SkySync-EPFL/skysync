@@ -19,6 +19,7 @@ class ChatTextUiTest {
   private val fakeText =
       ChatMessage(
           "him",
+          MessageType.RECEIVED,
           image,
           "Hi",
           "11:11",
@@ -26,6 +27,7 @@ class ChatTextUiTest {
   private val myFakeText =
       ChatMessage(
           "me",
+          MessageType.SENT,
           image,
           "Hello",
           "12:12",
@@ -83,9 +85,9 @@ class ChatTextUiTest {
     composeTestRule.setContent {
       ChatText(
           groupName = "Name",
-          msgList = list,
-          backClick = {},
-          sendClick = {},
+          messages = list,
+          onBack = {},
+          onSend = {},
           paddingValues = PaddingValues(0.dp))
     }
   }

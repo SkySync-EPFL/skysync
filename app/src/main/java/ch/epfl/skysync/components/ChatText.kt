@@ -44,8 +44,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.ui.theme.lightOrange
 
+enum class MessageType {
+  SENT,
+  RECEIVED,
+}
+
 data class ChatMessage(
     val sender: String,
+    val messageType: MessageType,
     val profilePicture: ImageVector?,
     val message: String,
     val time: String
@@ -63,16 +69,16 @@ data class ChatMessage(
 @Composable
 fun ChatText(
     groupName: String,
-    msgList: List<ChatMessage>,
-    backClick: () -> Unit,
-    sendClick: (String) -> Unit,
+    messages: List<ChatMessage>,
+    onBack: () -> Unit,
+    onSend: (String) -> Unit,
     paddingValues: PaddingValues
 ) {
   Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-    Header(BackClick = backClick, title = groupName)
+    Header(backClick = onBack, title = groupName)
     Spacer(modifier = Modifier.size(1.dp))
-    ChatTextBody(msgList)
-    ChatInput(sendClick)
+    ChatTextBody(messages)
+    ChatInput(onSend)
   }
 }
 /**
@@ -82,33 +88,26 @@ fun ChatText(
  *   and timestamp.
  */
 @Composable
-fun ChatTextBody(msgList: List<ChatMessage>) {
+fun ChatTextBody(messages: List<ChatMessage>) {
   val lazyListState = rememberLazyListState()
   LazyColumn(Modifier.fillMaxHeight(0.875f).testTag("ChatTextBody"), state = lazyListState) {
-    items(msgList.size) { index ->
-      ChatBubble(
-          sender = msgList[index].sender,
-          image = msgList[index].profilePicture,
-          message = msgList[index].message,
-          time = msgList[index].time,
-          index = "$index")
-    }
+    items(messages.size) { index -> ChatBubble(message = messages[index], index = "$index") }
   }
-  LaunchedEffect(Unit) { lazyListState.scrollToItem(msgList.size - 1) }
+  LaunchedEffect(Unit) { lazyListState.scrollToItem(messages.size - 1) }
 }
 /**
  * Composable function representing a chat bubble.
  *
- * @param sender The sender of the message.
- * @param image The image associated with the sender.
- * @param message The message content.
- * @param time The timestamp of the message.
+ * @param message The message.
  * @param index The index of the chat bubble.
  */
 @Composable
-fun ChatBubble(sender: String, image: ImageVector?, message: String, time: String, index: String) {
+fun ChatBubble(message: ChatMessage, index: String) {
   var isMyMessage = false
-  if (sender == "me") {
+  val image = message.profilePicture
+  val messageContent = message.message
+  val time = message.time
+  if (message.messageType == MessageType.SENT) {
     isMyMessage = true
   }
   val backgroundColor = if (isMyMessage) Color(0xFFDCF8C6) else Color.White
@@ -144,7 +143,7 @@ fun ChatBubble(sender: String, image: ImageVector?, message: String, time: Strin
             modifier = Modifier.background(color = backgroundColor, shape = shape).padding(8.dp)) {
               Row {
                 Text(
-                    text = message,
+                    text = messageContent,
                     color = contentColor,
                     modifier = Modifier.padding(bottom = 2.dp).testTag("ChatBubbleMessage$index"))
                 Spacer(modifier = Modifier.size(4.dp))
