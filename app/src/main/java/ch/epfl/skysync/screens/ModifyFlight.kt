@@ -20,7 +20,7 @@ fun ModifyFlightScreen(
   val allBalloons by viewModel.currentBalloons.collectAsStateWithLifecycle()
   val allBaskets by viewModel.currentBaskets.collectAsStateWithLifecycle()
   val allVehicles by viewModel.currentVehicles.collectAsStateWithLifecycle()
-    val flightToModify by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
+  val flightToModify by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
   val allRoleTypes = RoleType.entries
   FlightForm(
       currentFlight = flightToModify,
@@ -31,9 +31,9 @@ fun ModifyFlightScreen(
       allVehicles = allVehicles,
       allBalloons = allBalloons,
       allBaskets = allBaskets,
-      flightAction = {
-          flight: PlannedFlight -> viewModel.modifyFlight(flight)
-            navController.navigate(Route.HOME)},
-      onBackButton = {navController.popBackStack()}
-      )
+      flightAction = { flight: PlannedFlight ->
+        viewModel.modifyFlight(flight)
+        navController.navigate(Route.HOME)
+      },
+      onBackButton = { navController.popBackStack() })
 }

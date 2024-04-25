@@ -17,10 +17,8 @@ fun MainGraph(
     signInLauncher: ActivityResultLauncher<Intent>,
     uid: String?
 ) {
-  NavHost(
-      navController = navHostController,
-      startDestination = if (uid == null) Route.LOGIN else Route.MAIN) {
-        homeGraph(repository, navHostController, uid)
-        composable(Route.LOGIN) { LoginScreen(signInLauncher = signInLauncher) }
-      }
+  NavHost(navController = navHostController, startDestination = Route.MAIN) {
+    homeGraph(repository, navHostController, uid)
+    composable(Route.LOGIN) { LoginScreen(signInLauncher = signInLauncher) }
+  }
 }

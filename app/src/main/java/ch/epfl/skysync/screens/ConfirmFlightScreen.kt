@@ -13,6 +13,7 @@ import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import java.time.LocalDate
 
@@ -29,10 +30,7 @@ fun confirmationScreenHardCoded(navController: NavController) {
           LocalDate.now().plusDays(3),
           TimeSlot.PM,
           listOf(Vehicle("Peugeot 308", "1234")))
-  confirmation(dummy) {
-    navController.popBackStack()
-    navController.popBackStack()
-  }
+  confirmation(dummy) { navController.navigate(Route.MAIN) }
 }
 
 @Composable

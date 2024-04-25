@@ -42,39 +42,29 @@ fun NavGraphBuilder.homeGraph(
           FlightDetailScreen(
               navController = navController, flightId = flightId, viewModel = flightsViewModel)
         }
-    composable(Route.ADD_FLIGHT)
-    {
-      val flightsViewModel =
-          FlightsViewModel.createViewModel(repository)
+
+    composable(Route.ADD_FLIGHT) {
+      val flightsViewModel = FlightsViewModel.createViewModel(repository)
       AddFlightScreen(navController, flightsViewModel)
     }
-      composable(Route.MODIFY_FLIGHT + "/{Flight ID}",
-          arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })
-      ) {
 
-          val flightId = it.arguments?.getString("Flight ID") ?: UNSET_ID
     composable(
         Route.CONFIRM_FLIGHT + "/{Flight ID}",
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          val flightsViewModel =
-              FlightsViewModel.createViewModel(
-                  flightTable = repository.flightTable,
-                  balloonTable = repository.balloonTable,
-                  basketTable = repository.basketTable,
-                  flightTypeTable = repository.flightTypeTable,
-                  vehicleTable = repository.vehicleTable)
+          val flightsViewModel = FlightsViewModel.createViewModel(repository)
           confirmationScreen(navController, flightId, flightsViewModel)
         }
-    composable(Route.MODIFY_FLIGHT) {
-      val flightsViewModel =
-          FlightsViewModel.createViewModel(repository)
-      ModifyFlightScreen(
-          navController,
-          flightsViewModel,
-          flightId)
-    }
+
+    composable(
+        route = Route.MODIFY_FLIGHT + "/{Flight ID}",
+        arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
+          ->
+          val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
+          val flightsViewModel = FlightsViewModel.createViewModel(repository)
+          ModifyFlightScreen(navController, flightsViewModel, flightId)
+        }
     composable(
         Route.TEXT + "/{Group Name}",
         arguments = listOf(navArgument("Group Name") { type = NavType.StringType })) {

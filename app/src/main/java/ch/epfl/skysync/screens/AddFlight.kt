@@ -26,11 +26,9 @@ fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewMode
       allVehicles = allVehicles,
       allBalloons = allBalloons,
       allBaskets = allBaskets,
-      flightAction = {
-          flight: PlannedFlight -> viewModel.addFlight(flight)
-          navController.navigate(Route.HOME)
+      flightAction = { flight: PlannedFlight ->
+        viewModel.addFlight(flight)
+        navController.navigate(Route.HOME)
       },
-      onBackButton = {navController.popBackStack()}
-
-  )
+      onBackButton = { navController.popBackStack() })
 }

@@ -24,12 +24,11 @@ fun FlightDetailScreen(
     FlightDetailUi(
         backClick = { navController.popBackStack() },
         deleteClick = {
-            viewModel.deleteFlight(flightId)
-            navController.navigate(Route.HOME)
-                      },
-        editClick = {
-            navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}")},
-        confirmClick = {},
+          viewModel.deleteFlight(flightId)
+          navController.navigate(Route.HOME)
+        },
+        editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
+        confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
         padding = padding,
         flight = flight)
   }

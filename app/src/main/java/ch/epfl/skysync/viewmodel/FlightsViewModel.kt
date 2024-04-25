@@ -6,11 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
-import ch.epfl.skysync.database.tables.BalloonTable
-import ch.epfl.skysync.database.tables.BasketTable
-import ch.epfl.skysync.database.tables.FlightTable
-import ch.epfl.skysync.database.tables.FlightTypeTable
-import ch.epfl.skysync.database.tables.VehicleTable
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.Flight
@@ -38,10 +33,7 @@ class FlightsViewModel(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return FlightsViewModel(
-                      repository
-                  )
-                      as T
+                  return FlightsViewModel(repository) as T
                 }
               })
     }
@@ -98,16 +90,10 @@ class FlightsViewModel(
    */
   fun modifyFlight(
       newFlight: Flight,
-  ) =
-      viewModelScope.launch {
-          repository.flightTable.update(newFlight.id, newFlight)
-      }
-
+  ) = viewModelScope.launch { repository.flightTable.update(newFlight.id, newFlight) }
 
   fun deleteFlight(flightId: String) =
-      viewModelScope.launch {
-          repository.flightTable.delete(flightId, onError = { onError(it) })
-      }
+      viewModelScope.launch { repository.flightTable.delete(flightId, onError = { onError(it) }) }
 
   /** adds the given flight to the db and the viewmodel */
   fun addFlight(
@@ -116,7 +102,6 @@ class FlightsViewModel(
       viewModelScope.launch {
         val flightId = repository.flightTable.add(flight, onError = { onError(it) })
       }
-
 
   fun getFlight(flightId: String): StateFlow<Flight?> {
     return _currentFlights
