@@ -55,15 +55,16 @@ class FlightFormTest {
       val allRoleTypes = RoleType.entries
       navController = TestNavHostController(LocalContext.current)
       FlightForm(
-          navController,
-          null,
-          title,
-          allFlights,
-          allRoleTypes,
-          allVehicles,
-          allBalloons,
-          allBaskets) { _ ->
-          }
+          currentFlight = null,
+          modifyMode = false,
+          title = title,
+          allFlightTypes = allFlights,
+          allRoleTypes = allRoleTypes,
+          allVehicles = allVehicles,
+          allBalloons = allBalloons,
+          allBaskets = allBaskets,
+          flightAction = { _ -> },
+          onBackButton = {})
     }
   }
 

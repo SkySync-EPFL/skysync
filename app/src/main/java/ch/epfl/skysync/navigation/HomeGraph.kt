@@ -24,6 +24,7 @@ fun NavGraphBuilder.homeGraph(
     navController: NavHostController,
     uid: String?
 ) {
+
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
     personalCalendar(repository, navController, uid)
     composable(Route.CHAT) { ChatScreen(navController) }

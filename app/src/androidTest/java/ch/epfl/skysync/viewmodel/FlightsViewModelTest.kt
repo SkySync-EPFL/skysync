@@ -1,6 +1,7 @@
 package ch.epfl.skysync.viewmodel
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.tables.BalloonTable
@@ -30,6 +31,7 @@ class FlightsViewModelTest {
   private val balloonTable = BalloonTable(db)
   private val flightTypeTable = FlightTypeTable(db)
   private val vehicleTable = VehicleTable(db)
+  private val repository = Repository(db)
 
   // adding this rule should set the test dispatcher and should
   // enable us to use advanceUntilIdle(), but it seems advanceUntilIdle
@@ -62,11 +64,7 @@ class FlightsViewModelTest {
 
     dbSetup.clearDatabase(db)
     dbSetup.fillDatabase(db)
-    composeTestRule.setContent {
-      viewModel =
-          FlightsViewModel.createViewModel(
-              flightTable, balloonTable, basketTable, flightTypeTable, vehicleTable)
-    }
+    composeTestRule.setContent { viewModel = FlightsViewModel.createViewModel(repository) }
   }
 
   @Test
