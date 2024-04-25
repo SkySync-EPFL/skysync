@@ -61,19 +61,16 @@ fun FlightDetailUi(
       modifier = Modifier.fillMaxSize().background(Color.White),
   ) {
     Header(backClick = backClick, title = "Flight Detail")
-    Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
-      FlightdetailBody(flight, padding)
-      FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
-    FlightDetailHead(BackClick = backClick)
-    if (flight == null) {
-      LoadingComponent(isLoading = true, onRefresh = {}) {}
-    } else {
-      Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
-        FlightdetailBody(flight, padding)
-        FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
+      if (flight == null) {
+          LoadingComponent(isLoading = true, onRefresh = {}) {}
+      } else {
+          Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
+              FlightDetailBody(flight, padding)
+              FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
+
+          }
       }
-    }
-  }
+}
 }
 /**
  * FlightdetailBody is a Composable function that displays the body of the flight detail screen.
@@ -82,7 +79,7 @@ fun FlightDetailUi(
  * @param padding PaddingValues to apply to the content.
  */
 @Composable
-fun FlightdetailBody(flight: Flight, padding: PaddingValues) {
+fun FlightDetailBody(flight: Flight, padding: PaddingValues) {
   Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f).padding(padding)) {
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
     Row() {
