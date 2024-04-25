@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.components.GroupChat
 import ch.epfl.skysync.components.GroupDetail
 import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.navigation.Route
 
 @Composable
 fun ChatScreen(navController: NavHostController) {
@@ -26,7 +27,10 @@ fun ChatScreen(navController: NavHostController) {
                   lastMessage = "Hello",
                   lastMessageTime = "12:00")
             }
-        GroupChat(groupList = groupList, onClick = {}, paddingValues = padding)
+        GroupChat(
+            groupList = groupList,
+            onClick = { selectedGroup -> navController.navigate(Route.TEXT + "/${selectedGroup}") },
+            paddingValues = padding)
       }
 }
 
