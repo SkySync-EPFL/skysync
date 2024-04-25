@@ -24,7 +24,7 @@ fun TextScreen(navController: NavHostController, groupName: String) {
         ChatText(
             groupName = groupName,
             msgList = hardCoded,
-            backClick = {navController.popBackStack()},
+            backClick = { navController.popBackStack() },
             sendClick = { /*TODO*/},
             paddingValues = padding)
       }

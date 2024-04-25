@@ -121,7 +121,7 @@ fun GroupCard(
 ) {
 
   Card(
-      modifier = Modifier.clickable(onClick = {onClick(group)}).fillMaxWidth().testTag(testTag),
+      modifier = Modifier.clickable(onClick = { onClick(group) }).fillMaxWidth().testTag(testTag),
       shape = RectangleShape,
       colors =
           CardDefaults.cardColors(

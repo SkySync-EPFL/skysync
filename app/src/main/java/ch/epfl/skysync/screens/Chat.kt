@@ -27,8 +27,10 @@ fun ChatScreen(navController: NavHostController) {
                   lastMessage = "Hello",
                   lastMessageTime = "12:00")
             }
-        GroupChat(groupList = groupList, onClick = {selectedGroup -> navController.navigate(Route.TEXT +"/${selectedGroup}")}, paddingValues = padding)
-
+        GroupChat(
+            groupList = groupList,
+            onClick = { selectedGroup -> navController.navigate(Route.TEXT + "/${selectedGroup}") },
+            paddingValues = padding)
       }
 }
 
