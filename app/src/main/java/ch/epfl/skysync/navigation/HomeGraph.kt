@@ -92,6 +92,12 @@ fun NavGraphBuilder.homeGraph(
               basket = null,
               team = Team(roles = emptyList())))
     }
-    composable(Route.TEXT) { TextScreen(navController) }
-  }
+    composable(
+        Route.TEXT + "/{Group Name}",
+        arguments = listOf(navArgument("Group Name") { type = NavType.StringType })) { backStackEntry
+        ->
+        val groupName = backStackEntry.arguments?.getString("Group Name") ?: "No Name"
+        TextScreen(navController, groupName)
+    }
+    }
 }

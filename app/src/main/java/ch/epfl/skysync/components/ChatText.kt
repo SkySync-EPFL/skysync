@@ -112,7 +112,7 @@ fun ChatBubble(sender: String, image: ImageVector?, message: String, time: Strin
     isMyMessage = true
   }
   val backgroundColor = if (isMyMessage) Color(0xFFDCF8C6) else Color.White
-  val contentColor = if (isMyMessage) Color.Black else Color.Black
+  val contentColor = Color.Black
   val shape =
       when (isMyMessage) {
         false -> {

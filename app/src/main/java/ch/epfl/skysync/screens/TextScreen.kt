@@ -12,7 +12,7 @@ import ch.epfl.skysync.components.ChatText
 import ch.epfl.skysync.navigation.BottomBar
 
 @Composable
-fun TextScreen(navController: NavHostController) {
+fun TextScreen(navController: NavHostController, groupName: String) {
   val hardCoded =
       listOf(
           ChatMessage("Sender", null, "Message", "11:11"),
@@ -22,9 +22,9 @@ fun TextScreen(navController: NavHostController) {
       modifier = Modifier.fillMaxSize().testTag("ChatScreenScaffold"),
       bottomBar = { BottomBar(navController) }) { padding ->
         ChatText(
-            groupName = "Group Name",
+            groupName = groupName,
             msgList = hardCoded,
-            backClick = { /*TODO*/},
+            backClick = {navController.popBackStack()},
             sendClick = { /*TODO*/},
             paddingValues = padding)
       }

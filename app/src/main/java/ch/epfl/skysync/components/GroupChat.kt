@@ -113,7 +113,7 @@ fun GroupChatTopBar() {
 @Composable
 fun GroupCard(
     group: String,
-    onClick: () -> Unit,
+    onClick: (String) -> Unit,
     groupImage: ImageVector?,
     lastMsg: String,
     lastMsgTime: String,
@@ -121,7 +121,7 @@ fun GroupCard(
 ) {
 
   Card(
-      modifier = Modifier.clickable(onClick = onClick).fillMaxWidth().testTag(testTag),
+      modifier = Modifier.clickable(onClick = {onClick(group)}).fillMaxWidth().testTag(testTag),
       shape = RectangleShape,
       colors =
           CardDefaults.cardColors(
@@ -177,7 +177,7 @@ fun GroupChatBody(groupList: List<GroupDetail>, onClick: (String) -> Unit) {
     items(groupList.size) { index ->
       GroupCard(
           group = groupList[index].groupName,
-          onClick = { onClick(groupList[index].groupName) },
+          onClick = onClick,
           groupImage = groupList[index].groupImage,
           lastMsg = groupList[index].lastMessage,
           lastMsgTime = groupList[index].lastMessageTime,
