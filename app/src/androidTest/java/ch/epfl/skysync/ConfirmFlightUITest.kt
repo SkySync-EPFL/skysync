@@ -30,7 +30,7 @@ class ConfirmFlightUITest {
   private val planedFlight =
       PlannedFlight(
           "1234",
-          3,
+          19,
           FlightType.DISCOVERY,
           Team(listOf(Role(RoleType.CREW))),
           Balloon("Ballon Name", BalloonQualification.LARGE, "Ballon Name"),
