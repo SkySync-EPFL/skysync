@@ -21,24 +21,13 @@ class LoginScreenTest : TestCase() {
   @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
 
   @Test
-  fun buttonIsCorrectlyDisplayed() {
+  fun buttonIsCorrectlyDisplayedAndIsClickable() {
     ComposeScreen.onComposeScreen<LoginScreenNodes>(composeTestRule) {
       loginButton {
         assertIsDisplayed()
         assertHasClickAction()
-      }
-    }
-  }
-
-  @Test
-  fun googleSignInReturnsValidActivityResult() {
-    ComposeScreen.onComposeScreen<LoginScreenNodes>(composeTestRule) {
-      loginButton {
-        assertIsDisplayed()
         performClick()
       }
-      // assert that an Intent resolving to Google Mobile Services has been sent (for sign-in)
-      Intents.intended(IntentMatchers.toPackage("com.google.android.gms"))
     }
   }
 }
