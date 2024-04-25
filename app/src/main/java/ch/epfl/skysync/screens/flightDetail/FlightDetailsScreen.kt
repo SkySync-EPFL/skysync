@@ -34,7 +34,7 @@ fun FlightDetailScreen(
         backClick = { navController.popBackStack() },
         deleteClick = { navController.popBackStack() },
         editClick = {},
-        confirmClick = { navController.navigate("Confirm Flight") },
+        confirmClick = { navController.navigate("Confirm Flight" + "/${flightId}") },
         padding = padding,
         flight = fakeFlight)
   }

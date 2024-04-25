@@ -14,7 +14,7 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
-import ch.epfl.skysync.components.confirmationScreen
+import ch.epfl.skysync.components.confirmation
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
@@ -55,7 +55,7 @@ class ConfirmFlightUITest {
       val repository = Repository(FirestoreDatabase(useEmulator = true))
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      confirmationScreen(plannedFlight = planedFlight.value, navController = navController) {}
+      confirmation(plannedFlight = planedFlight.value, navController = navController) {}
     }
   }
   // test of info to verify by a user

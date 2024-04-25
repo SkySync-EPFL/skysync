@@ -44,7 +44,7 @@ import java.time.format.DateTimeFormatter
  * @param plannedFlight The planned flight for which the confirmation screen is displayed.
  */
 @Composable
-fun confirmationScreen(
+fun confirmation(
     plannedFlight: PlannedFlight,
     navController: NavController,
     confirmClick: () -> Unit
