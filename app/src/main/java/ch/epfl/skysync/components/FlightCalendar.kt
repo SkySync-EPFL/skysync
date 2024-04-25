@@ -2,15 +2,22 @@ package ch.epfl.skysync.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,8 +26,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.viewmodel.CalendarViewModel
 import java.time.LocalDate
 
 /**
@@ -96,3 +107,36 @@ fun FlightCalendar(
         }
       }
 }
+
+
+@Composable
+fun FlightCalendarNew(
+    topBar: @Composable () -> Unit,
+    navController: NavHostController,
+    viewModel: CalendarViewModel,
+    onFlightClick: (Flight) -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val flightCalendar = uiState.flightGroupCalendar
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = { topBar() },
+        bottomBar = { BottomBar(navController) }) { padding ->
+        Column(modifier = Modifier.padding(padding)) {
+            ModularCalendarNew(
+                isDraft = false)
+            { date, time ->
+                val flight = flightCalendar.getFirstFlightByDate(date, time)
+                FlightTile(
+                    date = date,
+                    time = time,
+                    flight = flight,
+                ) {
+                    onFlightClick(flight!!)
+                }
+            }
+        }
+    }
+}
+

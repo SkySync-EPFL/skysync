@@ -108,6 +108,7 @@ fun AvailabilityCalendar(
     nextAvailabilityStatus: (LocalDate, TimeSlot) -> AvailabilityStatus,
     onSave: () -> Unit
 ) {
+
   ModularCalendar(
       padding = padding,
       bottom = {
@@ -151,12 +152,13 @@ fun AvailabilityCalendarNew(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val availabilityCalendar = uiState.availabilityCalendar
+  var isDraft by remember { mutableStateOf(false) }
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       topBar = { topBar() },
       bottomBar = { BottomBar(navController) }) { padding ->
         Column(modifier = Modifier.padding(padding)) {
-          ModularCalendarNew() { date, time ->
+          ModularCalendarNew(isDraft = isDraft) { date, time ->
             // at the moment the Calendar is a mutable class
             // thus the reference of the Calendar stay the same on updates
             // -> it does not trigger a recompose. To trigger the recompose
@@ -170,11 +172,8 @@ fun AvailabilityCalendarNew(
             }
             AvailabilityTile(date = date, time = time, availabilityStatus = status) {
               status = availabilityCalendar.nextAvailabilityStatus(date, time)
+              isDraft = true
             }
-          }
-
-          Button(onClick = onSave, modifier = Modifier.testTag("AvailabilityCalendarSaveButton")) {
-            Text(text = "Save")
           }
         }
       }
