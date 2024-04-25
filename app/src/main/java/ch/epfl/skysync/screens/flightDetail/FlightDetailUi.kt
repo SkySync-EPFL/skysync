@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.components.Header
+import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
@@ -54,15 +55,19 @@ fun FlightDetailUi(
     editClick: (flightId: String) -> Unit,
     confirmClick: (flightId: String) -> Unit,
     padding: PaddingValues,
-    flight: Flight
+    flight: Flight?
 ) {
   Column(
       modifier = Modifier.fillMaxSize().background(Color.White),
   ) {
     Header(backClick = backClick, title = "Flight Detail")
-    Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
-      FlightdetailBody(flight, padding)
-      FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
+    if (flight == null) {
+      LoadingComponent(isLoading = true, onRefresh = {}) {}
+    } else {
+      Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
+        FlightDetailBody(flight, padding)
+        FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
+      }
     }
   }
 }
@@ -73,7 +78,7 @@ fun FlightDetailUi(
  * @param padding PaddingValues to apply to the content.
  */
 @Composable
-fun FlightdetailBody(flight: Flight, padding: PaddingValues) {
+fun FlightDetailBody(flight: Flight, padding: PaddingValues) {
   Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f).padding(padding)) {
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
     Row() {

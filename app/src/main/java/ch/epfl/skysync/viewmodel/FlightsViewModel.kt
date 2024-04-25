@@ -16,8 +16,12 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.util.WhileUiSubscribed
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /** ViewModel for the user */
@@ -54,7 +58,7 @@ class FlightsViewModel(
     }
   }
 
-  private val _currentFlights: MutableStateFlow<List<Flight>> = MutableStateFlow(emptyList())
+  private val _currentFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
   private val _currentBalloons: MutableStateFlow<List<Balloon>> = MutableStateFlow(emptyList())
   private val _currentBaskets: MutableStateFlow<List<Basket>> = MutableStateFlow(emptyList())
   private val _currentFlightTypes: MutableStateFlow<List<FlightType>> =
@@ -97,7 +101,6 @@ class FlightsViewModel(
 
   fun refreshCurrentFlights() =
       viewModelScope.launch {
-        // todo: check for dirty data (flights added/modified/deleted while offline)
         _currentFlights.value = flightTable.getAll(onError = { onError(it) })
       }
 
@@ -106,27 +109,15 @@ class FlightsViewModel(
    */
   fun modifyFlight(
       newFlight: PlannedFlight,
-  ) =
-      viewModelScope.launch {
-        flightTable.update(newFlight.id, newFlight)
-        _currentFlights.value =
-            _currentFlights.value.map { if (it.id == newFlight.id) newFlight else it }
-      }
+  ) = viewModelScope.launch { flightTable.update(newFlight.id, newFlight) }
 
   /** deletes the given flight from the db and the viewmodel */
   fun deleteFlight(
       flight: Flight,
-  ) =
-      viewModelScope.launch {
-        flightTable.delete(flight.id, onError = { onError(it) })
-        _currentFlights.value -= flight
-      }
+  ) = viewModelScope.launch { flightTable.delete(flight.id, onError = { onError(it) }) }
 
   fun deleteFlight(flightId: String) =
-      viewModelScope.launch {
-        flightTable.delete(flightId, onError = { onError(it) })
-        _currentFlights.value = currentFlights.value.filter { it.id != flightId }
-      }
+      viewModelScope.launch { flightTable.delete(flightId, onError = { onError(it) }) }
 
   /** adds the given flight to the db and the viewmodel */
   fun addFlight(
@@ -134,14 +125,18 @@ class FlightsViewModel(
   ) =
       viewModelScope.launch {
         val flightId = flightTable.add(flight, onError = { onError(it) })
-
-        _currentFlights.value += flight.setId(flightId)
         refreshCurrentFlights()
       }
 
   /** return the flight with flight id if it exists in the list of current flights */
-  fun getFlightFromId(flightId: String): Flight? {
-    return currentFlights.value.find { it.id == flightId }
+  private fun getFlightFromId(flightId: String): Flight? {
+    return currentFlights.value?.find { it.id == flightId }
+  }
+
+  fun getFlight(flightId: String): StateFlow<Flight?> {
+    return _currentFlights
+        .map { flights -> flights?.find { it.id == flightId } }
+        .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
   }
 
   /** Callback executed when an error occurs on database-related operations */
