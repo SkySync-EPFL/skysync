@@ -61,16 +61,15 @@ fun FlightDetailUi(
       modifier = Modifier.fillMaxSize().background(Color.White),
   ) {
     Header(backClick = backClick, title = "Flight Detail")
-      if (flight == null) {
-          LoadingComponent(isLoading = true, onRefresh = {}) {}
-      } else {
-          Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
-              FlightDetailBody(flight, padding)
-              FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
-
-          }
+    if (flight == null) {
+      LoadingComponent(isLoading = true, onRefresh = {}) {}
+    } else {
+      Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
+        FlightDetailBody(flight, padding)
+        FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
       }
-}
+    }
+  }
 }
 /**
  * FlightdetailBody is a Composable function that displays the body of the flight detail screen.
