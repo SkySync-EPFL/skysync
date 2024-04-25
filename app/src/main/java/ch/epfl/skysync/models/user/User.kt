@@ -10,8 +10,11 @@ interface User {
   val lastname: String
   val availabilities: AvailabilityCalendar
   val assignedFlights: FlightGroupCalendar
+  val roleTypes: Set<RoleType>
 
   fun addRoleType(roleType: RoleType): User
 
-  fun canAssumeRole(roleType: RoleType): Boolean
+  fun canAssumeRole(roleType: RoleType): Boolean {
+    return roleTypes.contains(roleType)
+  }
 }
