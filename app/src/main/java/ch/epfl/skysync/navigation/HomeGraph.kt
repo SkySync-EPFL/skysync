@@ -28,7 +28,7 @@ fun NavGraphBuilder.homeGraph(
     uid: String?
 ) {
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
-    personalCalendarNew(repository, navController, uid)
+    personalCalendar(repository, navController, uid)
     composable(Route.CHAT) { ChatScreen(navController) }
     composable(Route.FLIGHT) { FlightScreen(navController) }
     composable(Route.HOME) {
