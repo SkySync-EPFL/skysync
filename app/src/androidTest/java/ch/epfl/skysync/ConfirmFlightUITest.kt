@@ -40,7 +40,7 @@ class ConfirmFlightUITest {
       mutableStateOf(
           PlannedFlight(
               "1234",
-              3,
+              26,
               FlightType.DISCOVERY,
               Team(listOf(Role(RoleType.CREW))),
               Balloon("Ballon Name", BalloonQualification.LARGE, "Ballon Name"),
