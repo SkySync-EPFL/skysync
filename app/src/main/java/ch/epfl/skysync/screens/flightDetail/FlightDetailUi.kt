@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
@@ -65,7 +66,7 @@ fun FlightDetailUi(
   ) {
     FlightDetailHead(BackClick = backClick)
     if (flight == null) {
-      Text("flight details loading ...")
+      LoadingComponent(isLoading = true, onRefresh = {}) {}
     } else {
       Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
         FlightdetailBody(flight, padding)

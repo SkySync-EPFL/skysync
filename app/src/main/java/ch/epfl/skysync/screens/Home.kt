@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
@@ -49,7 +50,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun UpcomingFlights(flights: List<Flight>, onFlightClick: (String) -> Unit) {
+fun UpcomingFlights(flights: List<Flight>?, onFlightClick: (String) -> Unit) {
   Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
     Text(
         text = "Upcoming flights",
@@ -64,8 +65,9 @@ fun UpcomingFlights(flights: List<Flight>, onFlightClick: (String) -> Unit) {
         textAlign = TextAlign.Center)
 
     Spacer(modifier = Modifier.height(16.dp))
-
-    if (flights.isEmpty()) {
+    if (flights == null) {
+      LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
+    } else if (flights.isEmpty()) {
       // Handle case when no upcoming flights
       Box(
           modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f),
