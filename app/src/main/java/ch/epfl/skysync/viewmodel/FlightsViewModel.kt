@@ -20,7 +20,6 @@ import ch.epfl.skysync.util.WhileUiSubscribed
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -102,7 +101,6 @@ class FlightsViewModel(
 
   fun refreshCurrentFlights() =
       viewModelScope.launch {
-        // todo: check for dirty data (flights added/modified/deleted while offline)
         _currentFlights.value = flightTable.getAll(onError = { onError(it) })
       }
 
@@ -111,23 +109,15 @@ class FlightsViewModel(
    */
   fun modifyFlight(
       newFlight: PlannedFlight,
-  ) =
-      viewModelScope.launch {
-        flightTable.update(newFlight.id, newFlight)
-      }
+  ) = viewModelScope.launch { flightTable.update(newFlight.id, newFlight) }
 
   /** deletes the given flight from the db and the viewmodel */
   fun deleteFlight(
       flight: Flight,
-  ) =
-      viewModelScope.launch {
-        flightTable.delete(flight.id, onError = { onError(it) })
-      }
+  ) = viewModelScope.launch { flightTable.delete(flight.id, onError = { onError(it) }) }
 
   fun deleteFlight(flightId: String) =
-      viewModelScope.launch {
-        flightTable.delete(flightId, onError = { onError(it) })
-      }
+      viewModelScope.launch { flightTable.delete(flightId, onError = { onError(it) }) }
 
   /** adds the given flight to the db and the viewmodel */
   fun addFlight(

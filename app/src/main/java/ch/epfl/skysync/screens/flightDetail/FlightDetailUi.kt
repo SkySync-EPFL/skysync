@@ -62,19 +62,13 @@ fun FlightDetailUi(
     flight: Flight?
 ) {
   Column(
-      modifier = Modifier
-          .fillMaxSize()
-          .background(Color.White),
+      modifier = Modifier.fillMaxSize().background(Color.White),
   ) {
     FlightDetailHead(BackClick = backClick)
     if (flight == null) {
-      LoadingComponent(isLoading = true, onRefresh = {}) {
-
-      }
+      LoadingComponent(isLoading = true, onRefresh = {}) {}
     } else {
-      Box(modifier = Modifier
-          .fillMaxHeight()
-          .padding(padding)) {
+      Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
         FlightdetailBody(flight, padding)
         FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
       }
@@ -119,10 +113,7 @@ fun FlightDetailHead(BackClick: () -> Unit) {
  */
 @Composable
 fun FlightdetailBody(flight: Flight, padding: PaddingValues) {
-  Column(modifier = Modifier
-      .fillMaxWidth()
-      .fillMaxHeight(0.9f)
-      .padding(padding)) {
+  Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f).padding(padding)) {
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
     Row() {
       Column(
@@ -279,9 +270,7 @@ fun TeamRolesList(team: Team) {
           Text(text = "No team member", color = Color.Black)
         }
   } else {
-    LazyColumn(modifier = Modifier
-        .testTag("TeamList")
-        .fillMaxHeight(0.5f)) {
+    LazyColumn(modifier = Modifier.testTag("TeamList").fillMaxHeight(0.5f)) {
       itemsIndexed(team.roles) { index, role ->
         val firstname = role.assignedUser?.firstname ?: ""
         val lastname = role.assignedUser?.lastname ?: ""

@@ -51,38 +51,26 @@ import java.util.Locale
 
 @Composable
 fun UpcomingFlights(flights: List<Flight>?, onFlightClick: (String) -> Unit) {
-  Column(modifier = Modifier
-      .fillMaxSize()
-      .padding(16.dp)) {
+  Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
     Text(
         text = "Upcoming flights",
         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
         modifier =
-        Modifier
-            .background(
-                color = lightOrange,
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-            )
-            .fillMaxWidth()
-            .padding(16.dp),
+            Modifier.background(
+                    color = lightOrange,
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                .fillMaxWidth()
+                .padding(16.dp),
         color = Color.White,
         textAlign = TextAlign.Center)
 
     Spacer(modifier = Modifier.height(16.dp))
-      if (flights == null){
-          LoadingComponent(
-              isLoading = true,
-              onRefresh = { /*TODO*/ }) {
-
-          }
-      }
-
-    else if (flights.isEmpty()) {
+    if (flights == null) {
+      LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
+    } else if (flights.isEmpty()) {
       // Handle case when no upcoming flights
       Box(
-          modifier = Modifier
-              .fillMaxWidth()
-              .fillMaxHeight(0.3f),
+          modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f),
           contentAlignment = Alignment.Center) {
             Text(
                 text = "No upcoming flights",
@@ -101,18 +89,15 @@ fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
   // Card for an individual flight, clickable to navigate to details
   Card(
       modifier =
-      Modifier
-          .fillMaxWidth()
-          .clickable { onFlightClick(flight.id) }
-          .padding(vertical = 4.dp)
-          .testTag("flightCard"),
+          Modifier.fillMaxWidth()
+              .clickable { onFlightClick(flight.id) }
+              .padding(vertical = 4.dp)
+              .testTag("flightCard"),
       elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
   ) {
     Surface(modifier = Modifier.fillMaxWidth(), color = flight.getFlightStatus().displayColor) {
       Row(
-          modifier = Modifier
-              .fillMaxWidth()
-              .padding(16.dp),
+          modifier = Modifier.fillMaxWidth().padding(16.dp),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.Start) {
             Text(
@@ -125,9 +110,7 @@ fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
             // Spacer for horizontal separation
             Spacer(modifier = Modifier.width(16.dp))
             // Column for flight details
-            Column(modifier = Modifier
-                .weight(0.7f)
-                .padding(start = 16.dp)) {
+            Column(modifier = Modifier.weight(0.7f).padding(start = 16.dp)) {
               // Text for flight type and passenger count
               Text(
                   text = "${flight.flightType.name} - ${flight.nPassengers} pax",

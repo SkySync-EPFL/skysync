@@ -70,9 +70,12 @@ class FlightsViewModelTest {
   }
 
   @Test
-  fun fetchesCurrentFlightsIfEmpty() {
-    val currentFlights = viewModel.currentFlights.value
-    assertEquals(0, currentFlights.size)
+  fun fetchesCurrentFlightsIsNullOnInit() {
+    runTest {
+      viewModel.refreshCurrentFlights().join()
+      val currentFlights = viewModel.currentFlights.value
+      assertEquals(1, currentFlights?.size)
+    }
   }
 
   @Test
@@ -118,7 +121,7 @@ class FlightsViewModelTest {
 
         viewModel.refreshCurrentFlights().join()
 
-        assertEquals(3, viewModel.currentFlights.value.size)
+        assertEquals(3, viewModel.currentFlights.value?.size)
       }
 
   @Test
@@ -144,7 +147,7 @@ class FlightsViewModelTest {
 
     viewModel.refreshCurrentFlights().join()
 
-    assertEquals(2, viewModel.currentFlights.value.size)
+    assertEquals(2, viewModel.currentFlights.value?.size)
   }
 
   @Test
@@ -182,18 +185,28 @@ class FlightsViewModelTest {
             timeSlot = TimeSlot.AM,
             vehicles = listOf(dbSetup.vehicle1),
             id = UNSET_ID)
+    viewModel.refreshCurrentFlights().join()
+    val initFlights = viewModel.currentFlights.value
+    assertEquals(1, initFlights?.size)
 
     flight1 = flight1.copy(id = flightTable.add(flight1, onError = { assertNull(it) }))
 
     flight2 = flight2.copy(id = flightTable.add(flight2, onError = { assertNull(it) }))
 
     viewModel.refreshCurrentFlights().join()
+    val withFlightsAdded = viewModel.currentFlights.value
+
+    assertEquals(3, withFlightsAdded?.size)
 
     viewModel.deleteFlight(flight1.id).join()
 
-    assertEquals(2, viewModel.currentFlights.value.size)
-    assertTrue(viewModel.currentFlights.value.contains(flight2))
-    assertFalse(viewModel.currentFlights.value.contains(flight1))
+    viewModel.refreshCurrentFlights().join()
+
+    val withOneFlightDeleted = viewModel.currentFlights.value
+
+    assertEquals(2, withOneFlightDeleted?.size)
+    assertTrue(withOneFlightDeleted?.contains(flight2) ?: false)
+    assertFalse(withOneFlightDeleted?.contains(flight1) ?: true)
   }
 
   @Test
@@ -225,19 +238,11 @@ class FlightsViewModelTest {
 
     viewModel.modifyFlight(modifiedFlight).join()
 
-    assertEquals(2, viewModel.currentFlights.value.size)
-    assertTrue(viewModel.currentFlights.value.contains(modifiedFlight))
-  }
+    viewModel.getFlight("dummy")
 
-  @Test
-  fun testGetFlight() {
-    runTest {
-      val persistedFlight =
-          defaultFlight1.copy(id = flightTable.add(defaultFlight1, onError = { assertNull(it) }))
-      viewModel.refreshCurrentFlights().join()
-      val foundFlight = viewModel.getFlight(persistedFlight.id)
-      // foundFlight.collectAsStateWithLifecycle()
-      // assertEquals(persistedFlight, foundFlight.value)
-    }
+    viewModel.refreshCurrentFlights().join()
+
+    assertEquals(2, viewModel.currentFlights.value?.size)
+    assertTrue(viewModel.currentFlights.value?.contains(modifiedFlight) ?: false)
   }
 }
