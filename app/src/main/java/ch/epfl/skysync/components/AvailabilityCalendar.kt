@@ -1,19 +1,26 @@
 package ch.epfl.skysync.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.viewmodel.CalendarViewModel
 import java.time.LocalDate
 
 // Define custom colors to represent availability status
@@ -104,14 +111,13 @@ fun AvailabilityCalendar(
   ModularCalendar(
       padding = padding,
       bottom = {
-        Column {
+        Column() {
           // TODO: Proper UI for this button
           Button(onClick = onSave, modifier = Modifier.testTag("AvailabilityCalendarSaveButton")) {
             Text(text = "Save")
           }
-          SwitchButton(
+          SwitchButtonBetter(
               currentSide = Side.RIGHT,
-              padding = padding,
               textLeft = "Flight Calendar",
               textRight = "Availability Calendar",
               onClickLeft = onFlightCalendarClick,
@@ -131,6 +137,45 @@ fun AvailabilityCalendar(
         }
         AvailabilityTile(date = date, time = time, availabilityStatus = status) {
           status = nextAvailabilityStatus(date, time)
+        }
+      }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun AvailabilityCalendarNew(
+    topBar: @Composable () -> Unit,
+    navController: NavHostController,
+    viewModel: CalendarViewModel,
+    onSave: () -> Unit
+) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val availabilityCalendar = uiState.availabilityCalendar
+  Scaffold(
+      modifier = Modifier.fillMaxSize(),
+      topBar = { topBar() },
+      bottomBar = { BottomBar(navController) }) { padding ->
+        Column(modifier = Modifier.padding(padding)) {
+          ModularCalendarNew() { date, time ->
+            // at the moment the Calendar is a mutable class
+            // thus the reference of the Calendar stay the same on updates
+            // -> it does not trigger a recompose. To trigger the recompose
+            // we have to store the availability status in a state and update
+            // it each time the result of getAvailabilityStatus change
+            // which is a bit hacky and should be a temporary solution
+            val availabilityStatus = availabilityCalendar.getAvailabilityStatus(date, time)
+            var status by remember { mutableStateOf(availabilityStatus) }
+            if (status != availabilityStatus) {
+              status = availabilityStatus
+            }
+            AvailabilityTile(date = date, time = time, availabilityStatus = status) {
+              status = availabilityCalendar.nextAvailabilityStatus(date, time)
+            }
+          }
+
+          Button(onClick = onSave, modifier = Modifier.testTag("AvailabilityCalendarSaveButton")) {
+            Text(text = "Save")
+          }
         }
       }
 }

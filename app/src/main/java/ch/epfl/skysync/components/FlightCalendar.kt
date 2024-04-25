@@ -1,5 +1,6 @@
 package ch.epfl.skysync.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -33,6 +34,7 @@ import java.time.LocalDate
 @Composable
 fun FlightTile(date: LocalDate, time: TimeSlot, flight: Flight?, onClick: () -> Unit) {
   var weight = 0.5f
+  val lightgrey = Color(0xfff0f0f0)
   if (time == TimeSlot.PM) {
     weight = 1f
   }
@@ -53,7 +55,7 @@ fun FlightTile(date: LocalDate, time: TimeSlot, flight: Flight?, onClick: () -> 
         }
   } else {
     Box(
-        modifier = Modifier.fillMaxHeight().fillMaxWidth(weight),
+        modifier = Modifier.background(lightgrey).fillMaxHeight().fillMaxWidth(weight),
         contentAlignment = Alignment.Center) {}
   }
 }
@@ -77,9 +79,8 @@ fun FlightCalendar(
   ModularCalendar(
       padding = padding,
       bottom = {
-        SwitchButton(
+        SwitchButtonBetter(
             currentSide = Side.LEFT,
-            padding = padding,
             textLeft = "Flight Calendar",
             textRight = "Availability Calendar",
             onClickLeft = {},
