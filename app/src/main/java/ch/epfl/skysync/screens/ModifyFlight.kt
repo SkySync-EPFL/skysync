@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.forms.FlightForm
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.RoleType
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
 @Composable
@@ -22,7 +23,6 @@ fun ModifyFlightScreen(
     val flightToModify by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
   val allRoleTypes = RoleType.entries
   FlightForm(
-      navController = navController,
       currentFlight = flightToModify,
       title = "Modify Flight",
       modifyMode = true,
@@ -31,5 +31,9 @@ fun ModifyFlightScreen(
       allVehicles = allVehicles,
       allBalloons = allBalloons,
       allBaskets = allBaskets,
-      flightAction = { flight: PlannedFlight -> viewModel.modifyFlight(flight) })
+      flightAction = {
+          flight: PlannedFlight -> viewModel.modifyFlight(flight)
+            navController.navigate(Route.HOME)},
+      onBackButton = {navController.popBackStack()}
+      )
 }

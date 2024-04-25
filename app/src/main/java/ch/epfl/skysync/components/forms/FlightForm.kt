@@ -44,7 +44,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.BASE_ROLES
@@ -65,7 +64,6 @@ import java.util.Calendar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlightForm(
-    navController: NavHostController,
     currentFlight: Flight?,
     modifyMode: Boolean,
     title: String,
@@ -74,7 +72,8 @@ fun FlightForm(
     allVehicles: List<Vehicle>,
     allBalloons: List<Balloon>,
     allBaskets: List<Basket>,
-    flightAction: (PlannedFlight) -> Unit
+    flightAction: (PlannedFlight) -> Unit,
+    onBackButton: () -> Unit
 ) {
   Scaffold(
       modifier = Modifier.fillMaxSize(),
@@ -82,7 +81,7 @@ fun FlightForm(
         TopAppBar(
             title = { Text(title) },
             navigationIcon = {
-              IconButton(onClick = { navController.popBackStack() }) {
+              IconButton(onClick = { onBackButton() }) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
               }
             })
@@ -566,7 +565,6 @@ fun RoleField(
 @Composable
 @Preview
 fun FlightFormPreview() {
-  val navController = rememberNavController()
   val currentFlight =
       PlannedFlight(
           nPassengers = 1,
@@ -578,7 +576,6 @@ fun FlightFormPreview() {
           basket = null,
           id = "testId")
   FlightForm(
-      navController = navController,
       currentFlight,
       modifyMode = false,
       "Flight Form",
@@ -587,5 +584,7 @@ fun FlightFormPreview() {
       emptyList(),
       emptyList(),
       emptyList(),
-      flightAction = {})
+      flightAction = {},
+      {}
+  )
 }

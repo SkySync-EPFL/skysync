@@ -28,7 +28,7 @@ fun NavGraphBuilder.homeGraph(
     composable(Route.FLIGHT) { FlightScreen(navController) }
     composable(Route.HOME) {
       val flightsViewModel = FlightsViewModel.createViewModel(repository)
-        flightsViewModel.refresh()
+      flightsViewModel.refresh()
       HomeScreen(navController, flightsViewModel)
     }
     composable(

@@ -23,7 +23,10 @@ fun FlightDetailScreen(
   Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
     FlightDetailUi(
         backClick = { navController.popBackStack() },
-        deleteClick = { navController.popBackStack() },
+        deleteClick = {
+            viewModel.deleteFlight(flightId)
+            navController.navigate(Route.HOME)
+                      },
         editClick = {
             navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}")},
         confirmClick = {},
