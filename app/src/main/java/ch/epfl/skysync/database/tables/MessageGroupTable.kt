@@ -101,7 +101,11 @@ class MessageGroupTable(db: FirestoreDatabase) :
    * @param id The id of the message group
    * @param onError Callback called when an error occurs
    */
-  suspend fun update(id: String, item: MessageGroup, onError: ((Exception) -> Unit)? = null) {
+  suspend fun updateGroupUsers(
+      id: String,
+      item: MessageGroup,
+      onError: ((Exception) -> Unit)? = null
+  ) {
     return withErrorCallback(onError) { db.setItem(path, id, MessageGroupSchema.fromModel(item)) }
   }
 

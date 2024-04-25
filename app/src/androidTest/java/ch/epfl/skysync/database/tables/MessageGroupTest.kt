@@ -30,8 +30,9 @@ class MessageGroupTest {
   fun getTest() = runTest {
     val messageGroup = messageGroupTable.get(dbs.messageGroup1.id, onError = { assertNull(it) })
     assertNotNull(messageGroup)
-    assertTrue(
-        listOf(dbs.admin2.id, dbs.pilot1.id, dbs.crew1.id).containsAll(messageGroup!!.userIds))
+    assertEquals(
+        listOf(dbs.admin2.id, dbs.pilot1.id, dbs.crew1.id).sorted(),
+        messageGroup!!.userIds.sorted())
 
     val messages = messageGroupTable.retrieveMessages(messageGroup.id, onError = { assertNull(it) })
     assertNotNull(messageGroup)
@@ -46,15 +47,15 @@ class MessageGroupTest {
         messageGroupTable.addGroupListener(dbs.messageGroup1.id) { update ->
           listenerUpdates.add(update)
         }
-    var newMessage1 = Message(date = Date.from(Instant.now()), content = "New")
-    newMessage1 =
-        newMessage1.copy(id = messageTable.add(dbs.messageGroup1.id, dbs.crew1.id, newMessage1))
+    var newMessage1 =
+        Message(userId = dbs.crew1.id, date = Date.from(Instant.now()), content = "New")
+    newMessage1 = newMessage1.copy(id = messageTable.add(dbs.messageGroup1.id, newMessage1))
 
     messageTable.delete(newMessage1.id)
 
-    var newMessage2 = Message(date = Date.from(Instant.now()), content = "New again")
-    newMessage2 =
-        newMessage2.copy(id = messageTable.add(dbs.messageGroup1.id, dbs.crew1.id, newMessage2))
+    var newMessage2 =
+        Message(userId = dbs.crew1.id, date = Date.from(Instant.now()), content = "New again")
+    newMessage2 = newMessage2.copy(id = messageTable.add(dbs.messageGroup1.id, newMessage2))
 
     assertEquals(4, listenerUpdates.size)
     assertEquals(true, listenerUpdates[0].isFirstUpdate)
@@ -96,5 +97,15 @@ class MessageGroupTest {
         listenerUpdates[3])
 
     listener.remove()
+  }
+
+  @Test
+  fun deleteTest() = runTest {
+    messageGroupTable.delete(dbs.messageGroup1.id, onError = { assertNull(it) })
+    val messageGroups = messageGroupTable.getAll(onError = { assertNull(it) })
+    assertEquals(listOf(dbs.messageGroup2), messageGroups)
+
+    val messages = messageTable.getAll(onError = { assertNull(it) })
+    assertEquals(listOf(dbs.message3), messages)
   }
 }

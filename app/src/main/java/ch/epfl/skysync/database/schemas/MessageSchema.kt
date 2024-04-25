@@ -15,14 +15,15 @@ data class MessageSchema(
   override fun toModel(): Message {
     return Message(
         id!!,
+        userId!!,
         date!!,
         content!!,
     )
   }
 
   companion object {
-    fun fromModel(groupId: String, userId: String, model: Message): MessageSchema {
-      return MessageSchema(model.id, groupId, userId, model.date, model.content)
+    fun fromModel(groupId: String, model: Message): MessageSchema {
+      return MessageSchema(model.id, groupId, model.userId, model.date, model.content)
     }
   }
 }

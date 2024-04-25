@@ -13,6 +13,9 @@ object Route {
   const val MODIFY_FLIGHT = "Modify Flight"
   const val CHAT = "Chat"
   const val FLIGHT_DETAILS = "Flight Details"
+  const val CONFIRM_FLIGHT = "Confirm Flight"
+
+  const val TEXT = "Text"
 
   const val LOGIN = "Login"
 }

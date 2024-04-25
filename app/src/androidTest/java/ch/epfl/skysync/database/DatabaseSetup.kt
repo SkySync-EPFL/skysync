@@ -128,10 +128,18 @@ class DatabaseSetup {
           vehicles = listOf(vehicle1),
           id = UNSET_ID)
 
-  var messageGroup1 = MessageGroup()
+  var messageGroup1 = MessageGroup(userIds = setOf(admin2.id, pilot1.id, crew1.id))
+  var messageGroup2 = MessageGroup(userIds = setOf(admin1.id, admin2.id))
 
-  var message1 = Message(date = Date.from(Instant.now().minusSeconds(10)), content = "Hello")
-  var message2 = Message(date = Date.from(Instant.now()), content = "World")
+  var message1 =
+      Message(
+          userId = admin2.id, date = Date.from(Instant.now().minusSeconds(20)), content = "Hello")
+  var message2 =
+      Message(
+          userId = pilot1.id, date = Date.from(Instant.now().minusSeconds(10)), content = "World")
+
+  var message3 =
+      Message(userId = admin2.id, date = Date.from(Instant.now()), content = "Some stuff")
 
   /**
    * Delete all items in all tables of the database
@@ -183,6 +191,9 @@ class DatabaseSetup {
               messageGroup1 = messageGroup1.copy(id = messageGroupTable.add(messageGroup1))
             },
             launch {
+              messageGroup2 = messageGroup2.copy(id = messageGroupTable.add(messageGroup2))
+            },
+            launch {
               userTable.set(admin1.id, admin1)
               availability3 =
                   availability3.copy(id = availabilityTable.add(admin1.id, availability3))
@@ -221,20 +232,13 @@ class DatabaseSetup {
             basket = basket1,
             vehicles = listOf(vehicle1),
         )
-    messageGroup1 =
-        messageGroup1.copy(
-            userIds = setOf(admin2.id, pilot1.id, crew1.id),
-        )
 
     // now that the IDs are set, add the flights/messages
     listOf(
             launch { flight1 = flight1.copy(id = flightTable.add(flight1)) },
-            launch {
-              message1 = message1.copy(id = messageTable.add(messageGroup1.id, admin2.id, message1))
-            },
-            launch {
-              message2 = message2.copy(id = messageTable.add(messageGroup1.id, pilot1.id, message2))
-            },
+            launch { message1 = message1.copy(id = messageTable.add(messageGroup1.id, message1)) },
+            launch { message2 = message2.copy(id = messageTable.add(messageGroup1.id, message2)) },
+            launch { message3 = message3.copy(id = messageTable.add(messageGroup2.id, message3)) },
         )
         .forEach { it.join() }
   }
