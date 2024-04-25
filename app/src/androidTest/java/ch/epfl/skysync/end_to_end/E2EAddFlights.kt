@@ -28,8 +28,8 @@ class E2EAddFlights {
   @Before
   fun setUpNavHost() {
     composeTestRule.setContent {
-      val db: FirestoreDatabase = FirestoreDatabase()
-      val repository: Repository = Repository(db)
+      val db = FirestoreDatabase()
+      val repository = Repository(db)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
