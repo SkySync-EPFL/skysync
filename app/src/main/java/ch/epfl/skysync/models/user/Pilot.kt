@@ -12,17 +12,11 @@ data class Pilot(
     override val lastname: String,
     override val availabilities: AvailabilityCalendar,
     override val assignedFlights: FlightGroupCalendar,
+    override val roleTypes: Set<RoleType> = setOf(RoleType.CREW, RoleType.PILOT),
     val qualification: BalloonQualification,
 ) : User {
-  private val roleTypes: Set<RoleType> = setOf(RoleType.CREW, RoleType.PILOT)
 
   override fun addRoleType(roleType: RoleType): Pilot {
-    throw NotImplementedError()
-  }
-
-  override fun canAssumeRole(roleType: RoleType): Boolean {
-    return roleTypes.contains(roleType)
+    return this.copy(roleTypes = roleTypes + roleType)
   }
 }
-
-// val examplePilot = Pilot("John", "Doe", "1234", BalloonQualification.LARGE)
