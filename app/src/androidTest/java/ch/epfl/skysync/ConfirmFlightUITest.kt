@@ -55,7 +55,7 @@ class ConfirmFlightUITest {
       val repository = Repository(FirestoreDatabase(useEmulator = true))
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      confirmation(plannedFlight = planedFlight.value, navController = navController) {}
+      confirmation(plannedFlight = planedFlight.value) {}
     }
   }
   // test of info to verify by a user

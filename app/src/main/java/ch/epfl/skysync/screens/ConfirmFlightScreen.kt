@@ -29,7 +29,7 @@ fun confirmationScreenHardCoded(navController: NavController) {
           LocalDate.now().plusDays(3),
           TimeSlot.PM,
           listOf(Vehicle("Peugeot 308", "1234")))
-  confirmation(dummy, navController) {
+  confirmation(dummy) {
     navController.popBackStack()
     navController.popBackStack()
   }

@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -44,11 +43,7 @@ import java.time.format.DateTimeFormatter
  * @param plannedFlight The planned flight for which the confirmation screen is displayed.
  */
 @Composable
-fun confirmation(
-    plannedFlight: PlannedFlight,
-    navController: NavController,
-    confirmClick: () -> Unit
-) {
+fun confirmation(plannedFlight: PlannedFlight, confirmClick: () -> Unit) {
   val id: String = plannedFlight.id
   val nPassengers: Int = plannedFlight.nPassengers
   val flightType: FlightType = plannedFlight.flightType
