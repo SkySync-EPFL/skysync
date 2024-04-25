@@ -16,6 +16,8 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
+import junit.framework.TestCase.assertNull
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -24,12 +26,12 @@ import org.junit.Test
 class E2EAddFlights {
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var navController: TestNavHostController
+  private val db = FirestoreDatabase()
+  private val repository = Repository(db)
 
   @Before
   fun setUpNavHost() {
     composeTestRule.setContent {
-      val db = FirestoreDatabase()
-      val repository = Repository(db)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
@@ -44,14 +46,12 @@ class E2EAddFlights {
     composeTestRule.onNodeWithTag("addFlightButton").performClick()
     var route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.ADD_FLIGHT, route)
-    val title: String = "Modify Flight"
-    composeTestRule.waitForIdle()
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
         .performScrollToNode(hasTestTag("nb Passenger"))
     composeTestRule.onNodeWithTag("nb Passenger").performClick()
     composeTestRule.onNodeWithTag("nb Passenger").performTextClearance()
-    composeTestRule.onNodeWithTag("nb Passenger").performTextInput("1")
+    composeTestRule.onNodeWithTag("nb Passenger").performTextInput("13")
 
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
@@ -89,5 +89,15 @@ class E2EAddFlights {
         .performScrollToNode(hasTestTag("Basket Menu"))
     composeTestRule.onNodeWithTag("Basket Menu").performClick()
     composeTestRule.onNodeWithTag("Basket 1").performClick()
+    val title1 = "Add Flight"
+    composeTestRule.onNodeWithTag("$title1 Button").performClick()
+    route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(Route.HOME, route)
+    var flightIsCreated = false
+    runTest {
+      val flights = repository.flightTable.getAll(onError = { assertNull(it) })
+      flightIsCreated = flights.any { it.nPassengers == 13 }
+    }
+    Assert.assertEquals(true, flightIsCreated)
   }
 }
