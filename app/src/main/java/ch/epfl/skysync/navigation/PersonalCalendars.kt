@@ -42,33 +42,35 @@ fun NavGraphBuilder.personalCalendarNew(
 ) {
   val tabs = mapOf(Route.PERSONAL_FLIGHT_CALENDAR to 0, Route.AVAILABILITY_CALENDAR to 1)
   navigation(startDestination = Route.AVAILABILITY_CALENDAR, route = Route.CALENDAR) {
-
-      composable(Route.AVAILABILITY_CALENDAR) {
-          val viewModel =
-              CalendarViewModel.createViewModel(
-                  uid!!, repository.userTable, repository.availabilityTable)
-          AvailabilityCalendarNew(
-              topBar = {
-                  TopBar(tab = Route.AVAILABILITY_CALENDAR, tabs = tabs) { onClickT(it, navController) }
-              },
-              navController = navController,
-              viewModel = viewModel) {}
-      }
+    composable(Route.AVAILABILITY_CALENDAR) {
+      val viewModel =
+          CalendarViewModel.createViewModel(
+              uid!!, repository.userTable, repository.availabilityTable)
+      AvailabilityCalendarNew(
+          topBar = {
+            TopBar(tab = Route.AVAILABILITY_CALENDAR, tabs = tabs) { onClickT(it, navController) }
+          },
+          navController = navController,
+          viewModel = viewModel)
+    }
 
     composable(Route.PERSONAL_FLIGHT_CALENDAR) {
       val viewModel =
           CalendarViewModel.createViewModel(
               uid!!, repository.userTable, repository.availabilityTable)
-      FlightCalendarNew(topBar = {
-          TopBar(tab = Route.PERSONAL_FLIGHT_CALENDAR, tabs = tabs) { onClickT(it, navController) }},
+      FlightCalendarNew(
+          topBar = {
+            TopBar(tab = Route.PERSONAL_FLIGHT_CALENDAR, tabs = tabs) {
+              onClickT(it, navController)
+            }
+          },
           navController = navController,
           viewModel = viewModel,
           onFlightClick = {
-              // TODO: navigate to flight details screen
+            // TODO: navigate to flight details screen
           })
-      }
     }
-
+  }
 }
 
 fun onClickT(tabIndex: Int, navController: NavHostController) {

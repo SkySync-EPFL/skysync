@@ -20,6 +20,7 @@ import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,11 +41,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.ui.theme.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import ch.epfl.skysync.ui.theme.*
-
 
 /**
  * Function to calculate the start date of the week for the given date.
@@ -69,15 +69,11 @@ fun ModularCalendar(
     tile: @Composable (date: LocalDate, time: TimeSlot) -> Unit
 ) {
   var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(LocalDate.now())) }
-  Column(modifier = Modifier
-      .background(Color.White)
-      .fillMaxSize()) {
+  Column(modifier = Modifier.background(Color.White).fillMaxSize()) {
     WeekView(false, currentWeekStartDate, tile)
     Spacer(modifier = Modifier.height(8.dp))
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
           Spacer(modifier = Modifier.width(5.dp))
           Button(
@@ -100,6 +96,7 @@ fun ModularCalendar(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ModularCalendarNew(
+    padding: PaddingValues,
     isDraft: Boolean,
     tile: @Composable (date: LocalDate, time: TimeSlot) -> Unit
 ) {
@@ -109,9 +106,7 @@ fun ModularCalendarNew(
   var previousPage by remember { mutableIntStateOf(pagerState.currentPage) }
 
   val calendarBackgroundColor = if (isDraft) Color.LightGray else Color.White
-  Column(modifier = Modifier
-      .background(Color.White)
-      .fillMaxSize()) {
+  Column(modifier = Modifier.background(Color.White).padding(padding)) {
     LaunchedEffect(pagerState) {
       // Collect from the a snapshotFlow reading the currentPage
       snapshotFlow { pagerState.currentPage }
@@ -130,76 +125,42 @@ fun ModularCalendarNew(
       WeekView(isDraft, currentWeekStartDate, tile)
     }
     // WeekView(currentWeekStartDate, tile)
-    Spacer(modifier = Modifier.height(8.dp))
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween) {
-          Spacer(modifier = Modifier.width(5.dp))
-          Button(
-              onClick = { currentWeekStartDate = currentWeekStartDate.minusWeeks(1) },
-              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))) {
-                Text(text = "Prev Week", color = Color.DarkGray)
-              }
-          Spacer(modifier = Modifier.width(20.dp))
-          Button(
-              onClick = { currentWeekStartDate = currentWeekStartDate.plusWeeks(1) },
-              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))) {
-                Text(text = "Next Week", color = Color.DarkGray)
-              }
-          Spacer(modifier = Modifier.width(5.dp))
-        }
-      if (isDraft){
-        SaveCancelButton(onCancel = { println("Cancel") }) {
-            println("Save")
-        }
-      }
+    if (isDraft) {
+      SaveCancelButton(onCancel = { println("Cancel") }) { println("Save") }
+    }
   }
 }
 
-
 @Composable
-fun SaveCancelButton(
-    onCancel: () -> Unit,
-    onSave: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(15.dp))
-            .clip(RoundedCornerShape(15.dp))
-            .testTag("SwitchButton"),
-        verticalAlignment = Alignment.Bottom
+fun SaveCancelButton(onCancel: () -> Unit, onSave: () -> Unit) {
+  Row(
+      modifier =
+          Modifier.clip(RoundedCornerShape(15.dp))
+              .clip(RoundedCornerShape(15.dp))
+              .testTag("SwitchButton"),
+  ) {
+    Button(
+        onClick = onCancel,
+        colors = ButtonDefaults.buttonColors(containerColor = lightRed),
+        shape = RoundedCornerShape(0),
+        modifier = Modifier.weight(1f).testTag("SwitchButtonLeftButton"),
     ) {
-        Button(
-            onClick = onCancel,
-            colors = ButtonDefaults.buttonColors(containerColor = lightRed),
-            shape = RoundedCornerShape(0),
-            modifier = Modifier
-                .weight(1f)
-                .testTag("SwitchButtonLeftButton"),
-        ) {
-            androidx.compose.material3.Text(
-                text = "Cancel",
-                fontSize = 12.sp,
-                overflow = TextOverflow.Clip
-            )
-        }
-        Button(
-            onClick = onSave,
-            colors = ButtonDefaults.buttonColors(containerColor = lightGreen),
-            shape = RoundedCornerShape(0),
-            modifier = Modifier
-                .weight(1f)
-                .testTag("SwitchButtonRightButton"),
-        ) {
-            androidx.compose.material3.Text(
-                text = "Save",
-                fontSize = 12.sp,
-                overflow = TextOverflow.Clip,
-            )
-        }
+      androidx.compose.material3.Text(
+          text = "Cancel", fontSize = 12.sp, overflow = TextOverflow.Clip)
     }
+    Button(
+        onClick = onSave,
+        colors = ButtonDefaults.buttonColors(containerColor = lightGreen),
+        shape = RoundedCornerShape(0),
+        modifier = Modifier.weight(1f).testTag("SwitchButtonRightButton"),
+    ) {
+      androidx.compose.material3.Text(
+          text = "Save",
+          fontSize = 12.sp,
+          overflow = TextOverflow.Clip,
+      )
+    }
+  }
 }
 
 /**
@@ -209,30 +170,33 @@ fun SaveCancelButton(
  * @param tile The composable rendering each tile
  */
 @Composable
-fun WeekView(isDraft: Boolean, startOfWeek: LocalDate, tile: @Composable (date: LocalDate, time: TimeSlot) -> Unit) {
+fun WeekView(
+    isDraft: Boolean,
+    startOfWeek: LocalDate,
+    tile: @Composable (date: LocalDate, time: TimeSlot) -> Unit
+) {
   val weekDays = (0..6).map { startOfWeek.plusDays(it.toLong()) }
   Column(horizontalAlignment = Alignment.End) {
-
     Row(
-        modifier = Modifier.fillMaxWidth(0.7f),
+        modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically) {
-        if(isDraft)
-            Text(text = "Draft")
+          if (isDraft)
+              Text(
+                  text = "Draft",
+                  fontSize = 16.sp,
+                  fontWeight = FontWeight.Bold,
+              )
           Text(
               text = "AM",
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .weight(1f),
+              modifier = Modifier.fillMaxWidth().weight(1f),
               fontSize = 16.sp,
               fontWeight = FontWeight.Bold,
               color = Color.Black,
               textAlign = TextAlign.Center)
           Text(
               text = "PM",
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .weight(1f),
+              modifier = Modifier.fillMaxWidth().weight(1f),
               fontSize = 16.sp,
               fontWeight = FontWeight.Bold,
               color = Color.Black,
@@ -289,16 +253,11 @@ fun WeekView(isDraft: Boolean, startOfWeek: LocalDate, tile: @Composable (date: 
     weekDays.withIndex().forEach { (i, day) ->
       val scale = (1f / 10 * 10 / (10 - i))
       Row(
-          modifier = Modifier
-              .fillMaxWidth()
-              .fillMaxHeight(scale),
+          modifier = Modifier.fillMaxWidth().fillMaxHeight(scale),
           verticalAlignment = Alignment.CenterVertically,
       ) {
         Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.3f)
-                .background(Color.White),
+            modifier = Modifier.fillMaxHeight().fillMaxWidth(0.3f).background(Color.White),
             verticalArrangement = Arrangement.Center,
         ) {
           Row(
@@ -324,9 +283,7 @@ fun WeekView(isDraft: Boolean, startOfWeek: LocalDate, tile: @Composable (date: 
               }
         }
         Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.LightGray),
+            modifier = Modifier.fillMaxSize().background(Color.LightGray),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
               tile(day, TimeSlot.AM)
@@ -341,9 +298,10 @@ fun WeekView(isDraft: Boolean, startOfWeek: LocalDate, tile: @Composable (date: 
 @Preview
 @Composable
 fun CalendarPreview() {
-
-  ModularCalendarNew(true) { date, time ->
-    println(date)
-    println(time)
+  Scaffold {
+    ModularCalendarNew(it, true) { date, time ->
+      println(date)
+      println(time)
+    }
   }
 }

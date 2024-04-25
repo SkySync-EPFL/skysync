@@ -17,6 +17,3 @@ val lightBlue = Color(0xFFB0E0E6)
 val lightBrown = Color(0xFFD2B48C)
 val lightGreen = Color(0xFFAAEE7B)
 val lightViolet = Color(0xFFE6E6FA)
-
-
-
