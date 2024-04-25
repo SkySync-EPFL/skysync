@@ -140,6 +140,7 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
       floatingActionButton = {
         // Define the FloatingActionButton to create a flight
         FloatingActionButton(
+            modifier = Modifier.testTag("addFlightButton"),
             onClick = { navController.navigate(Route.ADD_FLIGHT) { launchSingleTop = true } },
             containerColor = lightOrange) {
               Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)

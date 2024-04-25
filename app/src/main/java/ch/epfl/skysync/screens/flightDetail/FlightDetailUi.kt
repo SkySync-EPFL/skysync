@@ -14,13 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,11 +31,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ch.epfl.skysync.components.Header
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
-import ch.epfl.skysync.ui.theme.lightOrange
 
 /**
  * FlightDetailUi is a Composable function that displays the UI for flight details. It consists of a
@@ -64,6 +60,10 @@ fun FlightDetailUi(
   Column(
       modifier = Modifier.fillMaxSize().background(Color.White),
   ) {
+    Header(backClick = backClick, title = "Flight Detail")
+    Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
+      FlightdetailBody(flight, padding)
+      FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
     FlightDetailHead(BackClick = backClick)
     if (flight == null) {
       LoadingComponent(isLoading = true, onRefresh = {}) {}
@@ -73,36 +73,6 @@ fun FlightDetailUi(
         FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
       }
     }
-  }
-}
-
-/**
- * FlightDetailHead is a Composable function that displays the header of the flight detail screen.
- *
- * @param BackClick Callback function invoked when the back button is clicked.
- */
-@Composable
-fun FlightDetailHead(BackClick: () -> Unit) {
-  Row(
-      modifier = Modifier.fillMaxWidth(),
-      verticalAlignment = Alignment.CenterVertically,
-  ) {
-    IconButton(onClick = BackClick, modifier = Modifier.fillMaxWidth(0.2f)) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = lightOrange)
-        Text(text = "Back", color = lightOrange)
-      }
-    }
-    Column(
-        modifier = Modifier.fillMaxWidth(0.75f),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally) {
-          Text(
-              text = "Flight Detail",
-              color = Color.Black,
-              fontSize = 30.sp,
-          )
-        }
   }
 }
 /**
