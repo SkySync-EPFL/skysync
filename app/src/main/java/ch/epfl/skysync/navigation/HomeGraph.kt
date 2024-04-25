@@ -18,6 +18,7 @@ import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
 import ch.epfl.skysync.screens.ModifyFlightScreen
 import ch.epfl.skysync.screens.confirmationScreen
+import ch.epfl.skysync.screens.TextScreen
 import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import java.time.LocalDate
@@ -106,5 +107,12 @@ fun NavGraphBuilder.homeGraph(
               basket = null,
               team = Team(roles = emptyList())))
     }
+    composable(
+        Route.TEXT + "/{Group Name}",
+        arguments = listOf(navArgument("Group Name") { type = NavType.StringType })) {
+            backStackEntry ->
+          val groupName = backStackEntry.arguments?.getString("Group Name") ?: "No Name"
+          TextScreen(navController, groupName)
+        }
   }
 }
