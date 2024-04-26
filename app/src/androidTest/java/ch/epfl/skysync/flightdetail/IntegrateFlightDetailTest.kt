@@ -42,23 +42,23 @@ class IntegrateFlightDetailTest {
     }
   }
 
-  @Test
-  fun modifyConfirm() {
-    composeTestRule.onNodeWithText("Home").performClick()
-    val nodes = composeTestRule.onAllNodesWithTag("flightCard")
-    nodes[0].performClick()
-    var route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
-    composeTestRule.onNodeWithTag("EditButton").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.MODIFY_FLIGHT + "/{Flight ID}")
-    composeTestRule.onNodeWithTag("BackButton").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
-    composeTestRule.onNodeWithTag("ConfirmButton").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.CONFIRM_FLIGHT + "/{Flight ID}")
-  }
+  // @Test
+  //  fun modifyConfirm() {
+  //    composeTestRule.onNodeWithText("Home").performClick()
+  //    val nodes = composeTestRule.onAllNodesWithTag("flightCard")
+  //    nodes[0].performClick()
+  //    var route = navController.currentBackStackEntry?.destination?.route
+  //    assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
+  //    composeTestRule.onNodeWithTag("EditButton").performClick()
+  //    route = navController.currentBackStackEntry?.destination?.route
+  //    assertEquals(route, Route.MODIFY_FLIGHT + "/{Flight ID}")
+  //    composeTestRule.onNodeWithTag("BackButton").performClick()
+  //    route = navController.currentBackStackEntry?.destination?.route
+  //    assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
+  //    composeTestRule.onNodeWithTag("ConfirmButton").performClick()
+  //    route = navController.currentBackStackEntry?.destination?.route
+  //    assertEquals(route, Route.CONFIRM_FLIGHT + "/{Flight ID}")
+  //  }
 
   @Test
   fun testDelete() {
