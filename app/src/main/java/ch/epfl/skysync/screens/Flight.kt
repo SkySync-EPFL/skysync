@@ -1,6 +1,7 @@
 package ch.epfl.skysync.screens
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,11 +9,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.components.Timer
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
@@ -66,7 +70,6 @@ fun FlightScreen(navController: NavHostController) {
 
   // Provides access to the Fused Location Provider API.
   val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-
   // State holding the current location initialized to Lausanne as default value.
   var location by remember { mutableStateOf(LatLng(46.516, 6.63282)) }
 
@@ -78,6 +81,17 @@ fun FlightScreen(navController: NavHostController) {
   // Manages the state of the map marker.
   val markerState = rememberMarkerState(position = location)
 
+  var speed by remember { mutableStateOf(0f) } // Speed in meters/second
+
+  var altitude by remember { mutableStateOf(0.0) } // Altitude in meters
+
+  var bearing by remember { mutableStateOf(0f) } // Direction in degrees
+
+  var verticalSpeed by remember { mutableStateOf(0.0) } // Vertical speed in meters/second
+
+  var previousAltitude by remember { mutableStateOf<Double?>(null) }
+  var previousTime by remember { mutableStateOf<Long?>(null) }
+
   // DisposableEffect to handle location updates and permissions.
   DisposableEffect(locationPermission) {
     // Defines the location request parameters.
@@ -87,13 +101,34 @@ fun FlightScreen(navController: NavHostController) {
           fastestInterval = 2000 // Fastest interval for location updates.
         }
 
-    // Callback to receive location updates.
+    // Callback to receive location updates
     val locationCallback =
         object : LocationCallback() {
           override fun onLocationResult(locationResult: LocationResult) {
             locationResult.lastLocation?.let {
-              location = LatLng(it.latitude, it.longitude)
-              markerState.position = location // Updates marker position on the map.
+              val newLocation = LatLng(it.latitude, it.longitude)
+
+              cameraPositionState.position = CameraPosition.fromLatLngZoom(newLocation, 13f)
+
+              location = newLocation
+
+              markerState.position = newLocation
+
+              speed = it.speed // Update speed
+              bearing = it.bearing // Update Bearing
+
+              val currentTime = System.currentTimeMillis()
+              previousAltitude?.let { prevAlt ->
+                verticalSpeed =
+                    if (previousTime != null) {
+                      (it.altitude - prevAlt) / ((currentTime - previousTime!!) / 1000.0)
+                    } else {
+                      0.0
+                    }
+              }
+              altitude = it.altitude
+              previousAltitude = it.altitude
+              previousTime = currentTime
             }
           }
         }
@@ -106,6 +141,8 @@ fun FlightScreen(navController: NavHostController) {
         // Exception handling if the permission was rejected.
         Log.e("FlightScreen", "Failed to request location updates", e)
       }
+    } else {
+      locationPermission.launchPermissionRequest() // Request permission if not granted
     }
 
     // Cleanup function to stop receiving location updates when the composable is disposed.
@@ -121,15 +158,16 @@ fun FlightScreen(navController: NavHostController) {
               modifier =
                   Modifier.fillMaxSize().padding(start = 32.dp, bottom = 88.dp, top = 100.dp),
               contentAlignment = Alignment.BottomStart) {
-                Timer(Modifier.align(Alignment.TopEnd))
+                Timer(Modifier.align(Alignment.TopEnd).testTag("Timer"))
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()) {
                       FloatingActionButton(
                           onClick = {
                             // Moves the camera to the current location when clicked.
-                            cameraPositionState.move(
-                                CameraUpdateFactory.newLatLngZoom(location, 13f))
+                            location
+                                ?.let { CameraUpdateFactory.newLatLngZoom(it, 13f) }
+                                ?.let { cameraPositionState.move(it) }
                           },
                           containerColor = lightOrange) {
                             Icon(Icons.Default.LocationOn, contentDescription = "Locate Me")
@@ -154,14 +192,26 @@ fun FlightScreen(navController: NavHostController) {
         }
       },
       bottomBar = { BottomBar(navController) }) { padding ->
+        if (locationPermission.status.isGranted && location == null) {
+          LoadingComponent(isLoading = true, onRefresh = {}, content = {})
+        }
         // Renders the Google Map or a permission request message based on the permission status.
-        if (locationPermission.status.isGranted) {
+        if (locationPermission.status.isGranted && location != null) {
           GoogleMap(
               modifier = Modifier.fillMaxSize().padding(padding).testTag("Map"),
               cameraPositionState = cameraPositionState) {
                 Marker(state = markerState, title = "Your Location", snippet = "You are here")
               }
-        } else {
+          Text(
+              text =
+                  "X Speed: $speed m/s\nY Speed: $verticalSpeed m/s\nAltitude: $altitude m\nBearing: $bearing °",
+              style = MaterialTheme.typography.bodyLarge,
+              modifier =
+                  Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
+                      .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                      .padding(6.dp))
+        }
+        if (!locationPermission.status.isGranted) {
           // Displays a message if location permission is denied.
           Box(
               modifier = Modifier.fillMaxSize().padding(16.dp),

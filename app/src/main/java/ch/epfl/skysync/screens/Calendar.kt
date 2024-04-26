@@ -1,20 +1,29 @@
 package ch.epfl.skysync.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import ch.epfl.skysync.components.AvailabilityCalendar
 import ch.epfl.skysync.components.FlightCalendar
-import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
+import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.viewmodel.CalendarViewModel
 
 @Composable
@@ -23,39 +32,67 @@ fun CalendarScreen(
     calendarType: String,
     viewModel: CalendarViewModel
 ) {
+  val tabs = mapOf(Route.FLIGHT_CALENDAR to 0, Route.AVAILABILITY_CALENDAR to 1)
+  val navBackStackEntry by navController.currentBackStackEntryAsState()
+  val currentDestination = navBackStackEntry?.destination
+
   Scaffold(
       modifier = Modifier.fillMaxSize(),
-      bottomBar = { BottomBar(navController) },
+      topBar = {
+        CalendarTopBar(tab = calendarType, tabs = tabs) { route ->
+          navController.navigate(route) {
+            if (currentDestination?.route != route) {
+              navController.navigate(route) {
+                popUpTo(navController.graph.findStartDestination().id)
+                launchSingleTop = true
+              }
+            }
+          }
+        }
+      },
       floatingActionButton =
       // TODO delete the button. It is just there for preview purposes
-      { IconButton(onClick = { navController.navigate(Route.ADD_USER) }) { Icons.Default.Add } }) {
-          padding ->
+      { IconButton(onClick = { navController.navigate(Route.ADD_USER) }) { Icons.Default.Add } },
+      bottomBar = { BottomBar(navController) }) { padding ->
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         if (calendarType == Route.AVAILABILITY_CALENDAR) {
           val availabilityCalendar = uiState.availabilityCalendar
           AvailabilityCalendar(
-              padding,
-              onFlightCalendarClick = { navController.navigate(Route.PERSONAL_FLIGHT_CALENDAR) },
+              padding = padding,
               getAvailabilityStatus = { date, time ->
-                availabilityCalendar?.getAvailabilityStatus(date, time)
-                    ?: AvailabilityStatus.UNDEFINED
+                availabilityCalendar.getAvailabilityStatus(date, time)
               },
               nextAvailabilityStatus = { date, time ->
-                availabilityCalendar?.nextAvailabilityStatus(date, time)
-                    ?: AvailabilityStatus.UNDEFINED
+                availabilityCalendar.nextAvailabilityStatus(date, time)
               },
-              onSave = { viewModel.saveAvailabilities() })
-        } else if (calendarType == Route.PERSONAL_FLIGHT_CALENDAR) {
+              onSave = { viewModel.saveAvailabilities() },
+              onCancel = { Log.d("TO BE IMPLEMENTED", "Cancel in Availabilities") })
+        } else if (calendarType == Route.FLIGHT_CALENDAR) {
           val flightCalendar = uiState.flightGroupCalendar
           FlightCalendar(
-              padding,
-              onAvailabilityCalendarClick = { navController.navigate(Route.AVAILABILITY_CALENDAR) },
+              padding = padding,
               getFirstFlightByDate = { date, time ->
-                flightCalendar?.getFirstFlightByDate(date, time)
+                flightCalendar.getFirstFlightByDate(date, time)
               },
-              onFlightClick = {
-                // TODO: navigate to flight details screen
+              onFlightClick = { selectedFlight ->
+                navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
               })
         }
       }
+}
+
+@Composable
+fun CalendarTopBar(tab: String, tabs: Map<String, Int>, onclick: (String) -> Unit) {
+  val tabIndex = tabs[tab]
+  if (tabIndex != null) {
+    TabRow(selectedTabIndex = tabIndex, containerColor = lightGray) {
+      tabs.forEach { (route, index) ->
+        Tab(
+            modifier = Modifier.padding(8.dp).testTag(route),
+            text = { Text(text = route) },
+            selected = tabIndex == index,
+            onClick = { onclick(route) })
+      }
+    }
+  }
 }
