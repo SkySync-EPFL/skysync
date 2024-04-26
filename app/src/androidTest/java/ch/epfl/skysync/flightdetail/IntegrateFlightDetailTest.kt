@@ -35,8 +35,6 @@ class IntegrateFlightDetailTest {
       composeTestRule.setContent {
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
-        // NavHost(navController = navController, startDestination = Route.FLIGHT_DETAILS +
-        // "/{1212}") {
         NavHost(navController = navController, startDestination = Route.MAIN) {
           homeGraph(repository, navController, null)
         }
@@ -44,20 +42,6 @@ class IntegrateFlightDetailTest {
     }
   }
 
-  //  @Test
-  //  fun backStackIsRightIfClickOnFlight() {
-  //    composeTestRule.onNodeWithText("Calendar").performClick()
-  //    composeTestRule.onNodeWithText("Flight Calendar").performClick()
-  //    val nodes = composeTestRule.onAllNodesWithTag("flightButton")
-  //    for (i in 0 until nodes.fetchSemanticsNodes().size) {
-  //      nodes[i].performClick()
-  //      var route = navController.currentBackStackEntry?.destination?.route
-  //      assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
-  //      composeTestRule.onNodeWithText("Back").performClick()
-  //      route = navController.currentBackStackEntry?.destination?.route
-  //      assertEquals(route, Route.PERSONAL_FLIGHT_CALENDAR)
-  //    }
-  //  }
 
   @Test
   fun modifyConfirm() {
