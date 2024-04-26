@@ -107,13 +107,13 @@ fun FlightScreen(navController: NavHostController) {
           override fun onLocationResult(locationResult: LocationResult) {
             locationResult.lastLocation?.let {
               val newLocation = LatLng(it.latitude, it.longitude)
-              if (location == null) { // Initial setup
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(newLocation, 13f)
-              }
+
+              cameraPositionState.position = CameraPosition.fromLatLngZoom(newLocation, 13f)
+
               location = newLocation
-              if (markerState != null) {
-                markerState.position = newLocation
-              } // Updates marker position on the map
+
+              markerState.position = newLocation
+
               speed = it.speed // Update speed
               bearing = it.bearing // Update Bearing
 
