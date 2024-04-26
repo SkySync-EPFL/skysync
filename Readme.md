@@ -34,8 +34,7 @@ Administrators create flights and assign staff to them. They have read/write acc
 TBD
 
 ## Database
-
-![SkySync database diagram](https://github.com/SkySync-EPFL/skysync/assets/93386280/b8088739-655e-4511-bf8e-48be7d5954b7)
+![SkySync database diagram](https://github.com/SkySync-EPFL/skysync/assets/93386280/b013e412-8891-4f17-81f5-499af5cfaeb7)
 
 ## Architecture Diagram
 
