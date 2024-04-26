@@ -141,13 +141,16 @@ fun FlightForm(
             verticalArrangement = Arrangement.SpaceBetween) {
               // Field getting the number of passengers. Only number can be entered
               item {
-                nbPassengersField(
-                    nbPassengersValue = nbPassengersValue,
-                    onNbPassengersValueChange = { value ->
-                      nbPassengersValue = value.filter { it.isDigit() }
-                    },
-                    defaultPadding = defaultPadding,
-                    nbPassengersValueError = nbPassengersValueError)
+                TitledInputTextField(
+                    padding = defaultPadding,
+                    title = "Number of passengers",
+                    value = nbPassengersValue,
+                    onValueChange = { value -> nbPassengersValue = value.filter { it.isDigit() } },
+                    isError = nbPassengersValueError,
+                    messageError =
+                        if (nbPassengersValueError) "Please enter a valid number" else "",
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                )
               }
               // The date field is a clickable field that opens a date picker
               item {
@@ -406,28 +409,6 @@ fun FlightForm(
       }
     }
   }
-}
-
-@Composable
-fun nbPassengersField(
-    nbPassengersValue: String,
-    onNbPassengersValueChange: (String) -> Unit,
-    nbPassengersValueError: Boolean,
-    defaultPadding: Dp
-) {
-  Text(
-      modifier = Modifier.padding(horizontal = defaultPadding),
-      text = "Number of passengers",
-      style = MaterialTheme.typography.headlineSmall)
-  OutlinedTextField(
-      value = nbPassengersValue,
-      onValueChange = { value -> onNbPassengersValueChange(value) },
-      placeholder = { Text("Enter a number bigger than 0") },
-      singleLine = true,
-      keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-      modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("nb Passenger"),
-      isError = nbPassengersValueError,
-      supportingText = { if (nbPassengersValueError) Text("Please enter a valid number") })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
