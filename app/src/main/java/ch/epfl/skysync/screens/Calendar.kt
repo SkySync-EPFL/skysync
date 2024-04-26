@@ -1,6 +1,9 @@
 package ch.epfl.skysync.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,29 +23,39 @@ fun CalendarScreen(
     calendarType: String,
     viewModel: CalendarViewModel
 ) {
-  Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    if (calendarType == Route.AVAILABILITY_CALENDAR) {
-      val availabilityCalendar = uiState.availabilityCalendar
-      AvailabilityCalendar(
-          padding,
-          onFlightCalendarClick = { navController.navigate(Route.PERSONAL_FLIGHT_CALENDAR) },
-          getAvailabilityStatus = { date, time ->
-            availabilityCalendar?.getAvailabilityStatus(date, time) ?: AvailabilityStatus.UNDEFINED
-          },
-          nextAvailabilityStatus = { date, time ->
-            availabilityCalendar?.nextAvailabilityStatus(date, time) ?: AvailabilityStatus.UNDEFINED
-          },
-          onSave = { viewModel.saveAvailabilities() })
-    } else if (calendarType == Route.PERSONAL_FLIGHT_CALENDAR) {
-      val flightCalendar = uiState.flightGroupCalendar
-      FlightCalendar(
-          padding,
-          onAvailabilityCalendarClick = { navController.navigate(Route.AVAILABILITY_CALENDAR) },
-          getFirstFlightByDate = { date, time -> flightCalendar?.getFirstFlightByDate(date, time) },
-          onFlightClick = {
-            // TODO: navigate to flight details screen
-          })
-    }
-  }
+  Scaffold(
+      modifier = Modifier.fillMaxSize(),
+      bottomBar = { BottomBar(navController) },
+      floatingActionButton =
+      // TODO delete the button. It is just there for preview purposes
+      { IconButton(onClick = { navController.navigate(Route.ADD_USER) }) { Icons.Default.Add } }) {
+          padding ->
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+        if (calendarType == Route.AVAILABILITY_CALENDAR) {
+          val availabilityCalendar = uiState.availabilityCalendar
+          AvailabilityCalendar(
+              padding,
+              onFlightCalendarClick = { navController.navigate(Route.PERSONAL_FLIGHT_CALENDAR) },
+              getAvailabilityStatus = { date, time ->
+                availabilityCalendar?.getAvailabilityStatus(date, time)
+                    ?: AvailabilityStatus.UNDEFINED
+              },
+              nextAvailabilityStatus = { date, time ->
+                availabilityCalendar?.nextAvailabilityStatus(date, time)
+                    ?: AvailabilityStatus.UNDEFINED
+              },
+              onSave = { viewModel.saveAvailabilities() })
+        } else if (calendarType == Route.PERSONAL_FLIGHT_CALENDAR) {
+          val flightCalendar = uiState.flightGroupCalendar
+          FlightCalendar(
+              padding,
+              onAvailabilityCalendarClick = { navController.navigate(Route.AVAILABILITY_CALENDAR) },
+              getFirstFlightByDate = { date, time ->
+                flightCalendar?.getFirstFlightByDate(date, time)
+              },
+              onFlightClick = {
+                // TODO: navigate to flight details screen
+              })
+        }
+      }
 }

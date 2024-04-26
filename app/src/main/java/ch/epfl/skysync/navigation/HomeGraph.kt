@@ -13,6 +13,7 @@ import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.screens.AddFlightScreen
+import ch.epfl.skysync.screens.AddUserScreen
 import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
@@ -104,6 +105,7 @@ fun NavGraphBuilder.homeGraph(
               basket = null,
               team = Team(roles = emptyList())))
     }
+    composable(Route.ADD_USER) { AddUserScreen(navController = navController) }
     composable(
         Route.TEXT + "/{Group Name}",
         arguments = listOf(navArgument("Group Name") { type = NavType.StringType })) {
