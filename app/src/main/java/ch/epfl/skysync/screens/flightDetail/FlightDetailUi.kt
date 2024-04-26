@@ -55,19 +55,21 @@ fun FlightDetailUi(
     editClick: (flightId: String) -> Unit,
     confirmClick: (flightId: String) -> Unit,
     padding: PaddingValues,
-    flight: Flight?
+    flight: Flight?,
+    flightId: String
 ) {
   Column(
       modifier = Modifier.fillMaxSize().background(Color.White),
   ) {
     Header(backClick = backClick, title = "Flight Detail")
-    if (flight == null) {
-      LoadingComponent(isLoading = true, onRefresh = {}) {}
-    } else {
-      Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
+
+    Box(modifier = Modifier.fillMaxHeight().padding(padding)) {
+      if (flight == null) {
+        LoadingComponent(isLoading = true, onRefresh = {}) {}
+      } else {
         FlightDetailBody(flight, padding)
-        FlightDetailBottom(flight.id, deleteClick, editClick, confirmClick)
       }
+      FlightDetailBottom(flightId, deleteClick, editClick, confirmClick)
     }
   }
 }
@@ -155,17 +157,17 @@ fun FlightDetailBottom(
           ClickButton(
               text = "Delete",
               onClick = { DeleteClick(flightId) },
-              modifier = Modifier.fillMaxWidth(0.3f),
+              modifier = Modifier.fillMaxWidth(0.3f).testTag("DeleteButton"),
               color = Color.Red)
           ClickButton(
               text = "Edit",
               onClick = { EditClick(flightId) },
-              modifier = Modifier.fillMaxWidth(3 / 7f),
+              modifier = Modifier.fillMaxWidth(3 / 7f).testTag("EditButton"),
               color = Color.Yellow)
           ClickButton(
               text = "Confirm",
               onClick = { ConfirmClick(flightId) },
-              modifier = Modifier.fillMaxWidth(0.7f),
+              modifier = Modifier.fillMaxWidth(0.7f).testTag("ConfirmButton"),
               color = Color.Green)
         }
   }

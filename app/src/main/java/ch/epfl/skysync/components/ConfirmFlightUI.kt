@@ -215,7 +215,7 @@ fun confirmation(plannedFlight: PlannedFlight, confirmClick: () -> Unit) {
         ClickButton(
             text = "Confirm",
             onClick = { confirmClick() },
-            modifier = Modifier.fillMaxWidth(0.7f),
+            modifier = Modifier.fillMaxWidth(0.7f).testTag("ConfirmThisFlightButton"),
             color = Color.Green)
       }
     }

@@ -5,11 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ch.epfl.skysync.database.tables.BalloonTable
-import ch.epfl.skysync.database.tables.BasketTable
-import ch.epfl.skysync.database.tables.FlightTable
-import ch.epfl.skysync.database.tables.FlightTypeTable
-import ch.epfl.skysync.database.tables.VehicleTable
+import ch.epfl.skysync.Repository
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.Flight
@@ -26,33 +22,18 @@ import kotlinx.coroutines.launch
 
 /** ViewModel for the user */
 class FlightsViewModel(
-    private val flightTable: FlightTable,
-    private val balloonTable: BalloonTable,
-    private val basketTable: BasketTable,
-    private val flightTypeTable: FlightTypeTable,
-    private val vehicleTable: VehicleTable,
+    val repository: Repository,
 ) : ViewModel() {
   companion object {
     @Composable
     fun createViewModel(
-        flightTable: FlightTable,
-        balloonTable: BalloonTable,
-        basketTable: BasketTable,
-        flightTypeTable: FlightTypeTable,
-        vehicleTable: VehicleTable,
+        repository: Repository,
     ): FlightsViewModel {
       return viewModel<FlightsViewModel>(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return FlightsViewModel(
-                      flightTable,
-                      balloonTable,
-                      basketTable,
-                      flightTypeTable,
-                      vehicleTable,
-                  )
-                      as T
+                  return FlightsViewModel(repository) as T
                 }
               })
     }
@@ -81,57 +62,46 @@ class FlightsViewModel(
 
   fun refreshCurrentBalloons() =
       viewModelScope.launch {
-        _currentBalloons.value = balloonTable.getAll(onError = { onError(it) })
+        _currentBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
       }
 
   fun refreshCurrentVehicles() =
       viewModelScope.launch {
-        _currentVehicles.value = vehicleTable.getAll(onError = { onError(it) })
+        _currentVehicles.value = repository.vehicleTable.getAll(onError = { onError(it) })
       }
 
   fun refreshCurrentBaskets() =
       viewModelScope.launch {
-        _currentBaskets.value = basketTable.getAll(onError = { onError(it) })
+        _currentBaskets.value = repository.basketTable.getAll(onError = { onError(it) })
       }
 
   fun refreshCurrentFlightTypes() =
       viewModelScope.launch {
-        _currentFlightTypes.value = flightTypeTable.getAll(onError = { onError(it) })
+        _currentFlightTypes.value = repository.flightTypeTable.getAll(onError = { onError(it) })
       }
 
   fun refreshCurrentFlights() =
       viewModelScope.launch {
-        _currentFlights.value = flightTable.getAll(onError = { onError(it) })
+        _currentFlights.value = repository.flightTable.getAll(onError = { onError(it) })
       }
 
   /**
    * modifies the flight by deleting the old flight and adding a new one in the db and the viewmodel
    */
   fun modifyFlight(
-      newFlight: PlannedFlight,
-  ) = viewModelScope.launch { flightTable.update(newFlight.id, newFlight) }
-
-  /** deletes the given flight from the db and the viewmodel */
-  fun deleteFlight(
-      flight: Flight,
-  ) = viewModelScope.launch { flightTable.delete(flight.id, onError = { onError(it) }) }
+      newFlight: Flight,
+  ) = viewModelScope.launch { repository.flightTable.update(newFlight.id, newFlight) }
 
   fun deleteFlight(flightId: String) =
-      viewModelScope.launch { flightTable.delete(flightId, onError = { onError(it) }) }
+      viewModelScope.launch { repository.flightTable.delete(flightId, onError = { onError(it) }) }
 
   /** adds the given flight to the db and the viewmodel */
   fun addFlight(
       flight: PlannedFlight,
   ) =
       viewModelScope.launch {
-        val flightId = flightTable.add(flight, onError = { onError(it) })
-        refreshCurrentFlights()
+        val flightId = repository.flightTable.add(flight, onError = { onError(it) })
       }
-
-  /** return the flight with flight id if it exists in the list of current flights */
-  private fun getFlightFromId(flightId: String): Flight? {
-    return currentFlights.value?.find { it.id == flightId }
-  }
 
   fun getFlight(flightId: String): StateFlow<Flight?> {
     return _currentFlights
