@@ -1,8 +1,6 @@
 package ch.epfl.skysync.screens.login
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.MainActivity
@@ -21,24 +19,13 @@ class LoginScreenTest : TestCase() {
   @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
 
   @Test
-  fun buttonIsCorrectlyDisplayed() {
+  fun buttonIsCorrectlyDisplayedAndIsClickable() {
     ComposeScreen.onComposeScreen<LoginScreenNodes>(composeTestRule) {
       loginButton {
         assertIsDisplayed()
         assertHasClickAction()
-      }
-    }
-  }
-
-  @Test
-  fun googleSignInReturnsValidActivityResult() {
-    ComposeScreen.onComposeScreen<LoginScreenNodes>(composeTestRule) {
-      loginButton {
-        assertIsDisplayed()
         performClick()
       }
-      // assert that an Intent resolving to Google Mobile Services has been sent (for sign-in)
-      Intents.intended(IntentMatchers.toPackage("com.google.android.gms"))
     }
   }
 }

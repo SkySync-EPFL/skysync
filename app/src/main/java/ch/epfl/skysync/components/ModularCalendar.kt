@@ -1,38 +1,37 @@
 package ch.epfl.skysync.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Text
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.ui.theme.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -50,44 +49,41 @@ fun getStartOfWeek(date: LocalDate): LocalDate {
 /**
  * Composable function to display a calendar with a week view
  *
- * @param bottom The composable rendered at the bottom of the calendar
+ * @param modifier The modifier
+ * @param isDraft Indicates if the [AvailabilityCalendar] is being modified
  * @param tile The composable rendered for each tile
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ModularCalendar(
-    padding: PaddingValues,
-    bottom: @Composable () -> Unit,
+    modifier: Modifier,
+    isDraft: Boolean,
     tile: @Composable (date: LocalDate, time: TimeSlot) -> Unit
 ) {
+
+  val pagerState = rememberPagerState(initialPage = 20, pageCount = { 52 })
   var currentWeekStartDate by remember { mutableStateOf(getStartOfWeek(LocalDate.now())) }
-  Column(
-      modifier =
-          Modifier.padding(padding)
-              .verticalScroll(rememberScrollState())
-              .padding(16.dp)
-              .background(Color.White)
-              .testTag("ModularCalendar"),
-  ) {
-    WeekView(currentWeekStartDate, tile)
-    Spacer(modifier = Modifier.height(8.dp))
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween) {
-          Spacer(modifier = Modifier.width(5.dp))
-          Button(
-              onClick = { currentWeekStartDate = currentWeekStartDate.minusWeeks(1) },
-              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))) {
-                Text(text = "Prev Week", color = Color.DarkGray)
-              }
-          Spacer(modifier = Modifier.width(20.dp))
-          Button(
-              onClick = { currentWeekStartDate = currentWeekStartDate.plusWeeks(1) },
-              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))) {
-                Text(text = "Next Week", color = Color.DarkGray)
-              }
-          Spacer(modifier = Modifier.width(5.dp))
+  var previousPage by remember { mutableIntStateOf(pagerState.currentPage) }
+  var initLaunchEffect = true
+  LaunchedEffect(pagerState) {
+    // Collect from the a snapshotFlow reading the currentPage
+    snapshotFlow { pagerState.currentPage }
+        .collect { page ->
+          if (initLaunchEffect) {
+            initLaunchEffect = false
+          } else {
+            currentWeekStartDate =
+                if (page > previousPage) {
+                  currentWeekStartDate.plusWeeks(1)
+                } else {
+                  currentWeekStartDate.minusWeeks(1)
+                }
+            previousPage = page
+          }
         }
-    bottom()
+  }
+  HorizontalPager(state = pagerState, modifier = modifier.testTag("HorizontalPager")) {
+    WeekView(isDraft, currentWeekStartDate, tile)
   }
 }
 
@@ -98,64 +94,67 @@ fun ModularCalendar(
  * @param tile The composable rendering each tile
  */
 @Composable
-fun WeekView(startOfWeek: LocalDate, tile: @Composable (date: LocalDate, time: TimeSlot) -> Unit) {
+fun WeekView(
+    isDraft: Boolean,
+    startOfWeek: LocalDate,
+    tile: @Composable (date: LocalDate, time: TimeSlot) -> Unit
+) {
   val weekDays = (0..6).map { startOfWeek.plusDays(it.toLong()) }
-  Column() {
+  Column {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically) {
-          Spacer(modifier = Modifier.fillMaxWidth(0.01f))
-          Box(contentAlignment = Alignment.Center) {
-            Text(text = "AM", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+          val textColor = if (isDraft) Color.Black else Color.White
+          mapOf("Draft" to textColor, "AM" to Color.Black, "PM" to Color.Black).forEach {
+              (text, color) ->
+            Text(
+                text = text,
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                fontSize = 16.sp,
+                color = color,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center)
           }
-          Box(contentAlignment = Alignment.Center) {
-            Text(text = "PM", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-          }
-          Spacer(modifier = Modifier.fillMaxWidth(0.01f))
         }
-
-    weekDays.withIndex().forEach { (i, day) ->
-      val scale = (1f / 10 * 10 / (10 - i))
+    weekDays.forEach { day ->
       Row(
-          modifier = Modifier.fillMaxWidth().fillMaxHeight(scale),
+          modifier = Modifier.fillMaxSize().weight(2f),
           verticalAlignment = Alignment.CenterVertically,
       ) {
         Column(
             modifier = Modifier.fillMaxHeight().fillMaxWidth(0.3f).background(Color.White),
             verticalArrangement = Arrangement.Center,
         ) {
-          Row(
-              verticalAlignment = Alignment.CenterVertically,
-              horizontalArrangement = Arrangement.Center) {
-                Text(
-                    text = day.format(DateTimeFormatter.ofPattern("EEE", Locale.getDefault())),
-                    fontSize = 16.sp,
-                    color = Color.Black,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center)
-              }
-          Row(
-              verticalAlignment = Alignment.CenterVertically,
-              horizontalArrangement = Arrangement.Center) {
-                Text(
-                    text = day.format(DateTimeFormatter.ofPattern("MM/dd", Locale.getDefault())),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center)
-              }
+          Text(
+              text = day.format(DateTimeFormatter.ofPattern("EEE", Locale.getDefault())),
+              fontSize = 16.sp,
+              color = Color.Black,
+              modifier = Modifier.fillMaxWidth(),
+              textAlign = TextAlign.Center)
+
+          Text(
+              text = day.format(DateTimeFormatter.ofPattern("MM/dd", Locale.getDefault())),
+              fontSize = 16.sp,
+              fontWeight = FontWeight.Bold,
+              color = Color.Black,
+              modifier = Modifier.fillMaxWidth(),
+              textAlign = TextAlign.Center)
         }
-        Row(
-            modifier = Modifier.fillMaxSize().background(Color.LightGray),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween) {
-              tile(day, TimeSlot.AM)
-              tile(day, TimeSlot.PM)
-            }
+        tile(day, TimeSlot.AM)
+        tile(day, TimeSlot.PM)
       }
       Divider(color = Color.Black, thickness = 1.dp)
     }
+  }
+}
+
+@Preview
+@Composable
+fun CalendarPreview() {
+
+  ModularCalendar(Modifier, true) { date, time ->
+    println(date)
+    println(time)
   }
 }
