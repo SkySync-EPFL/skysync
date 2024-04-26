@@ -1,6 +1,7 @@
 package ch.epfl.skysync.components.forms
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenu
@@ -33,33 +34,39 @@ fun <T> CustomDropDownMenu(
 ) {
 
   var expanded by remember { mutableStateOf(false) }
-  ExposedDropdownMenuBox(
-      modifier =
-          Modifier.fillMaxWidth()
-              .padding(horizontal = defaultPadding)
-              .clickable(onClick = { expanded = true })
-              .testTag("$title Menu"),
-      expanded = expanded,
-      onExpandedChange = { expanded = !expanded }) {
-        OutlinedTextField(
-            value = showString(value),
-            modifier = Modifier.menuAnchor().fillMaxWidth(),
-            readOnly = true,
-            onValueChange = {},
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            isError = isError,
-            supportingText = { if (isError) Text(messageError) })
+  Column {
+    ExposedDropdownMenuBox(
+        modifier =
+            Modifier.fillMaxWidth()
+                .padding(horizontal = defaultPadding)
+                .clickable(onClick = { expanded = true })
+                .testTag("$title Menu"),
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }) {
+          OutlinedTextField(
+              value = showString(value),
+              modifier = Modifier.fillMaxWidth().menuAnchor(),
+              readOnly = true,
+              onValueChange = {},
+              trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+              isError = isError,
+              supportingText = { if (isError) Text(messageError) })
+        }
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+    ) {
+      items.withIndex().forEach { (id, item) ->
+        DropdownMenuItem(
+            modifier =
+                Modifier.fillMaxWidth().padding(horizontal = defaultPadding).testTag("$title $id"),
+            onClick = {
+              onclickMenu(item)
+              expanded = false
+            },
+            text = { Text(showString(item)) },
+            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding)
       }
-  DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-    items.withIndex().forEach { (id, item) ->
-      DropdownMenuItem(
-          modifier =
-              Modifier.fillMaxWidth().padding(horizontal = defaultPadding).testTag("$title $id"),
-          onClick = {
-            onclickMenu(item)
-            expanded = false
-          },
-          text = { Text(showString(item)) })
     }
   }
 }
