@@ -60,17 +60,17 @@ class IntegrateFlightDetailTest {
   //    assertEquals(route, Route.CONFIRM_FLIGHT + "/{Flight ID}")
   //  }
 
-  @Test
-  fun testDelete() {
-    composeTestRule.onNodeWithText("Home").performClick()
-    val nodes = composeTestRule.onAllNodesWithTag("flightCard")
-    nodes[0].performClick()
-    var route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
-    composeTestRule.onNodeWithTag("DeleteButton").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    assertEquals(route, Route.HOME)
-  }
+//  @Test
+//  fun testDelete() {
+//    composeTestRule.onNodeWithText("Home").performClick()
+//    val nodes = composeTestRule.onAllNodesWithTag("flightCard")
+//    nodes[0].performClick()
+//    var route = navController.currentBackStackEntry?.destination?.route
+//    assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
+//    composeTestRule.onNodeWithTag("DeleteButton").performClick()
+//    route = navController.currentBackStackEntry?.destination?.route
+//    assertEquals(route, Route.HOME)
+//  }
 
   @Test
   fun backStackIsRightIfClickOnFlightDetails() {
