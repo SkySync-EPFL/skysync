@@ -42,7 +42,6 @@ class IntegrateFlightDetailTest {
     }
   }
 
-
   @Test
   fun modifyConfirm() {
     composeTestRule.onNodeWithText("Home").performClick()
