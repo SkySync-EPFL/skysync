@@ -56,6 +56,7 @@ class FlightFormTest {
       navController = TestNavHostController(LocalContext.current)
       FlightForm(
           currentFlight = null,
+          navController = navController,
           modifyMode = false,
           title = title,
           allFlightTypes = allFlights,
@@ -63,8 +64,7 @@ class FlightFormTest {
           allVehicles = allVehicles,
           allBalloons = allBalloons,
           allBaskets = allBaskets,
-          flightAction = { _ -> },
-          onBackButton = {})
+          flightAction = { _ -> })
     }
   }
 

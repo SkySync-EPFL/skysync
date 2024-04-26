@@ -3,9 +3,6 @@ package ch.epfl.skysync.screens
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -50,9 +47,6 @@ fun CalendarScreen(
           }
         }
       },
-      floatingActionButton =
-      // TODO delete the button. It is just there for preview purposes
-      { IconButton(onClick = { navController.navigate(Route.ADD_USER) }) { Icons.Default.Add } },
       bottomBar = { BottomBar(navController) }) { padding ->
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         if (calendarType == Route.AVAILABILITY_CALENDAR) {

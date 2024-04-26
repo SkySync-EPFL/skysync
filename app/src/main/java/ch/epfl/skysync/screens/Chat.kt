@@ -2,6 +2,9 @@ package ch.epfl.skysync.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,7 +21,14 @@ import ch.epfl.skysync.navigation.Route
 fun ChatScreen(navController: NavHostController) {
   Scaffold(
       modifier = Modifier.fillMaxSize().testTag("ChatScreenScaffold"),
-      bottomBar = { BottomBar(navController) }) { padding ->
+      bottomBar = { BottomBar(navController) },
+      floatingActionButton =
+      // TODO delete the button. It is just there for preview purposes
+      {
+        FloatingActionButton(onClick = { navController.navigate(Route.ADD_USER) }) {
+          Icons.Default.Add
+        }
+      }) { padding ->
         val groupList =
             List(10) {
               GroupDetail(
