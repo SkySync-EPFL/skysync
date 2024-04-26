@@ -80,7 +80,7 @@ fun FlightForm(
         TopAppBar(
             title = { Text(title) },
             navigationIcon = {
-              IconButton(onClick = { onBackButton() }) {
+              IconButton(onClick = { onBackButton() }, modifier = Modifier.testTag("BackButton")) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
               }
             })

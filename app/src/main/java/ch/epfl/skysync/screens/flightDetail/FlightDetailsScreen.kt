@@ -30,7 +30,9 @@ fun FlightDetailScreen(
         editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
         confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
         padding = padding,
-        flight = flight)
+        flight = flight,
+        flightId = flightId,
+    )
   }
 }
 
