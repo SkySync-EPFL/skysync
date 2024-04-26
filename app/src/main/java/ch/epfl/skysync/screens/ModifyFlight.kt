@@ -24,6 +24,7 @@ fun ModifyFlightScreen(
   val allRoleTypes = RoleType.entries
   FlightForm(
       currentFlight = flightToModify,
+      navController = navController,
       title = "Modify Flight",
       modifyMode = true,
       allFlightTypes = allFlightTypes,
@@ -34,6 +35,5 @@ fun ModifyFlightScreen(
       flightAction = { flight: PlannedFlight ->
         viewModel.modifyFlight(flight)
         navController.navigate(Route.HOME)
-      },
-      onBackButton = { navController.popBackStack() })
+      })
 }

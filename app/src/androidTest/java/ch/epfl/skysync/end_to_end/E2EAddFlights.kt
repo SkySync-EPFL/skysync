@@ -48,10 +48,10 @@ class E2EAddFlights {
     Assert.assertEquals(Route.ADD_FLIGHT, route)
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("nb Passenger"))
-    composeTestRule.onNodeWithTag("nb Passenger").performClick()
-    composeTestRule.onNodeWithTag("nb Passenger").performTextClearance()
-    composeTestRule.onNodeWithTag("nb Passenger").performTextInput("13")
+        .performScrollToNode(hasTestTag("Number of passengers"))
+    composeTestRule.onNodeWithTag("Number of passengers").performClick()
+    composeTestRule.onNodeWithTag("Number of passengers").performTextClearance()
+    composeTestRule.onNodeWithTag("Number of passengers").performTextInput("13")
 
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")

@@ -19,6 +19,7 @@ fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewMode
   val allRoleTypes = RoleType.entries
   FlightForm(
       currentFlight = null,
+      navController = navController,
       modifyMode = false,
       title = "Add Flight",
       allFlightTypes = allFlightTypes,
@@ -29,6 +30,5 @@ fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewMode
       flightAction = { flight: PlannedFlight ->
         viewModel.addFlight(flight)
         navController.navigate(Route.HOME)
-      },
-      onBackButton = { navController.popBackStack() })
+      })
 }

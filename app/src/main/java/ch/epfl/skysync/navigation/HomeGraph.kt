@@ -9,6 +9,7 @@ import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.screens.AddFlightScreen
+import ch.epfl.skysync.screens.AddUserScreen
 import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
@@ -24,7 +25,6 @@ fun NavGraphBuilder.homeGraph(
     navController: NavHostController,
     uid: String?
 ) {
-
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
     personalCalendar(repository, navController, uid)
     composable(Route.CHAT) { ChatScreen(navController) }
@@ -43,12 +43,10 @@ fun NavGraphBuilder.homeGraph(
           FlightDetailScreen(
               navController = navController, flightId = flightId, viewModel = flightsViewModel)
         }
-
     composable(Route.ADD_FLIGHT) {
       val flightsViewModel = FlightsViewModel.createViewModel(repository)
       AddFlightScreen(navController, flightsViewModel)
     }
-
     composable(
         Route.CONFIRM_FLIGHT + "/{Flight ID}",
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
@@ -66,6 +64,7 @@ fun NavGraphBuilder.homeGraph(
           val flightsViewModel = FlightsViewModel.createViewModel(repository)
           ModifyFlightScreen(navController, flightsViewModel, flightId)
         }
+    composable(Route.ADD_USER) { AddUserScreen(navController = navController) }
     composable(
         Route.TEXT + "/{Group Name}",
         arguments = listOf(navArgument("Group Name") { type = NavType.StringType })) {

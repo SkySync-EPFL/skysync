@@ -36,7 +36,7 @@ fun <T> CustomDropDownMenu(
   ExposedDropdownMenuBox(
       modifier =
           Modifier.fillMaxWidth()
-              .padding(defaultPadding)
+              .padding(horizontal = defaultPadding)
               .clickable(onClick = { expanded = true })
               .testTag("$title Menu"),
       expanded = expanded,
@@ -53,7 +53,8 @@ fun <T> CustomDropDownMenu(
   DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
     items.withIndex().forEach { (id, item) ->
       DropdownMenuItem(
-          modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("$title $id"),
+          modifier =
+              Modifier.fillMaxWidth().padding(horizontal = defaultPadding).testTag("$title $id"),
           onClick = {
             onclickMenu(item)
             expanded = false

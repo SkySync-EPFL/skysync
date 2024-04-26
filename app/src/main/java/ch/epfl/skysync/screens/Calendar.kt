@@ -23,14 +23,6 @@ import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.viewmodel.CalendarViewModel
 
-/**
- * Composable function to display a either the [AvailabilityCalendar] or [FlightCalendar]
- *
- * @param navController Handles navigation between Screens
- * @param calendarType Indicates if the calender to be displayed should be the
- *   [AvailabilityCalendar] or [FlightCalendar]
- * @param viewModel The viewmodel of the calendars
- */
 @Composable
 fun CalendarScreen(
     navController: NavHostController,

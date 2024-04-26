@@ -14,6 +14,7 @@ object Route {
   const val CHAT = "Chat"
   const val FLIGHT_DETAILS = "Flight Details"
   const val CONFIRM_FLIGHT = "Confirm Flight"
+  const val ADD_USER = "Add User"
 
   const val TEXT = "Text"
 
