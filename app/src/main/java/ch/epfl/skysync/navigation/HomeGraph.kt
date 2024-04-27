@@ -17,6 +17,7 @@ import ch.epfl.skysync.screens.ModifyFlightScreen
 import ch.epfl.skysync.screens.TextScreen
 import ch.epfl.skysync.screens.confirmationScreen
 import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
+import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
 /** Graph of the main screens of the app */
@@ -27,7 +28,10 @@ fun NavGraphBuilder.homeGraph(
 ) {
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
     personalCalendar(repository, navController, uid)
-    composable(Route.CHAT) { ChatScreen(navController) }
+    composable(Route.CHAT) {
+      val chatViewModel = ChatViewModel.createViewModel("id-admin-2", repository)
+      ChatScreen(navController, chatViewModel)
+    }
     composable(Route.FLIGHT) { FlightScreen(navController) }
     composable(Route.HOME) {
       val flightsViewModel = FlightsViewModel.createViewModel(repository)
@@ -66,11 +70,16 @@ fun NavGraphBuilder.homeGraph(
         }
     composable(Route.ADD_USER) { AddUserScreen(navController = navController) }
     composable(
-        Route.TEXT + "/{Group Name}",
-        arguments = listOf(navArgument("Group Name") { type = NavType.StringType })) {
-            backStackEntry ->
-          val groupName = backStackEntry.arguments?.getString("Group Name") ?: "No Name"
-          TextScreen(navController, groupName)
+        Route.TEXT + "/{Group ID}",
+        arguments = listOf(navArgument("Group ID") { type = NavType.StringType })) { backStackEntry
+          ->
+          val chatViewModel = ChatViewModel.createViewModel("id-admin-2", repository)
+          val groupId = backStackEntry.arguments?.getString("Group ID")
+          if (groupId == null) {
+            navController.navigate(Route.HOME)
+            return@composable
+          }
+          TextScreen(navController, groupId, chatViewModel)
         }
   }
 }

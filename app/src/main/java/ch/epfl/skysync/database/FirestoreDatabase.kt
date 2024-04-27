@@ -12,8 +12,11 @@ import com.google.firebase.firestore.firestoreSettings
 import com.google.firebase.firestore.toObject
 import java.lang.UnsupportedOperationException
 import kotlin.reflect.KClass
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
 
 /**
@@ -209,7 +212,8 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
       path: String,
       filter: Filter,
       clazz: KClass<T>,
-      onChange: (ListenerUpdate<T>) -> Unit,
+      onChange: suspend (ListenerUpdate<T>) -> Unit,
+      coroutineScope: CoroutineScope,
       limit: Long? = null,
       orderBy: String? = null,
       orderByDirection: Query.Direction = Query.Direction.ASCENDING,
@@ -223,6 +227,11 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
     }
 
     var isFirstUpdate = true
+
+    // use a mutex to ensure that the order in which the callback is executed is preserved
+    // see:
+    // https://stackoverflow.com/questions/73119442/how-to-properly-have-a-queue-of-pending-operations-using-kotlin-coroutines
+    val mutex = Mutex()
     val listener =
         query.addSnapshotListener { snapshot, e ->
           if (e != null) {
@@ -255,7 +264,8 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
           Log.d(TAG, "Listen update: x${adds.size} x${updates.size} x${deletes.size} ($path)")
 
           isFirstUpdate = false
-          onChange(listenerUpdate)
+
+          coroutineScope.launch { mutex.withLock { onChange(listenerUpdate) } }
         }
     Log.d(TAG, "Added listener ($path)")
     return listener

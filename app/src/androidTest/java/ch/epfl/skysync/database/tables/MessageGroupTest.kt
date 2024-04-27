@@ -1,15 +1,19 @@
 package ch.epfl.skysync.database.tables
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.epfl.skysync.MainCoroutineRule
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.models.message.Message
 import java.time.Instant
 import java.util.Date
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.job
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -19,6 +23,8 @@ class MessageGroupTest {
   private val dbs = DatabaseSetup()
   private val messageGroupTable = MessageGroupTable(db)
   private val messageTable = MessageTable(db)
+
+  @ExperimentalCoroutinesApi @get:Rule var mainCoroutineRule = MainCoroutineRule()
 
   @Before
   fun testSetup() = runTest {
@@ -44,18 +50,23 @@ class MessageGroupTest {
     var listenerUpdates: MutableList<ListenerUpdate<Message>> = mutableListOf()
 
     val listener =
-        messageGroupTable.addGroupListener(dbs.messageGroup1.id) { update ->
-          listenerUpdates.add(update)
-        }
-    var newMessage1 =
-        Message(userId = dbs.crew1.id, date = Date.from(Instant.now()), content = "New")
+        messageGroupTable.addGroupListener(
+            dbs.messageGroup1.id,
+            { update -> listenerUpdates.add(update) },
+            coroutineScope = this,
+            onError = { assertNull(it) })
+    var newMessage1 = Message(user = dbs.crew1, date = Date.from(Instant.now()), content = "New")
     newMessage1 = newMessage1.copy(id = messageTable.add(dbs.messageGroup1.id, newMessage1))
 
     messageTable.delete(newMessage1.id)
 
     var newMessage2 =
-        Message(userId = dbs.crew1.id, date = Date.from(Instant.now()), content = "New again")
+        Message(user = dbs.crew1, date = Date.from(Instant.now()), content = "New again")
     newMessage2 = newMessage2.copy(id = messageTable.add(dbs.messageGroup1.id, newMessage2))
+
+    // scary looking call-chain that waits until all coroutines launched with this scope are
+    // finished
+    this.coroutineContext.job.children.forEach { it.join() }
 
     assertEquals(4, listenerUpdates.size)
     assertEquals(true, listenerUpdates[0].isFirstUpdate)

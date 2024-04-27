@@ -128,18 +128,16 @@ class DatabaseSetup {
           vehicles = listOf(vehicle1),
           id = UNSET_ID)
 
-  var messageGroup1 = MessageGroup(userIds = setOf(admin2.id, pilot1.id, crew1.id))
-  var messageGroup2 = MessageGroup(userIds = setOf(admin1.id, admin2.id))
+  var messageGroup1 =
+      MessageGroup(name = "Group 1", userIds = setOf(admin2.id, pilot1.id, crew1.id))
+  var messageGroup2 = MessageGroup(name = "Group 2", userIds = setOf(admin1.id, admin2.id))
 
   var message1 =
-      Message(
-          userId = admin2.id, date = Date.from(Instant.now().minusSeconds(20)), content = "Hello")
+      Message(user = admin2, date = Date.from(Instant.now().minusSeconds(20)), content = "Hello")
   var message2 =
-      Message(
-          userId = pilot1.id, date = Date.from(Instant.now().minusSeconds(10)), content = "World")
+      Message(user = pilot1, date = Date.from(Instant.now().minusSeconds(10)), content = "World")
 
-  var message3 =
-      Message(userId = admin2.id, date = Date.from(Instant.now()), content = "Some stuff")
+  var message3 = Message(user = admin2, date = Date.from(Instant.now()), content = "Some stuff")
 
   /**
    * Delete all items in all tables of the database
