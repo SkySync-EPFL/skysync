@@ -74,7 +74,7 @@ class FlightDetailUiTest {
           confirmClick = {},
           padding = PaddingValues(0.dp),
           flight = dummyFlight.value,
-          flightId = dummyFlight.value.id)
+      )
     }
   }
 

@@ -14,10 +14,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,8 +44,8 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 
 /**
- * FlightDetailUi is a Composable function that displays the UI for flight details. It consists of a
- * header, body, and bottom section with action buttons.
+ * Composable function that displays the UI for flight details. It consists of a header, body, and
+ * bottom section with action buttons.
  *
  * @param backClick Callback function invoked when the back button is clicked.
  * @param deleteClick Callback function invoked when the delete button is clicked.
@@ -51,13 +57,25 @@ import ch.epfl.skysync.models.flight.Vehicle
 @Composable
 fun FlightDetailUi(
     backClick: () -> Unit,
-    deleteClick: (flightId: String) -> Unit,
-    editClick: (flightId: String) -> Unit,
-    confirmClick: (flightId: String) -> Unit,
+    deleteClick: () -> Unit,
+    editClick: () -> Unit,
+    confirmClick: () -> Unit,
     padding: PaddingValues,
     flight: Flight?,
-    flightId: String
 ) {
+  var showDialog by remember { mutableStateOf(false) }
+
+  if (showDialog) {
+    AlertDialogExample(
+        onDismissRequest = { showDialog = false },
+        onConfirmation = {
+          showDialog = false
+          deleteClick()
+        },
+        dialogTitle = "Delete Flight",
+        dialogText = "Are you sure you want to delete this flight ?",
+        icon = Icons.Default.Info)
+  }
   Column(
       modifier = Modifier.fillMaxSize().background(Color.White),
   ) {
@@ -69,12 +87,13 @@ fun FlightDetailUi(
       } else {
         FlightDetailBody(flight, padding)
       }
-      FlightDetailBottom(flightId, deleteClick, editClick, confirmClick)
+      FlightDetailBottom(
+          editClick = editClick, confirmClick = confirmClick, deleteClick = { showDialog = true })
     }
   }
 }
 /**
- * FlightdetailBody is a Composable function that displays the body of the flight detail screen.
+ * Composable function that displays the body of the flight detail screen.
  *
  * @param flight The flight details to display.
  * @param padding PaddingValues to apply to the content.
@@ -134,20 +153,17 @@ fun FlightDetailBody(flight: Flight, padding: PaddingValues) {
   }
 }
 /**
- * FlightDetailBottom is a Composable function that displays the bottom section of the flight detail
- * screen.
+ * Composable function that displays the bottom section of the flight detail screen.
  *
- * @param DeleteClick Callback function invoked when the delete button is clicked.
- * @param EditClick Callback function invoked when the edit button is clicked.
- * @param ConfirmClick Callback function invoked when the confirm button is clicked.
- * @param padding PaddingValues to apply to the content.
+ * @param deleteClick Callback function invoked when the delete button is clicked.
+ * @param editClick Callback function invoked when the edit button is clicked.
+ * @param confirmClick Callback function invoked when the confirm button is clicked.
  */
 @Composable
 fun FlightDetailBottom(
-    flightId: String,
-    DeleteClick: (flightId: String) -> Unit,
-    EditClick: (flightId: String) -> Unit,
-    ConfirmClick: (flightId: String) -> Unit,
+    deleteClick: () -> Unit,
+    editClick: () -> Unit,
+    confirmClick: () -> Unit,
 ) {
   Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
     Row(
@@ -156,17 +172,17 @@ fun FlightDetailBottom(
         verticalAlignment = Alignment.CenterVertically) {
           ClickButton(
               text = "Delete",
-              onClick = { DeleteClick(flightId) },
+              onClick = { deleteClick() },
               modifier = Modifier.fillMaxWidth(0.3f).testTag("DeleteButton"),
               color = Color.Red)
           ClickButton(
               text = "Edit",
-              onClick = { EditClick(flightId) },
+              onClick = { editClick() },
               modifier = Modifier.fillMaxWidth(3 / 7f).testTag("EditButton"),
               color = Color.Yellow)
           ClickButton(
               text = "Confirm",
-              onClick = { ConfirmClick(flightId) },
+              onClick = { confirmClick() },
               modifier = Modifier.fillMaxWidth(0.7f).testTag("ConfirmButton"),
               color = Color.Green)
         }
@@ -190,8 +206,7 @@ fun ClickButton(text: String, onClick: () -> Unit, modifier: Modifier, color: Co
       }
 }
 /**
- * TextBar is a Composable function that displays a row with two text elements separated by a
- * divider.
+ * Composable function that displays a row with two text elements separated by a divider.
  *
  * @param textLeft The text to display on the left side.
  * @param textRight The text to display on the right side.
@@ -224,7 +239,7 @@ fun TextBar(textLeft: String, textRight: String) {
   Spacer(modifier = Modifier.height(8.dp))
 }
 /**
- * TeamRolesList is a Composable function that displays a list of team roles.
+ * Composable function that displays a list of team roles.
  *
  * @param team The team containing the roles to display.
  */
@@ -249,7 +264,7 @@ fun TeamRolesList(team: Team) {
   }
 }
 /**
- * VehicleListText is a Composable function that displays a list of vehicles.
+ * Composable function that displays a list of vehicles.
  *
  * @param vehicle The list of vehicles to display.
  */
@@ -274,8 +289,8 @@ fun VehicleListText(vehicle: List<Vehicle>) {
   }
 }
 /**
- * ScrollableBoxWithButton is a Composable function that displays a button that, when clicked,
- * toggles the visibility of a content area.
+ * Composable function that displays a button that, when clicked, toggles the visibility of a
+ * content area.
  *
  * @param name The text to display on the button.
  * @param content The content to be displayed when the button is clicked.
@@ -296,4 +311,36 @@ fun ScrollableBoxWithButton(name: String, content: @Composable () -> Unit) {
       content()
     }
   }
+}
+
+/**
+ * Composable that appears when the delete button is clicked.
+ *
+ * @param onDismissRequest Callback called when the user dismisses the dialog, such as by tapping
+ *   outside of it.
+ * @param onConfirmation Callback called when the flight has to be deleted
+ * @param dialogTitle Title displayed on the Dialog screen
+ * @param dialogText Text displayed on the Dialog screen
+ * @param icon Icon displayed on the Dialog screen
+ */
+@Composable
+fun AlertDialogExample(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    icon: ImageVector,
+) {
+  AlertDialog(
+      modifier = Modifier.testTag("AlertDialog"),
+      icon = { Icon(icon, contentDescription = "Example Icon") },
+      title = { Text(text = dialogTitle) },
+      text = { Text(text = dialogText, fontSize = 16.sp) },
+      onDismissRequest = { onDismissRequest() },
+      confirmButton = {
+        TextButton(onClick = { onConfirmation() },modifier = Modifier.testTag("AlertDialogConfirm")) { Text("Confirm", fontSize = 16.sp) }
+      },
+      dismissButton = {
+        TextButton(onClick = { onDismissRequest() }, modifier = Modifier.testTag("AlertDialogDismiss")) { Text("Dismiss", fontSize = 16.sp) }
+      })
 }
