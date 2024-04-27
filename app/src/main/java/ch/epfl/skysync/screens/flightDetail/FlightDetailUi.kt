@@ -338,9 +338,15 @@ fun AlertDialogExample(
       text = { Text(text = dialogText, fontSize = 16.sp) },
       onDismissRequest = { onDismissRequest() },
       confirmButton = {
-        TextButton(onClick = { onConfirmation() },modifier = Modifier.testTag("AlertDialogConfirm")) { Text("Confirm", fontSize = 16.sp) }
+        TextButton(
+            onClick = { onConfirmation() }, modifier = Modifier.testTag("AlertDialogConfirm")) {
+              Text("Confirm", fontSize = 16.sp)
+            }
       },
       dismissButton = {
-        TextButton(onClick = { onDismissRequest() }, modifier = Modifier.testTag("AlertDialogDismiss")) { Text("Dismiss", fontSize = 16.sp) }
+        TextButton(
+            onClick = { onDismissRequest() }, modifier = Modifier.testTag("AlertDialogDismiss")) {
+              Text("Dismiss", fontSize = 16.sp)
+            }
       })
 }
