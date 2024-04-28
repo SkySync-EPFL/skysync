@@ -18,7 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import ch.epfl.skysync.R
 
 @Composable
-fun BottomBar(navController: NavHostController) {
+fun AdminBottomBar(navController: NavHostController) {
   val screens =
       listOf(
           BottomBarScreen.Home,
@@ -36,4 +36,3 @@ fun BottomBar(navController: NavHostController) {
     }
   }
 }
-
