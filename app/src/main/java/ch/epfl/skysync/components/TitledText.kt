@@ -1,0 +1,46 @@
+package ch.epfl.skysync.components
+
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.Dp
+
+@Composable
+fun TitledInputTextField(
+    padding: Dp,
+    title: String,
+    value: String,
+    color: Color,
+    underLine: Boolean,
+) {
+
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = padding),
+        text = title,
+        style = MaterialTheme.typography.headlineSmall,
+        textDecoration = if (underLine) TextDecoration.Underline else TextDecoration.None,
+        color = color
+    )
+    OutlinedTextField(
+        value = value,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = padding)
+            .testTag(title),
+        onValueChange = { },
+        enabled = false,
+        colors = TextFieldDefaults.colors()
+    )
+}
