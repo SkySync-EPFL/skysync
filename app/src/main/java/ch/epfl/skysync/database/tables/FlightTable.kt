@@ -18,12 +18,12 @@ import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
+import java.time.LocalDate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 /** Represent the "flight" table */
 class FlightTable(db: FirestoreDatabase) :
@@ -214,7 +214,7 @@ class FlightTable(db: FirestoreDatabase) :
         }
       }
 
-/**
+  /**
    * Returns the available baskets on a given date and timeslot
    *
    * @param localDate The requested day
@@ -232,21 +232,21 @@ class FlightTable(db: FirestoreDatabase) :
     return basketTable.query(basketFilter)
   }
 
-    /**
-     * Returns the all the flights of a given user
-     *
-     * @param id The id of the user
-     */
-    suspend fun getFlightsForUser(id: String): List<Flight> {
-        val flightIds = flightMemberTable.query(Filter.equalTo("userId", id)).map { flightMemberSchema -> flightMemberSchema.flightId }
-        return query(Filter.inArray(FieldPath.documentId(), flightIds))
-    }
-
-
+  /**
+   * Returns the all the flights of a given user
+   *
+   * @param id The id of the user
+   */
+  suspend fun getFlightsForUser(id: String): List<Flight> {
+    val flightIds =
+        flightMemberTable.query(Filter.equalTo("userId", id)).map { flightMemberSchema ->
+          flightMemberSchema.flightId
+        }
+    return query(Filter.inArray(FieldPath.documentId(), flightIds))
+  }
 
   /**
->>>>>>> Stashed changes
-   * Add a new flight to the database
+   * >>>>>>> Stashed changes Add a new flight to the database
    *
    * This will generate a new id for this flight and disregard any previously set id. This will
    * create the [Flight.team] (and in the process the [User.assignedFlights])
