@@ -39,59 +39,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
-
-// Mock data for the list of users
-private val mockUsers =
-    listOf(
-        object : User {
-          override val id = "1"
-          override val firstname = "Jean"
-          override val lastname = "Michel"
-          override val availabilities: AvailabilityCalendar = AvailabilityCalendar()
-          override val assignedFlights: FlightGroupCalendar = FlightGroupCalendar()
-          override val roleTypes = setOf(RoleType.PILOT)
-
-          override fun addRoleType(roleType: RoleType) = this
-        },
-        object : User {
-          override val id = "2"
-          override val firstname = "Jean"
-          override val lastname = "Kevin"
-          override val availabilities: AvailabilityCalendar = AvailabilityCalendar()
-          override val assignedFlights: FlightGroupCalendar = FlightGroupCalendar()
-          override val roleTypes = setOf(RoleType.CREW)
-
-          override fun addRoleType(roleType: RoleType) = this
-        },
-        object : User {
-          override val id = "3"
-          override val firstname = "Jean"
-          override val lastname = "Edouard"
-          override val availabilities: AvailabilityCalendar = AvailabilityCalendar()
-          override val assignedFlights: FlightGroupCalendar = FlightGroupCalendar()
-          override val roleTypes = setOf(RoleType.MAITRE_FONDUE)
-
-          override fun addRoleType(roleType: RoleType) = this
-        },
-        object : User {
-          override val id = "4"
-          override val firstname = "Jean"
-          override val lastname = "Carre"
-          override val availabilities: AvailabilityCalendar = AvailabilityCalendar()
-          override val assignedFlights: FlightGroupCalendar = FlightGroupCalendar()
-          override val roleTypes = setOf(RoleType.SERVICE_ON_BOARD)
-
-          override fun addRoleType(roleType: RoleType) = this
-        },
-        // ... add more mock users
-    )
 
 // Composable function to display a card for a User object.
 @Composable
@@ -195,18 +148,19 @@ fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>) {
   }
 }
 
-// Main screen composable integrating all components.
+// Main screen composable integrating all components. List of users to later be replaced with
+// UserViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun UserManagementScreen(navController: NavHostController) {
+fun UserManagementScreen(navController: NavHostController, users: List<User>) {
   var searchQuery by remember { mutableStateOf("") }
   var selectedRole by remember { mutableStateOf<RoleType?>(null) }
   val roles = RoleType.entries
 
   // Filter users based on search query and selected role.
   val filteredUsers =
-      mockUsers.filter {
+      users.filter {
         (searchQuery.isEmpty() ||
             "${it.firstname} ${it.lastname}".contains(searchQuery, ignoreCase = true)) &&
             (selectedRole == null || it.roleTypes.contains(selectedRole))
@@ -229,7 +183,7 @@ fun UserManagementScreen(navController: NavHostController) {
       bottomBar = { BottomBar(navController) },
       floatingActionButton = {
         FloatingActionButton(
-            onClick = { navController.navigate("addUser") }, containerColor = lightOrange) {
+            onClick = { navController.navigate(Route.ADD_USER) }, containerColor = lightOrange) {
               Icon(imageVector = Icons.Filled.Add, contentDescription = "Add User")
             }
       },
@@ -256,5 +210,5 @@ fun UserManagementScreen(navController: NavHostController) {
 @Composable
 fun UserManagementScreenPreview() {
   val navController = rememberNavController()
-  UserManagementScreen(navController = navController)
+  UserManagementScreen(navController = navController, users = listOf())
 }

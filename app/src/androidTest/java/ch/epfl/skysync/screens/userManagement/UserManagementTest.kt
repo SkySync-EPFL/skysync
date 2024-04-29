@@ -6,10 +6,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.rememberNavController
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
+import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.screens.RoleFilter
 import ch.epfl.skysync.screens.SearchBar
 import ch.epfl.skysync.screens.UserCard
@@ -21,37 +19,31 @@ import org.junit.Test
 class UserManagementTest {
   @get:Rule val composeTestRule = createComposeRule()
 
-  private val mockUsers =
-      listOf(
-          object : User {
-            override val id = "1"
-            override val firstname = "Jean"
-            override val lastname = "Michel"
-            override val availabilities: AvailabilityCalendar = AvailabilityCalendar()
-            override val assignedFlights: FlightGroupCalendar = FlightGroupCalendar()
-            override val roleTypes = setOf(RoleType.PILOT)
+  private val dbs = DatabaseSetup()
 
-            override fun addRoleType(roleType: RoleType) = this
-          },
-      )
+  private val users = listOf(dbs.pilot1, dbs.crew1)
 
   @Test
   fun userCardDisplaysCorrectly() {
 
-    composeTestRule.setContent { UserCard(user = mockUsers[0], onUserClick = {}) }
+    composeTestRule.setContent { UserCard(user = users[0], onUserClick = {}) }
 
-    composeTestRule.onNodeWithText("Jean Michel").assertIsDisplayed()
-    composeTestRule.onNodeWithText("PILOT").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText("${dbs.pilot1.firstname} ${dbs.pilot1.lastname}")
+        .assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(dbs.pilot1.roleTypes.joinToString { it.name })
+        .assertIsDisplayed()
   }
 
   @Test
   fun userCardClickable() {
     var clickedId = ""
 
-    composeTestRule.setContent { UserCard(user = mockUsers[0], onUserClick = { clickedId = it }) }
+    composeTestRule.setContent { UserCard(user = users[0], onUserClick = { clickedId = it }) }
 
-    composeTestRule.onNodeWithText("Jean Michel").performClick()
-    assertEquals("1", clickedId)
+    composeTestRule.onNodeWithText("${dbs.pilot1.firstname} ${dbs.pilot1.lastname}").performClick()
+    assertEquals(dbs.pilot1.id, clickedId)
   }
 
   @Test
@@ -62,15 +54,13 @@ class UserManagementTest {
       SearchBar(query = currentQuery, onQueryChanged = { currentQuery = it })
     }
 
-    composeTestRule.onNodeWithText("Search users").performTextInput("Jean")
-    assertEquals("Jean", currentQuery)
+    composeTestRule.onNodeWithText("Search users").performTextInput(dbs.pilot1.firstname)
+    assertEquals(dbs.pilot1.firstname, currentQuery)
   }
 
   @Test
   fun roleFilterDisplaysRoles() {
-    composeTestRule.setContent {
-      RoleFilter(onRoleSelected = {}, roles = RoleType.values().toList())
-    }
+    composeTestRule.setContent { RoleFilter(onRoleSelected = {}, roles = RoleType.entries) }
 
     composeTestRule.onNodeWithText("Filter by role").performClick()
     composeTestRule.onNodeWithText("PILOT").assertIsDisplayed()
@@ -78,10 +68,16 @@ class UserManagementTest {
 
   @Test
   fun userManagementScreenDisplaysUsers() {
-    composeTestRule.setContent { UserManagementScreen(navController = rememberNavController()) }
+    composeTestRule.setContent {
+      UserManagementScreen(navController = rememberNavController(), users)
+    }
 
     // Assuming your mockUsers are visible to the test
-    composeTestRule.onNodeWithText("Jean Michel").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Jean Kevin").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText("${dbs.pilot1.firstname} ${dbs.pilot1.lastname}")
+        .assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText("${dbs.crew1.firstname} ${dbs.crew1.lastname}")
+        .assertIsDisplayed()
   }
 }
