@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit
 import java.util.Date
 
 object MessageDateFormatter {
+  /** Format a [Date] object to a readable date/time */
   fun format(date: Date): String {
     val now = Instant.now()
     val hoursDiff = date.toInstant().until(now, ChronoUnit.MINUTES)

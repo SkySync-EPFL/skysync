@@ -15,7 +15,6 @@ import ch.epfl.skysync.models.message.MessageType
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
 import com.google.firebase.firestore.Filter
-import com.google.firebase.firestore.ListenerRegistration
 import java.time.Instant
 import java.util.Date
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,18 +29,30 @@ data class ChatUiState(
     val isLoading: Boolean = true,
 )
 
+/**
+ * ViewModel for the chat screens
+ *
+ * @param uid The Firebase authentication uid of the user
+ * @param messageListenerViewModel The message listener shared view model
+ * @param repository App repository
+ */
 class ChatViewModel(
     private val uid: String,
+    private val messageListenerViewModel: MessageListenerSharedViewModel,
     repository: Repository,
 ) : ViewModel() {
   companion object {
     @Composable
-    fun createViewModel(uid: String, repository: Repository): ChatViewModel {
+    fun createViewModel(
+        uid: String,
+        messageListenerViewModel: MessageListenerSharedViewModel,
+        repository: Repository
+    ): ChatViewModel {
       return viewModel<ChatViewModel>(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return ChatViewModel(uid, repository) as T
+                  return ChatViewModel(uid, messageListenerViewModel, repository) as T
                 }
               })
     }
@@ -51,7 +62,6 @@ class ChatViewModel(
   private val messageGroupTable = repository.messageGroupTable
   private val messageTable = repository.messageTable
 
-  private val listeners: MutableList<ListenerRegistration> = mutableListOf()
   private var _user: User? = null
   private val messageGroups: MutableStateFlow<List<MessageGroup>> = MutableStateFlow(emptyList())
   private val isLoading = MutableStateFlow(false)
@@ -65,16 +75,20 @@ class ChatViewModel(
               started = WhileUiSubscribed,
               initialValue = ChatUiState(isLoading = true))
 
+  /** Returns a flow of the group details, updated on new messages */
   fun getGroupDetails(): StateFlow<List<GroupDetails>> {
     return messageGroups
         .map { groups ->
-          groups.map { group ->
-            GroupDetails(group.id, group.name, null, group.messages.getOrNull(0))
-          }
+          groups
+              .map { group ->
+                GroupDetails(group.id, group.name, null, group.messages.getOrNull(0))
+              }
+              .sortedByDescending { it.lastMessage?.date ?: Date.from(Instant.now()) }
         }
         .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = listOf())
   }
 
+  /** Returns a flow of the messages of a message group, updated on new messages */
   fun getGroupChatMessages(groupId: String): StateFlow<List<ChatMessage>> {
     return messageGroups
         .map { groups ->
@@ -97,8 +111,9 @@ class ChatViewModel(
         (messageGroups.value.filter { it.id != messageGroup.id } + messageGroup).sortedBy { it.id }
   }
 
-  private fun onMessageGroupChange(groupId: String, update: ListenerUpdate<Message>) {
-    val group = messageGroups.value.find { it.id == groupId } ?: return
+  /** Callback called on message listener update. */
+  private fun onMessageGroupChange(group: MessageGroup, update: ListenerUpdate<Message>) {
+    val group = messageGroups.value.find { it.id == group.id } ?: return
     var messages = group.messages
 
     // remove updated/deleted messages
@@ -109,25 +124,16 @@ class ChatViewModel(
         }
 
     messages = messages + (update.updates + update.adds)
-    messages = messages.sortedBy { it.date }.reversed()
+    messages = messages.sortedByDescending { it.date }
     updateMessageGroupState(group.copy(messages = messages))
   }
 
+  /** Fetch all message groups the user is part of, as well as the messages of these groups. */
   fun refresh() =
       viewModelScope.launch {
         isLoading.value = true
         val groups =
             messageGroupTable.query(Filter.arrayContains("userIds", uid), onError = { onError(it) })
-
-        // setup listeners
-        groups.forEach { group ->
-          listeners.add(
-              messageGroupTable.addGroupListener(
-                  group.id,
-                  { onMessageGroupChange(group.id, it) },
-                  viewModelScope,
-                  onError = { onError(it) }))
-        }
 
         groups
             .map { messageGroup ->
@@ -141,36 +147,42 @@ class ChatViewModel(
         isLoading.value = false
       }
 
+  /** Fetch the user */
   fun refreshUser() =
       viewModelScope.launch { _user = userTable.get(uid, onError = { onError(it) }) }
 
-  fun sendMessage(groupId: String, content: String): Message? {
-    if (_user == null) {
-      // this should in principle never happen
-      onError(IllegalStateException("User is not defined"))
-      return null
-    }
-    val message = Message(user = _user!!, date = Date.from(Instant.now()), content = content)
-    val messageGroup = messageGroups.value.find { it.id == groupId }
-    if (messageGroup == null) {
-      onError(IllegalArgumentException("Group ID is invalid"))
-      return null
-    }
-
-    viewModelScope.launch {
-      val id = messageTable.add(groupId, message, onError = { onError(it) })
-      updateMessageGroupState(messageGroup.withNewMessage(message.copy(id = id)))
-    }
-    return message
-  }
+  /**
+   * Send a message on a message group
+   *
+   * This will trigger a listener update that will update the group messages
+   *
+   * @param groupId The ID of the message group to send the message to
+   * @param content The content of the message
+   */
+  fun sendMessage(groupId: String, content: String) =
+      viewModelScope.launch {
+        if (_user == null) {
+          // this should in principle never happen
+          onError(IllegalStateException("User is not defined"))
+          return@launch
+        }
+        val message = Message(user = _user!!, date = Date.from(Instant.now()), content = content)
+        val messageGroup = messageGroups.value.find { it.id == groupId }
+        if (messageGroup == null) {
+          onError(IllegalArgumentException("Group ID is invalid"))
+          return@launch
+        }
+        messageTable.add(groupId, message, onError = { onError(it) })
+      }
 
   init {
+    messageListenerViewModel.pushCallback(this::onMessageGroupChange)
     refreshUser()
     refresh()
   }
 
   override fun onCleared() {
-    listeners.forEach { it.remove() }
+    messageListenerViewModel.popCallback()
     super.onCleared()
   }
 

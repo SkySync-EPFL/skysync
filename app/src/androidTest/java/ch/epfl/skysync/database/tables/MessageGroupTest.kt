@@ -114,7 +114,7 @@ class MessageGroupTest {
   fun deleteTest() = runTest {
     messageGroupTable.delete(dbs.messageGroup1.id, onError = { assertNull(it) })
     val messageGroups = messageGroupTable.getAll(onError = { assertNull(it) })
-    assertEquals(listOf(dbs.messageGroup2), messageGroups)
+    assertEquals(listOf(dbs.messageGroup2.id), messageGroups.map { it.id })
 
     val messages = messageTable.getAll(onError = { assertNull(it) })
     assertEquals(listOf(dbs.message3), messages)

@@ -239,5 +239,8 @@ class DatabaseSetup {
             launch { message3 = message3.copy(id = messageTable.add(messageGroup2.id, message3)) },
         )
         .forEach { it.join() }
+
+    messageGroup1 = messageGroup1.copy(messages = listOf(message2, message1))
+    messageGroup2 = messageGroup2.copy(messages = listOf(message3))
   }
 }

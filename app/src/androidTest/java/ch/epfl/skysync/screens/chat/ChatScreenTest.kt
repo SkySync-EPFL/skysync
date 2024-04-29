@@ -11,6 +11,7 @@ import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
+import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -26,7 +27,10 @@ class ChatScreenTest {
     val db = FirestoreDatabase(useEmulator = true)
     val repository = Repository(db)
     composeTestRule.setContent {
-      val viewModel = ChatViewModel.createViewModel(uid = dbs.admin1.id, repository = repository)
+      val messageListenerSharedViewModel = MessageListenerSharedViewModel.createViewModel()
+      val viewModel =
+          ChatViewModel.createViewModel(
+              uid = dbs.admin1.id, messageListenerSharedViewModel, repository = repository)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       ChatScreen(navController, viewModel)
