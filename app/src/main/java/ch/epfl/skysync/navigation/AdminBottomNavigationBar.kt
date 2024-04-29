@@ -1,31 +1,22 @@
 package ch.epfl.skysync.navigation
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import ch.epfl.skysync.R
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun AdminBottomBar(navController: NavHostController) {
   val screens =
       listOf(
           BottomBarScreen.Home,
-          BottomBarScreen.Flight,
+          BottomBarScreen.User,
           BottomBarScreen.Chat,
           BottomBarScreen.Calendar,
-      )
+          BottomBarScreen.Stats)
   val navBackStackEntry by navController.currentBackStackEntryAsState()
   val currentDestination = navBackStackEntry?.destination
 
@@ -35,4 +26,10 @@ fun AdminBottomBar(navController: NavHostController) {
           screen = screen, currentDestination = currentDestination, navController = navController)
     }
   }
+}
+
+@Preview
+@Composable
+fun PreviewAdminBottomBar() {
+  AdminBottomBar(navController = rememberNavController())
 }
