@@ -14,16 +14,22 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.database.tables.FlightMemberTable
+import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.screens.flightDetail.FlightDetailUi
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.verify
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 class FlightDetailUiTest {
   @get:Rule val composeTestRule = createComposeRule()
@@ -31,25 +37,32 @@ class FlightDetailUiTest {
   @get:Rule val mockkRule = MockKRule(this)
   // Relaxed mocks methods have a default implementation returning values
   @RelaxedMockK lateinit var navController: NavHostController
-  val dbs = DatabaseSetup()
-  var flight = dbs.flight1
-  val flightId = flight.id
+  private val db = FirestoreDatabase(useEmulator = true)
+  private val dbs = DatabaseSetup()
+  private val flightTable = FlightTable(db)
+  private val flightMemberTable = FlightMemberTable(db)
 
   @Before
   fun setUpNavHost() = runTest {
-    val db = FirestoreDatabase(useEmulator = true)
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
+
     composeTestRule.setContent {
       FlightDetailUi(
           backClick = { navController.popBackStack() },
-          deleteClick = { navController.navigate(Route.HOME) },
-          editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
-          confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
+          deleteClick = {
+            launch {
+              println("POIRE")
+              flightTable.delete(dbs.flight1.id) }
+            navController.navigate(Route.HOME)
+          },
+          editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${dbs.flight1.id}") },
+          confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${dbs.flight1.id}") },
           padding = PaddingValues(0.dp),
-          flight = flight,
+          flight = dbs.flight1,
       )
     }
+
   }
 
   @Test
@@ -60,20 +73,31 @@ class FlightDetailUiTest {
   }
 
   @Test
-  fun deleteButtonWorksWhenDismiss() {
+  fun deleteButtonWorksWhenDismiss() = runTest {
     composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
     composeTestRule.onNodeWithText("Delete").performClick()
     composeTestRule.onNodeWithTag("AlertDialog").assertIsDisplayed()
     composeTestRule.onNodeWithTag("AlertDialogDismiss").performClick()
     composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
+
+    val getFlight = flightTable.get(dbs.flight1.id, onError = { Assert.assertNull(it) })
+
+    Assert.assertEquals(dbs.flight1, getFlight)
   }
 
   @Test
-  fun deleteButtonWorksWhenConfirm() {
+  fun deleteButtonWorksWhenConfirm() = runTest {
+
     composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
     composeTestRule.onNodeWithText("Delete").performClick()
     composeTestRule.onNodeWithTag("AlertDialog").assertIsDisplayed()
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
+
+    runBlocking {
+      delay(1000                                                                                           0)
+    }
+    val getFlight = flightTable.get(dbs.flight1.id, onError = { Assert.assertNull(it) })
+    Assert.assertEquals(null, getFlight)
     verify { navController.navigate(Route.HOME) }
     confirmVerified(navController)
   }
@@ -81,59 +105,59 @@ class FlightDetailUiTest {
   @Test
   fun editButtonWorks() {
     composeTestRule.onNodeWithText("Edit").performClick()
-    verify { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") }
+    verify { navController.navigate(Route.MODIFY_FLIGHT + "/${dbs.flight1.id}") }
     confirmVerified(navController)
   }
 
   @Test
   fun confirmButtonWorks() {
     composeTestRule.onNodeWithText("Confirm").performClick()
-    verify { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") }
+    verify { navController.navigate(Route.CONFIRM_FLIGHT + "/${dbs.flight1.id}") }
     confirmVerified(navController)
   }
 
   @Test
   fun numberOfPaxValueIsDisplayed() {
-    val expected = flight.nPassengers.toString()
+    val expected = dbs.flight1.nPassengers.toString()
     composeTestRule.onNodeWithText("$expected Pax").assertIsDisplayed()
   }
 
   @Test
   fun flightTypeValueIsDisplayed() {
-    val expected = flight.flightType.name
+    val expected = dbs.flight1.flightType.name
     composeTestRule.onNodeWithText(expected).assertIsDisplayed()
   }
 
   @Test
   fun dateValueIsDisplayed() {
-    val expected = flight.date.toString()
+    val expected = dbs.flight1.date.toString()
     composeTestRule.onNodeWithText(expected).assertIsDisplayed()
   }
 
   @Test
   fun balloonAndValueIsDisplayed() {
     composeTestRule.onNodeWithText("Balloon").assertIsDisplayed()
-    val expected = flight.balloon?.name ?: "None"
+    val expected = dbs.flight1.balloon?.name ?: "None"
     composeTestRule.onNodeWithTag("Balloon$expected").assertIsDisplayed()
   }
 
   @Test
   fun basketAndValueIsDisplayed() {
     composeTestRule.onNodeWithText("Basket").assertIsDisplayed()
-    val expected = flight.basket?.name ?: "None"
+    val expected = dbs.flight1.basket?.name ?: "None"
     composeTestRule.onNodeWithTag("Basket$expected").assertIsDisplayed()
   }
 
   @Test
   fun timeSlotIsDisplayed() {
-    composeTestRule.onNodeWithText(flight.timeSlot.name).assertIsDisplayed()
+    composeTestRule.onNodeWithText(dbs.flight1.timeSlot.name).assertIsDisplayed()
   }
 
   @Test
   fun teamButtonWorks() {
     composeTestRule.onNodeWithText("Team").performClick()
-    for (index in flight.team.roles.indices) {
-      val role = flight.team.roles[index]
+    for (index in dbs.flight1.team.roles.indices) {
+      val role = dbs.flight1.team.roles[index]
       composeTestRule
           .onNodeWithTag("TeamList")
           .performScrollToNode(hasText("Member $index: ${role.roleType.name}"))
@@ -154,14 +178,14 @@ class FlightDetailUiTest {
   @Test
   fun vehiclesAndValuesAreDisplayed() {
     composeTestRule.onNodeWithText("Vehicles").performClick()
-    for (index in flight.vehicles.indices) {
+    for (index in dbs.flight1.vehicles.indices) {
       composeTestRule
           .onNodeWithTag("VehicleList")
           .performScrollToNode(hasText("Vehicle $index"))
           .assertIsDisplayed()
 
       composeTestRule
-          .onNodeWithTag("Vehicle $index" + flight.vehicles[index].name)
+          .onNodeWithTag("Vehicle $index" + dbs.flight1.vehicles[index].name)
           .assertIsDisplayed()
     }
   }
@@ -169,10 +193,10 @@ class FlightDetailUiTest {
   @Test
   fun vehiclesValueAreDisplayed() {
     composeTestRule.onNodeWithText("Vehicles").performClick()
-    for (index in flight.vehicles.indices) {
+    for (index in dbs.flight1.vehicles.indices) {
       composeTestRule
           .onNodeWithTag("VehicleList")
-          .performScrollToNode(hasTestTag("Vehicle $index" + flight.vehicles[index].name))
+          .performScrollToNode(hasTestTag("Vehicle $index" + dbs.flight1.vehicles[index].name))
           .assertIsDisplayed()
     }
   }

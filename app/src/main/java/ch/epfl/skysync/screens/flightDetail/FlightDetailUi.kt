@@ -14,13 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -31,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -66,7 +62,7 @@ fun FlightDetailUi(
   var showDialog by remember { mutableStateOf(false) }
 
   if (showDialog) {
-    AlertDialogExample(
+    ConfirmDeletionAlertDialog(
         onDismissRequest = { showDialog = false },
         onConfirmation = {
           showDialog = false
@@ -74,7 +70,7 @@ fun FlightDetailUi(
         },
         dialogTitle = "Delete Flight",
         dialogText = "Are you sure you want to delete this flight ?",
-        icon = Icons.Default.Info)
+    )
   }
   Column(
       modifier = Modifier.fillMaxSize().background(Color.White),
@@ -321,19 +317,16 @@ fun ScrollableBoxWithButton(name: String, content: @Composable () -> Unit) {
  * @param onConfirmation Callback called when the flight has to be deleted
  * @param dialogTitle Title displayed on the Dialog screen
  * @param dialogText Text displayed on the Dialog screen
- * @param icon Icon displayed on the Dialog screen
  */
 @Composable
-fun AlertDialogExample(
+fun ConfirmDeletionAlertDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogTitle: String,
     dialogText: String,
-    icon: ImageVector,
 ) {
   AlertDialog(
       modifier = Modifier.testTag("AlertDialog"),
-      icon = { Icon(icon, contentDescription = "Example Icon") },
       title = { Text(text = dialogTitle) },
       text = { Text(text = dialogText, fontSize = 16.sp) },
       onDismissRequest = { onDismissRequest() },
