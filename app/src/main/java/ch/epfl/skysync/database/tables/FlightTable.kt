@@ -6,6 +6,7 @@ import ch.epfl.skysync.database.FlightStatus
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.FlightMemberSchema
 import ch.epfl.skysync.database.schemas.FlightSchema
+import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.Flight
@@ -15,7 +16,9 @@ import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.User
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
+import java.time.LocalDate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -104,6 +107,7 @@ class FlightTable(db: FirestoreDatabase) :
         roles.add(Role(member.roleType!!, null))
         continue
       }
+
       deferreds.add(
           launch {
             val user = userTable.get(member.userId)
@@ -210,6 +214,36 @@ class FlightTable(db: FirestoreDatabase) :
               .awaitAll()
         }
       }
+
+  /**
+   * Returns the available baskets on a given date and timeslot
+   *
+   * @param localDate The requested day
+   * @param timeslot The requested timeslot
+   */
+  suspend fun getBasketsAvailableFor(localDate: LocalDate, timeslot: TimeSlot): List<Basket> {
+    val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
+    val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
+    val flightFilter = Filter.and(dateFilter, timeslotFilter)
+
+    val unavailableBasketsIds: List<String> =
+        query(flightFilter).mapNotNull { flight: Flight -> flight.basket?.id }
+
+    val basketFilter = Filter.notInArray(FieldPath.documentId(), unavailableBasketsIds)
+    return basketTable.query(basketFilter)
+  }
+
+    /**
+     * Returns the all the flights of a given user
+     *
+     * @param id The id of the user
+     */
+    suspend fun getFlightsForUser(id: String): List<Flight> {
+        val flightIds = flightMemberTable.query(Filter.equalTo("userId", id)).map { flightMemberSchema -> flightMemberSchema.flightId }
+        return query(Filter.inArray(FieldPath.documentId(), flightIds))
+    }
+
+
 
   /**
    * Add a new flight to the database
