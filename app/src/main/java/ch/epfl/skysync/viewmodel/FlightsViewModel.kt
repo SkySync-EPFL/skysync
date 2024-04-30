@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
-import ch.epfl.skysync.database.UserRole
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
@@ -53,7 +52,7 @@ class FlightsViewModel(
   private val _currentFlightTypes: MutableStateFlow<List<FlightType>> =
       MutableStateFlow(emptyList())
   private val _currentVehicles: MutableStateFlow<List<Vehicle>> = MutableStateFlow(emptyList())
-    private val _currentUser = MutableStateFlow<User?>(null)
+  private val _currentUser = MutableStateFlow<User?>(null)
 
   val currentFlights = _currentFlights.asStateFlow()
   val currentBalloons = _currentBalloons.asStateFlow()
@@ -62,27 +61,25 @@ class FlightsViewModel(
   val currentVehicles = _currentVehicles.asStateFlow()
 
   fun refresh() {
-      refreshUserAndFlights()
+    refreshUserAndFlights()
     refreshCurrentBalloons()
     refreshCurrentBaskets()
     refreshCurrentFlightTypes()
     refreshCurrentVehicles()
   }
 
-    fun refreshUserAndFlights() {
-        viewModelScope.launch {
-            _currentUser.value = repository.userTable.get(userId?: UNSET_ID, onError = { onError(it) })
-            if (_currentUser.value is Admin) {
-                _currentFlights.value = repository.flightTable.getAll(onError = { onError(it) })
-            } else if (_currentUser.value is Pilot || _currentUser.value is Crew){
-                _currentFlights.value = repository.userTable.retrieveAssignedFlights(
-                    repository.flightTable,
-                    userId?: UNSET_ID,
-                    onError = { onError(it)}
-                )
-            }
-        }
+  fun refreshUserAndFlights() {
+    viewModelScope.launch {
+      _currentUser.value = repository.userTable.get(userId ?: UNSET_ID, onError = { onError(it) })
+      if (_currentUser.value is Admin) {
+        _currentFlights.value = repository.flightTable.getAll(onError = { onError(it) })
+      } else if (_currentUser.value is Pilot || _currentUser.value is Crew) {
+        _currentFlights.value =
+            repository.userTable.retrieveAssignedFlights(
+                repository.flightTable, userId ?: UNSET_ID, onError = { onError(it) })
+      }
     }
+  }
 
   fun refreshCurrentBalloons() =
       viewModelScope.launch {
@@ -128,7 +125,7 @@ class FlightsViewModel(
         .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
   }
 
-    /** Callback executed when an error occurs on database-related operations */
+  /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
     // TODO: display error message
   }
