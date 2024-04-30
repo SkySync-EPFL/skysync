@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.database.tables.FlightMemberTable
 import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.screens.flightDetail.FlightDetailUi
@@ -22,14 +21,11 @@ import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.verify
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
 class FlightDetailUiTest {
   @get:Rule val composeTestRule = createComposeRule()
@@ -49,16 +45,13 @@ class FlightDetailUiTest {
     composeTestRule.setContent {
       FlightDetailUi(
           backClick = { navController.popBackStack() },
-          deleteClick = {
-            navController.navigate(Route.HOME)
-          },
+          deleteClick = { navController.navigate(Route.HOME) },
           editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${dbs.flight1.id}") },
           confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${dbs.flight1.id}") },
           padding = PaddingValues(0.dp),
           flight = dbs.flight1,
       )
     }
-
   }
 
   @Test
@@ -83,7 +76,6 @@ class FlightDetailUiTest {
 
   @Test
   fun deleteButtonWorksWhenConfirm() = runTest {
-
     composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
     composeTestRule.onNodeWithText("Delete").performClick()
     composeTestRule.onNodeWithTag("AlertDialog").assertIsDisplayed()
