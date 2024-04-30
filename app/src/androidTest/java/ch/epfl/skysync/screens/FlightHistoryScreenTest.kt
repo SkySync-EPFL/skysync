@@ -2,9 +2,6 @@ package ch.epfl.skysync.screens
 
 import android.location.Location
 import androidx.compose.ui.test.junit4.createComposeRule
-import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.BASE_ROLES
 import ch.epfl.skysync.models.flight.Balloon
@@ -16,7 +13,6 @@ import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
-import ch.epfl.skysync.models.user.Crew
 import java.time.LocalDate
 import java.time.LocalTime
 import org.junit.Rule
@@ -43,13 +39,6 @@ class FlightHistoryScreenTest {
             Location("Lausanne 1"),
             LocalTime.now(),
             Location("Lausanne 2"),
-            LocalTime.now(),
-            0,
-            listOf(""),
-            0U,
-            0U,
-            0U,
-            false,
-            Crew(UNSET_ID, "Crew", "Member", AvailabilityCalendar(), FlightGroupCalendar()))
+            0L)
   }
 }
