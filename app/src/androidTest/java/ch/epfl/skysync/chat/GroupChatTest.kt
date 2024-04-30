@@ -13,7 +13,8 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.unit.dp
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.components.GroupChat
-import ch.epfl.skysync.components.GroupDetail
+import ch.epfl.skysync.database.DatabaseSetup
+import ch.epfl.skysync.models.message.GroupDetails
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -21,9 +22,10 @@ import org.junit.Test
 class GroupChatTest {
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var navController: TestNavHostController
+  val dbs = DatabaseSetup()
   val image: ImageVector? = null
-  val group = GroupDetail("Group", image, "Last message", "Last message time")
-  val searchGroup = GroupDetail("GroupSearch", image, "Last message", "Last message time")
+  val group = GroupDetails("id1", "Group", image, dbs.message1)
+  val searchGroup = GroupDetails("id2", "GroupSearch", image, dbs.message2)
   val groups =
       listOf(
           group,
