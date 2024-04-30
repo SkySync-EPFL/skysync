@@ -16,6 +16,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.Filter
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -193,23 +194,28 @@ class FlightTable(db: FirestoreDatabase) :
     }
   }
 
-  override suspend fun query(filter: Filter, onError: ((Exception) -> Unit)?): List<Flight> =
-      coroutineScope {
-        withErrorCallback(onError) {
-          val schemas = db.query(path, filter, clazz)
-          schemas
-              .map { schema ->
-                async {
-                  val flight = retrieveFlight(schema)
-                  if (flight == null) {
-                    // report
-                  }
-                  flight!!
-                }
+  override suspend fun query(
+      filter: Filter,
+      limit: Long?,
+      orderBy: String?,
+      orderByDirection: Query.Direction,
+      onError: ((Exception) -> Unit)?
+  ): List<Flight> = coroutineScope {
+    withErrorCallback(onError) {
+      val schemas = db.query(path, filter, clazz)
+      schemas
+          .map { schema ->
+            async {
+              val flight = retrieveFlight(schema)
+              if (flight == null) {
+                // report
               }
-              .awaitAll()
-        }
-      }
+              flight!!
+            }
+          }
+          .awaitAll()
+    }
+  }
 
   /**
    * Add a new flight to the database
