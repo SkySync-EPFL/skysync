@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.database.UserRole
+import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.Flight
@@ -23,17 +25,21 @@ import kotlinx.coroutines.launch
 /** ViewModel for the user */
 class FlightsViewModel(
     val repository: Repository,
+    val userId: String?,
+    val userRole: UserRole
 ) : ViewModel() {
   companion object {
     @Composable
     fun createViewModel(
         repository: Repository,
+        userId: String?,
+        userRole: UserRole = UserRole.CREW
     ): FlightsViewModel {
       return viewModel<FlightsViewModel>(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return FlightsViewModel(repository) as T
+                  return FlightsViewModel(repository, userId, userRole) as T
                 }
               })
     }
@@ -82,7 +88,15 @@ class FlightsViewModel(
 
   fun refreshCurrentFlights() =
       viewModelScope.launch {
-        _currentFlights.value = repository.flightTable.getAll(onError = { onError(it) })
+          if (userRole == UserRole.ADMIN) {
+              _currentFlights.value = repository.flightTable.getAll(onError = { onError(it) })
+          } else {
+              _currentFlights.value = repository.userTable.retrieveAssignedFlights(
+                  repository.flightTable,
+                  userId?: UNSET_ID,
+                  onError = { onError(it)}
+              )
+          }
       }
 
   /**
@@ -109,7 +123,7 @@ class FlightsViewModel(
         .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
   }
 
-  /** Callback executed when an error occurs on database-related operations */
+    /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
     // TODO: display error message
   }
