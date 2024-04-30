@@ -262,10 +262,7 @@ fun ConfirmedFlightDetailBottom(confirmClick: () -> Unit) {
   ) {
     Button(
         onClick = confirmClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .testTag("Confirm Button"),
+        modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("Confirm Button"),
         colors = ButtonDefaults.buttonColors(containerColor = lightOrange)) {
           Text(text = "Confirm", color = Color.White, overflow = TextOverflow.Clip)
         }
