@@ -21,8 +21,6 @@ fun TitledText(
     padding: Dp,
     title: String,
     value: String,
-    color: Color,
-    underLine: Boolean,
 ) {
 
     Text(
@@ -31,8 +29,8 @@ fun TitledText(
             .padding(horizontal = padding),
         text = title,
         style = MaterialTheme.typography.headlineSmall,
-        textDecoration = if (underLine) TextDecoration.Underline else TextDecoration.None,
-        color = color
+        textDecoration = TextDecoration.None,
+        color = Color.Black
     )
     Spacer(modifier = Modifier.padding(4.dp))
     OutlinedTextField(

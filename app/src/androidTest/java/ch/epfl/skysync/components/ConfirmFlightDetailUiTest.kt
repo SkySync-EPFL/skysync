@@ -2,6 +2,7 @@ package ch.epfl.skysync.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -32,19 +33,8 @@ class ConfirmFlightDetailUiTest {
     @get:Rule
     val composeTestRule = createComposeRule()
     lateinit var navController: TestNavHostController
-    private var dummyFlight =
-        PlannedFlight(
-            UNSET_ID,
-            1,
-            FlightType.FONDUE,
-            Team(listOf()),
-            null,
-            null,
-            LocalDate.now(),
-            TimeSlot.AM,
-            listOf()
-        )
     private var dummyConfirmedFlight =
+        mutableStateOf(
             ConfirmedFlight(
                 UNSET_ID,
                 1,
@@ -62,15 +52,16 @@ class ConfirmFlightDetailUiTest {
                 meetupTimePassenger = LocalTime.MIDNIGHT,
                 meetupLocationPassenger = "Test Location",
             )
+        )
 
     @Before
     fun setUpNavHost() {
         composeTestRule.setContent {
             ConfirmFlightDetail(
-                originalFlight = dummyFlight,
-                confirmedFlight = dummyConfirmedFlight,
+                confirmedFlight = dummyConfirmedFlight.value,
                 backClick = {},
-                paddingValues = PaddingValues(0.dp)
+                paddingValues = PaddingValues(0.dp),
+                confirmClick = {},
             )
         }
     }
@@ -102,10 +93,10 @@ class ConfirmFlightDetailUiTest {
     }
     @Test
     fun teamIsDisplayed(){
-        dummyConfirmedFlight = dummyConfirmedFlight.copy(team = Team(listOf(Role(RoleType.PILOT),Role(RoleType.CREW))))
+        dummyConfirmedFlight.value = dummyConfirmedFlight.value.copy(team = Team(listOf(Role(RoleType.PILOT),Role(RoleType.CREW))))
         var indexPilot = 0
         var indexCrew = 0
-        for(i in dummyConfirmedFlight.team.roles){
+        for(i in dummyConfirmedFlight.value.team.roles){
             if(i.roleType == RoleType.PILOT){
                 composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag(RoleType.PILOT.name + "$indexPilot"))
                 composeTestRule.onNodeWithTag(RoleType.PILOT.name + "$indexPilot").assertIsDisplayed()
@@ -141,40 +132,40 @@ class ConfirmFlightDetailUiTest {
     }
     @Test
     fun vehiclesIsDisplayed(){
-        dummyConfirmedFlight = dummyConfirmedFlight.copy(vehicles = listOf(Vehicle("test1"),Vehicle("test2")))
+        dummyConfirmedFlight.value = dummyConfirmedFlight.value.copy(vehicles = listOf(Vehicle("test1"),Vehicle("test2")))
         var index = 0
-        for(i in dummyConfirmedFlight.vehicles){
-            composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Vehicle$index"))
-            composeTestRule.onNodeWithTag("Vehicle$index").assertIsDisplayed()
+        for(i in dummyConfirmedFlight.value.vehicles){
+            composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("vehicle $index"))
+            composeTestRule.onNodeWithTag("vehicle $index").assertIsDisplayed()
             index += 1
         }
     }
     @Test
     fun vehiclesIsNotDisplayed(){
-        dummyConfirmedFlight = dummyConfirmedFlight.copy(vehicles = listOf())
+        dummyConfirmedFlight.value = dummyConfirmedFlight.value.copy(vehicles = listOf())
         composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Vehicle"))
         composeTestRule.onNodeWithTag("Vehicle").assertIsDisplayed()
     }
     @Test
     fun remarksIsDisplayed(){
-        dummyConfirmedFlight = dummyConfirmedFlight.copy(remarks = listOf("test1","test2"))
+        dummyConfirmedFlight.value = dummyConfirmedFlight.value.copy(remarks = listOf("test1","test2"))
         var index = 0
-        for(i in dummyConfirmedFlight.remarks){
-            composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Remark$index"))
-            composeTestRule.onNodeWithTag("Remark$index").assertIsDisplayed()
+        for(i in dummyConfirmedFlight.value.remarks){
+            composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("remarks $index"))
+            composeTestRule.onNodeWithTag("remarks $index").assertIsDisplayed()
             index += 1
         }
     }
     @Test
     fun remarksIsNotDisplayed(){
-        dummyConfirmedFlight = dummyConfirmedFlight.copy(remarks = listOf())
-        composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Remark"))
-        composeTestRule.onNodeWithTag("Remark").assertIsDisplayed()
+        dummyConfirmedFlight.value = dummyConfirmedFlight.value.copy(remarks = listOf())
+        composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Remarks"))
+        composeTestRule.onNodeWithTag("Remarks").assertIsDisplayed()
     }
     @Test
     fun colorIsDisplayed(){
-        composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Color"))
-        composeTestRule.onNodeWithTag("Color").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Flight Color"))
+        composeTestRule.onNodeWithTag("Flight Color").assertIsDisplayed()
     }
     @Test
     fun meetupTimeTeamIsDisplayed(){
@@ -195,6 +186,14 @@ class ConfirmFlightDetailUiTest {
     fun meetupLocationPassengerIsDisplayed(){
         composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Meetup Location Passenger"))
         composeTestRule.onNodeWithTag("Meetup Location Passenger").assertIsDisplayed()
+    }
+    @Test
+    fun confirmButtonIsDisplayed(){
+        composeTestRule.onNodeWithTag("Confirm Button").assertIsDisplayed()
+    }
+    @Test
+    fun confirmButtonIsClickable(){
+        composeTestRule.onNodeWithTag("Confirm Button").assertHasClickAction()
     }
 
 }

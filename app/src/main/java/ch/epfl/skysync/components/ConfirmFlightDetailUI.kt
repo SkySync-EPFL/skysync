@@ -1,13 +1,16 @@
 package ch.epfl.skysync.components
 
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -15,12 +18,11 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
@@ -39,12 +41,20 @@ import java.time.LocalTime
 
 
 @Composable
-fun ConfirmFlightDetail(originalFlight: Flight, confirmedFlight: ConfirmedFlight, backClick: ()->Unit,paddingValues: PaddingValues){
+fun ConfirmFlightDetail(confirmedFlight: ConfirmedFlight, backClick: ()->Unit,paddingValues: PaddingValues, confirmClick: ()->Unit){
     Column(
-        modifier = Modifier.padding(PaddingValues())
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth()
+            .padding(paddingValues)
     ) {
-        Header(backClick = backClick, title = "Confirm Flight")
-        ConfirmFlightDetailBody(originalFlight = originalFlight, confirmedFlight = confirmedFlight)
+        Column(modifier = Modifier.fillMaxHeight(0.87f))
+        {
+            Header(backClick = backClick, title = "Confirm Flight")
+            ConfirmFlightDetailBody(confirmedFlight = confirmedFlight)
+        }
+        ConfirmedFlightDetailBottom(confirmClick = confirmClick)
+
     }
 }
 
@@ -81,58 +91,51 @@ fun ConfirmFlightDetailPreview(){
             meetupTimePassenger = LocalTime.NOON,
             meetupLocationPassenger = "idk"
         )
-    ConfirmFlightDetail(originalFlight = ogFlight, confirmedFlight = confirmedFlight, backClick = {}, paddingValues = PaddingValues(0.dp))
+    ConfirmFlightDetail(confirmedFlight = confirmedFlight, backClick = {}, paddingValues = PaddingValues(0.dp), confirmClick = {})
 }
 @Composable
-fun ConfirmFlightDetailBody(originalFlight: Flight,confirmedFlight: ConfirmedFlight){
-    val idBool = confirmedFlight.id == originalFlight.id
-    val nbOfPaxBool = confirmedFlight.nPassengers == originalFlight.nPassengers
-    val flightTypeBool = confirmedFlight.flightType == originalFlight.flightType
-    val teamBool = confirmedFlight.team == originalFlight.team
-    val balloonBool = confirmedFlight.balloon == originalFlight.balloon
-    val basketBool = confirmedFlight.basket == originalFlight.basket
-    val dateBool = confirmedFlight.date == originalFlight.date
-    val timeBool = confirmedFlight.timeSlot == originalFlight.timeSlot
-    val vehicleBool = confirmedFlight.vehicles == originalFlight.vehicles
+fun ConfirmFlightDetailBody(confirmedFlight: ConfirmedFlight){
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
+            .padding(PaddingValues(top = 16.dp))
             .verticalScroll(enabled = true, state = rememberScrollState())
             .testTag("body")
+            .fillMaxHeight(0.8f)
     ) {
-        TitledText(padding = 16.dp, title = "ID", value = confirmedFlight.id, color = if(idBool) Color.Black else lightOrange, underLine = !idBool)
-        TitledText(padding = 16.dp, title = "Number Of Pax" , value = "${confirmedFlight.nPassengers}", color = if(nbOfPaxBool) Color.Black else lightOrange, underLine = !nbOfPaxBool)
-        TitledText(padding = 16.dp, title = "Flight Type", value = confirmedFlight.flightType.name, color = if(flightTypeBool) Color.Black else lightOrange, underLine = !flightTypeBool)
+        TitledText(padding = 16.dp, title = "ID", value = confirmedFlight.id)
+        TitledText(padding = 16.dp, title = "Number Of Pax" , value = "${confirmedFlight.nPassengers}")
+        TitledText(padding = 16.dp, title = "Flight Type", value = confirmedFlight.flightType.name)
         if(confirmedFlight.team.roles.isEmpty()){
             EmptyListText("Team")
         }
         else{
-            TeamText(team = confirmedFlight.team, bool = teamBool)
+            TeamText(team = confirmedFlight.team)
         }
-        TitledText(padding = 16.dp, title = "Balloon", value = confirmedFlight.balloon.name, color = if(balloonBool) Color.Black else lightOrange, underLine = !balloonBool)
-        TitledText(padding = 16.dp, title = "Basket", value = confirmedFlight.basket.name, color = if(basketBool) Color.Black else lightOrange, underLine = !basketBool)
-        TitledText(padding = 16.dp, title = "Date", value = confirmedFlight.date.toString(), color = if(dateBool) Color.Black else lightOrange, underLine = !dateBool)
-        TitledText(padding = 16.dp, title = "Time Slot", value = confirmedFlight.timeSlot.toString(), if(timeBool) Color.Black else lightOrange, underLine = !timeBool)
+        TitledText(padding = 16.dp, title = "Balloon", value = confirmedFlight.balloon.name)
+        TitledText(padding = 16.dp, title = "Basket", value = confirmedFlight.basket.name)
+        TitledText(padding = 16.dp, title = "Date", value = confirmedFlight.date.toString())
+        TitledText(padding = 16.dp, title = "Time Slot", value = confirmedFlight.timeSlot.toString())
         if (confirmedFlight.vehicles.isEmpty()){
             EmptyListText("Vehicle")
         }
         else{
-            VehicleText(vehicle = confirmedFlight.vehicles, bool = vehicleBool) }
+            VehicleText(vehicle = confirmedFlight.vehicles) }
         if(confirmedFlight.remarks.isEmpty()){
             EmptyListText("Remarks")
         }
         else{
-            RemarkText(remarks = confirmedFlight.remarks, bool = false)
+            RemarkText(remarks = confirmedFlight.remarks)
         }
-        TitledText(padding = 16.dp, title = "Flight Color", value = confirmedFlight.color.name, color = lightOrange, underLine = true)
-        TitledText(padding = 16.dp, title = "Meetup Time (Team)", value = confirmedFlight.meetupTimeTeam.toString(), color = lightOrange, underLine = true)
-        TitledText(padding = 16.dp, title = "Departure Time (Team)", value = confirmedFlight.departureTimeTeam.toString(), color = lightOrange, underLine = true)
-        TitledText(padding = 16.dp, title = "Meetup Time (Passenger)", value = confirmedFlight.meetupTimePassenger.toString(), color = lightOrange, underLine = true)
-        TitledText(padding = 16.dp, title = "Meetup Location (Passenger)", value = confirmedFlight.meetupLocationPassenger, color = lightOrange, underLine = true)
+        TitledText(padding = 16.dp, title = "Flight Color", value = confirmedFlight.color.name)
+        TitledText(padding = 16.dp, title = "Meetup Time Team", value = confirmedFlight.meetupTimeTeam.toString())
+        TitledText(padding = 16.dp, title = "Departure Time Team", value = confirmedFlight.departureTimeTeam.toString())
+        TitledText(padding = 16.dp, title = "Meetup Time Passenger", value = confirmedFlight.meetupTimePassenger.toString())
+        TitledText(padding = 16.dp, title = "Meetup Location Passenger", value = confirmedFlight.meetupLocationPassenger)
     }
 }
 @Composable
-fun TeamText(team: Team, bool: Boolean){
+fun TeamText(team: Team){
     Text(
         text = "Team",
         modifier = Modifier
@@ -146,8 +149,7 @@ fun TeamText(team: Team, bool: Boolean){
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp),
-        color = if(bool) Color.DarkGray else lightOrange,
-        textDecoration = if (!bool) TextDecoration.Underline else TextDecoration.None,
+        color = Color.Black
     )
     var index = 0
     for(i in team.roles){
@@ -175,8 +177,7 @@ fun TeamText(team: Team, bool: Boolean){
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp),
-        color = if(bool) Color.DarkGray else lightOrange,
-        textDecoration = if (!bool) TextDecoration.Underline else TextDecoration.None,
+        color = Color.Black
     )
     index = 0
     for(i in team.roles){
@@ -201,15 +202,14 @@ fun TeamText(team: Team, bool: Boolean){
     Spacer(modifier = Modifier.padding(12.dp))
 }
 @Composable
-fun VehicleText(vehicle: List<Vehicle>, bool: Boolean){
+fun VehicleText(vehicle: List<Vehicle>){
     Text(
         text = "Vehicle",
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        color = if(bool) Color.Black else lightOrange,
+        color = Color.Black,
         style = MaterialTheme.typography.headlineSmall,
-        textDecoration = if (!bool) TextDecoration.Underline else TextDecoration.None,
     )
     Spacer(modifier = Modifier.padding(4.dp))
     var index = 0
@@ -228,21 +228,22 @@ fun VehicleText(vehicle: List<Vehicle>, bool: Boolean){
                     disabledContainerColor = Color.White
                 )
             )
+        index += 1
         }
     Spacer(modifier = Modifier.padding(12.dp))
 }
 @Composable
-fun RemarkText(remarks: List<String>, bool: Boolean){
+fun RemarkText(remarks: List<String>){
     Text(
         text = "Remarks",
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        color = if(bool) Color.Black else lightOrange,
+        color =Color.Black,
         style = MaterialTheme.typography.headlineSmall,
-        textDecoration = if (!bool) TextDecoration.Underline else TextDecoration.None,
     )
     Spacer(modifier = Modifier.padding(4.dp))
+    var index = 0
     for(i in remarks){
         Spacer(modifier = Modifier.padding(4.dp))
         OutlinedTextField(
@@ -250,7 +251,7 @@ fun RemarkText(remarks: List<String>, bool: Boolean){
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .testTag("remarks"),
+                .testTag("remarks $index"),
             onValueChange = { },
             enabled = false,
             colors = TextFieldDefaults.colors(
@@ -259,6 +260,7 @@ fun RemarkText(remarks: List<String>, bool: Boolean){
 
             )
         )
+        index += 1
     }
     Spacer(modifier = Modifier.padding(12.dp))
 }
@@ -287,4 +289,21 @@ fun EmptyListText(title: String){
         )
     )
     Spacer(modifier = Modifier.padding(12.dp))
+}
+@Composable
+fun ConfirmedFlightDetailBottom(confirmClick: ()->Unit){
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .fillMaxHeight(),
+    ) {
+     Button(onClick =confirmClick,
+         modifier = Modifier
+             .fillMaxWidth()
+             .padding(16.dp),
+         colors = ButtonDefaults.buttonColors(containerColor = lightOrange)) {
+         Text(text = "Confirm", color = Color.White, overflow = TextOverflow.Clip)
+     }
+    }
 }
