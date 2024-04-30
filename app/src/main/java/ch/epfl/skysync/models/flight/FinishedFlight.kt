@@ -2,10 +2,10 @@ package ch.epfl.skysync.models.flight
 
 import android.location.Location
 import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.user.Crew
 import java.time.LocalDate
 import java.time.LocalTime
 
+/** Represents the flight when it is finished and the report has been submitted */
 data class FinishedFlight(
     override val id: String,
     override val nPassengers: Int,
@@ -21,14 +21,7 @@ data class FinishedFlight(
     val takeOffLocation: Location,
     val landingTime: LocalTime,
     val landingLocation: Location,
-    val meetupTimePassenger: LocalTime,
-    val breakTime: Long, // time in milliseconds
-    val vehicleProblems: List<String>,
-    val littleBottle: UInt,
-    val bigBottle: UInt,
-    val prestigeBottle: UInt,
-    val bottleToFarmer: Boolean,
-    val filledByCrew: Crew
+    val flightTime: Long // time in milliseconds
 ) : Flight {
   override fun getFlightStatus(): FlightStatus {
     return FlightStatus.COMPLETED
