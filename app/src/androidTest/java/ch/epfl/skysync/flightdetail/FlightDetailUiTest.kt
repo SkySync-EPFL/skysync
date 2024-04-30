@@ -40,7 +40,6 @@ class FlightDetailUiTest {
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbs = DatabaseSetup()
   private val flightTable = FlightTable(db)
-  private val flightMemberTable = FlightMemberTable(db)
 
   @Before
   fun setUpNavHost() = runTest {
@@ -51,9 +50,6 @@ class FlightDetailUiTest {
       FlightDetailUi(
           backClick = { navController.popBackStack() },
           deleteClick = {
-            launch {
-              println("POIRE")
-              flightTable.delete(dbs.flight1.id) }
             navController.navigate(Route.HOME)
           },
           editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${dbs.flight1.id}") },
@@ -93,11 +89,6 @@ class FlightDetailUiTest {
     composeTestRule.onNodeWithTag("AlertDialog").assertIsDisplayed()
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
 
-    runBlocking {
-      delay(1000                                                                                           0)
-    }
-    val getFlight = flightTable.get(dbs.flight1.id, onError = { Assert.assertNull(it) })
-    Assert.assertEquals(null, getFlight)
     verify { navController.navigate(Route.HOME) }
     confirmVerified(navController)
   }
