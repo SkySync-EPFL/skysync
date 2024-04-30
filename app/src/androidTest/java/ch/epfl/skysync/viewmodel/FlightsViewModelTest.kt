@@ -72,7 +72,7 @@ class FlightsViewModelTest {
     runTest {
       viewModel.refreshCurrentFlights().join()
       val currentFlights = viewModel.currentFlights.value
-      assertEquals(1, currentFlights?.size)
+      assertEquals(3, currentFlights?.size)
     }
   }
 
@@ -119,7 +119,7 @@ class FlightsViewModelTest {
 
         viewModel.refreshCurrentFlights().join()
 
-        assertEquals(3, viewModel.currentFlights.value?.size)
+        assertEquals(5, viewModel.currentFlights.value?.size)
       }
 
   @Test
@@ -145,7 +145,7 @@ class FlightsViewModelTest {
 
     viewModel.refreshCurrentFlights().join()
 
-    assertEquals(2, viewModel.currentFlights.value?.size)
+    assertEquals(4, viewModel.currentFlights.value?.size)
   }
 
   @Test
@@ -185,7 +185,7 @@ class FlightsViewModelTest {
             id = UNSET_ID)
     viewModel.refreshCurrentFlights().join()
     val initFlights = viewModel.currentFlights.value
-    assertEquals(1, initFlights?.size)
+    assertEquals(3, initFlights?.size)
 
     flight1 = flight1.copy(id = flightTable.add(flight1, onError = { assertNull(it) }))
 
@@ -194,7 +194,7 @@ class FlightsViewModelTest {
     viewModel.refreshCurrentFlights().join()
     val withFlightsAdded = viewModel.currentFlights.value
 
-    assertEquals(3, withFlightsAdded?.size)
+    assertEquals(5, withFlightsAdded?.size)
 
     viewModel.deleteFlight(flight1.id).join()
 
@@ -202,7 +202,7 @@ class FlightsViewModelTest {
 
     val withOneFlightDeleted = viewModel.currentFlights.value
 
-    assertEquals(2, withOneFlightDeleted?.size)
+    assertEquals(4, withOneFlightDeleted?.size)
     assertTrue(withOneFlightDeleted?.contains(flight2) ?: false)
     assertFalse(withOneFlightDeleted?.contains(flight1) ?: true)
   }
@@ -240,7 +240,7 @@ class FlightsViewModelTest {
 
     viewModel.refreshCurrentFlights().join()
 
-    assertEquals(2, viewModel.currentFlights.value?.size)
+    assertEquals(4, viewModel.currentFlights.value?.size)
     assertTrue(viewModel.currentFlights.value?.contains(modifiedFlight) ?: false)
   }
 }

@@ -64,6 +64,15 @@ class DatabaseSetup {
           lastname = "Bob",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
+
+  var crew2 =
+      Crew(
+          id = "id-crew-2",
+          firstname = "crew-2",
+          lastname = "Denis",
+          availabilities = AvailabilityCalendar(),
+          assignedFlights = FlightGroupCalendar())
+
   var pilot1 =
       Pilot(
           id = "id-pilot-1",
@@ -80,41 +89,56 @@ class DatabaseSetup {
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.SMALL)
-  var availability1 =
-      Availability(
-          status = AvailabilityStatus.MAYBE,
-          timeSlot = TimeSlot.AM,
-          date = LocalDate.of(2024, 8, 12))
-  var availability2 =
-      Availability(
-          status = AvailabilityStatus.MAYBE,
-          timeSlot = TimeSlot.AM,
-          date = LocalDate.of(2024, 8, 12))
-  var availability3 =
-      Availability(
-          status = AvailabilityStatus.NO, timeSlot = TimeSlot.AM, date = LocalDate.of(2024, 8, 14))
-  var availability4 =
-      Availability(
-          status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = LocalDate.of(2024, 8, 15))
-  var availability5 =
-      Availability(
-          status = AvailabilityStatus.MAYBE,
-          timeSlot = TimeSlot.PM,
-          date = LocalDate.of(2024, 8, 16))
+
+  var date1 = LocalDate.of(2024, 8, 12)
+  var date2 = LocalDate.of(2024, 8, 14)
+  var dateNoFlight = LocalDate.of(2024, 8, 16)
+
+  var availability1Crew1 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
+  var availability2Crew1 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
+
+  var availability1Crew2 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
+  var availability2Crew2 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
+
+  var availability1Pilot1 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
+  var availability2Pilot1 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
+
+  var availability1Pilot2 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
+  var availability2Pilot2 =
+      Availability(status = AvailabilityStatus.NO, timeSlot = TimeSlot.PM, date = date1)
+  var availability3Pilot2 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = dateNoFlight)
+
+  var availability1Admin1 =
+      Availability(status = AvailabilityStatus.NO, timeSlot = TimeSlot.AM, date = date1)
+  var availability2Admin1 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date2)
 
   var balloon1 = Balloon(name = "balloon-1", qualification = BalloonQualification.MEDIUM)
 
   var balloon2 = Balloon(name = "balloon-2", qualification = BalloonQualification.LARGE)
 
+  var balloon3 = Balloon(name = "ballon-3", qualification = BalloonQualification.SMALL)
+
   var basket1 = Basket(name = "basket-1", hasDoor = false)
 
   var basket2 = Basket(name = "basket-2", hasDoor = true)
+
+  var basket3 = Basket(name = "basket-3", hasDoor = true)
 
   var flightType1 = FlightType.DISCOVERY
   var flightType2 = FlightType.FONDUE
 
   var vehicle1 = Vehicle(name = "vehicle-1")
   var vehicle2 = Vehicle(name = "vehicle-2")
+  var vehicle3 = Vehicle(name = "vehicle-3")
 
   var flight1 =
       PlannedFlight(
@@ -123,9 +147,33 @@ class DatabaseSetup {
           flightType = flightType1,
           balloon = balloon1,
           basket = basket1,
-          date = LocalDate.of(2024, 8, 12),
+          date = date1,
           timeSlot = TimeSlot.AM,
           vehicles = listOf(vehicle1),
+          id = UNSET_ID)
+
+  var flight2 =
+      PlannedFlight(
+          nPassengers = 4,
+          team = Team(roles = listOf(Role(RoleType.PILOT, pilot2), Role(RoleType.CREW, crew2))),
+          flightType = flightType2,
+          balloon = balloon2,
+          basket = basket2,
+          date = date1,
+          timeSlot = TimeSlot.AM,
+          vehicles = listOf(vehicle2, vehicle3),
+          id = UNSET_ID)
+
+  var flight3 =
+      PlannedFlight(
+          nPassengers = 3,
+          team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
+          flightType = flightType1,
+          balloon = balloon1,
+          basket = basket3,
+          date = date1,
+          timeSlot = TimeSlot.PM,
+          vehicles = listOf(vehicle1, vehicle2, vehicle3),
           id = UNSET_ID)
 
   var messageGroup1 = MessageGroup(userIds = setOf(admin2.id, pilot1.id, crew1.id))
@@ -183,10 +231,13 @@ class DatabaseSetup {
             launch { flightType2 = flightType2.copy(id = flightTypeTable.add(flightType2)) },
             launch { balloon1 = balloon1.copy(id = balloonTable.add(balloon1)) },
             launch { balloon2 = balloon2.copy(id = balloonTable.add(balloon2)) },
+            launch { balloon3 = balloon3.copy(id = balloonTable.add(balloon3)) },
             launch { basket1 = basket1.copy(id = basketTable.add(basket1)) },
             launch { basket2 = basket2.copy(id = basketTable.add(basket2)) },
+            launch { basket3 = basket3.copy(id = basketTable.add(basket3)) },
             launch { vehicle1 = vehicle1.copy(id = vehicleTable.add(vehicle1)) },
             launch { vehicle2 = vehicle2.copy(id = vehicleTable.add(vehicle2)) },
+            launch { vehicle3 = vehicle3.copy(id = vehicleTable.add(vehicle3)) },
             launch {
               messageGroup1 = messageGroup1.copy(id = messageGroupTable.add(messageGroup1))
             },
@@ -195,30 +246,58 @@ class DatabaseSetup {
             },
             launch {
               userTable.set(admin1.id, admin1)
-              availability3 =
-                  availability3.copy(id = availabilityTable.add(admin1.id, availability3))
-              availability4 =
-                  availability4.copy(id = availabilityTable.add(admin1.id, availability4))
-              admin1.availabilities.addCells(listOf(availability3, availability4))
+              availability1Admin1 =
+                  availability1Admin1.copy(
+                      id = availabilityTable.add(admin1.id, availability1Admin1))
+              availability2Admin1 =
+                  availability2Admin1.copy(
+                      id = availabilityTable.add(admin1.id, availability2Admin1))
+              admin1.availabilities.addCells(listOf(availability1Admin1, availability2Admin1))
             },
             launch { userTable.set(admin2.id, admin2) },
             launch {
               userTable.set(crew1.id, crew1)
-              availability1 =
-                  availability1.copy(id = availabilityTable.add(crew1.id, availability1))
-              crew1.availabilities.addCells(listOf(availability1))
+              availability1Crew1 =
+                  availability1Crew1.copy(id = availabilityTable.add(crew1.id, availability1Crew1))
+              availability2Crew1 =
+                  availability2Crew1.copy(id = availabilityTable.add(crew1.id, availability2Crew1))
+              crew1.availabilities.addCells(listOf(availability1Crew1, availability2Crew1))
             },
             launch {
               userTable.set(pilot1.id, pilot1)
-              availability2 =
-                  availability2.copy(id = availabilityTable.add(pilot1.id, availability2))
-              pilot1.availabilities.addCells(listOf(availability2))
+              availability1Pilot1 =
+                  availability1Pilot1.copy(
+                      id = availabilityTable.add(pilot1.id, availability1Pilot1))
+              availability2Pilot1 =
+                  availability2Pilot1.copy(
+                      id = availabilityTable.add(pilot1.id, availability2Pilot1))
+              pilot1.availabilities.addCells(listOf(availability1Pilot1, availability2Pilot1))
+            },
+            launch {
+              userTable.set(crew2.id, crew2)
+              availability1Crew2 =
+                  availability1Crew2.copy(id = availabilityTable.add(crew2.id, availability1Crew2))
+              availability2Crew2 =
+                  availability2Crew2.copy(id = availabilityTable.add(crew2.id, availability2Crew2))
+              println(availability1Crew2)
+              println(availability2Crew2)
+
+              crew2.availabilities.addCells(listOf(availability1Crew2, availability2Crew2))
             },
             launch {
               userTable.set(pilot2.id, pilot2)
-              availability5 =
-                  availability5.copy(id = availabilityTable.add(pilot2.id, availability5))
-              pilot2.availabilities.addCells(listOf(availability5))
+              availability1Pilot2 =
+                  availability1Pilot2.copy(
+                      id = availabilityTable.add(pilot2.id, availability1Pilot2))
+
+              availability2Pilot2 =
+                  availability2Pilot2.copy(
+                      id = availabilityTable.add(pilot2.id, availability2Pilot2))
+              availability3Pilot2 =
+                  availability3Pilot2.copy(
+                      id = availabilityTable.add(pilot2.id, availability3Pilot2))
+              pilot2.availabilities.addCells(
+                  listOf(availability1Pilot2, availability2Pilot2, availability3Pilot2))
             },
         )
         .forEach { it.join() }
@@ -232,10 +311,28 @@ class DatabaseSetup {
             basket = basket1,
             vehicles = listOf(vehicle1),
         )
+    flight2 =
+        flight2.copy(
+            team = Team(roles = listOf(Role(RoleType.PILOT, pilot2), Role(RoleType.CREW, crew2))),
+            flightType = flightType1,
+            balloon = balloon2,
+            basket = basket2,
+            vehicles = listOf(vehicle2, vehicle3),
+        )
+    flight3 =
+        flight3.copy(
+            team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
+            flightType = flightType1,
+            balloon = balloon2,
+            basket = basket1,
+            vehicles = listOf(vehicle1, vehicle2, vehicle3),
+        )
 
     // now that the IDs are set, add the flights/messages
     listOf(
             launch { flight1 = flight1.copy(id = flightTable.add(flight1)) },
+            launch { flight2 = flight2.copy(id = flightTable.add(flight2)) },
+            launch { flight3 = flight3.copy(id = flightTable.add(flight3)) },
             launch { message1 = message1.copy(id = messageTable.add(messageGroup1.id, message1)) },
             launch { message2 = message2.copy(id = messageTable.add(messageGroup1.id, message2)) },
             launch { message3 = message3.copy(id = messageTable.add(messageGroup2.id, message3)) },

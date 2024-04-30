@@ -65,7 +65,18 @@ class UserTableUnitTest {
     val availabilities = availabilityTable.getAll(onError = { assertNull(it) })
 
     assertTrue(
-        listOf(dbs.availability2, dbs.availability3, dbs.availability4, dbs.availability5)
+        listOf(
+                dbs.availability1Crew1,
+                dbs.availability2Crew1,
+                dbs.availability1Crew2,
+                dbs.availability2Crew2,
+                dbs.availability1Pilot1,
+                dbs.availability2Pilot1,
+                dbs.availability1Pilot2,
+                dbs.availability2Pilot2,
+                dbs.availability3Pilot2,
+                dbs.availability1Admin1,
+                dbs.availability2Admin1)
             .containsAll(availabilities))
 
     val flightMembers =
