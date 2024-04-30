@@ -6,7 +6,6 @@ import ch.epfl.skysync.database.tables.BalloonTable
 import ch.epfl.skysync.database.tables.BasketTable
 import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.database.tables.FlightTypeTable
-import ch.epfl.skysync.database.tables.LocationTable
 import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.database.tables.VehicleTable
 
