@@ -20,7 +20,9 @@ class UpcomingFlightsTests {
 
   @Test
   fun upcomingFlightsDisplaysNoFlightsWhenListIsEmpty() {
-    composeTestRule.setContent { UpcomingFlights(flights = emptyList(), color = lightOrange, onFlightClick = {}) }
+    composeTestRule.setContent {
+      UpcomingFlights(flights = emptyList(), color = lightOrange, onFlightClick = {})
+    }
 
     composeTestRule.onNodeWithText("No upcoming flights").assertIsDisplayed()
   }
@@ -39,7 +41,9 @@ class UpcomingFlightsTests {
             basket = null,
             id = "testFlightId")
 
-    composeTestRule.setContent { UpcomingFlights(flights = listOf(testFlight),color = lightOrange, onFlightClick = {}) }
+    composeTestRule.setContent {
+      UpcomingFlights(flights = listOf(testFlight), color = lightOrange, onFlightClick = {})
+    }
 
     composeTestRule.onNodeWithText("Discovery - 1 pax").assertIsDisplayed()
   }
@@ -60,7 +64,9 @@ class UpcomingFlightsTests {
             id = "testFlightId")
 
     composeTestRule.setContent {
-      UpcomingFlights(flights = listOf(testFlight), color = lightOrange) { wasClicked = it == testFlight.id }
+      UpcomingFlights(flights = listOf(testFlight), color = lightOrange) {
+        wasClicked = it == testFlight.id
+      }
     }
 
     composeTestRule.onNodeWithText("Discovery - 1 pax").performClick()
