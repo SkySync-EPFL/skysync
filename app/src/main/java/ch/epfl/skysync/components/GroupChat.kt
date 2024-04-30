@@ -31,21 +31,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ch.epfl.skysync.models.message.GroupDetails
+import ch.epfl.skysync.models.message.MessageDateFormatter
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
 
-data class GroupDetail(
-    val groupName: String,
-    val groupImage: ImageVector?,
-    val lastMessage: String,
-    val lastMessageTime: String
-)
 /**
  * Composable function to display a group chat UI.
  *
@@ -56,8 +51,8 @@ data class GroupDetail(
  */
 @Composable
 fun GroupChat(
-    groupList: List<GroupDetail>,
-    onClick: (String) -> Unit,
+    groupList: List<GroupDetails>,
+    onClick: (GroupDetails) -> Unit,
     paddingValues: PaddingValues
 ) {
   var searchQuery by remember { mutableStateOf("") }
@@ -74,7 +69,7 @@ fun GroupChat(
                 focusedBorderColor = lightOrange, focusedLabelColor = lightOrange),
         modifier = Modifier.fillMaxWidth().testTag("Search"),
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done))
-    val filteredGroups = groupList.filter { it.groupName.contains(searchQuery, ignoreCase = true) }
+    val filteredGroups = groupList.filter { it.name.contains(searchQuery, ignoreCase = true) }
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
     GroupChatBody(groupList = filteredGroups, onClick = onClick)
   }
@@ -103,34 +98,28 @@ fun GroupChatTopBar() {
 /**
  * Composable function to display a group card in the group chat UI.
  *
- * @param group The name of the group.
+ * @param groupDetails The details of the group
  * @param onClick Callback triggered when the group card is clicked.
- * @param groupImage The image associated with the group. Can be null if no image is available.
- * @param lastMsg The last message in the group.
- * @param lastMsgTime The time of the last message.
  * @param testTag A tag used for testing purposes.
  */
 @Composable
-fun GroupCard(
-    group: String,
-    onClick: (String) -> Unit,
-    groupImage: ImageVector?,
-    lastMsg: String,
-    lastMsgTime: String,
-    testTag: String
-) {
-
+fun GroupCard(groupDetails: GroupDetails, onClick: (GroupDetails) -> Unit, testTag: String) {
+  val time =
+      if (groupDetails.lastMessage != null)
+          MessageDateFormatter.format(groupDetails.lastMessage.date)
+      else ""
   Card(
-      modifier = Modifier.clickable(onClick = { onClick(group) }).fillMaxWidth().testTag(testTag),
+      modifier =
+          Modifier.clickable(onClick = { onClick(groupDetails) }).fillMaxWidth().testTag(testTag),
       shape = RectangleShape,
       colors =
           CardDefaults.cardColors(
               containerColor = lightGray,
           )) {
         Row {
-          if (groupImage != null) {
+          if (groupDetails.image != null) {
             Box(modifier = Modifier.fillMaxWidth(0.125f).size(50.dp)) {
-              Image(imageVector = groupImage, contentDescription = "Group Image")
+              Image(imageVector = groupDetails.image, contentDescription = "Group Image")
             }
           } else {
             Box(
@@ -146,24 +135,25 @@ fun GroupCard(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween) {
                       Text(
-                          text = group,
+                          text = groupDetails.name,
                           fontSize = 16.sp,
                           fontWeight = FontWeight.Bold,
                           color = Color.Black)
                       Text(
-                          text = lastMsgTime,
+                          text = time,
                           color = Color.Gray,
                           style = MaterialTheme.typography.bodyMedium,
                       )
                     }
                 Text(
-                    text = lastMsg,
+                    text = groupDetails.lastMessage?.content ?: "",
                     color = Color.Black,
                     style = MaterialTheme.typography.bodyMedium)
               }
         }
       }
 }
+
 /**
  * Composable function to display the body of the group chat UI.
  *
@@ -172,16 +162,10 @@ fun GroupCard(
  * @param onClick Callback triggered when a group card is clicked.
  */
 @Composable
-fun GroupChatBody(groupList: List<GroupDetail>, onClick: (String) -> Unit) {
+fun GroupChatBody(groupList: List<GroupDetails>, onClick: (GroupDetails) -> Unit) {
   LazyColumn(modifier = Modifier.testTag("GroupChatBody")) {
     items(groupList.size) { index ->
-      GroupCard(
-          group = groupList[index].groupName,
-          onClick = onClick,
-          groupImage = groupList[index].groupImage,
-          lastMsg = groupList[index].lastMessage,
-          lastMsgTime = groupList[index].lastMessageTime,
-          testTag = "GroupCard$index")
+      GroupCard(groupDetails = groupList[index], onClick = onClick, testTag = "GroupCard$index")
       Spacer(modifier = Modifier.size(1.dp))
     }
   }

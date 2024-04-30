@@ -13,6 +13,7 @@ import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
@@ -26,16 +27,19 @@ import org.junit.Test
 class E2EAddFlights {
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var navController: TestNavHostController
-  private val db = FirestoreDatabase()
+  private val db = FirestoreDatabase(useEmulator = true)
+  private val dbs = DatabaseSetup()
   private val repository = Repository(db)
 
   @Before
-  fun setUpNavHost() {
+  fun setUpNavHost() = runTest {
+    dbs.clearDatabase(db)
+    dbs.fillDatabase(db)
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, null)
+        homeGraph(repository, navController, dbs.admin1.id)
       }
     }
   }

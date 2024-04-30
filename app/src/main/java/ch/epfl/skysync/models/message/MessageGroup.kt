@@ -11,6 +11,11 @@ import ch.epfl.skysync.models.UNSET_ID
  */
 data class MessageGroup(
     val id: String = UNSET_ID,
+    val name: String,
     val userIds: Set<String> = setOf(),
     val messages: List<Message> = listOf()
-)
+) {
+  fun withNewMessage(message: Message): MessageGroup {
+    return this.copy(messages = listOf(message) + messages)
+  }
+}
