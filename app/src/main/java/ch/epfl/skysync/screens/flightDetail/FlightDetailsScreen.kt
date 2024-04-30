@@ -23,28 +23,27 @@ fun FlightDetailScreen(
   val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
 
   Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
-      if(flight is ConfirmedFlight){
-          val confirmedFlight = flight as ConfirmedFlight
-          ConfirmFlightDetail(
-              confirmedFlight = confirmedFlight,
-              backClick = { navController.popBackStack() },
-              paddingValues = padding,
-              confirmClick = {}
-          )
-      } else {
-          FlightDetailUi(
-              backClick = { navController.popBackStack() },
-              deleteClick = {
-                  viewModel.deleteFlight(flightId)
-                  navController.navigate(Route.HOME)
-              },
-              editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
-              confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
-              padding = padding,
-              flight = flight,
-              flightId = flightId,
-          )
-      }
+    if (flight is ConfirmedFlight) {
+      val confirmedFlight = flight as ConfirmedFlight
+      ConfirmFlightDetail(
+          confirmedFlight = confirmedFlight,
+          backClick = { navController.popBackStack() },
+          paddingValues = padding,
+          confirmClick = {})
+    } else {
+      FlightDetailUi(
+          backClick = { navController.popBackStack() },
+          deleteClick = {
+            viewModel.deleteFlight(flightId)
+            navController.navigate(Route.HOME)
+          },
+          editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
+          confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
+          padding = padding,
+          flight = flight,
+          flightId = flightId,
+      )
+    }
   }
 }
 
