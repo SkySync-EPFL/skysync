@@ -19,5 +19,4 @@ class Repository(db: FirestoreDatabase) {
   val flightTypeTable: FlightTypeTable = FlightTypeTable(db)
   val userTable: UserTable = UserTable(db)
   val vehicleTable: VehicleTable = VehicleTable(db)
-  val locationTable: LocationTable = LocationTable(db)
 }
