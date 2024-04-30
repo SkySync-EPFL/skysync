@@ -17,6 +17,7 @@ import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.message.Message
 import ch.epfl.skysync.models.message.MessageGroup
+import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.screens.AddFlightScreen
 import ch.epfl.skysync.screens.AddUserScreen
 import ch.epfl.skysync.screens.ChatScreen
@@ -62,7 +63,9 @@ fun NavGraphBuilder.homeGraph(
 
       val flightsViewModel = FlightsViewModel.createViewModel(repository)
       flightsViewModel.refresh()
-      HomeScreen(navController, flightsViewModel)
+      var userd: User? = null
+      suspend { userd = repository.userTable.get(uid!!) }
+      HomeScreen(navController, flightsViewModel, userd)
     }
     composable(
         route = Route.FLIGHT_DETAILS + "/{Flight ID}",
