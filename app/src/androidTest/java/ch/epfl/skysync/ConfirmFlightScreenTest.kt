@@ -12,9 +12,11 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
+import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -23,15 +25,19 @@ import org.junit.Test
 class ConfirmFlightScreenTest {
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var navController: TestNavHostController
+  private val db = FirestoreDatabase(useEmulator = true)
+  private val dbs = DatabaseSetup()
 
   @Before
-  fun setUpNavHost() {
+  fun setUpNavHost() = runTest {
+    dbs.clearDatabase(db)
+    dbs.fillDatabase(db)
     composeTestRule.setContent {
-      val repository = Repository(FirestoreDatabase(useEmulator = true))
+      val repository = Repository(db)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, null)
+        homeGraph(repository, navController, dbs.admin1.id)
       }
     }
   }

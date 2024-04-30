@@ -9,28 +9,29 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
+import ch.epfl.skysync.database.DatabaseSetup
+import ch.epfl.skysync.models.message.ChatMessage
+import ch.epfl.skysync.models.message.MessageType
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class ChatTextUiTest {
   @get:Rule val composeTestRule = createComposeRule()
+  val dbs = DatabaseSetup()
+
   val image: ImageVector? = null
   private val fakeText =
       ChatMessage(
-          "him",
+          dbs.message1,
           MessageType.RECEIVED,
           image,
-          "Hi",
-          "11:11",
       )
   private val myFakeText =
       ChatMessage(
-          "me",
+          dbs.message2,
           MessageType.SENT,
           image,
-          "Hello",
-          "12:12",
       )
   private val list =
       listOf(

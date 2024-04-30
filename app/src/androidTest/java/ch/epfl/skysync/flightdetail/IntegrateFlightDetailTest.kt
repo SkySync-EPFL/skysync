@@ -22,21 +22,19 @@ import org.junit.Test
 class IntegrateFlightDetailTest {
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var navController: TestNavHostController
+  private val db = FirestoreDatabase(useEmulator = true)
+  private val dbs = DatabaseSetup()
 
   @Before
-  fun setUpNavHost() {
-    runTest {
-      val db = FirestoreDatabase(useEmulator = true)
-      val repository = Repository(db)
-      val dbs = DatabaseSetup()
-      dbs.clearDatabase(db)
-      dbs.fillDatabase(db)
-      composeTestRule.setContent {
-        navController = TestNavHostController(LocalContext.current)
-        navController.navigatorProvider.addNavigator(ComposeNavigator())
-        NavHost(navController = navController, startDestination = Route.MAIN) {
-          homeGraph(repository, navController, null)
-        }
+  fun setUpNavHost() = runTest {
+    dbs.clearDatabase(db)
+    dbs.fillDatabase(db)
+    val repository = Repository(db)
+    composeTestRule.setContent {
+      navController = TestNavHostController(LocalContext.current)
+      navController.navigatorProvider.addNavigator(ComposeNavigator())
+      NavHost(navController = navController, startDestination = Route.MAIN) {
+        homeGraph(repository, navController, dbs.admin1.id)
       }
     }
   }
