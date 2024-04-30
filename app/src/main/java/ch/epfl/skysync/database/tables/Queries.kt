@@ -30,16 +30,24 @@ class Queries(db: FirestoreDatabase) {
    *
    * @param localDate The requested day
    * @param timeslot The requested timeslot
+   * @param onError Callback called when an error occurs
    */
-  suspend fun getBasketsAvailableOn(localDate: LocalDate, timeslot: TimeSlot): List<Basket> {
+  suspend fun getBasketsAvailableOn(
+      localDate: LocalDate,
+      timeslot: TimeSlot,
+      onError: ((Exception) -> Unit)?
+  ): List<Basket> {
     val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
     val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
     val flightFilter = Filter.and(dateFilter, timeslotFilter)
 
     val unavailableBasketsIds: Set<String> =
-        flightTable.query(flightFilter).mapNotNull { flight: Flight -> flight.basket?.id }.toSet()
+        flightTable
+            .query(flightFilter, onError)
+            .mapNotNull { flight: Flight -> flight.basket?.id }
+            .toSet()
 
-    val allBaskets = basketTable.getAll()
+    val allBaskets = basketTable.getAll(onError)
 
     return allBaskets.filterNot { basket: Basket -> basket.id in unavailableBasketsIds }
   }
@@ -49,16 +57,24 @@ class Queries(db: FirestoreDatabase) {
    *
    * @param localDate The requested day
    * @param timeslot The requested timeslot
+   * @param onError Callback called when an error occurs
    */
-  suspend fun getBalloonsAvailableOn(localDate: LocalDate, timeslot: TimeSlot): List<Balloon> {
+  suspend fun getBalloonsAvailableOn(
+      localDate: LocalDate,
+      timeslot: TimeSlot,
+      onError: ((Exception) -> Unit)?
+  ): List<Balloon> {
     val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
     val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
     val flightFilter = Filter.and(dateFilter, timeslotFilter)
 
     val unavailableBalloonIds: Set<String> =
-        flightTable.query(flightFilter).mapNotNull { flight: Flight -> flight.balloon?.id }.toSet()
+        flightTable
+            .query(flightFilter, onError)
+            .mapNotNull { flight: Flight -> flight.balloon?.id }
+            .toSet()
 
-    val allBalloons = balloonTable.getAll()
+    val allBalloons = balloonTable.getAll(onError)
 
     return allBalloons.filterNot { balloon: Balloon -> balloon.id in unavailableBalloonIds }
   }
@@ -68,45 +84,47 @@ class Queries(db: FirestoreDatabase) {
    *
    * @param localDate The requested day
    * @param timeslot The requested timeslot
+   * @param onError Callback called when an error occurs
    */
-  suspend fun getUsersAvailableOn(localDate: LocalDate, timeslot: TimeSlot): List<User> =
-      coroutineScope {
-        val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
-        val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
-        val dateTimeSlotFilter = Filter.and(dateFilter, timeslotFilter)
+  suspend fun getUsersAvailableOn(
+      localDate: LocalDate,
+      timeslot: TimeSlot,
+      onError: ((Exception) -> Unit)?
+  ): List<User> = coroutineScope {
+    val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
+    val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
+    val dateTimeSlotFilter = Filter.and(dateFilter, timeslotFilter)
 
-        // Retrieve all flights of the given day, timeslot
-        val flightsIds = flightTable.query(dateTimeSlotFilter).map { flight: Flight -> flight.id }
-        // Retrieve all members of these flights (they are not available)
-        val unavailableUserIds =
-            flightMemberTable.query(Filter.inArray("flightId", flightsIds)).map { fm -> fm.userId }
-        // Retrieve all possible available members
-        val potentialAvailableUsers =
-            userTable.query(Filter.notInArray(FieldPath.documentId(), unavailableUserIds))
+    // Retrieve all flights of the given day, timeslot
+    val flightsIds =
+        flightTable.query(dateTimeSlotFilter, onError).map { flight: Flight -> flight.id }
+    // Retrieve all members of these flights (they are not available)
+    val unavailableUserIds =
+        flightMemberTable.query(Filter.inArray("flightId", flightsIds), onError).map { fm -> fm.userId }
+    // Retrieve all possible available members
+    val potentialAvailableUsers = userTable.getAll(onError).filterNot { user: User -> user.id in unavailableUserIds }
 
-        val availableUsers = mutableListOf<User>()
-        val jobs = mutableListOf<Job>()
-        // For each potential user check if he is available on the given day
-        for (user in potentialAvailableUsers) {
-          jobs.add(
-              launch {
-                val a =
+      return@coroutineScope  potentialAvailableUsers
+            .map { user: User ->
+              async {
+                val availableUsers =
                     availabilityTable.query(
                         Filter.and(Filter.equalTo("userId", user.id), dateTimeSlotFilter))
-                // There is only 1 availability
-                if (a.isNotEmpty() && a[0].status == AvailabilityStatus.OK) {
-                  availableUsers.add(user)
+
+                if (availableUsers.firstOrNull()?.status == AvailabilityStatus.OK) {
+                  return@async user
                 }
-              })
-        }
-        jobs.forEach { it.join() }
-        return@coroutineScope availableUsers
-      }
+                 return@async null
+              }
+            }
+            .awaitAll().filterNotNull()
+  }
 
   /**
    * Returns the all the flights of a given user
    *
    * @param id The id of the user
+   * @param onError Callback called when an error occurs
    */
   suspend fun getFlightsForUser(id: String, onError: ((Exception) -> Unit)?): List<Flight?> =
       coroutineScope {
