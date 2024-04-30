@@ -4,17 +4,23 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.MessageGroupSchema
+import ch.epfl.skysync.database.schemas.MessageSchema
 import ch.epfl.skysync.models.message.Message
 import ch.epfl.skysync.models.message.MessageGroup
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class MessageGroupTable(db: FirestoreDatabase) :
     Table<MessageGroup, MessageGroupSchema>(db, MessageGroupSchema::class, PATH) {
   private val messageTable = MessageTable(db)
+  private val userTable = UserTable(db)
 
   /**
    * Add a listener on a message group
@@ -27,7 +33,9 @@ class MessageGroupTable(db: FirestoreDatabase) :
    */
   fun addGroupListener(
       groupId: String,
-      onChange: (ListenerUpdate<Message>) -> Unit,
+      onChange: suspend (ListenerUpdate<Message>) -> Unit,
+      coroutineScope: CoroutineScope,
+      onError: ((Exception) -> Unit)? = null
   ): ListenerRegistration {
     // the query limit is there to avoid wasting resources
     // as the callback will receive the result of the query
@@ -42,16 +50,33 @@ class MessageGroupTable(db: FirestoreDatabase) :
         orderBy = "date",
         orderByDirection = Query.Direction.DESCENDING,
         onChange = { update ->
-          onChange(
-              ListenerUpdate(
-                  isFirstUpdate = update.isFirstUpdate,
-                  isLocalUpdate = update.isLocalUpdate,
-                  adds = update.adds.map { it.toModel() },
-                  updates = update.updates.map { it.toModel() },
-                  deletes = update.deletes.map { it.toModel() },
-              ))
-        })
+          coroutineScope {
+            withErrorCallback(onError) {
+              val adds = update.adds.map { retrieveMessage(it) }
+              val updates = update.updates.map { retrieveMessage(it) }
+              val deletes = update.deletes.map { retrieveMessage(it) }
+              onChange(
+                  ListenerUpdate(
+                      isFirstUpdate = update.isFirstUpdate,
+                      isLocalUpdate = update.isLocalUpdate,
+                      adds = adds.awaitAll().filterNotNull(),
+                      updates = updates.awaitAll().filterNotNull(),
+                      deletes = deletes.awaitAll().filterNotNull(),
+                  ))
+            }
+          }
+        },
+        coroutineScope = coroutineScope)
   }
+
+  private suspend fun retrieveMessage(messageSchema: MessageSchema): Deferred<Message?> =
+      coroutineScope {
+        async {
+          val message = messageSchema.toModel()
+          val user = userTable.get(message.user.id) ?: return@async null
+          message.copy(user = user)
+        }
+      }
 
   /**
    * Retrieve all messages of a message group
@@ -63,7 +88,12 @@ class MessageGroupTable(db: FirestoreDatabase) :
       groupId: String,
       onError: ((Exception) -> Unit)? = null
   ): List<Message> {
-    return withErrorCallback(onError) { messageTable.query(Filter.equalTo("groupId", groupId)) }
+    return withErrorCallback(onError) {
+      messageTable.query(
+          Filter.equalTo("groupId", groupId),
+          orderBy = "date",
+          orderByDirection = Query.Direction.DESCENDING)
+    }
   }
 
   /**

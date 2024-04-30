@@ -7,6 +7,7 @@ import ch.epfl.skysync.models.calendar.Availability
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.Filter
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -94,18 +95,21 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
     }
   }
 
-  override suspend fun query(filter: Filter, onError: ((Exception) -> Unit)?): List<User> =
-      coroutineScope {
-        withErrorCallback(onError) {
-          val users = super.query(filter, onError = null)
-          users
-              .map { user ->
-                async { user.availabilities.addCells(retrieveAvailabilities(user.id)) }
-              }
-              .awaitAll()
-          users
-        }
-      }
+  override suspend fun query(
+      filter: Filter,
+      limit: Long?,
+      orderBy: String?,
+      orderByDirection: Query.Direction,
+      onError: ((Exception) -> Unit)?
+  ): List<User> = coroutineScope {
+    withErrorCallback(onError) {
+      val users = super.query(filter, limit, orderBy, orderByDirection, onError = null)
+      users
+          .map { user -> async { user.availabilities.addCells(retrieveAvailabilities(user.id)) } }
+          .awaitAll()
+      users
+    }
+  }
 
   override suspend fun delete(id: String, onError: ((Exception) -> Unit)?): Unit = coroutineScope {
     withErrorCallback(onError) {
