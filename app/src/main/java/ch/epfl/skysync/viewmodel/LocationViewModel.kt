@@ -1,7 +1,10 @@
 package ch.epfl.skysync.viewmodel
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.models.location.Location
 import com.google.firebase.firestore.ListenerRegistration
@@ -11,11 +14,25 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class LocationViewModel(private val repository: Repository) : ViewModel() {
+
+  companion object {
+    @Composable
+    fun createViewModel(repository: Repository): LocationViewModel {
+      return viewModel<LocationViewModel>(
+          factory =
+              object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                  return LocationViewModel(repository) as T
+                }
+              })
+    }
+  }
+
   // Temporary
   private val userTable = repository.userTable
 
   private val locationTable = repository.locationTable
-  private val listeners = mutableListOf<ListenerRegistration>()
+  val listeners = mutableListOf<ListenerRegistration>()
 
   // Flow to observe location updates
   private val _locations = MutableStateFlow<List<Location>>(emptyList())
