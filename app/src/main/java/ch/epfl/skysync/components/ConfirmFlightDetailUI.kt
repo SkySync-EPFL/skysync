@@ -1,29 +1,32 @@
 package ch.epfl.skysync.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ch.epfl.skysync.models.flight.ConfirmedFlight
-import ch.epfl.skysync.models.flight.RoleType
+import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.ui.theme.Pink40
 import ch.epfl.skysync.ui.theme.lightOrange
 
 /**
@@ -32,21 +35,21 @@ import ch.epfl.skysync.ui.theme.lightOrange
  * @param confirmedFlight The details of the confirmed flight.
  * @param backClick Lambda function to handle the click event for going back.
  * @param paddingValues The padding values to be applied to the layout.
- * @param confirmClick Lambda function to handle the click event for confirming the flight.
+ * @param okClick Lambda function to handle the click event for confirming the flight.
  */
 @Composable
-fun ConfirmFlightDetail(
+fun ConfirmFlightDetailUi(
     confirmedFlight: ConfirmedFlight,
     backClick: () -> Unit,
     paddingValues: PaddingValues,
-    confirmClick: () -> Unit
+    okClick: () -> Unit
 ) {
   Column(modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(paddingValues)) {
     Column(modifier = Modifier.fillMaxHeight(0.87f)) {
-      Header(backClick = backClick, title = "Confirm Flight")
+      Header(backClick = backClick, title = "Confirmed Flight")
       ConfirmFlightDetailBody(confirmedFlight = confirmedFlight)
     }
-    ConfirmedFlightDetailBottom(confirmClick = confirmClick)
+    ConfirmedFlightDetailBottom(okClick = okClick)
   }
 }
 
@@ -68,27 +71,19 @@ fun ConfirmFlightDetailBody(confirmedFlight: ConfirmedFlight) {
         TitledText(
             padding = 16.dp, title = "Number Of Pax", value = "${confirmedFlight.nPassengers}")
         TitledText(padding = 16.dp, title = "Flight Type", value = confirmedFlight.flightType.name)
-        if (confirmedFlight.team.roles.isEmpty()) {
-          EmptyListText("Team")
-        } else {
-          TeamText(team = confirmedFlight.team)
-        }
+        TeamText(team = confirmedFlight.team, padding = 16.dp)
         TitledText(padding = 16.dp, title = "Balloon", value = confirmedFlight.balloon.name)
         TitledText(padding = 16.dp, title = "Basket", value = confirmedFlight.basket.name)
         TitledText(padding = 16.dp, title = "Date", value = confirmedFlight.date.toString())
         TitledText(
             padding = 16.dp, title = "Time Slot", value = confirmedFlight.timeSlot.toString())
-        if (confirmedFlight.vehicles.isEmpty()) {
-          EmptyListText("Vehicle")
-        } else {
-          VehicleText(vehicle = confirmedFlight.vehicles)
-        }
+        VehicleText(vehicle = confirmedFlight.vehicles, padding = 16.dp)
         if (confirmedFlight.remarks.isEmpty()) {
-          EmptyListText("Remarks")
+          EmptyListText("Remarks", 16.dp)
         } else {
-          RemarkText(remarks = confirmedFlight.remarks)
+          RemarkText(remarks = confirmedFlight.remarks, padding = 16.dp)
         }
-        TitledText(padding = 16.dp, title = "Flight Color", value = confirmedFlight.color.name)
+        ShowColor("Flight Color", confirmedFlight.color, 16.dp)
         TitledText(
             padding = 16.dp,
             title = "Meetup Time Team",
@@ -108,62 +103,43 @@ fun ConfirmFlightDetailBody(confirmedFlight: ConfirmedFlight) {
       }
 }
 /**
- * Composable function for displaying the team details, including pilots and crew members.
+ * Composable function for displaying text in a list element.
  *
- * @param team The team for which the details are to be displayed.
+ * @param text The text to be displayed.
+ * @param padding The padding to be applied to the text.
+ * @param testTag The tag used for testing purposes.
  */
 @Composable
-fun TeamText(team: Team) {
+fun ListElementText(text: String, padding: Dp, testTag: String) {
   Text(
-      text = "Team",
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-      style = MaterialTheme.typography.headlineSmall,
+      text = text,
+      modifier = Modifier.fillMaxWidth().padding(horizontal = padding).testTag(testTag),
+      color = Color.Black,
+      style = MaterialTheme.typography.bodyLarge,
   )
   Spacer(modifier = Modifier.padding(4.dp))
+}
+/**
+ * Composable function for displaying team details.
+ *
+ * @param team The team for which the details are to be displayed.
+ * @param padding The padding to be applied to the text elements.
+ */
+@Composable
+fun TeamText(team: Team, padding: Dp) {
   Text(
-      text = RoleType.PILOT.name,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-      color = Color.Black)
+      text = "Team",
+      modifier = Modifier.fillMaxWidth().padding(horizontal = padding),
+      style = MaterialTheme.typography.headlineSmall,
+  )
   var index = 0
   for (i in team.roles) {
-    if (i.roleType == RoleType.PILOT) {
-      Spacer(modifier = Modifier.padding(4.dp))
-      OutlinedTextField(
-          value = i.assignedUser?.firstname ?: "No Name",
-          modifier =
-              Modifier.fillMaxWidth()
-                  .padding(horizontal = 24.dp)
-                  .testTag(RoleType.PILOT.name + "$index"),
-          onValueChange = {},
-          enabled = false,
-          colors =
-              TextFieldDefaults.colors(
-                  disabledTextColor = Color.Black, disabledContainerColor = Color.White))
-      index += 1
-    }
-  }
-  Spacer(modifier = Modifier.padding(8.dp))
-  Text(
-      text = RoleType.CREW.name,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-      color = Color.Black)
-  index = 0
-  for (i in team.roles) {
-    if (i.roleType == RoleType.CREW) {
-      Spacer(modifier = Modifier.padding(4.dp))
-      OutlinedTextField(
-          value = i.assignedUser?.firstname ?: "No Name",
-          modifier =
-              Modifier.fillMaxWidth()
-                  .padding(horizontal = 24.dp)
-                  .testTag(RoleType.CREW.name + "$index"),
-          onValueChange = {},
-          enabled = false,
-          colors =
-              TextFieldDefaults.colors(
-                  disabledTextColor = Color.Black, disabledContainerColor = Color.White))
-      index += 1
-    }
+    ListElementText(
+        text =
+            "${i.roleType.name} : ${i.assignedUser?.firstname ?: "First Name Not Assigned"} ${i.assignedUser?.lastname ?: "Last Name Not Assigned"}",
+        padding = padding.plus(4.dp),
+        testTag = "Team $index")
+    index += 1
   }
   Spacer(modifier = Modifier.padding(12.dp))
 }
@@ -171,27 +147,20 @@ fun TeamText(team: Team) {
  * Composable function for displaying vehicle details.
  *
  * @param vehicle The list of vehicles for which details are to be displayed.
+ * @param padding The padding to be applied to the text elements.
  */
 @Composable
-fun VehicleText(vehicle: List<Vehicle>) {
+fun VehicleText(vehicle: List<Vehicle>, padding: Dp) {
   Text(
       text = "Vehicle",
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = padding),
       color = Color.Black,
       style = MaterialTheme.typography.headlineSmall,
   )
   Spacer(modifier = Modifier.padding(4.dp))
   var index = 0
   for (i in vehicle) {
-    Spacer(modifier = Modifier.padding(4.dp))
-    OutlinedTextField(
-        value = i.name,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).testTag("vehicle $index"),
-        onValueChange = {},
-        enabled = false,
-        colors =
-            TextFieldDefaults.colors(
-                disabledTextColor = Color.Black, disabledContainerColor = Color.White))
+    ListElementText(i.name, padding.plus(4.dp), "Vehicle $index")
     index += 1
   }
   Spacer(modifier = Modifier.padding(12.dp))
@@ -200,28 +169,20 @@ fun VehicleText(vehicle: List<Vehicle>) {
  * Composable function for displaying remarks.
  *
  * @param remarks The list of remarks to be displayed.
+ * @param padding The padding to be applied to the text elements.
  */
 @Composable
-fun RemarkText(remarks: List<String>) {
+fun RemarkText(remarks: List<String>, padding: Dp) {
   Text(
       text = "Remarks",
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = padding),
       color = Color.Black,
       style = MaterialTheme.typography.headlineSmall,
   )
   Spacer(modifier = Modifier.padding(4.dp))
   var index = 0
   for (i in remarks) {
-    Spacer(modifier = Modifier.padding(4.dp))
-    OutlinedTextField(
-        value = i,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).testTag("remarks $index"),
-        onValueChange = {},
-        enabled = false,
-        colors =
-            TextFieldDefaults.colors(
-                disabledTextColor = Color.Black, disabledContainerColor = Color.White))
-
+    ListElementText(i, padding.plus(4.dp), "Remark $index")
     index += 1
   }
   Spacer(modifier = Modifier.padding(12.dp))
@@ -230,41 +191,76 @@ fun RemarkText(remarks: List<String>) {
  * Composable function for displaying a message when a list is empty.
  *
  * @param title The title or label indicating the type of empty list.
+ * @param padding The padding to be applied to the text elements.
  */
 @Composable
-fun EmptyListText(title: String) {
+fun EmptyListText(title: String, padding: Dp) {
   Text(
       text = title,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = padding),
       color = Color.Black,
       style = MaterialTheme.typography.headlineSmall,
   )
   Spacer(modifier = Modifier.padding(4.dp))
-  OutlinedTextField(
-      value = "No Data",
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).testTag(title),
-      onValueChange = {},
-      enabled = false,
-      colors =
-          TextFieldDefaults.colors(
-              disabledTextColor = Color.Black, disabledContainerColor = Color.White))
+  Text(
+      text = "No $title to display",
+      modifier = Modifier.fillMaxWidth().padding(horizontal = padding.plus(4.dp)).testTag(title),
+      style = MaterialTheme.typography.bodyLarge,
+  )
+  Spacer(modifier = Modifier.padding(12.dp))
+}
+/**
+ * Composable function for displaying a color representation.
+ *
+ * @param title The title or label indicating the purpose of the color representation.
+ * @param flightColor The FlightColor enum representing the color to be displayed.
+ * @param padding The padding to be applied to the color representation.
+ */
+@Composable
+fun ShowColor(title: String, flightColor: FlightColor, padding: Dp) {
+
+  Text(
+      text = title,
+      modifier = Modifier.fillMaxWidth().padding(horizontal = padding),
+      color = Color.Black,
+      style = MaterialTheme.typography.headlineSmall,
+  )
+  val color =
+      when (flightColor) {
+        FlightColor.RED -> Color.Red
+        FlightColor.BLUE -> Color.Blue
+        FlightColor.YELLOW -> Color.Yellow
+        FlightColor.ORANGE -> lightOrange
+        FlightColor.PINK -> Pink40
+        FlightColor.NO_COLOR -> Color.White
+      }
+  Spacer(modifier = Modifier.padding(4.dp))
+  Box(
+      modifier =
+          Modifier.fillMaxWidth()
+              .height(75.dp)
+              .padding(horizontal = padding)
+              .padding(padding)
+              .testTag(title)
+              .background(color),
+  )
   Spacer(modifier = Modifier.padding(12.dp))
 }
 /**
  * Composable function for displaying the bottom section of the confirmed flight details UI.
  *
- * @param confirmClick Lambda function to handle the click event for confirming the flight.
+ * @param okClick Lambda function to handle the click event for confirming the flight details.
  */
 @Composable
-fun ConfirmedFlightDetailBottom(confirmClick: () -> Unit) {
+fun ConfirmedFlightDetailBottom(okClick: () -> Unit) {
   Column(
       modifier = Modifier.padding(16.dp).fillMaxWidth().fillMaxHeight(),
   ) {
     Button(
-        onClick = confirmClick,
-        modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("Confirm Button"),
+        onClick = okClick,
+        modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("OK Button"),
         colors = ButtonDefaults.buttonColors(containerColor = lightOrange)) {
-          Text(text = "Confirm", color = Color.White, overflow = TextOverflow.Clip)
+          Text(text = "OK", color = Color.White, overflow = TextOverflow.Clip)
         }
   }
 }

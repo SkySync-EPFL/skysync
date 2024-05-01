@@ -54,11 +54,11 @@ class ConfirmFlightDetailUiTest {
   @Before
   fun setUpNavHost() {
     composeTestRule.setContent {
-      ConfirmFlightDetail(
+      ConfirmFlightDetailUi(
           confirmedFlight = dummyConfirmedFlight.value,
           backClick = {},
           paddingValues = PaddingValues(0.dp),
-          confirmClick = {},
+          okClick = {},
       )
     }
   }
@@ -88,33 +88,15 @@ class ConfirmFlightDetailUiTest {
   }
 
   @Test
-  fun teamIsNotDisplayed() {
-    composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Team"))
-    composeTestRule.onNodeWithTag("Team").assertIsDisplayed()
-  }
-
-  @Test
   fun teamIsDisplayed() {
     dummyConfirmedFlight.value =
         dummyConfirmedFlight.value.copy(
             team = Team(listOf(Role(RoleType.PILOT), Role(RoleType.CREW))))
-    var indexPilot = 0
-    var indexCrew = 0
+    var index = 0
     for (i in dummyConfirmedFlight.value.team.roles) {
-      if (i.roleType == RoleType.PILOT) {
-        composeTestRule
-            .onNodeWithTag("body")
-            .performScrollToNode(hasTestTag(RoleType.PILOT.name + "$indexPilot"))
-        composeTestRule.onNodeWithTag(RoleType.PILOT.name + "$indexPilot").assertIsDisplayed()
-        indexPilot += 1
-      }
-      if (i.roleType == RoleType.CREW) {
-        composeTestRule
-            .onNodeWithTag("body")
-            .performScrollToNode(hasTestTag(RoleType.CREW.name + "$indexCrew"))
-        composeTestRule.onNodeWithTag(RoleType.PILOT.name + "$indexCrew").assertIsDisplayed()
-        indexCrew += 1
-      }
+      composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Team $index"))
+      composeTestRule.onNodeWithTag("Team $index").assertIsDisplayed()
+      index += 1
     }
   }
 
@@ -148,17 +130,10 @@ class ConfirmFlightDetailUiTest {
         dummyConfirmedFlight.value.copy(vehicles = listOf(Vehicle("test1"), Vehicle("test2")))
     var index = 0
     for (i in dummyConfirmedFlight.value.vehicles) {
-      composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("vehicle $index"))
-      composeTestRule.onNodeWithTag("vehicle $index").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Vehicle $index"))
+      composeTestRule.onNodeWithTag("Vehicle $index").assertIsDisplayed()
       index += 1
     }
-  }
-
-  @Test
-  fun vehiclesIsNotDisplayed() {
-    dummyConfirmedFlight.value = dummyConfirmedFlight.value.copy(vehicles = listOf())
-    composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Vehicle"))
-    composeTestRule.onNodeWithTag("Vehicle").assertIsDisplayed()
   }
 
   @Test
@@ -166,8 +141,8 @@ class ConfirmFlightDetailUiTest {
     dummyConfirmedFlight.value = dummyConfirmedFlight.value.copy(remarks = listOf("test1", "test2"))
     var index = 0
     for (i in dummyConfirmedFlight.value.remarks) {
-      composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("remarks $index"))
-      composeTestRule.onNodeWithTag("remarks $index").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Remark $index"))
+      composeTestRule.onNodeWithTag("Remark $index").assertIsDisplayed()
       index += 1
     }
   }
@@ -213,11 +188,11 @@ class ConfirmFlightDetailUiTest {
 
   @Test
   fun confirmButtonIsDisplayed() {
-    composeTestRule.onNodeWithTag("Confirm Button").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("OK Button").assertIsDisplayed()
   }
 
   @Test
   fun confirmButtonIsClickable() {
-    composeTestRule.onNodeWithTag("Confirm Button").assertHasClickAction()
+    composeTestRule.onNodeWithTag("OK Button").assertHasClickAction()
   }
 }

@@ -4,14 +4,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -33,18 +30,12 @@ fun TitledText(
       modifier = Modifier.fillMaxWidth().padding(horizontal = padding),
       text = title,
       style = MaterialTheme.typography.headlineSmall,
-      textDecoration = TextDecoration.None,
       color = Color.Black)
   Spacer(modifier = Modifier.padding(4.dp))
-  OutlinedTextField(
-      value = value,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = padding).testTag(title),
-      onValueChange = {},
-      enabled = false,
-      colors =
-          TextFieldDefaults.colors(
-              disabledTextColor = Color.Black,
-              disabledContainerColor = Color.White,
-          ))
+  Text(
+      text = value,
+      modifier = Modifier.fillMaxWidth().padding(horizontal = padding.plus(4.dp)).testTag(title),
+      style = MaterialTheme.typography.bodyLarge,
+  )
   Spacer(modifier = Modifier.padding(12.dp))
 }
