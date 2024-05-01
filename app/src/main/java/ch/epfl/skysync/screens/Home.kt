@@ -134,11 +134,9 @@ fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
 // Scaffold wrapper for the Home Screen
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel, user: User?) {
-  val admin = user is Admin
-
+fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel, user: User) {
   val currentFlights by viewModel.currentFlights.collectAsStateWithLifecycle()
-  if (admin) {
+  if (user is Admin) {
     // Display the Home Screen with the list of upcoming flights
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -181,6 +179,7 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel, us
         navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
         // Example navigation call: navController.navigate("FlightDetails.id")
       }
+        Text(text = user?.id ?: "No user")
     }
   }
 }
