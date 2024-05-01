@@ -1,5 +1,6 @@
 package ch.epfl.skysync.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -59,6 +60,7 @@ class FlightsViewModel(
   val currentBaskets = _currentBaskets.asStateFlow()
   val currentFlightTypes = _currentFlightTypes.asStateFlow()
   val currentVehicles = _currentVehicles.asStateFlow()
+    val currentUser = _currentUser.asStateFlow()
 
   fun refresh() {
     refreshUserAndFlights()
@@ -68,18 +70,19 @@ class FlightsViewModel(
     refreshCurrentVehicles()
   }
 
-  fun refreshUserAndFlights() {
-    viewModelScope.launch {
+  fun refreshUserAndFlights() =
+      viewModelScope.launch {
       _currentUser.value = repository.userTable.get(userId ?: UNSET_ID, onError = { onError(it) })
       if (_currentUser.value is Admin) {
+          Log.d("FlightsViewModel", "Admin user")
         _currentFlights.value = repository.flightTable.getAll(onError = { onError(it) })
       } else if (_currentUser.value is Pilot || _currentUser.value is Crew) {
         _currentFlights.value =
             repository.userTable.retrieveAssignedFlights(
                 repository.flightTable, userId ?: UNSET_ID, onError = { onError(it) })
+          Log.d("FlightsViewModel", "Pilot or Crew user")
       }
     }
-  }
 
   fun refreshCurrentBalloons() =
       viewModelScope.launch {

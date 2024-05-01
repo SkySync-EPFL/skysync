@@ -40,7 +40,8 @@ class FlightsViewModelTest {
   // @ExperimentalCoroutinesApi @get:Rule var mainCoroutineRule = MainCoroutineRule()
 
   @get:Rule val composeTestRule = createComposeRule()
-  lateinit var viewModel: FlightsViewModel
+  lateinit var viewModelAdmin: FlightsViewModel
+  lateinit var viewModelCrewPilot: FlightsViewModel
   lateinit var defaultFlight1: PlannedFlight
 
   @Before
@@ -64,183 +65,330 @@ class FlightsViewModelTest {
 
     dbSetup.clearDatabase(db)
     dbSetup.fillDatabase(db)
-    composeTestRule.setContent { viewModel = FlightsViewModel.createViewModel(repository) }
   }
 
+    @Test
+    fun loadsCorrectAdmin() {
+        composeTestRule.setContent {
+            viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+        }
+        runTest {
+            viewModelAdmin.refreshUserAndFlights().join()
+            val currentUser = viewModelAdmin.currentUser.value
+            assertEquals("id-admin-1", currentUser?.id)
+        }
+    }
+
+    @Test
+    fun loadsCorrectCrew() {
+        composeTestRule.setContent {
+            viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-crew-1")
+        }
+        runTest {
+            viewModelAdmin.refreshUserAndFlights().join()
+            val currentUser = viewModelAdmin.currentUser.value
+            assertEquals("id-crew-1", currentUser?.id)
+        }
+    }
+
+
+
   @Test
-  fun fetchesCurrentFlightsIsNullOnInit() {
+  fun fetchesCurrentFlightsOnInitForAdmin() {
+      composeTestRule.setContent {
+          viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      }
     runTest {
-      viewModel.refreshCurrentFlights().join()
-      val currentFlights = viewModel.currentFlights.value
+        viewModelAdmin.refreshUserAndFlights().join()
+      val currentFlights = viewModelAdmin.currentFlights.value
       assertEquals(1, currentFlights?.size)
     }
   }
 
+    @Test
+    fun fetchesCurrentFlightsIfAffectedAsCrew() {
+        composeTestRule.setContent {
+            viewModelCrewPilot = FlightsViewModel.createViewModel(repository, "id-crew-1")
+        }
+        runTest {
+            viewModelCrewPilot.refreshUserAndFlights().join()
+            val currentFlights = viewModelCrewPilot.currentFlights.value
+            assertEquals(1, currentFlights?.size)
+        }
+    }
+
+    @Test
+    fun doesNotFetchCurrentFlightsIfNotAffected() {
+        composeTestRule.setContent {
+            viewModelCrewPilot = FlightsViewModel.createViewModel(repository, "id-pilot-2")
+        }
+        runTest {
+            viewModelCrewPilot.refreshUserAndFlights().join()
+            val currentFlights = viewModelCrewPilot.currentFlights.value
+            assertEquals(0, currentFlights?.size)
+        }
+    }
+
   @Test
-  fun fetchesCurrentFlights() =
+  fun fetchesRelevantCurrentFlightsAsCrew() {
+      composeTestRule.setContent {
+          viewModelCrewPilot = FlightsViewModel.createViewModel(repository, "id-crew-1")
+      }
       runTest() {
-        var flight1 =
-            PlannedFlight(
-                nPassengers = 2,
-                team =
+          var flightWithCrew =
+              PlannedFlight(
+                  nPassengers = 3,
+                  team =
+                  Team(
+                      roles =
+                      listOf(
+                          Role(RoleType.PILOT, dbSetup.pilot1),
+                          Role(RoleType.CREW, dbSetup.crew1)
+                      )
+                  ),
+                  flightType = dbSetup.flightType1,
+                  balloon = dbSetup.balloon1,
+                  basket = dbSetup.basket2,
+                  date = LocalDate.of(2024, 8, 12),
+                  timeSlot = TimeSlot.AM,
+                  vehicles = listOf(dbSetup.vehicle1),
+                  id = UNSET_ID
+              )
+
+          var flightWithoutCrew =
+              PlannedFlight(
+                  nPassengers = 4,
+                  team =
+                  Team(
+                      roles =
+                      listOf(
+                          Role(RoleType.PILOT, dbSetup.pilot1),
+                      )
+                  ),
+                  flightType = dbSetup.flightType2,
+                  balloon = dbSetup.balloon1,
+                  basket = dbSetup.basket2,
+                  date = LocalDate.of(2024, 8, 12),
+                  timeSlot = TimeSlot.PM,
+                  vehicles = listOf(dbSetup.vehicle1),
+                  id = UNSET_ID
+              )
+
+          flightWithCrew = flightWithCrew.copy(id = flightTable.add(flightWithCrew, onError = { assertNull(it) }))
+
+          flightWithoutCrew = flightWithoutCrew.copy(id = flightTable.add(flightWithoutCrew, onError = { assertNull(it) }))
+
+          viewModelCrewPilot.refreshUserAndFlights().join()
+          assertEquals(2, viewModelCrewPilot.currentFlights.value?.size)
+      }
+  }
+
+
+    @Test
+    fun fetchesAllCurrentFlightsAsAdmin() {
+        composeTestRule.setContent {
+            viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+        }
+        runTest() {
+            var flightWithCrew =
+                PlannedFlight(
+                    nPassengers = 3,
+                    team =
                     Team(
                         roles =
-                            listOf(
-                                Role(RoleType.PILOT, dbSetup.pilot1),
-                                Role(RoleType.CREW, dbSetup.crew1))),
-                flightType = dbSetup.flightType2,
-                balloon = dbSetup.balloon1,
-                basket = dbSetup.basket2,
-                date = LocalDate.of(2024, 8, 12),
-                timeSlot = TimeSlot.AM,
-                vehicles = listOf(dbSetup.vehicle1),
-                id = UNSET_ID)
+                        listOf(
+                            Role(RoleType.PILOT, dbSetup.pilot1),
+                            Role(RoleType.CREW, dbSetup.crew1)
+                        )
+                    ),
+                    flightType = dbSetup.flightType1,
+                    balloon = dbSetup.balloon1,
+                    basket = dbSetup.basket2,
+                    date = LocalDate.of(2024, 8, 12),
+                    timeSlot = TimeSlot.AM,
+                    vehicles = listOf(dbSetup.vehicle1),
+                    id = UNSET_ID
+                )
 
-        var flight2 =
-            PlannedFlight(
-                nPassengers = 2,
-                team =
+            var flightWithoutCrew =
+                PlannedFlight(
+                    nPassengers = 4,
+                    team =
                     Team(
                         roles =
-                            listOf(
-                                Role(RoleType.PILOT, dbSetup.pilot1),
-                                Role(RoleType.CREW, dbSetup.crew1))),
-                flightType = dbSetup.flightType1,
-                balloon = dbSetup.balloon1,
-                basket = dbSetup.basket2,
-                date = LocalDate.of(2024, 8, 12),
-                timeSlot = TimeSlot.AM,
-                vehicles = listOf(dbSetup.vehicle1),
-                id = UNSET_ID)
+                        listOf(
+                            Role(RoleType.PILOT, dbSetup.pilot1),
+                        )
+                    ),
+                    flightType = dbSetup.flightType2,
+                    balloon = dbSetup.balloon1,
+                    basket = dbSetup.basket2,
+                    date = LocalDate.of(2024, 8, 12),
+                    timeSlot = TimeSlot.PM,
+                    vehicles = listOf(dbSetup.vehicle1),
+                    id = UNSET_ID
+                )
 
-        flight1 = flight1.copy(id = flightTable.add(flight1, onError = { assertNull(it) }))
+            flightWithCrew = flightWithCrew.copy(id = flightTable.add(flightWithCrew, onError = { assertNull(it) }))
 
-        flight2 = flight2.copy(id = flightTable.add(flight2, onError = { assertNull(it) }))
+            flightWithoutCrew = flightWithoutCrew.copy(id = flightTable.add(flightWithoutCrew, onError = { assertNull(it) }))
 
-        viewModel.refreshCurrentFlights().join()
 
-        assertEquals(3, viewModel.currentFlights.value?.size)
+
+            viewModelAdmin.refreshUserAndFlights().join()
+            assertEquals(3, viewModelAdmin.currentFlights.value?.size)
+        }
+    }
+
+  @Test
+  fun addsFlight() {
+      composeTestRule.setContent {
+          viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
       }
 
-  @Test
-  fun addsFlight() = runTest {
-    var flight1 =
-        PlannedFlight(
-            nPassengers = 2,
-            team =
-                Team(
-                    roles =
-                        listOf(
-                            Role(RoleType.PILOT, dbSetup.pilot1),
-                            Role(RoleType.CREW, dbSetup.crew1))),
-            flightType = dbSetup.flightType2,
-            balloon = dbSetup.balloon1,
-            basket = dbSetup.basket2,
-            date = LocalDate.of(2024, 8, 12),
-            timeSlot = TimeSlot.AM,
-            vehicles = listOf(dbSetup.vehicle1),
-            id = UNSET_ID)
+      runTest {
+          var flight1 =
+              PlannedFlight(
+                  nPassengers = 2,
+                  team =
+                  Team(
+                      roles =
+                      listOf(
+                          Role(RoleType.PILOT, dbSetup.pilot1),
+                          Role(RoleType.CREW, dbSetup.crew1)
+                      )
+                  ),
+                  flightType = dbSetup.flightType2,
+                  balloon = dbSetup.balloon1,
+                  basket = dbSetup.basket2,
+                  date = LocalDate.of(2024, 8, 12),
+                  timeSlot = TimeSlot.AM,
+                  vehicles = listOf(dbSetup.vehicle1),
+                  id = UNSET_ID
+              )
 
-    viewModel.addFlight(flight1).join()
+          viewModelAdmin.addFlight(flight1).join()
 
-    viewModel.refreshCurrentFlights().join()
+          viewModelAdmin.refreshUserAndFlights().join()
 
-    assertEquals(2, viewModel.currentFlights.value?.size)
+          assertEquals(2, viewModelAdmin.currentFlights.value?.size)
+      }
   }
 
   @Test
-  fun deletesFlight() = runTest {
-    var flight1 =
-        PlannedFlight(
-            nPassengers = 2,
-            team =
-                Team(
-                    roles =
-                        listOf(
-                            Role(RoleType.PILOT, dbSetup.pilot1),
-                            Role(RoleType.CREW, dbSetup.crew1))),
-            flightType = dbSetup.flightType2,
-            balloon = dbSetup.balloon1,
-            basket = dbSetup.basket2,
-            date = LocalDate.of(2024, 8, 12),
-            timeSlot = TimeSlot.AM,
-            vehicles = listOf(dbSetup.vehicle1),
-            id = UNSET_ID)
+  fun deletesFlight() {
+      composeTestRule.setContent {
+          viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      }
 
-    var flight2 =
-        PlannedFlight(
-            nPassengers = 2,
-            team =
-                Team(
-                    roles =
-                        listOf(
-                            Role(RoleType.PILOT, dbSetup.pilot1),
-                            Role(RoleType.CREW, dbSetup.crew1))),
-            flightType = dbSetup.flightType1,
-            balloon = dbSetup.balloon1,
-            basket = dbSetup.basket2,
-            date = LocalDate.of(2024, 8, 12),
-            timeSlot = TimeSlot.AM,
-            vehicles = listOf(dbSetup.vehicle1),
-            id = UNSET_ID)
-    viewModel.refreshCurrentFlights().join()
-    val initFlights = viewModel.currentFlights.value
-    assertEquals(1, initFlights?.size)
+      runTest {
+          var flight1 =
+              PlannedFlight(
+                  nPassengers = 2,
+                  team =
+                  Team(
+                      roles =
+                      listOf(
+                          Role(RoleType.PILOT, dbSetup.pilot1),
+                          Role(RoleType.CREW, dbSetup.crew1)
+                      )
+                  ),
+                  flightType = dbSetup.flightType2,
+                  balloon = dbSetup.balloon1,
+                  basket = dbSetup.basket2,
+                  date = LocalDate.of(2024, 8, 12),
+                  timeSlot = TimeSlot.AM,
+                  vehicles = listOf(dbSetup.vehicle1),
+                  id = UNSET_ID
+              )
 
-    flight1 = flight1.copy(id = flightTable.add(flight1, onError = { assertNull(it) }))
+          var flight2 =
+              PlannedFlight(
+                  nPassengers = 2,
+                  team =
+                  Team(
+                      roles =
+                      listOf(
+                          Role(RoleType.PILOT, dbSetup.pilot1),
+                          Role(RoleType.CREW, dbSetup.crew1)
+                      )
+                  ),
+                  flightType = dbSetup.flightType1,
+                  balloon = dbSetup.balloon1,
+                  basket = dbSetup.basket2,
+                  date = LocalDate.of(2024, 8, 12),
+                  timeSlot = TimeSlot.AM,
+                  vehicles = listOf(dbSetup.vehicle1),
+                  id = UNSET_ID
+              )
+          viewModelAdmin.refreshUserAndFlights().join()
+          val initFlights = viewModelAdmin.currentFlights.value
+          assertEquals(1, initFlights?.size)
 
-    flight2 = flight2.copy(id = flightTable.add(flight2, onError = { assertNull(it) }))
+          flight1 = flight1.copy(id = flightTable.add(flight1, onError = { assertNull(it) }))
 
-    viewModel.refreshCurrentFlights().join()
-    val withFlightsAdded = viewModel.currentFlights.value
+          flight2 = flight2.copy(id = flightTable.add(flight2, onError = { assertNull(it) }))
 
-    assertEquals(3, withFlightsAdded?.size)
+          viewModelAdmin.refreshUserAndFlights().join()
+          val withFlightsAdded = viewModelAdmin.currentFlights.value
 
-    viewModel.deleteFlight(flight1.id).join()
+          assertEquals(3, withFlightsAdded?.size)
 
-    viewModel.refreshCurrentFlights().join()
+          viewModelAdmin.deleteFlight(flight1.id).join()
 
-    val withOneFlightDeleted = viewModel.currentFlights.value
+          viewModelAdmin.refreshUserAndFlights().join()
 
-    assertEquals(2, withOneFlightDeleted?.size)
-    assertTrue(withOneFlightDeleted?.contains(flight2) ?: false)
-    assertFalse(withOneFlightDeleted?.contains(flight1) ?: true)
+          val withOneFlightDeleted = viewModelAdmin.currentFlights.value
+
+          assertEquals(2, withOneFlightDeleted?.size)
+          assertTrue(withOneFlightDeleted?.contains(flight2) ?: false)
+          assertFalse(withOneFlightDeleted?.contains(flight1) ?: true)
+      }
   }
 
   @Test
-  fun modifyFlight() = runTest {
-    var flight1 =
-        PlannedFlight(
-            nPassengers = 2,
-            team =
-                Team(
-                    roles =
-                        listOf(
-                            Role(RoleType.PILOT, dbSetup.pilot1),
-                            Role(RoleType.CREW, dbSetup.crew1))),
-            flightType = dbSetup.flightType2,
-            balloon = dbSetup.balloon1,
-            basket = dbSetup.basket2,
-            date = LocalDate.of(2024, 8, 12),
-            timeSlot = TimeSlot.AM,
-            vehicles = listOf(dbSetup.vehicle1),
-            id = UNSET_ID)
+  fun modifyFlight() {
+      composeTestRule.setContent {
+          viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      }
 
-    flight1 = flight1.copy(id = flightTable.add(flight1, onError = { assertNull(it) }))
+      runTest {
+          var flight1 =
+              PlannedFlight(
+                  nPassengers = 2,
+                  team =
+                  Team(
+                      roles =
+                      listOf(
+                          Role(RoleType.PILOT, dbSetup.pilot1),
+                          Role(RoleType.CREW, dbSetup.crew1)
+                      )
+                  ),
+                  flightType = dbSetup.flightType2,
+                  balloon = dbSetup.balloon1,
+                  basket = dbSetup.basket2,
+                  date = LocalDate.of(2024, 8, 12),
+                  timeSlot = TimeSlot.AM,
+                  vehicles = listOf(dbSetup.vehicle1),
+                  id = UNSET_ID
+              )
 
-    // we first need to refresh as otherwise the view model doesn't know about the flight
-    // also it doesn't make sense to modify a flight you didn't load in the first place
-    viewModel.refreshCurrentFlights().join()
+          flight1 = flight1.copy(id = flightTable.add(flight1, onError = { assertNull(it) }))
 
-    val modifiedFlight = flight1.copy(nPassengers = 3)
+          // we first need to refresh as otherwise the view model doesn't know about the flight
+          // also it doesn't make sense to modify a flight you didn't load in the first place
+          viewModelAdmin.refreshUserAndFlights().join()
 
-    viewModel.modifyFlight(modifiedFlight).join()
+          val modifiedFlight = flight1.copy(nPassengers = 3)
 
-    viewModel.getFlight("dummy")
+          viewModelAdmin.modifyFlight(modifiedFlight).join()
 
-    viewModel.refreshCurrentFlights().join()
+          viewModelAdmin.getFlight("dummy")
 
-    assertEquals(2, viewModel.currentFlights.value?.size)
-    assertTrue(viewModel.currentFlights.value?.contains(modifiedFlight) ?: false)
+          viewModelAdmin.refreshUserAndFlights().join()
+
+          assertEquals(2, viewModelAdmin.currentFlights.value?.size)
+          assertTrue(viewModelAdmin.currentFlights.value?.contains(modifiedFlight) ?: false)
+      }
   }
 }
