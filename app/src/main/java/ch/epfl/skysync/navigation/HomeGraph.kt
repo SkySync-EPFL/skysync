@@ -29,12 +29,14 @@ import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
+import ch.epfl.skysync.viewmodel.TimerViewModel
 
 /** Graph of the main screens of the app */
 fun NavGraphBuilder.homeGraph(
     repository: Repository,
     navController: NavHostController,
-    uid: String?
+    uid: String?,
+    timer: TimerViewModel
 ) {
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
     personalCalendar(repository, navController, uid)
@@ -47,7 +49,9 @@ fun NavGraphBuilder.homeGraph(
           ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
       ChatScreen(navController, chatViewModel)
     }
-    composable(Route.FLIGHT) { FlightScreen(navController) }
+    composable(Route.FLIGHT) {
+        FlightScreen(navController, timer)
+    }
     composable(Route.HOME) { entry ->
 
       // get the MessageListenerSharedViewModel here so that it gets
