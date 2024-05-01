@@ -1,11 +1,7 @@
 package ch.epfl.skysync.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
@@ -21,7 +17,6 @@ import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.message.Message
 import ch.epfl.skysync.models.message.MessageGroup
-import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.screens.AddFlightScreen
 import ch.epfl.skysync.screens.AddUserScreen
 import ch.epfl.skysync.screens.ChatScreen
@@ -34,7 +29,6 @@ import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
-
 
 /** Graph of the main screens of the app */
 fun NavGraphBuilder.homeGraph(
@@ -66,19 +60,9 @@ fun NavGraphBuilder.homeGraph(
         onMessageUpdate(group, update)
       }
 
-      val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
-      flightsViewModel.refresh()
-      val userd: MutableState<User?> = remember {
-          mutableStateOf(null)
-      }
-        suspend {
-            userd.value = repository.userTable.get(uid!!)
-        }
-
-        if(userd.value != null) {
-            HomeScreen(navController, flightsViewModel, userd.value!!)
-        }
-
+      val flightsViewModel = FlightsViewModel.createViewModel(repository, "id-admin-1")
+        flightsViewModel.refresh()
+      HomeScreen(navController, flightsViewModel)
     }
     composable(
         route = Route.FLIGHT_DETAILS + "/{Flight ID}",
