@@ -64,7 +64,7 @@ fun NavGraphBuilder.homeGraph(
         onMessageUpdate(group, update)
       }
 
-      val flightsViewModel = FlightsViewModel.createViewModel(repository)
+      val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
       flightsViewModel.refresh()
       HomeScreen(navController, flightsViewModel)
     }
@@ -73,12 +73,12 @@ fun NavGraphBuilder.homeGraph(
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          val flightsViewModel = FlightsViewModel.createViewModel(repository)
+          val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
           FlightDetailScreen(
               navController = navController, flightId = flightId, viewModel = flightsViewModel)
         }
     composable(Route.ADD_FLIGHT) {
-      val flightsViewModel = FlightsViewModel.createViewModel(repository)
+      val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
       AddFlightScreen(navController, flightsViewModel)
     }
     composable(
@@ -86,7 +86,7 @@ fun NavGraphBuilder.homeGraph(
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          val flightsViewModel = FlightsViewModel.createViewModel(repository)
+          val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
           confirmationScreen(navController, flightId, flightsViewModel)
         }
 
@@ -95,7 +95,7 @@ fun NavGraphBuilder.homeGraph(
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          val flightsViewModel = FlightsViewModel.createViewModel(repository)
+          val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
           ModifyFlightScreen(navController, flightsViewModel, flightId)
         }
     composable(Route.ADD_USER) { AddUserScreen(navController = navController) }
