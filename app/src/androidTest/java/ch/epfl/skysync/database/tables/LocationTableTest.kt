@@ -54,7 +54,8 @@ class LocationTableTest {
     // Simulate location update
     val newLocation = Location(id = "user1", value = LatLng(34.0522, -118.2437))
     locationTable.updateLocation(newLocation)
-    locationTable.listenForLocationUpdates(userIds, onChange = { locations -> updates.add(locations) }, coroutineScope = this)
+    locationTable.listenForLocationUpdates(
+        userIds, onChange = { locations -> updates.add(locations) }, coroutineScope = this)
     this.coroutineContext.job.children.forEach { it.join() } // Wait for all coroutines to finish
 
     assertTrue(updates.isNotEmpty())
