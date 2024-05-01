@@ -60,7 +60,7 @@ fun NavGraphBuilder.homeGraph(
         onMessageUpdate(group, update)
       }
 
-      val flightsViewModel = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
         flightsViewModel.refresh()
       HomeScreen(navController, flightsViewModel)
     }

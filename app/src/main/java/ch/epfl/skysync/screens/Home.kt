@@ -177,7 +177,6 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
             ) { padding ->
                 UpcomingFlights(currentFlights, lightOrange) { selectedFlight ->
                     // Here is where you'd navigate to a new screen. For now, just log a message.
-                    val some = viewModel
                     Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
 
                     navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
@@ -195,7 +194,6 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
             ) { padding ->
                 UpcomingFlights(currentFlights, Purple40) { selectedFlight ->
                     // Here is where you'd navigate to a new screen. For now, just log a message.
-                    val some = viewModel
                     Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
 
                     navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
