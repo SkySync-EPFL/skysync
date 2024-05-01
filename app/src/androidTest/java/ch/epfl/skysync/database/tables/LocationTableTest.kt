@@ -8,6 +8,7 @@ import ch.epfl.skysync.models.location.Location
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.job
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
@@ -47,20 +48,22 @@ class LocationTableTest {
     val userIds = listOf("user1", "user2")
 
     // Mocking real-time updates
-    val listenerRegistrations =
-        locationTable.listenForLocationUpdates(
-            userIds, onChange = { locations -> updates.add(locations) }, coroutineScope = this)
+    val listenerRegistrations = locationTable.listenForLocationUpdates(
+      userIds, onChange = { locations ->
+        updates.add(locations)
+      }, coroutineScope = this)
 
     // Simulate location update
     val newLocation = Location(id = "user1", value = LatLng(34.0522, -118.2437))
     locationTable.updateLocation(newLocation)
-    locationTable.listenForLocationUpdates(
-        userIds, onChange = { locations -> updates.add(locations) }, coroutineScope = this)
-    this.coroutineContext.job.children.forEach { it.join() } // Wait for all coroutines to finish
 
-    assertTrue(updates.isNotEmpty())
-    assertEquals(
-        newLocation.value.latitude, updates.last().find { it.id == "user1" }?.value?.latitude)
+    // Ensure all async updates are processed
+    advanceUntilIdle() // Use this instead of manually joining child coroutines
+
+    assertTrue("Expected updates to be not empty", updates.isNotEmpty())
+    val lastUpdateForUser1 = updates.flatMap { it.filter { loc -> loc.id == "user1" } }.lastOrNull()
+    assertNotNull("Expected last update for user1 to be not null", lastUpdateForUser1)
+    assertEquals("Latitude mismatch", newLocation.value.latitude, lastUpdateForUser1?.value?.latitude)
 
     // Clean up listeners
     listenerRegistrations.forEach { it.remove() }

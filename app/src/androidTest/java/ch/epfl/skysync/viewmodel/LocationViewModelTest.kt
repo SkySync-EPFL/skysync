@@ -9,6 +9,7 @@ import ch.epfl.skysync.models.location.Location
 import com.google.android.gms.maps.model.LatLng
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -39,11 +40,17 @@ class LocationViewModelTest {
   fun testLocationUpdate() = runTest {
     val testLocation = Location(dbs.pilot1.id, LatLng(10.0, 10.0))
 
-    locationViewModel.updateMyLocation(testLocation)
+    // First, set up the listener
     locationViewModel.fetchAndListenToLocations(listOf(dbs.pilot1.id))
-    val locations = locationViewModel.locations
 
-    // Verify the location is updated in the ViewModel
-    assertTrue(locations.value.contains(testLocation))
+    // Then, update the location
+    locationViewModel.updateMyLocation(testLocation)
+
+    // Wait for all launched coroutines in the ViewModel to complete
+    advanceUntilIdle()
+
+    // Check if the updated location is now part of the observed locations
+    val locations = locationViewModel.locations.value
+    assertTrue("The expected location was not found in the ViewModel.", locations.contains(testLocation))
   }
 }
