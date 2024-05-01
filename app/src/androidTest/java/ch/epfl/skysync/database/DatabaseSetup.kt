@@ -8,6 +8,7 @@ import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.database.tables.FlightTypeTable
 import ch.epfl.skysync.database.tables.MessageGroupTable
 import ch.epfl.skysync.database.tables.MessageTable
+import ch.epfl.skysync.database.tables.TempUserTable
 import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.database.tables.VehicleTable
 import ch.epfl.skysync.models.UNSET_ID
@@ -30,6 +31,7 @@ import ch.epfl.skysync.models.message.MessageGroup
 import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
+import ch.epfl.skysync.models.user.TempUser
 import java.time.Instant
 import java.time.LocalDate
 import java.util.Date
@@ -48,6 +50,7 @@ class DatabaseSetup {
           id = "id-admin-1",
           firstname = "admin-1",
           lastname = "lastname",
+          email = "admin1.lastname@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
   var admin2 =
@@ -55,6 +58,7 @@ class DatabaseSetup {
           id = "id-admin-2",
           firstname = "admin-2",
           lastname = "lastname",
+          email = "admin2.lastname@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
   var crew1 =
@@ -62,13 +66,22 @@ class DatabaseSetup {
           id = "id-crew-1",
           firstname = "crew-1",
           lastname = "Bob",
+          email = "crew1.bob@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
+  var tempUser =
+      TempUser(
+          email = "temp.user@skysnc.ch",
+          userRole = UserRole.CREW,
+          firstname = "temp",
+          lastname = "user",
+          balloonQualification = null)
   var pilot1 =
       Pilot(
           id = "id-pilot-1",
           firstname = "pilot-1",
           lastname = "Bob",
+          email = "pilot1.bob@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.LARGE)
@@ -77,6 +90,7 @@ class DatabaseSetup {
           id = "id-pilot-2",
           firstname = "pilot-2",
           lastname = "lastname",
+          email = "pilot2.lastname@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.SMALL)
@@ -152,6 +166,7 @@ class DatabaseSetup {
             launch { VehicleTable(db).deleteTable(onError = null) },
             launch { FlightMemberTable(db).deleteTable(onError = null) },
             launch { UserTable(db).deleteTable(onError = null) },
+            launch { TempUserTable(db).deleteTable(onError = null) },
             launch { FlightTable(db).deleteTable(onError = null) },
             launch { AvailabilityTable(db).deleteTable(onError = null) },
             launch { MessageTable(db).deleteTable(onError = null) },
@@ -171,6 +186,7 @@ class DatabaseSetup {
     val basketTable = BasketTable(db)
     val vehicleTable = VehicleTable(db)
     val userTable = UserTable(db)
+    val tempUserTable = TempUserTable(db)
     val flightTable = FlightTable(db)
     val availabilityTable = AvailabilityTable(db)
     val messageTable = MessageTable(db)
@@ -218,7 +234,7 @@ class DatabaseSetup {
                   availability5.copy(id = availabilityTable.add(pilot2.id, availability5))
               pilot2.availabilities.addCells(listOf(availability5))
             },
-        )
+            launch { tempUserTable.set(tempUser.email, tempUser) })
         .forEach { it.join() }
 
     // re-set all the objects that have been added in the db -> they now have IDs

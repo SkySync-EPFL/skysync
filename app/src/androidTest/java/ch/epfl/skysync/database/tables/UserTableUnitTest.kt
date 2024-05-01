@@ -19,6 +19,7 @@ class UserTableUnitTest {
   private val availabilityTable = AvailabilityTable(db)
   private val flightTable = FlightTable(db)
   private val flightMemberTable = FlightMemberTable(db)
+  private val tempUserTable = TempUserTable(db)
 
   @Before
   fun testSetup() = runTest {
@@ -87,4 +88,20 @@ class UserTableUnitTest {
         userTable.retrieveAssignedFlights(flightTable, dbs.pilot1.id, onError = { assertNull(it) })
     assertTrue(flights.contains(dbs.flight1))
   }
+
+  /*
+  @Test
+  fun createUserTest() = runTest {
+    val id = "new-user"
+    val user = dbs.tempUser.toUserSchema(id).toModel()
+    userTable.createUser(id, dbs.tempUser.email, onError = { assertNull(it) })
+
+    val tempUserExists = tempUserTable.get(dbs.tempUser.email, onError = { assertNull(it) })
+    assertEquals(null, tempUserExists)
+
+    val userExists = userTable.get(id, onError = { assertNull(it) })
+    assertEquals(user, userExists)
+  }
+  */
+
 }
