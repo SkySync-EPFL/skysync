@@ -36,7 +36,7 @@ class LocationTable(db: FirestoreDatabase) :
   ): List<ListenerRegistration> {
     return userIds.map { userId ->
       queryListener(
-          Filter.equalTo("uid", userId),
+          Filter.equalTo("id", userId),
           onChange = { update ->
             coroutineScope.launch {
               val locations = update.updates.map { it.toModel() }

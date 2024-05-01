@@ -40,7 +40,7 @@ class LocationViewModelTest {
     val testLocation = Location(dbs.pilot1.id, LatLng(10.0, 10.0))
 
     locationViewModel.updateMyLocation(testLocation)
-
+    locationViewModel.fetchAndListenToLocations(listOf(dbs.pilot1.id))
     val locations = locationViewModel.locations
 
     // Verify the location is updated in the ViewModel
