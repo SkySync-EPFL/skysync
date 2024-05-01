@@ -7,7 +7,7 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.location.Location
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.job
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
@@ -54,15 +54,11 @@ class LocationTableTest {
     // Simulate location update
     val newLocation = Location(id = "user1", value = LatLng(34.0522, -118.2437))
     locationTable.updateLocation(newLocation)
+    this.coroutineContext.job.children.forEach { it.join() } // Wait for all coroutines to finish
 
-    // Ensure all async updates are processed
-    advanceUntilIdle() // Use this instead of manually joining child coroutines
-
-    assertTrue("Expected updates to be not empty", updates.isNotEmpty())
-    val lastUpdateForUser1 = updates.flatMap { it.filter { loc -> loc.id == "user1" } }.lastOrNull()
-    assertNotNull("Expected last update for user1 to be not null", lastUpdateForUser1)
+    assertTrue(updates.isNotEmpty())
     assertEquals(
-        "Latitude mismatch", newLocation.value.latitude, lastUpdateForUser1?.value?.latitude)
+        newLocation.value.latitude, updates.last().find { it.id == "user1" }?.value?.latitude)
 
     // Clean up listeners
     listenerRegistrations.forEach { it.remove() }
