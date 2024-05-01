@@ -51,6 +51,7 @@ class LocationViewModelTest {
 
     // Check if the updated location is now part of the observed locations
     val locations = locationViewModel.locations.value
-    assertTrue("The expected location was not found in the ViewModel.", locations.contains(testLocation))
+    assertTrue(
+        "The expected location was not found in the ViewModel.", locations.contains(testLocation))
   }
 }
