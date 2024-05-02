@@ -2,6 +2,7 @@ package ch.epfl.skysync.navigation
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
@@ -25,15 +26,19 @@ class AdminBottomBarTest {
 
   @Before
   fun setUp() = runTest {
+    dbs.clearDatabase(db)
+    dbs.fillDatabase(db)
     composeTestRule.setContent {
-      AdminBottomBar(navController = navController)
       val repository = Repository(db)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      // TODO put the graph of the admin view
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(repository, navController, dbs.admin1.id)
       }
+    }
+    composeTestRule.waitUntil {
+      val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
+      nodes.fetchSemanticsNodes().isNotEmpty()
     }
   }
 
@@ -56,14 +61,14 @@ class AdminBottomBarTest {
     composeTestRule.onNodeWithText("User").performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.FLIGHT)
+    Assert.assertEquals(route, Route.USER)
   }
 
   @Test
   fun routeIsRightIfClickOnStat() {
-    composeTestRule.onNodeWithText("User").performClick()
+    composeTestRule.onNodeWithText("Stats").performClick()
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.FLIGHT)
+    Assert.assertEquals(route, Route.STATS)
   }
 
   @Test
