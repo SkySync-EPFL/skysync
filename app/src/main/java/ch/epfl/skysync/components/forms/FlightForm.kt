@@ -29,6 +29,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -70,9 +71,9 @@ fun FlightForm(
     title: String,
     allFlightTypes: List<FlightType>,
     allRoleTypes: List<RoleType>,
-    allVehicles: List<Vehicle>,
-    allBalloons: List<Balloon>,
-    allBaskets: List<Basket>,
+    availableVehicles: List<Vehicle>,
+    availableBalloons: List<Balloon>,
+    availableBaskets: List<Basket>,
     flightAction: (PlannedFlight) -> Unit,
 ) {
   Scaffold(modifier = Modifier.fillMaxSize(), topBar = { CustomTopAppBar(navController, title) }) {
@@ -84,7 +85,7 @@ fun FlightForm(
         val defaultPadding = 16.dp
         val smallPadding = 8.dp
 
-        var nbPassengersValue by remember {
+        var nbPassengersValue = remember {
           mutableStateOf(currentFlight?.nPassengers?.toString() ?: "")
         }
         var nbPassengersValueError by remember { mutableStateOf(false) }
@@ -141,16 +142,7 @@ fun FlightForm(
             verticalArrangement = Arrangement.SpaceBetween) {
               // Field getting the number of passengers. Only number can be entered
               item {
-                TitledInputTextField(
-                    padding = defaultPadding,
-                    title = "Number of passengers",
-                    value = nbPassengersValue,
-                    onValueChange = { value -> nbPassengersValue = value.filter { it.isDigit() } },
-                    isError = nbPassengersValueError,
-                    messageError =
-                        if (nbPassengersValueError) "Please enter a valid number" else "",
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                )
+                  EnterPassengerNumber(defaultPadding, nbPassengersValue, nbPassengersValueError)
               }
               // The date field is a clickable field that opens a date picker
               item {
@@ -243,6 +235,18 @@ fun FlightForm(
                               onValueChange = { addNewUserQuery = it },
                               placeholder = { Text("User") },
                               singleLine = true)
+
+                            // add user
+                            val addUserTitle = "choose user"
+                            TitledDropDownMenu(
+                                defaultPadding = defaultPadding,
+                                title = addUserTitle,
+                                value = flightTypeValue,
+                                onclickMenu = { item -> flightTypeValue = item },
+                                items = allFlightTypes,
+                                showString = { it?.name ?: "Choose the flightType" },
+                                isError = flightTypeValueError,
+                                messageError = "Please choose a flight type")
                         }
                       },
                       confirmButton = {
@@ -288,7 +292,7 @@ fun FlightForm(
                               Modifier.padding(horizontal = defaultPadding)
                                   .testTag("Add Vehicle Button"),
                           onClick = {
-                            if (listVehiclesValue.size < allVehicles.size) {
+                            if (listVehiclesValue.size < availableVehicles.size) {
                               addVehicle = true
                             }
                           },
@@ -308,7 +312,7 @@ fun FlightForm(
                             title = "Vehicle $idList",
                             value = car,
                             onclickMenu = { item -> listVehiclesValue[idList] = item },
-                            items = allVehicles,
+                            items = availableVehicles,
                             showString = { it.name })
                         IconButton(
                             modifier = Modifier.testTag("Delete Vehicle $idList Button"),
@@ -339,7 +343,7 @@ fun FlightForm(
                               addVehicle = false
                               listVehiclesValue.add(item!!)
                             },
-                            items = allVehicles,
+                            items = availableVehicles,
                             showString = { it?.name ?: "Choose a vehicle" })
                         IconButton(
                             modifier = Modifier.testTag("Delete Vehicle $id Button"),
@@ -363,7 +367,7 @@ fun FlightForm(
                     title = balloonTitle,
                     value = balloonValue,
                     onclickMenu = { item -> balloonValue = item },
-                    items = allBalloons,
+                    items = availableBalloons,
                     showString = { it?.name ?: "Choose the balloon" })
               }
               // Drop down menu for the basket
@@ -374,7 +378,7 @@ fun FlightForm(
                     title = basketTitle,
                     value = basketValue,
                     onclickMenu = { item -> basketValue = item },
-                    items = allBaskets,
+                    items = availableBaskets,
                     showString = { it?.name ?: "Choose the basket" })
               }
             }
@@ -382,7 +386,7 @@ fun FlightForm(
         Button(
             modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("$title Button"),
             onClick = {
-              nbPassengersValueError = nbPassengerInputValidation(nbPassengersValue)
+              nbPassengersValueError = nbPassengerInputValidation(nbPassengersValue.value)
               flightTypeValueError = flightTypeInputValidation(flightTypeValue)
               isError = inputValidation(nbPassengersValueError, flightTypeValueError)
               if (!isError) {
@@ -392,7 +396,7 @@ fun FlightForm(
                 val team = Team(allRoles)
                 val newFlight =
                     PlannedFlight(
-                        nPassengers = nbPassengersValue.toInt(),
+                        nPassengers = nbPassengersValue.value.toInt(),
                         date = dateValue,
                         flightType = flightTypeValue!!,
                         timeSlot = timeSlotValue,
@@ -410,6 +414,9 @@ fun FlightForm(
     }
   }
 }
+
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -480,7 +487,7 @@ fun RoleField(
     specialName: String = ""
 ) {
   var query by remember { mutableStateOf("") }
-  Text(modifier = Modifier.padding(horizontal = defaultPadding), text = role.roleType.name)
+  Text(modifier = Modifier.padding(horizontal = defaultPadding), text = role.roleType.toString())
   Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -503,6 +510,24 @@ fun RoleField(
         }
       }
 }
+
+@Composable
+fun EnterPassengerNumber(defaultPadding: Dp,
+                         nbPassengersValue: MutableState<String>,
+                         nbPassengersValueError: Boolean){
+    TitledInputTextField(
+        padding = defaultPadding,
+        title = "Number of passengers",
+        value = nbPassengersValue.value,
+        onValueChange = { value -> nbPassengersValue.value = value.filter { it.isDigit() } },
+        isError = nbPassengersValueError,
+        messageError =
+        if (nbPassengersValueError) "Please enter a valid number" else "",
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+    )
+}
+
+
 
 @Composable
 @Preview
