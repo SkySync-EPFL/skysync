@@ -450,7 +450,7 @@ fun RoleField(
           Modifier.fillMaxWidth()
               .padding(horizontal = defaultPadding)
               .testTag("$specialName User $id"),
-      text = role.roleType.toString(),
+      text = role.roleType.description,
   )
   Row(
       modifier = Modifier.fillMaxWidth(),
@@ -462,7 +462,7 @@ fun RoleField(
             value = role.assignedUser,
             onclickMenu = { item -> onReassign(item) },
             items = availableUsers,
-            showString = { it?.lastname ?: "choose a user" },
+            showString = { it?.displayString() ?: "choose a user" },
             isError = false,
             messageError = "no message")
 

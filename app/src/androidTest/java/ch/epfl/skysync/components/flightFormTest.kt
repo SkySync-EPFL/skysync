@@ -188,18 +188,17 @@ class FlightFormTest {
   }
 
   @Test
-  fun fondueFieldIsDisplayedCorrectly() {
-    composeTestRule.onNodeWithText(RoleType.MAITRE_FONDUE.description).assertIsNotDisplayed()
+  fun crewFieldIsDisplayedCorrectly() {
 
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
         .performScrollToNode(hasTestTag("Flight Type Menu"))
     composeTestRule.onNodeWithTag("Flight Type Menu").performClick()
-    composeTestRule.onNodeWithText("Fondue").performClick()
+    composeTestRule.onNodeWithText("Discovery").performClick()
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasText(RoleType.MAITRE_FONDUE.description))
-    composeTestRule.onNodeWithText(RoleType.MAITRE_FONDUE.description).assertIsDisplayed()
+        .performScrollToNode(hasText(RoleType.CREW.description))
+    composeTestRule.onNodeWithText(RoleType.CREW.description).assertIsDisplayed()
   }
 
   @Test
@@ -271,7 +270,10 @@ class FlightFormTest {
     composeTestRule.onNodeWithText(user1_tag).performClick()
     composeTestRule.onNodeWithTag("selected Assigned User dropdown").assertTextContains(user1_tag)
     composeTestRule.onNodeWithTag("Add Role Button").performClick()
-    composeTestRule.onNodeWithText(user1_tag).assertExists()
+      composeTestRule
+          .onNodeWithTag("Flight Lazy Column")
+          .performScrollToNode(hasText(user1_tag))
+    composeTestRule.onNodeWithText(user1_tag).assertIsDisplayed()
   }
 
   @Test
@@ -281,6 +283,10 @@ class FlightFormTest {
         .performScrollToNode(hasTestTag("overview:Crew Menu"))
     composeTestRule.onAllNodesWithTag("overview:Crew Menu")[0].performClick()
     val user1_tag = user1.firstname + " " + user1.lastname
+    composeTestRule.onNodeWithText(user1_tag).performClick()
+      composeTestRule
+          .onNodeWithText(user1_tag)
+          .assertIsDisplayed()
   }
 
   @Test
