@@ -16,7 +16,14 @@ class TimerTest {
 
   @Before
   fun setUp() {
-    composeTestRule.setContent { Timer(modifier = Modifier) }
+    composeTestRule.setContent {
+      Timer(
+        modifier = Modifier,
+        currentTimer = "0:0:0",
+        isRunning = false,
+        onStart = {},
+        onStop = {})
+    }
   }
 
   @Test

@@ -42,6 +42,7 @@ class TimerViewModel: ViewModel(){
 
     fun start() {
         if (_isRunning.value) return
+        _counter.value = 0L
         _isRunning.value = true
         var newTimeStamp = 0L
         job = viewModelScope.launch {
@@ -55,7 +56,7 @@ class TimerViewModel: ViewModel(){
         }
     }
 
-    fun formatTime(milliseconds: Long): String {
+    private fun formatTime(milliseconds: Long): String {
         val secondsRounded = milliseconds / 1000
         val hours = secondsRounded / 3600
         val minutes = (secondsRounded % 3600) / 60
@@ -67,7 +68,6 @@ class TimerViewModel: ViewModel(){
         _isRunning.value = false
         job?.cancel()
         job = null
-        _counter.value = 0L
         lastTimestamp = 0L
     }
 

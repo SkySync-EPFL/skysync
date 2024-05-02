@@ -36,7 +36,7 @@ fun NavGraphBuilder.homeGraph(
     repository: Repository,
     navController: NavHostController,
     uid: String?,
-    timer: TimerViewModel
+    timer: TimerViewModel? = null
 ) {
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
     personalCalendar(repository, navController, uid)
@@ -50,7 +50,7 @@ fun NavGraphBuilder.homeGraph(
       ChatScreen(navController, chatViewModel)
     }
     composable(Route.FLIGHT) {
-        FlightScreen(navController, timer)
+        FlightScreen(navController, timer!!)
     }
     composable(Route.HOME) { entry ->
 
