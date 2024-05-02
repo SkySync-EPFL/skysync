@@ -42,27 +42,9 @@ class FlightsViewModelTest {
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var viewModelAdmin: FlightsViewModel
   lateinit var viewModelCrewPilot: FlightsViewModel
-  lateinit var defaultFlight1: PlannedFlight
 
   @Before
   fun setUp() = runTest {
-    defaultFlight1 =
-        PlannedFlight(
-            nPassengers = 2,
-            team =
-                Team(
-                    roles =
-                        listOf(
-                            Role(RoleType.PILOT, dbSetup.pilot1),
-                            Role(RoleType.CREW, dbSetup.crew1))),
-            flightType = dbSetup.flightType1,
-            balloon = dbSetup.balloon1,
-            basket = dbSetup.basket2,
-            date = LocalDate.of(2024, 8, 12),
-            timeSlot = TimeSlot.AM,
-            vehicles = listOf(dbSetup.vehicle1),
-            id = UNSET_ID)
-
     dbSetup.clearDatabase(db)
     dbSetup.fillDatabase(db)
   }
@@ -99,7 +81,7 @@ class FlightsViewModelTest {
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
       val currentFlights = viewModelAdmin.currentFlights.value
-      assertEquals(1, currentFlights?.size)
+      assertEquals(2, currentFlights?.size)
     }
   }
 
@@ -111,7 +93,7 @@ class FlightsViewModelTest {
     runTest {
       viewModelCrewPilot.refreshUserAndFlights().join()
       val currentFlights = viewModelCrewPilot.currentFlights.value
-      assertEquals(1, currentFlights?.size)
+      assertEquals(2, currentFlights?.size)
     }
   }
 
@@ -175,7 +157,7 @@ class FlightsViewModelTest {
               id = flightTable.add(flightWithoutCrew, onError = { assertNull(it) }))
 
       viewModelCrewPilot.refreshUserAndFlights().join()
-      assertEquals(2, viewModelCrewPilot.currentFlights.value?.size)
+      assertEquals(3, viewModelCrewPilot.currentFlights.value?.size)
     }
   }
 
@@ -227,7 +209,7 @@ class FlightsViewModelTest {
               id = flightTable.add(flightWithoutCrew, onError = { assertNull(it) }))
 
       viewModelAdmin.refreshUserAndFlights().join()
-      assertEquals(3, viewModelAdmin.currentFlights.value?.size)
+      assertEquals(4, viewModelAdmin.currentFlights.value?.size)
     }
   }
 
@@ -259,7 +241,7 @@ class FlightsViewModelTest {
 
       viewModelAdmin.refreshUserAndFlights().join()
 
-      assertEquals(2, viewModelAdmin.currentFlights.value?.size)
+      assertEquals(3, viewModelAdmin.currentFlights.value?.size)
     }
   }
 
@@ -305,7 +287,7 @@ class FlightsViewModelTest {
               id = UNSET_ID)
       viewModelAdmin.refreshUserAndFlights().join()
       val initFlights = viewModelAdmin.currentFlights.value
-      assertEquals(1, initFlights?.size)
+      assertEquals(2, initFlights?.size)
 
       flight1 = flight1.copy(id = flightTable.add(flight1, onError = { assertNull(it) }))
 
@@ -314,7 +296,7 @@ class FlightsViewModelTest {
       viewModelAdmin.refreshUserAndFlights().join()
       val withFlightsAdded = viewModelAdmin.currentFlights.value
 
-      assertEquals(3, withFlightsAdded?.size)
+      assertEquals(4, withFlightsAdded?.size)
 
       viewModelAdmin.deleteFlight(flight1.id).join()
 
@@ -322,7 +304,7 @@ class FlightsViewModelTest {
 
       val withOneFlightDeleted = viewModelAdmin.currentFlights.value
 
-      assertEquals(2, withOneFlightDeleted?.size)
+      assertEquals(3, withOneFlightDeleted?.size)
       assertTrue(withOneFlightDeleted?.contains(flight2) ?: false)
       assertFalse(withOneFlightDeleted?.contains(flight1) ?: true)
     }
@@ -366,7 +348,7 @@ class FlightsViewModelTest {
 
       viewModelAdmin.refreshUserAndFlights().join()
 
-      assertEquals(2, viewModelAdmin.currentFlights.value?.size)
+      assertEquals(3, viewModelAdmin.currentFlights.value?.size)
       assertTrue(viewModelAdmin.currentFlights.value?.contains(modifiedFlight) ?: false)
     }
   }

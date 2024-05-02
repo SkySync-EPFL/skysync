@@ -42,23 +42,24 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
+import ch.epfl.skysync.ui.theme.Purple40
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun UpcomingFlights(flights: List<Flight>?, onFlightClick: (String) -> Unit) {
+fun UpcomingFlights(flights: List<Flight>?, color: Color, onFlightClick: (String) -> Unit) {
   Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
     Text(
         text = "Upcoming flights",
         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
         modifier =
             Modifier.background(
-                    color = lightOrange,
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                    color = color, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .fillMaxWidth()
                 .padding(16.dp),
         color = Color.White,
@@ -134,27 +135,55 @@ fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
   val currentFlights by viewModel.currentFlights.collectAsStateWithLifecycle()
-  Scaffold(
-      modifier = Modifier.fillMaxSize(),
-      bottomBar = { BottomBar(navController) },
-      floatingActionButton = {
-        // Define the FloatingActionButton to create a flight
-        FloatingActionButton(
-            modifier = Modifier.testTag("addFlightButton"),
-            onClick = { navController.navigate(Route.ADD_FLIGHT) { launchSingleTop = true } },
-            containerColor = lightOrange) {
-              Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
-            }
-      },
-      floatingActionButtonPosition = FabPosition.End,
-  ) { padding ->
-    UpcomingFlights(currentFlights) { selectedFlight ->
-      // Here is where you'd navigate to a new screen. For now, just log a message.
-      val some = viewModel
-      Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
+  val user by viewModel.currentUser.collectAsStateWithLifecycle()
 
-      navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
-      // Example navigation call: navController.navigate("FlightDetails.id")
+  if (user == null) {
+    LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
+  } else {
+    if (user is Admin) {
+      // Display the Home Screen with the list of upcoming flights
+      Scaffold(
+          modifier = Modifier.fillMaxSize(),
+          bottomBar = { BottomBar(navController) },
+          floatingActionButton = {
+            // Define the FloatingActionButton to create a flight
+            FloatingActionButton(
+                modifier = Modifier.testTag("addFlightButton"),
+                onClick = { navController.navigate(Route.ADD_FLIGHT) { launchSingleTop = true } },
+                containerColor = lightOrange) {
+                  Icon(
+                      imageVector = Icons.Default.Add,
+                      contentDescription = "Add",
+                      tint = Color.White)
+                }
+          },
+          floatingActionButtonPosition = FabPosition.End,
+      ) { padding ->
+        UpcomingFlights(currentFlights, lightOrange) { selectedFlight ->
+          // Here is where you'd navigate to a new screen. For now, just log a message.
+          Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
+
+          navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
+          // Example navigation call: navController.navigate("FlightDetails.id")
+        }
+      }
+    } else {
+      Scaffold(
+          modifier = Modifier.fillMaxSize(),
+          bottomBar = { BottomBar(navController) },
+          floatingActionButton = {
+            // Define the FloatingActionButton to create a flight
+          },
+          floatingActionButtonPosition = FabPosition.End,
+      ) { padding ->
+        UpcomingFlights(currentFlights, Purple40) { selectedFlight ->
+          // Here is where you'd navigate to a new screen. For now, just log a message.
+          Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
+
+          navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
+          // Example navigation call: navController.navigate("FlightDetails.id")
+        }
+      }
     }
   }
 }
