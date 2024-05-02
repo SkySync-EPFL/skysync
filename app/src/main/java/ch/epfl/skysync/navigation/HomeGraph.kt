@@ -52,7 +52,7 @@ fun NavGraphBuilder.homeGraph(
     }
     composable(Route.FLIGHT) {
       val locationViewModel = LocationViewModel.createViewModel(repository)
-      FlightScreen(navController,timer!!, locationViewModel, uid!!)
+      FlightScreen(navController, timer!!, locationViewModel, uid!!)
     }
     composable(Route.HOME) { entry ->
 

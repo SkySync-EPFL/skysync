@@ -11,8 +11,8 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.screens.FlightScreen
-import ch.epfl.skysync.viewmodel.TimerViewModel
 import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.TimerViewModel
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,7 +29,11 @@ class FlightScreenNoPermissionTest {
       val locationViewModel = LocationViewModel.createViewModel(repository)
       val navController = rememberNavController()
       val uid = dbs.pilot1.id
-      FlightScreen(navController = navController,TimerViewModel.createViewModel(), locationViewModel = locationViewModel, uid)
+      FlightScreen(
+          navController = navController,
+          TimerViewModel.createViewModel(),
+          locationViewModel = locationViewModel,
+          uid)
     }
   }
 

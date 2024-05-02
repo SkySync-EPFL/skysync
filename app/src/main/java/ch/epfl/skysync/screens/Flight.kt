@@ -63,11 +63,12 @@ import com.google.maps.android.compose.rememberMarkerState
  */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun FlightScreen(navController: 
-    NavHostController, 
-    timer: TimerViewModel, 
-    locationViewModel: LocationViewModel, 
-    uid: String) {
+fun FlightScreen(
+    navController: NavHostController,
+    timer: TimerViewModel,
+    locationViewModel: LocationViewModel,
+    uid: String
+) {
   // Access to the application context.
   val context = LocalContext.current
 
