@@ -2,6 +2,7 @@ package ch.epfl.skysync.navigation
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.ComposeNavigator
@@ -35,7 +36,10 @@ class HomeNavigationTest {
         homeGraph(repository, navController, dbs.admin1.id)
       }
     }
-    composeTestRule.onNodeWithText("SwipeRefreshLayout").assertDoesNotExist()
+    composeTestRule.waitUntil {
+      val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
+      nodes.fetchSemanticsNodes().isNotEmpty()
+    }
   }
 
   @Test

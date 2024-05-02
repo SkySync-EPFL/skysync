@@ -6,8 +6,8 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.navigation.compose.ComposeNavigator
@@ -46,7 +46,10 @@ class AvailabiltyCalendarTest {
         homeGraph(repository, navController, dbs.admin1.id)
       }
     }
-    composeTestRule.onNodeWithText("SwipeRefreshLayout").assertDoesNotExist()
+    composeTestRule.waitUntil {
+      val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
+      nodes.fetchSemanticsNodes().isNotEmpty()
+    }
   }
 
   @Test
