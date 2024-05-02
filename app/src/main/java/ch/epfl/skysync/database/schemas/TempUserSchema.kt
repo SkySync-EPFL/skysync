@@ -14,22 +14,12 @@ data class TempUserSchema(
     val balloonQualification: BalloonQualification? = null
 ) : Schema<TempUser> {
   override fun toModel(): TempUser {
-    return when (userRole!!) {
-      UserRole.PILOT ->
-          TempUser(
-              email = email!!,
-              userRole = userRole!!,
-              firstname = firstname!!,
-              lastname = lastname!!,
-              balloonQualification = balloonQualification!!)
-      else ->
-          TempUser(
-              email = email!!,
-              userRole = userRole!!,
-              firstname = firstname!!,
-              lastname = lastname!!,
-          )
-    }
+    return TempUser(
+        email = email!!,
+        userRole = userRole!!,
+        firstname = firstname!!,
+        lastname = lastname!!,
+        balloonQualification = balloonQualification)
   }
 
   companion object {

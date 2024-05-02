@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
 
     val snackBarText =
         if (userId.value == "default-user") "Authentication with default Admin user"
-        else "Authentication Successful as ${userId.value}"
+        else "Authentication Successful"
     SnackbarManager.showMessage(snackBarText)
   }
 

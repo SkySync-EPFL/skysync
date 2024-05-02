@@ -21,7 +21,6 @@ class UserTableUnitTest {
   private val availabilityTable = AvailabilityTable(db)
   private val flightTable = FlightTable(db)
   private val flightMemberTable = FlightMemberTable(db)
-  private val tempUserTable = TempUserTable(db)
 
   @Before
   fun testSetup() = runTest {
