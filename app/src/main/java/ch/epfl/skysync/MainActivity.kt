@@ -55,8 +55,8 @@ class MainActivity : ComponentActivity() {
               navHostController = navController,
               signInLauncher = signInLauncher,
               uid = user.value?.uid,
-              timer=timerVm,
-            )
+              timer = timerVm,
+          )
         }
       }
     }

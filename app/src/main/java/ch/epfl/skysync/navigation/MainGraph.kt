@@ -22,12 +22,7 @@ fun MainGraph(
   NavHost(
       navController = navHostController,
       startDestination = if (uid == null) Route.LOGIN else Route.MAIN) {
-        homeGraph(
-            repository,
-            navHostController,
-            uid,
-            timer
-        )
+        homeGraph(repository, navHostController, uid, timer)
         composable(Route.LOGIN) { LoginScreen(signInLauncher = signInLauncher) }
       }
 }

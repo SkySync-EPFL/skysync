@@ -67,8 +67,8 @@ fun FlightScreen(navController: NavHostController, timer: TimerViewModel) {
   // Access to the application context.
   val context = LocalContext.current
 
-    val currentTime by timer.counter.collectAsStateWithLifecycle()
-    val flightIsStarted by timer.isRunning.collectAsStateWithLifecycle()
+  val currentTime by timer.counter.collectAsStateWithLifecycle()
+  val flightIsStarted by timer.isRunning.collectAsStateWithLifecycle()
 
   // Manages the state of location permissions.
   val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -161,19 +161,15 @@ fun FlightScreen(navController: NavHostController, timer: TimerViewModel) {
         if (locationPermission.status.isGranted) {
           Box(
               modifier =
-              Modifier
-                  .fillMaxSize()
-                  .padding(start = 32.dp, bottom = 88.dp, top = 100.dp),
+                  Modifier.fillMaxSize().padding(start = 32.dp, bottom = 88.dp, top = 100.dp),
               contentAlignment = Alignment.BottomStart) {
                 Timer(
-                    Modifier
-                        .align(Alignment.TopEnd)
-                        .testTag("Timer"),
+                    Modifier.align(Alignment.TopEnd).testTag("Timer"),
                     currentTimer = currentTime,
                     isRunning = flightIsStarted,
                     onStart = { timer.start() },
                     onStop = { timer.stop() },
-                    )
+                )
 
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -214,10 +210,7 @@ fun FlightScreen(navController: NavHostController, timer: TimerViewModel) {
         // Renders the Google Map or a permission request message based on the permission status.
         if (locationPermission.status.isGranted && location != null) {
           GoogleMap(
-              modifier = Modifier
-                  .fillMaxSize()
-                  .padding(padding)
-                  .testTag("Map"),
+              modifier = Modifier.fillMaxSize().padding(padding).testTag("Map"),
               cameraPositionState = cameraPositionState) {
                 Marker(state = markerState, title = "Your Location", snippet = "You are here")
               }
@@ -226,17 +219,14 @@ fun FlightScreen(navController: NavHostController, timer: TimerViewModel) {
                   "X Speed: $speed m/s\nY Speed: $verticalSpeed m/s\nAltitude: $altitude m\nBearing: $bearing °",
               style = MaterialTheme.typography.bodyLarge,
               modifier =
-              Modifier
-                  .padding(top = 16.dp, start = 12.dp, end = 12.dp)
-                  .background(color = Color.White, shape = RoundedCornerShape(8.dp))
-                  .padding(6.dp))
+                  Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
+                      .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                      .padding(6.dp))
         }
         if (!locationPermission.status.isGranted) {
           // Displays a message if location permission is denied.
           Box(
-              modifier = Modifier
-                  .fillMaxSize()
-                  .padding(16.dp),
+              modifier = Modifier.fillMaxSize().padding(16.dp),
               contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                   Text("Access to location is required to use this feature.")

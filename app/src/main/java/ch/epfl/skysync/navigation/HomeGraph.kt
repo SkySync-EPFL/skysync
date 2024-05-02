@@ -49,9 +49,7 @@ fun NavGraphBuilder.homeGraph(
           ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
       ChatScreen(navController, chatViewModel)
     }
-    composable(Route.FLIGHT) {
-        FlightScreen(navController, timer!!)
-    }
+    composable(Route.FLIGHT) { FlightScreen(navController, timer!!) }
     composable(Route.HOME) { entry ->
 
       // get the MessageListenerSharedViewModel here so that it gets
