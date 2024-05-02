@@ -2,7 +2,6 @@ package ch.epfl.skysync.end_to_end
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -24,7 +23,6 @@ import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
 import ch.epfl.skysync.viewmodel.TimerViewModel
-import junit.framework.TestCase
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
@@ -35,7 +33,7 @@ class E2EPilotDuringFlight {
   @get:Rule val composeTestRule = createComposeRule()
   @get:Rule
   var permissionRule: GrantPermissionRule =
-    GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
   lateinit var navController: TestNavHostController
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbs = DatabaseSetup()
@@ -50,7 +48,7 @@ class E2EPilotDuringFlight {
     composeTestRule.setContent {
       messageListenerSharedViewModel = MessageListenerSharedViewModel.createViewModel()
       chatViewModel =
-        ChatViewModel.createViewModel(dbs.admin2.id, messageListenerSharedViewModel, repository)
+          ChatViewModel.createViewModel(dbs.admin2.id, messageListenerSharedViewModel, repository)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       val t = TimerViewModel.createViewModel()
@@ -89,8 +87,8 @@ class E2EPilotDuringFlight {
       // Opens flight information and asserts the display of navigation information
       composeTestRule.onNodeWithContentDescription("Flight infos").performClick()
       composeTestRule
-        .onNodeWithText("X Speed: 0.0 m/s\nY Speed: 0.0 m/s\nAltitude: 0.0 m\nBearing: 0.0 °")
-        .assertIsDisplayed()
+          .onNodeWithText("X Speed: 0.0 m/s\nY Speed: 0.0 m/s\nAltitude: 0.0 m\nBearing: 0.0 °")
+          .assertIsDisplayed()
 
       // Navigates to the chat screen
       composeTestRule.onNodeWithText("Chat").performClick()
@@ -106,8 +104,9 @@ class E2EPilotDuringFlight {
       composeTestRule.waitForIdle()
 
       // Scrolls to the group chat and clicks on it
-      composeTestRule.onNodeWithTag("GroupChatBody")
-        .performScrollToNode(hasTestTag("GroupCard$index"))
+      composeTestRule
+          .onNodeWithTag("GroupChatBody")
+          .performScrollToNode(hasTestTag("GroupCard$index"))
       composeTestRule.onNodeWithTag("GroupCard$index").assertIsDisplayed()
       composeTestRule.onNodeWithTag("GroupCard$index").performClick()
 
@@ -125,5 +124,4 @@ class E2EPilotDuringFlight {
       composeTestRule.onNodeWithTag("Stop Button").performClick()
     }
   }
-
 }
