@@ -31,11 +31,12 @@ class LocationTableTest {
 
   @Test
   fun updateLocationTest() = runTest {
-    val originalLocation = Location(id = "loc1", value = LatLng(40.7128, -74.0060))
-    val newLocation = Location(id = "loc1", value = LatLng(37.7749, -122.4194))
+    val originalLocation = Location(id = dbs.pilot1.id, value = LatLng(40.7128, -74.0060))
+    locationTable.updateLocation(originalLocation)
+    val newLocation = Location(id = dbs.crew1.id, value = LatLng(37.7749, -122.4194))
     locationTable.updateLocation(newLocation, onError = { assertNull(it) })
 
-    val updatedLocation = locationTable.get("loc1", onError = { assertNull(it) })
+    val updatedLocation = locationTable.get(dbs.crew1.id, onError = { assertNull(it) })
     assertNotNull(updatedLocation)
     assertEquals(37.7749, updatedLocation!!.value.latitude, 0.001)
     assertEquals(-122.4194, updatedLocation.value.longitude, 0.001)
@@ -44,7 +45,7 @@ class LocationTableTest {
   @Test
   fun listenForUpdatesTest() = runTest {
     val updates: MutableList<List<Location>> = mutableListOf()
-    val userIds = listOf("user1", "user2")
+    val userIds = listOf(dbs.pilot2.id, dbs.admin2.id)
 
     // Mocking real-time updates
     val listenerRegistrations =
@@ -52,13 +53,13 @@ class LocationTableTest {
             userIds, onChange = { locations -> updates.add(locations) }, coroutineScope = this)
 
     // Simulate location update
-    val newLocation = Location(id = "user1", value = LatLng(34.0522, -118.2437))
+    val newLocation = Location(id = dbs.pilot2.id, value = LatLng(34.0522, -118.2437))
     locationTable.updateLocation(newLocation)
     this.coroutineContext.job.children.forEach { it.join() } // Wait for all coroutines to finish
 
     assertTrue(updates.isNotEmpty())
     assertEquals(
-        newLocation.value.latitude, updates.last().find { it.id == "user1" }?.value?.latitude)
+        newLocation.value.latitude, updates.last().find { it.id == dbs.pilot2.id }?.value?.latitude)
 
     // Clean up listeners
     listenerRegistrations.forEach { it.remove() }
@@ -66,7 +67,7 @@ class LocationTableTest {
 
   @Test
   fun deleteLocationTest() = runTest {
-    val locationId = "loc1"
+    val locationId = dbs.pilot1.id
     locationTable.delete(locationId, onError = { assertNull(it) })
     val retrievedLocation = locationTable.get(locationId, onError = { assertNull(it) })
     assertNull(retrievedLocation)

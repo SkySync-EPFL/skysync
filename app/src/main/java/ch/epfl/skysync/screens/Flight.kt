@@ -20,7 +20,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -77,7 +76,8 @@ fun FlightScreen(
   // List of the locations of the other Team members
   val locations = locationViewModel.locations.collectAsState().value
   // State holding the current location initialized to Lausanne as default value.
-  var userLocation by remember { mutableStateOf(LatLng(46.516, 6.63282)) }
+  val defaultLocation = LatLng(46.516, 6.63282)
+  var userLocation by remember { mutableStateOf(defaultLocation) }
   // Remembers and controls the camera position state for the map.
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(userLocation, 13f)
@@ -92,10 +92,6 @@ fun FlightScreen(
   var previousAltitude by remember { mutableStateOf<Double?>(null) }
   var previousTime by remember { mutableStateOf<Long?>(null) }
 
-  LaunchedEffect(locations) {
-    Log.d("LocationsUpdate", "locations of other users have been updated")
-  }
-
   // Callback to receive location updates
   val locationCallback =
       object : LocationCallback() {
@@ -106,11 +102,9 @@ fun FlightScreen(
             cameraPositionState.position = CameraPosition.fromLatLngZoom(newLocation, 13f)
             // Update local location
             userLocation = newLocation
-            Log.d("CurrentUserLocationUpdate", "Location of current user updated")
+            Log.d("CurrentUserLocationUpdate", "Locations size: ${locations.size}")
             // Update location for other users
-            locationViewModel.updateMyLocation(
-                Location(uid, newLocation) // Construct Location object correctly
-                )
+            locationViewModel.updateMyLocation(Location(uid, newLocation))
             // Update marker position
             markerState.position = newLocation
             // Update user's informations
@@ -200,11 +194,11 @@ fun FlightScreen(
         }
       },
       bottomBar = { BottomBar(navController) }) { padding ->
-        if (!locationPermission.status.isGranted && userLocation == null) {
+        if (locationPermission.status.isGranted && userLocation == defaultLocation) {
           LoadingComponent(isLoading = true, onRefresh = {}, content = {})
         }
         // Renders the Google Map or a permission request message based on the permission status.
-        if (locationPermission.status.isGranted && userLocation != null) {
+        if (locationPermission.status.isGranted && userLocation != defaultLocation) {
           GoogleMap(
               modifier = Modifier.fillMaxSize().padding(padding).testTag("Map"),
               cameraPositionState = cameraPositionState) {

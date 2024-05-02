@@ -1,5 +1,6 @@
 package ch.epfl.skysync.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -46,7 +47,12 @@ class LocationViewModel(private val repository: Repository) : ViewModel() {
   fun fetchAndListenToLocations(userIds: List<String>) {
     listeners +=
         locationTable.listenForLocationUpdates(
-            userIds, { locations -> _locations.value = locations }, viewModelScope)
+            userIds,
+            { locations ->
+              Log.d("LocationsSize", "Locations size: ${locations.size}")
+              _locations.value = locations
+            },
+            viewModelScope)
   }
 
   /**
@@ -68,6 +74,7 @@ class LocationViewModel(private val repository: Repository) : ViewModel() {
     // Will need a shared ViewModel later
     viewModelScope.launch {
       val userIds = userTable.getAll().map { it.id }
+      Log.d("UserSize", "User size: ${userIds.size}")
       fetchAndListenToLocations(userIds)
     }
   }
