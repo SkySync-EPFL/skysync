@@ -30,7 +30,6 @@ class E2EAddFlights {
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbs = DatabaseSetup()
   private val repository = Repository(db)
-
   @Before
   fun setUpNavHost() = runTest {
     dbs.clearDatabase(db)
