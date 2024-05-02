@@ -50,6 +50,16 @@ class FlightsViewModelTest {
   }
 
   @Test
+  fun setDate() {
+    composeTestRule.setContent {
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+    }
+    viewModelAdmin.setDateAndTimeSlot(LocalDate.of(2024, 8, 12), TimeSlot.AM)
+    assertEquals(LocalDate.of(2024, 8, 12), viewModelAdmin.date)
+    assertEquals(TimeSlot.AM, viewModelAdmin.timeSlot)
+  }
+
+  @Test
   fun loadsCorrectAdmin() {
     composeTestRule.setContent {
       viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
