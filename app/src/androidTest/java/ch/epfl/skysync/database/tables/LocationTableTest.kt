@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.MainCoroutineRule
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.models.location.Location
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,22 +45,35 @@ class LocationTableTest {
 
   @Test
   fun listenForUpdatesTest() = runTest {
-    val updates: MutableList<List<Location>> = mutableListOf()
+    val updates: MutableList<ListenerUpdate<Location>> = mutableListOf()
     val userIds = listOf(dbs.pilot2.id, dbs.admin2.id)
 
     // Mocking real-time updates
     val listenerRegistrations =
-        locationTable.listenForLocationUpdates(
-            userIds, onChange = { locations -> updates.add(locations) }, coroutineScope = this)
+        userIds.map { userId ->
+          locationTable.listenForLocationUpdates(
+              userId, onChange = { update -> updates.add(update) }, coroutineScope = this)
+        }
 
-    // Simulate location update
     val newLocation = Location(id = dbs.pilot2.id, value = LatLng(34.0522, -118.2437))
     locationTable.updateLocation(newLocation)
+
+    val updatedLocation = Location(id = dbs.pilot2.id, value = LatLng(0.0, 0.0))
+    locationTable.updateLocation(updatedLocation)
+
     this.coroutineContext.job.children.forEach { it.join() } // Wait for all coroutines to finish
 
-    assertTrue(updates.isNotEmpty())
-    assertEquals(
-        newLocation.value.latitude, updates.last().find { it.id == dbs.pilot2.id }?.value?.latitude)
+    // The order of the listener triggers is:
+    // - Add new location
+    // - Initial listener query result
+    // - update location
+    // as the first update as it needs to wait for a requests and is not
+    // a coroutine (it is not blocking as it is executed by the listener)
+    // while the listener is triggered before the add operation is performed
+    // see doc (https://firebase.google.com/docs/firestore/query-data/listen#events-local-changes)
+    assertEquals(3, updates.size)
+    assertEquals(newLocation.value.latitude, updates[0].adds[0].value.latitude, 0.001)
+    assertEquals(updatedLocation.value.latitude, updates[2].updates[0].value.latitude, 0.001)
 
     // Clean up listeners
     listenerRegistrations.forEach { it.remove() }

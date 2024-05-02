@@ -99,12 +99,11 @@ fun FlightScreen(
           locationResult.lastLocation?.let {
             val newLocation = LatLng(it.latitude, it.longitude)
 
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(newLocation, 13f)
             // Update local location
             userLocation = newLocation
-            Log.d("CurrentUserLocationUpdate", "Locations size: ${locations.size}")
+
             // Update location for other users
-            locationViewModel.updateMyLocation(Location(uid, newLocation))
+            locationViewModel.updateLocation(Location(uid, newLocation))
             // Update marker position
             markerState.position = newLocation
             // Update user's informations

@@ -1,5 +1,6 @@
 package ch.epfl.skysync.viewmodel
 
+import android.os.SystemClock
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.Repository
@@ -39,7 +40,10 @@ class LocationViewModelTest {
   fun testLocationUpdate() = runTest {
     val testLocation = Location(dbs.pilot1.id, LatLng(10.0, 10.0))
 
-    locationViewModel.updateMyLocation(testLocation)
+    locationViewModel.updateLocation(testLocation).join()
+
+    // add a little delay to wait for the listener to be triggered
+    SystemClock.sleep(200)
 
     val locations = locationViewModel.locations
 

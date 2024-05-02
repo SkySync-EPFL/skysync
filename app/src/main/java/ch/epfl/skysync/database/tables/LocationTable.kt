@@ -1,13 +1,14 @@
 package ch.epfl.skysync.database.tables
 
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.LocationSchema
 import ch.epfl.skysync.models.location.Location
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 class LocationTable(db: FirestoreDatabase) :
     Table<Location, LocationSchema>(db, LocationSchema::class, PATH) {
@@ -30,21 +31,23 @@ class LocationTable(db: FirestoreDatabase) :
    * @param coroutineScope CoroutineScope for launching asynchronous tasks.
    */
   fun listenForLocationUpdates(
-      userIds: List<String>,
-      onChange: suspend (List<Location>) -> Unit,
+      userId: String,
+      onChange: suspend (ListenerUpdate<Location>) -> Unit,
       coroutineScope: CoroutineScope,
-  ): List<ListenerRegistration> {
-    return userIds.map { userId ->
-      queryListener(
-          Filter.equalTo("id", userId),
-          onChange = { update ->
-            coroutineScope.launch {
-              val locations = update.updates.map { it.toModel() }
-              onChange(locations)
-            }
-          },
-          coroutineScope = coroutineScope)
-    }
+  ): ListenerRegistration {
+    return queryListener(
+        Filter.equalTo(FieldPath.documentId(), userId),
+        onChange = { update ->
+          onChange(
+              ListenerUpdate(
+                  isFirstUpdate = update.isFirstUpdate,
+                  isLocalUpdate = update.isLocalUpdate,
+                  adds = update.adds.map { it.toModel() },
+                  updates = update.updates.map { it.toModel() },
+                  deletes = update.deletes.map { it.toModel() },
+              ))
+        },
+        coroutineScope = coroutineScope)
   }
 
   companion object {

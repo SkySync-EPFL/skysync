@@ -1,6 +1,5 @@
 package ch.epfl.skysync.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -14,7 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class LocationViewModel(private val repository: Repository) : ViewModel() {
+class LocationViewModel(repository: Repository) : ViewModel() {
 
   companion object {
     @Composable
@@ -33,7 +32,7 @@ class LocationViewModel(private val repository: Repository) : ViewModel() {
   private val userTable = repository.userTable
 
   private val locationTable = repository.locationTable
-  val listeners = mutableListOf<ListenerRegistration>()
+  private val listeners = mutableListOf<ListenerRegistration>()
 
   // Flow to observe location updates
   private val _locations = MutableStateFlow<List<Location>>(emptyList())
@@ -44,15 +43,25 @@ class LocationViewModel(private val repository: Repository) : ViewModel() {
    *
    * @param userIds List of user IDs whose locations are to be fetched and observed.
    */
-  fun fetchAndListenToLocations(userIds: List<String>) {
+  private fun addLocationListeners(userIds: List<String>) {
     listeners +=
-        locationTable.listenForLocationUpdates(
-            userIds,
-            { locations ->
-              Log.d("LocationsSize", "Locations size: ${locations.size}")
-              _locations.value = locations
-            },
-            viewModelScope)
+        userIds.map { userId ->
+          locationTable.listenForLocationUpdates(
+              userId,
+              { update ->
+                var locations = _locations.value
+
+                // remove current locations that will be updated/added
+                locations =
+                    locations.filter { location ->
+                      update.adds.find { it.id == location.id } == null &&
+                          update.updates.find { it.id == location.id } == null
+                    }
+                // add new locations
+                _locations.value = locations + update.adds + update.updates
+              },
+              viewModelScope)
+        }
   }
 
   /**
@@ -60,9 +69,8 @@ class LocationViewModel(private val repository: Repository) : ViewModel() {
    *
    * @param location The new location to update in the database.
    */
-  fun updateMyLocation(location: Location) {
-    viewModelScope.launch { locationTable.updateLocation(location, onError = { onError(it) }) }
-  }
+  fun updateLocation(location: Location) =
+      viewModelScope.launch { locationTable.updateLocation(location, onError = { onError(it) }) }
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
@@ -74,8 +82,7 @@ class LocationViewModel(private val repository: Repository) : ViewModel() {
     // Will need a shared ViewModel later
     viewModelScope.launch {
       val userIds = userTable.getAll().map { it.id }
-      Log.d("UserSize", "User size: ${userIds.size}")
-      fetchAndListenToLocations(userIds)
+      addLocationListeners(userIds)
     }
   }
 
