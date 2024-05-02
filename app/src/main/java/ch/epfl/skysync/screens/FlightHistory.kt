@@ -118,7 +118,7 @@ fun FlightHistoryScreen(
                 showFilters = false
               })
         }
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.Top) {
           FlightSearchBar(
               modifier = Modifier.fillMaxWidth().weight(3f),
               onSearch = { /* TODO search for flights by location name */},
@@ -128,6 +128,7 @@ fun FlightHistoryScreen(
               onClick = { showFilters = !showFilters },
               content = {
                 Icon(
+                    modifier = Modifier.padding(top = 16.dp),
                     painter = painterResource(id = R.drawable.baseline_filter_list_alt_24),
                     contentDescription = "Filters")
               })
