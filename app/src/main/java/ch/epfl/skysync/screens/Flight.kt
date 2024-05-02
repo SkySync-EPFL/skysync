@@ -257,3 +257,4 @@ fun FlightScreenPreview() {
         LocationViewModel.createViewModel(repository)
   FlightScreen(navController = navController, timer = TimerViewModel(), locationViewModel = locationViewModel, uid)
 }
+*/
