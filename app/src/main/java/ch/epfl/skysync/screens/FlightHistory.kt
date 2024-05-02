@@ -360,9 +360,7 @@ fun getFormattedTime(time: LocalTime?): String {
   return time?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "--:--"
 }
 
-/**
- * Search bar for flights with the location of the flight as filter
- */
+/** Search bar for flights with the location of the flight as filter */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlightSearchBar(modifier: Modifier, onSearch: (String) -> Unit, results: List<Flight>) {
