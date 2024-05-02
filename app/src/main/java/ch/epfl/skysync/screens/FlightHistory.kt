@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -50,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,6 +60,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.R
 import ch.epfl.skysync.components.CustomTopAppBar
+import ch.epfl.skysync.components.forms.TitledDropDownMenu
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.BASE_ROLES
@@ -81,51 +84,38 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun FlightHistoryScreen(navController: NavHostController) {
-  val allFlights: MutableList<FinishedFlight> = remember {
-    mutableStateListOf(
-        FinishedFlight(
-            id = UNSET_ID,
-            nPassengers = 0,
-            team = Team(Role.initRoles(BASE_ROLES)),
-            flightType = FlightType.DISCOVERY,
-            balloon = Balloon("Balloon", BalloonQualification.MEDIUM),
-            basket = Basket("Basket", true),
-            date = LocalDate.now(),
-            timeSlot = TimeSlot.AM,
-            vehicles = emptyList(),
-            flightTime = 0L,
-            takeOffTime = LocalTime.now(),
-            landingTime = LocalTime.now(),
-            takeOffLocation = Location("Lausanne"),
-            landingLocation = Location("Lausanne")),
-        FinishedFlight(
-            id = UNSET_ID,
-            nPassengers = 0,
-            team = Team(Role.initRoles(BASE_ROLES)),
-            flightType = FlightType.HIGH_ALTITUDE,
-            balloon = Balloon("Balloon", BalloonQualification.MEDIUM),
-            basket = Basket("Basket", true),
-            date = LocalDate.now(),
-            timeSlot = TimeSlot.AM,
-            vehicles = emptyList(),
-            flightTime = 0L,
-            takeOffTime = LocalTime.now(),
-            landingTime = LocalTime.now(),
-            takeOffLocation = Location("Lausanne"),
-            landingLocation = Location("Lausanne")))
-  }
+fun FlightHistoryScreen(
+    navController: NavHostController,
+    allFlights: List<FinishedFlight> = emptyList()
+) {
   Scaffold(topBar = { CustomTopAppBar(navController = navController, title = "Flight History") }) {
       padding ->
     Column(modifier = Modifier.fillMaxSize().padding(padding)) {
       if (allFlights.isEmpty()) {
         Text(modifier = Modifier.padding(padding), text = "No flights available")
       } else {
-        var showFilters by remember { mutableStateOf(true) }
+        var beginDate: LocalDate? by remember { mutableStateOf(null) }
+        var endDate: LocalDate? by remember { mutableStateOf(null) }
+        var beginFlightTime: LocalTime? by remember { mutableStateOf(null) }
+        var endFlightTime: LocalTime? by remember { mutableStateOf(null) }
+        var flightType: FlightType? by remember { mutableStateOf(null) }
+        var showFilters by remember { mutableStateOf(false) }
         if (showFilters) {
           FiltersMenu(
               onDismissRequest = { showFilters = false },
-              onConfirmRequest = { showFilters = false })
+              onConfirmRequest = {
+                  tmpBeginDate,
+                  tmpEndDate,
+                  tmpBeginFlightTime,
+                  tmpEndFlightTime,
+                  tmpFlightType ->
+                beginDate = tmpBeginDate
+                endDate = tmpEndDate
+                beginFlightTime = tmpBeginFlightTime
+                endFlightTime = tmpEndFlightTime
+                flightType = tmpFlightType
+                showFilters = false
+              })
         }
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
           FlightSearchBar(
@@ -133,6 +123,7 @@ fun FlightHistoryScreen(navController: NavHostController) {
               onSearch = { query -> allFlights.filter { it.date.toString().contains(query) } },
               results = allFlights)
           IconButton(
+              modifier = Modifier.testTag("Filter Button"),
               onClick = { showFilters = !showFilters },
               content = {
                 Icon(
@@ -141,17 +132,19 @@ fun FlightHistoryScreen(navController: NavHostController) {
               })
         }
       }
-      LazyColumn() { items(allFlights) { flight -> HistoryCard(flight) } }
+      LazyColumn() {
+        itemsIndexed(allFlights) { id, flight -> HistoryCard(flight, Modifier.testTag("Card $id")) }
+      }
     }
   }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryCard(flight: FinishedFlight) {
+fun HistoryCard(flight: FinishedFlight, modifier: Modifier) {
 
   Card(
-      modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+      modifier = modifier.padding(horizontal = 16.dp).fillMaxWidth(),
       onClick = { /* TODO Show details of the flight ? */},
       colors = CardDefaults.cardColors(containerColor = cardColors(flight.flightType)),
       elevation = CardDefaults.cardElevation(5.dp),
@@ -216,23 +209,23 @@ fun HistoryCard(flight: FinishedFlight) {
 @Composable
 fun FiltersMenu(
     onDismissRequest: () -> Unit,
-    onConfirmRequest: () -> Unit,
+    onConfirmRequest: (LocalDate?, LocalDate?, LocalTime?, LocalTime?, FlightType?) -> Unit,
 ) {
-
+  var showRangeDatePicker by remember { mutableStateOf(false) }
+  var beginDate: LocalDate? by remember { mutableStateOf(null) }
+  var endDate: LocalDate? by remember { mutableStateOf(null) }
+  var beginFlightTime: LocalTime? by remember { mutableStateOf(null) }
+  var endFlightTime: LocalTime? by remember { mutableStateOf(null) }
+  var flightType: FlightType? by remember { mutableStateOf(null) }
   AlertDialog(
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().testTag("Filter Menu"),
       onDismissRequest = onDismissRequest,
       title = { Text("Filters") },
       text = {
         Column(Modifier.fillMaxWidth()) {
-          var showRangeDatePicker by remember { mutableStateOf(false) }
-          var beginDate: LocalDate? by remember { mutableStateOf(null) }
-          var endDate: LocalDate? by remember { mutableStateOf(null) }
-          var beginFlightTime: LocalTime? by remember { mutableStateOf(null) }
-          var endFlightTime: LocalTime? by remember { mutableStateOf(null) }
           if (showRangeDatePicker) {
             AlertDialog(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("Date Range Picker"),
                 onDismissRequest = { showRangeDatePicker = false },
                 title = { Text("Select date range") },
                 text = {
@@ -243,48 +236,38 @@ fun FiltersMenu(
                   }
                 },
                 confirmButton = {},
-                dismissButton = {
-                  TextButton(onClick = { showRangeDatePicker = false }) { Text("Cancel") }
-                })
+                dismissButton = {})
           } else {
-            Text(
-                modifier = Modifier.fillMaxWidth().padding(5.dp),
-                text = "Date range: ",
-                style = MaterialTheme.typography.headlineSmall)
-            Row {
-              OutlinedTextField(
-                  modifier =
-                      Modifier.clickable { showRangeDatePicker = !showRangeDatePicker }
-                          .fillMaxWidth(0.9f)
-                          .weight(1f),
-                  value = getFormattedDate(beginDate),
-                  onValueChange = {},
-                  readOnly = true,
-                  enabled = false)
-              Text(
-                  modifier = Modifier.padding(vertical = 10.dp, horizontal = 5.dp),
-                  text = " to ",
-                  style = MaterialTheme.typography.headlineSmall,
-                  textAlign = TextAlign.Center)
-              OutlinedTextField(
-                  modifier =
-                      Modifier.clickable { showRangeDatePicker = !showRangeDatePicker }
-                          .fillMaxWidth(0.9f)
-                          .weight(1f),
-                  value = getFormattedDate(endDate),
-                  onValueChange = {},
-                  readOnly = true,
-                  enabled = false)
-            }
-            Text(
-                modifier = Modifier.fillMaxWidth().padding(5.dp),
-                text = "Flight time range : ",
-                style = MaterialTheme.typography.headlineSmall)
-            TimeRangeFilter()
+            TitledRangedFilterField(
+                title = "Date",
+                minValue = beginDate,
+                maxValue = endDate,
+                onClick = { showRangeDatePicker = true },
+                showString = { getFormattedDate(it) })
+            TitledRangedFilterField(
+                title = "Flight Time",
+                minValue = beginFlightTime,
+                maxValue = endFlightTime,
+                onClick = { /* TODO time picker */},
+                showString = { getFormattedTime(it) })
+            TitledDropDownMenu(
+                defaultPadding = 16.dp,
+                title = "Flight type",
+                value = flightType,
+                onclickMenu = { type -> flightType = type },
+                items = FlightType.ALL_FLIGHTS,
+                showString = { it?.name ?: "" })
           }
         }
       },
-      confirmButton = { TextButton(onClick = onConfirmRequest) { Text("Apply") } },
+      confirmButton = {
+        TextButton(
+            onClick = {
+              onConfirmRequest(beginDate, endDate, beginFlightTime, endFlightTime, flightType)
+            }) {
+              Text("Apply")
+            }
+      },
       dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancel") } })
 }
 
@@ -373,38 +356,13 @@ fun getFormattedDate(date: LocalDate?): String {
   return date?.format(DateTimeFormatter.ofPattern("dd/MM/yy")) ?: "--/--/--"
 }
 
-fun getFormattedTime(time: LocalTime): String {
-  return time.format(DateTimeFormatter.ofPattern("HH:mm"))
+fun getFormattedTime(time: LocalTime?): String {
+  return time?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "--:--"
 }
 
-/** Filter the flights according to the flight duration */
-@Composable
-fun TimeRangeFilter() {
-  val minTime by remember { mutableStateOf(LocalTime.now()) }
-  val maxTime by remember { mutableStateOf(LocalTime.now()) }
-  Row {
-    OutlinedTextField(
-        modifier =
-            Modifier.clickable { /*TODO the time input selector*/}.fillMaxWidth(0.9f).weight(1f),
-        value = getFormattedTime(minTime),
-        onValueChange = {},
-        readOnly = true,
-        enabled = false)
-    Text(
-        modifier = Modifier.padding(vertical = 10.dp, horizontal = 5.dp),
-        text = " to ",
-        style = MaterialTheme.typography.headlineSmall,
-        textAlign = TextAlign.Center)
-    OutlinedTextField(
-        modifier =
-            Modifier.clickable { /*TODO the time input selector*/}.fillMaxWidth(0.9f).weight(1f),
-        value = getFormattedTime(maxTime),
-        onValueChange = {},
-        readOnly = true,
-        enabled = false)
-  }
-}
-
+/**
+ * Search bar for flights with the location of the flight as filter
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlightSearchBar(modifier: Modifier, onSearch: (String) -> Unit, results: List<Flight>) {
@@ -435,8 +393,82 @@ fun FlightSearchBar(modifier: Modifier, onSearch: (String) -> Unit, results: Lis
       }
 }
 
+@Composable
+fun <T> TitledRangedFilterField(
+    title: String,
+    minValue: T,
+    maxValue: T,
+    onClick: () -> Unit,
+    showString: (T) -> String
+) {
+  Text(
+      modifier = Modifier.fillMaxWidth().padding(5.dp),
+      text = "$title range : ",
+      style = MaterialTheme.typography.headlineSmall)
+  Row {
+    OutlinedTextField(
+        modifier =
+            Modifier.clickable { onClick() }
+                .fillMaxWidth(0.9f)
+                .weight(1f)
+                .testTag("$title Range Field 1"),
+        value = showString(minValue),
+        onValueChange = {},
+        readOnly = true,
+        enabled = false)
+    Text(
+        modifier = Modifier.padding(vertical = 10.dp, horizontal = 5.dp),
+        text = " to ",
+        style = MaterialTheme.typography.headlineSmall,
+        textAlign = TextAlign.Center)
+    OutlinedTextField(
+        modifier =
+            Modifier.clickable { onClick() }
+                .fillMaxWidth(0.9f)
+                .weight(1f)
+                .testTag("$title Range Field 2"),
+        value = showString(maxValue),
+        onValueChange = {},
+        readOnly = true,
+        enabled = false)
+  }
+}
+
 @Preview
 @Composable
 fun FlightHistoryScreenPreview() {
-  FlightHistoryScreen(navController = rememberNavController())
+  val allFlights: MutableList<FinishedFlight> = remember {
+    mutableStateListOf(
+        FinishedFlight(
+            id = UNSET_ID,
+            nPassengers = 0,
+            team = Team(Role.initRoles(BASE_ROLES)),
+            flightType = FlightType.DISCOVERY,
+            balloon = Balloon("Balloon", BalloonQualification.MEDIUM),
+            basket = Basket("Basket", true),
+            date = LocalDate.now(),
+            timeSlot = TimeSlot.AM,
+            vehicles = emptyList(),
+            flightTime = 0L,
+            takeOffTime = LocalTime.now(),
+            landingTime = LocalTime.now(),
+            takeOffLocation = Location("Lausanne"),
+            landingLocation = Location("Lausanne")),
+        FinishedFlight(
+            id = UNSET_ID,
+            nPassengers = 0,
+            team = Team(Role.initRoles(BASE_ROLES)),
+            flightType = FlightType.HIGH_ALTITUDE,
+            balloon = Balloon("Balloon", BalloonQualification.MEDIUM),
+            basket = Basket("Basket", true),
+            date = LocalDate.now(),
+            timeSlot = TimeSlot.AM,
+            vehicles = emptyList(),
+            flightTime = 0L,
+            takeOffTime = LocalTime.now(),
+            landingTime = LocalTime.now(),
+            takeOffLocation = Location("Lausanne"),
+            landingLocation = Location("Lausanne")))
+  }
+  FlightHistoryScreen(navController = rememberNavController(), allFlights = allFlights)
 }
