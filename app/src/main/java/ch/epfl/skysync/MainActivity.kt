@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
       SkySyncTheme {
         val navController = rememberNavController()
         Scaffold(snackbarHost = { GlobalSnackbarHost() }) {
-          val timerVm = TimerViewModel.createViewModel()
+          val timerVm = TimerViewModel.createViewModel() // is shared between all screens
           MainGraph(
               repository = repository,
               navHostController = navController,

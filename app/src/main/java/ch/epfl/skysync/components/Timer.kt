@@ -16,6 +16,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.epfl.skysync.ui.theme.lightOrange
 
+/**
+ * Timer composable that displays the current timer value and a button to start (if the timer is
+ * currently not running) or stop (if the timer is currently running).
+ *
+ * @param modifier Modifier to apply to this layout node.
+ * @param currentTimer The current value of the timer.
+ * @param isRunning The current state of the timer.
+ * @param onStart Callback to start the timer.
+ * @param onStop Callback to stop the timer.
+ */
 @Composable
 fun Timer(
     modifier: Modifier,

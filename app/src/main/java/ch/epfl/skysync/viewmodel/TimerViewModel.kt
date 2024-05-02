@@ -14,19 +14,25 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+/** ViewModel for the Timer composable. */
 class TimerViewModel : ViewModel() {
   private val _isRunning = MutableStateFlow(false)
+
+  /** The current state of the timer. */
   val isRunning = _isRunning.asStateFlow()
 
   private var job: Job? = null
   private var lastTimestamp = 0L
   private val _counter = MutableStateFlow(0L)
+
+  /** The current value of the counter formatted as a string in the format "HH:MM:SS". */
   val counter =
       _counter
           .map { formatTime(it) }
           .stateIn(viewModelScope, started = WhileUiSubscribed, initialValue = formatTime(0))
 
   companion object {
+    /** return a new instance of TimerViewModel */
     @Composable
     fun createViewModel(): TimerViewModel {
       return viewModel<TimerViewModel>(
@@ -39,6 +45,10 @@ class TimerViewModel : ViewModel() {
     }
   }
 
+  /**
+   * Starts the timer on a reset counter in a new coroutine and sets isRunning to true. Uses
+   * timestamp to update the counter every approx. 100ms.
+   */
   fun start() {
     if (_isRunning.value) return
     _counter.value = 0L
@@ -56,6 +66,7 @@ class TimerViewModel : ViewModel() {
         }
   }
 
+  /** Formats the given time in milliseconds to a string in the format "HH:MM:SS". */
   private fun formatTime(milliseconds: Long): String {
     val secondsRounded = milliseconds / 1000
     val hours = secondsRounded / 3600
@@ -64,6 +75,10 @@ class TimerViewModel : ViewModel() {
     return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
   }
 
+  /**
+   * Stops the timer by setting isRunning to false and cancelling the coroutine that updates the
+   * counter. The time is not reset.
+   */
   fun stop() {
     _isRunning.value = false
     job?.cancel()
