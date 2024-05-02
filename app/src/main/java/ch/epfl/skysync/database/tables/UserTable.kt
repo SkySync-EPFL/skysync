@@ -150,36 +150,6 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
     return withErrorCallback(onError) { db.setItem(path, id, UserSchema.fromModel(item)) }
   }
 
-    /*
-  /**
-   * Creates a new User if the entry exists in the temporary user table
-   *
-   * @param id The id of the user
-   * @param email The email of the user (used as key in tempUserTable)
-   * @param onError Callback called when an error occurs
-   */
-  suspend fun createUser(id: String, email: String, onError: ((Exception) -> Unit)? = null) {
-    return withErrorCallback(onError) {
-      val tempUser = tempUserTable.get(email)
-      if (tempUser != null) {
-        set(id, tempUser.toUserSchema(id).toModel())
-        tempUserTable.delete(email)
-      } else {
-        /*
-        val u = TempUser(
-            email = email,
-            userRole = UserRole.CREW,
-            firstname = "Jean",
-            lastname = "François",
-            balloonQualification = null
-        )
-        tempUserTable.set(email, u)
-        */
-      }
-    }
-  }
-  */
-
   companion object {
     const val PATH = "user"
   }

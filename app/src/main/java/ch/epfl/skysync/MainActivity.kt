@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
   private val repository: Repository = Repository(db)
 
   private fun onError(e: Exception) {
-    println("HELLLLLOOO")
+    // TODO
   }
 
   private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
@@ -50,21 +50,21 @@ class MainActivity : ComponentActivity() {
               incomingUser.uid, tempUser.toUserSchema(incomingUser.uid).toModel())
           repository.tempUserTable.delete(email)
           user.value = incomingUser
-        }else {
-          val u = TempUser(
+        } else {
+          val u =
+              TempUser(
                   email = email,
-          userRole = UserRole.CREW,
-          firstname = "Jean",
-          lastname = "François",
-          balloonQualification = null
-          )
+                  userRole = UserRole.CREW,
+                  firstname = "Jean",
+                  lastname = "François",
+                  balloonQualification = null)
           repository.tempUserTable.set(email, u)
         }
       }
     }
-    val snackBarText = if(user.value == null) "Authentication failed" else "Authentication Successful"
+    val snackBarText =
+        if (user.value == null) "Authentication failed" else "Authentication Successful"
     SnackbarManager.showMessage(snackBarText)
-
   }
 
   @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
