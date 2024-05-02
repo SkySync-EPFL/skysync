@@ -78,8 +78,6 @@ fun FlightForm(
     availableUsers: List<User>,
     onSaveFlight: (PlannedFlight) -> Unit,
 ) {
-    //val fakeUsers = listOf("Tom", "Georg", "Lala")
-    val fakeUsers = availableUsers.map { it.lastname }
   Scaffold(modifier = Modifier.fillMaxSize(), topBar = { CustomTopAppBar(navController, title) }) {
       padding ->
     if (currentFlight == null && modifyMode) {
@@ -210,7 +208,6 @@ fun FlightForm(
                 item {
                     RoleField(
                         defaultPadding= defaultPadding,
-                        smallPadding = smallPadding,
                         role=role,
                         id = id,
                         onDelete = { teamMembers.removeAt(id) },
@@ -451,7 +448,6 @@ fun inputValidation(nbPassengersValueError: Boolean, flightTypeValueError: Boole
 @Composable
 fun RoleField(
     defaultPadding: Dp,
-    smallPadding: Dp,
     role: Role,
     id: Int,
     onDelete: () -> Unit,
@@ -459,19 +455,20 @@ fun RoleField(
     specialName: String = "",
     availableUsers: List<User>,
 ) {
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = defaultPadding)
+            .testTag("$specialName User $id"),
+        text = role.roleType.toString(),
+    )
   Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically) {
-      val title = role.roleType.toString().lowercase()
-      Text(
-          modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = defaultPadding, vertical = smallPadding)
-              .weight(1f)
-              .testTag("$specialName User $id"),
-          text = title,
-          style = MaterialTheme.typography.headlineSmall)
+      val title = role.roleType.description.lowercase()
+
+
       CustomDropDownMenu(
           defaultPadding = defaultPadding,
           title = title,
@@ -539,7 +536,7 @@ fun AddRole(showAddMemberDialog: Boolean,
                             item -> addNewRole = item
                             roleNotChosenError = false },
                         items = allRoleTypes,
-                        showString = { it?.toString() ?: "choose a role *" },
+                        showString = { it?.description ?: "choose a role *" },
                         isError = roleNotChosenError,
                         messageError = "Please choose a role type"
                     )
@@ -549,7 +546,7 @@ fun AddRole(showAddMemberDialog: Boolean,
                         value = addNewAssignee,
                         onclickMenu = { item -> addNewAssignee = item},
                         items = allAvailableUsers,
-                        showString = { it?.toString()?: "choose a user"},
+                        showString = { it?.displayString()?: "choose a user"},
                     )
                 }
             },

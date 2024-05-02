@@ -9,7 +9,4 @@ enum class RoleType(val description: String) {
   TRANSLATION("Translation"),
   ON_BOARD("Crew On Board"); // if no other more specific role applies
 
-  override fun toString(): String {
-    return description
-  }
 }

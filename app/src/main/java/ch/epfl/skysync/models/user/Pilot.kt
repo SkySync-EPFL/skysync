@@ -20,7 +20,4 @@ data class Pilot(
     return this.copy(roleTypes = roleTypes + roleType)
   }
 
-    override fun toString(): String {
-        return "$firstname $lastname"
-    }
 }

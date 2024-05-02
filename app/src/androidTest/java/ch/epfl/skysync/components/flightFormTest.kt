@@ -61,10 +61,10 @@ class FlightFormTest {
           title = title,
           allFlightTypes = allFlights,
           allRoleTypes = allRoleTypes,
-          allVehicles = allVehicles,
-          allBalloons = allBalloons,
-          allBaskets = allBaskets,
-          flightAction = { _ -> })
+          availableVehicles = allVehicles,
+          availableBalloons = allBalloons,
+          availableBaskets = allBaskets,
+          onSaveFlight = { _ -> })
     }
   }
 
