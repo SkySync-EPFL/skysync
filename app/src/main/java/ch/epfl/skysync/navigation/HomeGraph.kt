@@ -15,15 +15,22 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.models.UNSET_ID
+import ch.epfl.skysync.models.calendar.AvailabilityCalendar
+import ch.epfl.skysync.models.calendar.FlightGroupCalendar
+import ch.epfl.skysync.models.flight.BalloonQualification
+import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.message.Message
 import ch.epfl.skysync.models.message.MessageGroup
+import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.screens.AddFlightScreen
 import ch.epfl.skysync.screens.AddUserScreen
 import ch.epfl.skysync.screens.ChatScreen
+import ch.epfl.skysync.screens.FlightHistoryScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
 import ch.epfl.skysync.screens.ModifyFlightScreen
 import ch.epfl.skysync.screens.TextScreen
+import ch.epfl.skysync.screens.UserManagementScreen
 import ch.epfl.skysync.screens.confirmationScreen
 import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
@@ -101,6 +108,20 @@ fun NavGraphBuilder.homeGraph(
           ModifyFlightScreen(navController, flightsViewModel, flightId)
         }
     composable(Route.ADD_USER) { AddUserScreen(navController = navController) }
+    composable(Route.USER) {
+      val users =
+          listOf(
+              Pilot(
+                  "testID",
+                  "John",
+                  "Doe",
+                  AvailabilityCalendar(mutableListOf()),
+                  FlightGroupCalendar(),
+                  setOf(RoleType.PILOT),
+                  BalloonQualification.MEDIUM))
+      UserManagementScreen(navController = navController, users = users)
+    }
+    composable(Route.STATS) { FlightHistoryScreen(navController = navController) }
     composable(
         Route.TEXT + "/{Group ID}",
         arguments = listOf(navArgument("Group ID") { type = NavType.StringType })) { entry ->
