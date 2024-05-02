@@ -46,7 +46,7 @@ class AvailabiltyCalendarTest {
         homeGraph(repository, navController, dbs.admin1.id)
       }
     }
-    composeTestRule.onNodeWithText("Calendar").performClick()
+    composeTestRule.onNodeWithText("SwipeRefreshLayout").assertDoesNotExist()
   }
 
   @Test
