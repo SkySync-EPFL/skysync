@@ -17,6 +17,7 @@ fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewMode
   val allBaskets by viewModel.currentBaskets.collectAsStateWithLifecycle()
   val allVehicles by viewModel.currentVehicles.collectAsStateWithLifecycle()
   val allRoleTypes = RoleType.entries
+    val availableUsers by viewModel.availableUsers.collectAsStateWithLifecycle()
   FlightForm(
       currentFlight = null,
       navController = navController,
@@ -24,10 +25,11 @@ fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewMode
       title = "Add Flight",
       allFlightTypes = allFlightTypes,
       allRoleTypes = allRoleTypes,
-      allVehicles = allVehicles,
-      allBalloons = allBalloons,
-      allBaskets = allBaskets,
-      flightAction = { flight: PlannedFlight ->
+      availableVehicles = allVehicles,
+      availableBalloons = allBalloons,
+      availableBaskets = allBaskets,
+      availableUsers = availableUsers,
+      onSaveFlight = { flight: PlannedFlight ->
         viewModel.addFlight(flight)
         navController.navigate(Route.HOME)
       })

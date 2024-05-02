@@ -57,6 +57,7 @@ import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.user.User
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -74,8 +75,11 @@ fun FlightForm(
     availableVehicles: List<Vehicle>,
     availableBalloons: List<Balloon>,
     availableBaskets: List<Basket>,
-    flightAction: (PlannedFlight) -> Unit,
+    availableUsers: List<User>,
+    onSaveFlight: (PlannedFlight) -> Unit,
 ) {
+    //val fakeUsers = listOf("Tom", "Georg", "Lala")
+    val fakeUsers = availableUsers.map { it.lastname }
   Scaffold(modifier = Modifier.fillMaxSize(), topBar = { CustomTopAppBar(navController, title) }) {
       padding ->
     if (currentFlight == null && modifyMode) {
@@ -110,7 +114,7 @@ fun FlightForm(
 
         var basketValue: Basket? by remember { mutableStateOf(currentFlight?.basket) }
 
-        val crewMembers = remember {
+        val teamMembers = remember {
           mutableStateListOf(
               *currentFlight?.team?.roles?.toTypedArray()
                   ?: Role.initRoles(BASE_ROLES).toTypedArray())
@@ -137,7 +141,10 @@ fun FlightForm(
           }
         }
         LazyColumn(
-            modifier = Modifier.padding(padding).weight(1f).testTag("Flight Lazy Column"),
+            modifier = Modifier
+                .padding(padding)
+                .weight(1f)
+                .testTag("Flight Lazy Column"),
             state = lazyListState,
             verticalArrangement = Arrangement.SpaceBetween) {
               // Field getting the number of passengers. Only number can be entered
@@ -192,91 +199,50 @@ fun FlightForm(
               }
               // Section to add the crew members
               item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically) {
-                      Text(
-                          modifier = Modifier.padding(horizontal = defaultPadding),
-                          text = "Team",
-                          style = MaterialTheme.typography.headlineSmall,
-                      )
-                      IconButton(
-                          modifier =
-                              Modifier.padding(horizontal = defaultPadding)
-                                  .testTag("Add Crew Button"),
-                          onClick = { showAddMemberDialog = true },
-                      ) {
-                        Icon(Icons.Default.Add, contentDescription = "Add Crew Member")
-                      }
-                    }
-                // Dialog to add a new crew member and its corresponding field
-                if (showAddMemberDialog) {
-                  AlertDialog(
-                      onDismissRequest = { showAddMemberDialog = false },
-                      title = { Text("Add Crew Member") },
-                      text = {
-                        Column {
-                          CustomDropDownMenu(
-                              defaultPadding = defaultPadding,
-                              title = "Role Type",
-                              value = addNewRole,
-                              onclickMenu = { item -> addNewRole = item },
-                              items = allRoleTypes,
-                              showString = { it?.name ?: "Choose a role" },
-                          )
-                          // TODO: Handle correctly the user for now it is just a text field
-                          OutlinedTextField(
-                              modifier =
-                                  Modifier.fillMaxWidth()
-                                      .padding(defaultPadding)
-                                      .testTag("User Dialog Field"),
-                              value = addNewUserQuery,
-                              onValueChange = { addNewUserQuery = it },
-                              placeholder = { Text("User") },
-                              singleLine = true)
-
-                            // add user
-                            val addUserTitle = "choose user"
-                            TitledDropDownMenu(
-                                defaultPadding = defaultPadding,
-                                title = addUserTitle,
-                                value = flightTypeValue,
-                                onclickMenu = { item -> flightTypeValue = item },
-                                items = allFlightTypes,
-                                showString = { it?.name ?: "Choose the flightType" },
-                                isError = flightTypeValueError,
-                                messageError = "Please choose a flight type")
-                        }
-                      },
-                      confirmButton = {
-                        Button(
-                            onClick = {
-                              addNewRoleError = addNewRole == null
-                              if (!addNewRoleError) {
-                                crewMembers.add(Role(addNewRole!!))
-                                showAddMemberDialog = false
-                              }
-                            }) {
-                              Text("Add")
-                            }
-                      },
-                      dismissButton = {
-                        Button(onClick = { showAddMemberDialog = false }) { Text("Cancel") }
-                      })
-                }
+                TeamHeader(
+                    defaultPadding = defaultPadding,
+                    crewMembers = teamMembers,
+                    allRoleTypes = allRoleTypes,
+                    availableUsers = availableUsers
+                )
               }
-              crewMembers.withIndex().forEach() { (id, role) ->
-                item { RoleField(defaultPadding, smallPadding, role, id, crewMembers) }
-              }
-              if (flightTypeValue != null) {
-                flightTypeValue!!.specialRoles.withIndex().forEach { (id, roleType) ->
-                  item {
+              teamMembers.withIndex().forEach() { (id, role) ->
+                item {
                     RoleField(
-                        defaultPadding, smallPadding, Role(roleType), id, specialRoles, "Special")
-                  }
+                        defaultPadding= defaultPadding,
+                        smallPadding = smallPadding,
+                        role=role,
+                        id = id,
+                        onDelete = { teamMembers.removeAt(id) },
+                        onReassign = { user -> teamMembers[id] = Role(role.roleType, user) },
+                        availableUsers = availableUsers,
+                )
                 }
               }
+//              if (flightTypeValue != null) {
+//                flightTypeValue!!.specialRoles.withIndex().forEach { (id, roleType) ->
+//                  item {
+//                    RoleField(
+//                        defaultPadding,
+//                        smallPadding,
+//                        Role(roleType),
+//                        id,
+//                        { specialRoles.removeAt(id) },
+//                        "Special",
+//                        availableUsers = emptyList(),
+//                    )
+//                      RoleField(
+//                          defaultPadding= defaultPadding,
+//                          smallPadding = smallPadding,
+//                          role=role,
+//                          id = id,
+//                          onDelete = { crewMembers.removeAt(id) },
+//                          onReassign = { user -> crewMembers[id] = Role(role.roleType, user) },
+//                          availableUsers = availableUsers,
+//                      )
+//                  }
+//                }
+//              }
               // Drop down menu for the vehicle
               item {
                 Row(
@@ -289,8 +255,9 @@ fun FlightForm(
                           style = MaterialTheme.typography.headlineSmall)
                       IconButton(
                           modifier =
-                              Modifier.padding(horizontal = defaultPadding)
-                                  .testTag("Add Vehicle Button"),
+                          Modifier
+                              .padding(horizontal = defaultPadding)
+                              .testTag("Add Vehicle Button"),
                           onClick = {
                             if (listVehiclesValue.size < availableVehicles.size) {
                               addVehicle = true
@@ -384,7 +351,10 @@ fun FlightForm(
             }
         // Button to add the flight to the list of flights
         Button(
-            modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("$title Button"),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(defaultPadding)
+                .testTag("$title Button"),
             onClick = {
               nbPassengersValueError = nbPassengerInputValidation(nbPassengersValue.value)
               flightTypeValueError = flightTypeInputValidation(flightTypeValue)
@@ -392,7 +362,7 @@ fun FlightForm(
               if (!isError) {
                 val vehicles: List<Vehicle> =
                     if (vehicle == null) emptyList() else listOf(vehicle!!)
-                val allRoles = crewMembers.toList() + specialRoles
+                val allRoles = teamMembers.toList() + specialRoles
                 val team = Team(allRoles)
                 val newFlight =
                     PlannedFlight(
@@ -405,7 +375,7 @@ fun FlightForm(
                         vehicles = vehicles,
                         team = team,
                         id = currentFlight?.id ?: UNSET_ID)
-                flightAction(newFlight)
+                onSaveFlight(newFlight)
               }
             }) {
               Text(title)
@@ -454,10 +424,11 @@ fun DatePickerField(
 
   OutlinedTextField(
       modifier =
-          Modifier.fillMaxWidth()
-              .padding(defaultPadding)
-              .clickable(onClick = onclickField)
-              .testTag("Date Field"),
+      Modifier
+          .fillMaxWidth()
+          .padding(defaultPadding)
+          .clickable(onClick = onclickField)
+          .testTag("Date Field"),
       enabled = false,
       value =
           String.format(
@@ -483,26 +454,35 @@ fun RoleField(
     smallPadding: Dp,
     role: Role,
     id: Int,
-    crewMembers: MutableList<Role>,
-    specialName: String = ""
+    onDelete: () -> Unit,
+    onReassign: (User?) -> Unit,
+    specialName: String = "",
+    availableUsers: List<User>,
 ) {
-  var query by remember { mutableStateOf("") }
-  Text(modifier = Modifier.padding(horizontal = defaultPadding), text = role.roleType.toString())
   Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically) {
-        OutlinedTextField(
-            modifier =
-                Modifier.fillMaxWidth()
-                    .padding(horizontal = defaultPadding, vertical = smallPadding)
-                    .weight(1f)
-                    .testTag("$specialName User $id"),
-            value = query,
-            onValueChange = { query = it },
-            placeholder = { Text("User ${id + 1}") },
-            singleLine = true)
-        IconButton(onClick = { crewMembers.removeAt(id) }) {
+      val title = role.roleType.toString().lowercase()
+      Text(
+          modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = defaultPadding, vertical = smallPadding)
+              .weight(1f)
+              .testTag("$specialName User $id"),
+          text = title,
+          style = MaterialTheme.typography.headlineSmall)
+      CustomDropDownMenu(
+          defaultPadding = defaultPadding,
+          title = title,
+          value = role.assignedUser,
+          onclickMenu = { item -> onReassign(item)},
+          items = availableUsers,
+          showString = {it?.lastname ?: "choose a user"},
+          isError = false,
+          messageError = "no message")
+
+        IconButton(onClick = {onDelete()}) {
           Icon(
               modifier = Modifier.testTag("Delete $specialName Crew Member $id"),
               imageVector = Icons.Default.Delete,
@@ -525,6 +505,118 @@ fun EnterPassengerNumber(defaultPadding: Dp,
         if (nbPassengersValueError) "Please enter a valid number" else "",
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     )
+}
+
+
+
+@Composable
+fun AddRole(showAddMemberDialog: Boolean,
+            onclickDismiss: () -> Unit,
+            defaultPadding: Dp,
+            allRoleTypes: List<RoleType>,
+            allAvailableUsers: List<User>,
+            onConfirm: (RoleType, User?) -> Unit,
+            ){
+    var addNewRole: RoleType? by remember { mutableStateOf(null) }
+    var roleNotChosenError: Boolean by remember { mutableStateOf(false) }
+    var addNewAssignee: User? by remember { mutableStateOf(null) }
+    if (showAddMemberDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                onclickDismiss()
+                addNewRole = null
+                roleNotChosenError = false
+                addNewAssignee = null
+                               },
+            title = { Text("Add New Member") },
+            text = {
+                Column {
+                    CustomDropDownMenu(
+                        defaultPadding = defaultPadding,
+                        title = "Role Type",
+                        value = addNewRole,
+                        onclickMenu = {
+                            item -> addNewRole = item
+                            roleNotChosenError = false },
+                        items = allRoleTypes,
+                        showString = { it?.toString() ?: "choose a role *" },
+                        isError = roleNotChosenError,
+                        messageError = "Please choose a role type"
+                    )
+                    CustomDropDownMenu(
+                        defaultPadding = defaultPadding,
+                        title = "Assigned User",
+                        value = addNewAssignee,
+                        onclickMenu = { item -> addNewAssignee = item},
+                        items = allAvailableUsers,
+                        showString = { it?.toString()?: "choose a user"},
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        roleNotChosenError = addNewRole == null
+                        if (!roleNotChosenError) {
+                            onConfirm(addNewRole!!, addNewAssignee)
+                            addNewRole = null
+                            roleNotChosenError = false
+                            addNewAssignee = null
+                        }
+                    }) {
+                    Text("Add")
+                }
+            },
+            dismissButton = {
+                Button(onClick = {
+                    onclickDismiss()
+                    addNewRole = null
+                    roleNotChosenError = false
+                    addNewAssignee = null
+                }) { Text("Cancel") }
+            })
+    }
+
+}
+
+
+@Composable
+fun TeamHeader(defaultPadding: Dp,
+               crewMembers: MutableList<Role>,
+                allRoleTypes: List<RoleType>,
+               availableUsers: List<User>){
+    var showAddMemberDialog by remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            modifier = Modifier.padding(horizontal = defaultPadding),
+            text = "Team",
+            style = MaterialTheme.typography.headlineSmall,
+        )
+        IconButton(
+            modifier =
+            Modifier
+                .padding(horizontal = defaultPadding)
+                .testTag("Add Crew Button"),
+            onClick = { showAddMemberDialog = true },
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Add Crew Member")
+        }
+        AddRole(
+            showAddMemberDialog = showAddMemberDialog,
+            onclickDismiss = { showAddMemberDialog = false },
+            defaultPadding = defaultPadding,
+            allRoleTypes = allRoleTypes,
+            allAvailableUsers = availableUsers,
+            onConfirm = { roleType, user ->
+                crewMembers.add(Role(roleType, user))
+                showAddMemberDialog = false
+            }
+
+        )
+    }
 }
 
 
@@ -553,5 +645,6 @@ fun FlightFormPreview() {
       emptyList(),
       emptyList(),
       emptyList(),
-      flightAction = {})
+      emptyList(),
+      onSaveFlight = {})
 }
