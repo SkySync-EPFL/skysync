@@ -44,64 +44,85 @@ class E2EAddFlights {
     }
   }
 
-  @Test
-  fun addFlightAsAdmin() {
 
-    composeTestRule.onNodeWithTag("addFlightButton").performClick()
-    var route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(Route.ADD_FLIGHT, route)
-    composeTestRule
-        .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Number of passengers"))
-    composeTestRule.onNodeWithTag("Number of passengers").performClick()
-    composeTestRule.onNodeWithTag("Number of passengers").performTextClearance()
-    composeTestRule.onNodeWithTag("Number of passengers").performTextInput("13")
 
-    composeTestRule
-        .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Date Field"))
-    composeTestRule.onNodeWithTag("Date Field").performClick()
-    composeTestRule.onNodeWithText("OK").performClick()
 
-    composeTestRule
-        .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Flight Type Menu"))
-    composeTestRule.onNodeWithTag("Flight Type Menu").performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("Flight Type 1").performClick()
 
-    composeTestRule
-        .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Vehicle 0 Menu"))
-    composeTestRule.onNodeWithTag("Vehicle 0 Menu").performClick()
-    composeTestRule.onNodeWithTag("Vehicle 0 1").performClick()
 
-    composeTestRule
-        .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Time Slot Menu"))
-    composeTestRule.onNodeWithTag("Time Slot Menu").performClick()
-    composeTestRule.onNodeWithTag("Time Slot 1").performClick()
+    @Test
+    //    This test function simulates the process of adding a flight as an admin in a UI environment.
+    //    It navigates through various UI elements, sets values, and confirms the addition of a flight.
+    //    Finally, it verifies if the flight with 13 passengers is successfully created.
+    fun addFlightAsAdmin() {
+        // Clicks on the "addFlightButton" to initiate adding a flight
+        composeTestRule.onNodeWithTag("addFlightButton").performClick()
 
-    composeTestRule
-        .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Balloon Menu"))
-    composeTestRule.onNodeWithTag("Balloon Menu").performClick()
-    composeTestRule.onNodeWithTag("Balloon 1").performClick()
+        // Checks the current destination route in the navigation controller
+        var route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(Route.ADD_FLIGHT, route)
 
-    composeTestRule
-        .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Basket Menu"))
-    composeTestRule.onNodeWithTag("Basket Menu").performClick()
-    composeTestRule.onNodeWithTag("Basket 1").performClick()
-    val title1 = "Add Flight"
-    composeTestRule.onNodeWithTag("$title1 Button").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(Route.HOME, route)
-    var flightIsCreated = false
-    runTest {
-      val flights = repository.flightTable.getAll(onError = { assertNull(it) })
-      flightIsCreated = flights.any { it.nPassengers == 13 }
+        // Performs scrolling to the "Number of passengers" field and sets its value to 13
+        composeTestRule
+            .onNodeWithTag("Flight Lazy Column")
+            .performScrollToNode(hasTestTag("Number of passengers"))
+        composeTestRule.onNodeWithTag("Number of passengers").performClick()
+        composeTestRule.onNodeWithTag("Number of passengers").performTextClearance()
+        composeTestRule.onNodeWithTag("Number of passengers").performTextInput("13")
+
+        // Clicks on the "Date Field" and selects "OK" from the dialog
+        composeTestRule
+            .onNodeWithTag("Flight Lazy Column")
+            .performScrollToNode(hasTestTag("Date Field"))
+        composeTestRule.onNodeWithTag("Date Field").performClick()
+        composeTestRule.onNodeWithText("OK").performClick()
+
+        // Performs similar actions for selecting flight type, vehicle, time slot, balloon, and basket
+        composeTestRule
+            .onNodeWithTag("Flight Lazy Column")
+            .performScrollToNode(hasTestTag("Flight Type Menu"))
+        composeTestRule.onNodeWithTag("Flight Type Menu").performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("Flight Type 1").performClick()
+
+        composeTestRule
+            .onNodeWithTag("Flight Lazy Column")
+            .performScrollToNode(hasTestTag("Vehicle 0 Menu"))
+        composeTestRule.onNodeWithTag("Vehicle 0 Menu").performClick()
+        composeTestRule.onNodeWithTag("Vehicle 0 1").performClick()
+
+        composeTestRule
+            .onNodeWithTag("Flight Lazy Column")
+            .performScrollToNode(hasTestTag("Time Slot Menu"))
+        composeTestRule.onNodeWithTag("Time Slot Menu").performClick()
+        composeTestRule.onNodeWithTag("Time Slot 1").performClick()
+
+        composeTestRule
+            .onNodeWithTag("Flight Lazy Column")
+            .performScrollToNode(hasTestTag("Balloon Menu"))
+        composeTestRule.onNodeWithTag("Balloon Menu").performClick()
+        composeTestRule.onNodeWithTag("Balloon 1").performClick()
+
+        composeTestRule
+            .onNodeWithTag("Flight Lazy Column")
+            .performScrollToNode(hasTestTag("Basket Menu"))
+        composeTestRule.onNodeWithTag("Basket Menu").performClick()
+        composeTestRule.onNodeWithTag("Basket 1").performClick()
+
+        // Clicks on the "Add Flight" button to confirm flight addition
+        val title1 = "Add Flight"
+        composeTestRule.onNodeWithTag("$title1 Button").performClick()
+
+        // Checks if navigation goes back to the home route after adding flight
+        route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(Route.HOME, route)
+
+        // Checks if the flight with 13 passengers is created successfully
+        var flightIsCreated = false
+        runTest {
+            val flights = repository.flightTable.getAll(onError = { assertNull(it) })
+            flightIsCreated = flights.any { it.nPassengers == 13 }
+        }
+        Assert.assertEquals(true, flightIsCreated)
     }
-    Assert.assertEquals(true, flightIsCreated)
-  }
+
 }
