@@ -19,6 +19,7 @@ import org.junit.Test
 class HomeScreenTest {
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var navController: TestNavHostController
+  lateinit var flightsViewModel: FlightsViewModel
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbs = DatabaseSetup()
   private val repository = Repository(db)
@@ -34,10 +35,13 @@ class HomeScreenTest {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      val flightsViewModel = FlightsViewModel.createViewModel(repository, dbs.admin1.id)
+      flightsViewModel = FlightsViewModel.createViewModel(repository, dbs.admin1.id)
       HomeScreen(navController = navController, viewModel = flightsViewModel)
     }
-    composeTestRule.onNodeWithTag("addFlightButton").assertIsDisplayed()
+    runTest {
+      flightsViewModel.refreshUserAndFlights().join()
+      composeTestRule.onNodeWithTag("addFlightButton").assertIsDisplayed()
+    }
   }
 
   @Test
@@ -45,9 +49,12 @@ class HomeScreenTest {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      val flightsViewModel = FlightsViewModel.createViewModel(repository, dbs.crew1.id)
+      flightsViewModel = FlightsViewModel.createViewModel(repository, dbs.crew1.id)
       HomeScreen(navController = navController, viewModel = flightsViewModel)
     }
-    composeTestRule.onNodeWithTag("addFlightButton").assertDoesNotExist()
+    runTest {
+      flightsViewModel.refreshUserAndFlights().join()
+      composeTestRule.onNodeWithTag("addFlightButton").assertDoesNotExist()
+    }
   }
 }
