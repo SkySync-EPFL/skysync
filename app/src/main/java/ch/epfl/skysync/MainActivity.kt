@@ -12,20 +12,17 @@ import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.components.GlobalSnackbarHost
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.database.UserRole
-import ch.epfl.skysync.models.user.TempUser
 import ch.epfl.skysync.navigation.MainGraph
 import ch.epfl.skysync.ui.theme.SkySyncTheme
 import ch.epfl.skysync.viewmodel.TimerViewModel
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
   private lateinit var signInLauncher: ActivityResultLauncher<Intent>
-  private val user = mutableStateOf<FirebaseUser?>(null)
+  private val userId = mutableStateOf("")
   private val db: FirestoreDatabase = FirestoreDatabase()
   private val repository: Repository = Repository(db)
 
@@ -41,7 +38,7 @@ class MainActivity : ComponentActivity() {
       runBlocking {
         val userExists = repository.userTable.get(incomingUser.uid)
         if (userExists != null) {
-          user.value = incomingUser
+          userId.value = incomingUser.uid
           return@runBlocking
         }
 
@@ -50,21 +47,15 @@ class MainActivity : ComponentActivity() {
           repository.userTable.set(
               incomingUser.uid, tempUser.toUserSchema(incomingUser.uid).toModel())
           repository.tempUserTable.delete(email)
-          user.value = incomingUser
+          userId.value = incomingUser.uid
         } else {
-          val u =
-              TempUser(
-                  email = email,
-                  userRole = UserRole.CREW,
-                  firstname = "Jean",
-                  lastname = "François",
-                  balloonQualification = null)
-          repository.tempUserTable.set(email, u)
+          userId.value = "default-user"
         }
       }
     }
     val snackBarText =
-        if (user.value == null) "Authentication failed" else "Authentication Successful"
+        if (userId.value == "default-user") "Authentication with default Admin user"
+        else "Authentication Successful"
     SnackbarManager.showMessage(snackBarText)
   }
 

@@ -26,5 +26,4 @@ class Repository(db: FirestoreDatabase) {
   val messageTable: MessageTable = MessageTable(db)
   val tempUserTable: TempUserTable = TempUserTable(db)
   val locationTable: LocationTable = LocationTable(db)
-
 }
