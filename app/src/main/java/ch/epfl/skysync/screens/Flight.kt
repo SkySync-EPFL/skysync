@@ -31,12 +31,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.components.Timer
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
+import ch.epfl.skysync.viewmodel.TimerViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -61,9 +63,12 @@ import com.google.maps.android.compose.rememberMarkerState
  */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun FlightScreen(navController: NavHostController) {
+fun FlightScreen(navController: NavHostController, timer: TimerViewModel) {
   // Access to the application context.
   val context = LocalContext.current
+
+  val currentTime by timer.counter.collectAsStateWithLifecycle()
+  val flightIsStarted by timer.isRunning.collectAsStateWithLifecycle()
 
   // Manages the state of location permissions.
   val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -158,7 +163,14 @@ fun FlightScreen(navController: NavHostController) {
               modifier =
                   Modifier.fillMaxSize().padding(start = 32.dp, bottom = 88.dp, top = 100.dp),
               contentAlignment = Alignment.BottomStart) {
-                Timer(Modifier.align(Alignment.TopEnd).testTag("Timer"))
+                Timer(
+                    Modifier.align(Alignment.TopEnd).testTag("Timer"),
+                    currentTimer = currentTime,
+                    isRunning = flightIsStarted,
+                    onStart = { timer.start() },
+                    onStop = { timer.stop() },
+                )
+
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()) {
@@ -229,5 +241,5 @@ fun FlightScreen(navController: NavHostController) {
 @Preview
 fun FlightScreenPreview() {
   val navController = rememberNavController()
-  FlightScreen(navController = navController)
+  FlightScreen(navController = navController, timer = TimerViewModel())
 }
