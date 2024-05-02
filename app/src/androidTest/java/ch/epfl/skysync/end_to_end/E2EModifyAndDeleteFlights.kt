@@ -157,7 +157,7 @@ class E2EModifyAndDeleteFlights {
       composeTestRule.waitUntil(5000) {
         composeTestRule.onAllNodesWithTag("flightCard").fetchSemanticsNodes().isNotEmpty()
       }
-      composeTestRule.onNodeWithTag("flightCard").performClick()
+      composeTestRule.onAllNodesWithTag("flightCard")[0].performClick()
       route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
       composeTestRule.onNodeWithTag("DeleteButton").performClick()
