@@ -43,6 +43,7 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.user.Admin
+import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.Purple40
@@ -144,7 +145,7 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
       // Display the Home Screen with the list of upcoming flights
       Scaffold(
           modifier = Modifier.fillMaxSize(),
-          bottomBar = { BottomBar(navController) },
+          bottomBar = { AdminBottomBar(navController = navController) },
           floatingActionButton = {
             // Define the FloatingActionButton to create a flight
             FloatingActionButton(

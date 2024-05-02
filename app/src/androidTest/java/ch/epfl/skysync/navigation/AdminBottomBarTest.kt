@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
@@ -17,15 +18,14 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class HomeNavigationTest {
-
+class AdminBottomBarTest {
   @get:Rule val composeTestRule = createComposeRule()
-  lateinit var navController: TestNavHostController
+  lateinit var navController: NavHostController
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbs = DatabaseSetup()
 
   @Before
-  fun setUpNavHost() = runTest {
+  fun setUp() = runTest {
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
     composeTestRule.setContent {
@@ -33,7 +33,7 @@ class HomeNavigationTest {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.crew1.id)
+        homeGraph(repository, navController, dbs.admin1.id)
       }
     }
     composeTestRule.waitUntil {
@@ -57,11 +57,18 @@ class HomeNavigationTest {
   }
 
   @Test
-  fun routeIsRightIfClickOnFlight() {
-    composeTestRule.onNodeWithText("Flight").performClick()
+  fun routeIsRightIfClickOnUser() {
+    composeTestRule.onNodeWithText("User").performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.FLIGHT)
+    Assert.assertEquals(route, Route.USER)
+  }
+
+  @Test
+  fun routeIsRightIfClickOnStat() {
+    composeTestRule.onNodeWithText("Stats").performClick()
+    val route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(route, Route.STATS)
   }
 
   @Test
