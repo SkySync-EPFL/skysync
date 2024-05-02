@@ -22,7 +22,7 @@ import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
   private lateinit var signInLauncher: ActivityResultLauncher<Intent>
-  private val userId = mutableStateOf("")
+  private val userId = mutableStateOf<String?>(null)
   private val db: FirestoreDatabase = FirestoreDatabase()
   private val repository: Repository = Repository(db)
 
@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
         val userExists = repository.userTable.get(incomingUser.uid)
         if (userExists != null) {
           userId.value = incomingUser.uid
+
           return@runBlocking
         }
 
@@ -53,9 +54,10 @@ class MainActivity : ComponentActivity() {
         }
       }
     }
+
     val snackBarText =
         if (userId.value == "default-user") "Authentication with default Admin user"
-        else "Authentication Successful"
+        else "Authentication Successful as ${userId.value}"
     SnackbarManager.showMessage(snackBarText)
   }
 
@@ -78,7 +80,7 @@ class MainActivity : ComponentActivity() {
               repository = repository,
               navHostController = navController,
               signInLauncher = signInLauncher,
-              uid = user.value?.uid,
+              uid = userId.value,
               timer = timerVm,
           )
         }
