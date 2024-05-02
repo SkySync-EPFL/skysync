@@ -9,7 +9,13 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.rememberNavController
 import androidx.test.rule.GrantPermissionRule
+import ch.epfl.skysync.Repository
+import ch.epfl.skysync.database.DatabaseSetup
+import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.screens.FlightScreen
+import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.TimerViewModel
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -20,12 +26,25 @@ class FlightScreenPermissionTest {
   var permissionRule: GrantPermissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
+  @Before
+  fun setUpNavHost() {
+    val dbs = DatabaseSetup()
+    val db = FirestoreDatabase(useEmulator = true)
+    val repository = Repository(db)
+    composeTestRule.setContent {
+      val locationViewModel = LocationViewModel.createViewModel(repository)
+      val navController = rememberNavController()
+      val uid = dbs.pilot1.id
+      FlightScreen(
+          navController,
+          TimerViewModel.createViewModel(),
+          locationViewModel = locationViewModel,
+          uid)
+    }
+  }
+
   @Test
   fun flightScreen_PermissionGranted_ShowsMapAndFAB() {
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      FlightScreen(navController)
-    }
 
     composeTestRule.onNodeWithTag("LoadingIndicator").assertIsNotDisplayed()
     composeTestRule.onNodeWithTag("Timer").assertExists()
