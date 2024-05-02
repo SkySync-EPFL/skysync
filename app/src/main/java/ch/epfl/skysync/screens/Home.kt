@@ -183,7 +183,6 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
           navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
           // Example navigation call: navController.navigate("FlightDetails.id")
         }
-        Text(text = user?.id ?: "No user")
       }
     }
   }
