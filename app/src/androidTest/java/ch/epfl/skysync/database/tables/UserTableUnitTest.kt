@@ -3,7 +3,9 @@ package ch.epfl.skysync.database.tables
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.RoleType
+import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.Filter
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
@@ -66,7 +68,21 @@ class UserTableUnitTest {
     val availabilities = availabilityTable.getAll(onError = { assertNull(it) })
 
     assertTrue(
-        listOf(dbs.availability2, dbs.availability3, dbs.availability4, dbs.availability5)
+        listOf(
+                dbs.availability1Crew1,
+                dbs.availability2Crew1,
+                dbs.availability3Crew1,
+                dbs.availability1Crew2,
+                dbs.availability2Crew2,
+                dbs.availability3Crew2,
+                dbs.availability1Pilot1,
+                dbs.availability2Pilot1,
+                dbs.availability3Pilot1,
+                dbs.availability1Pilot2,
+                dbs.availability2Pilot2,
+                dbs.availability3Pilot2,
+                dbs.availability1Admin1,
+                dbs.availability2Admin1)
             .containsAll(availabilities))
 
     val flightMembers =
@@ -89,19 +105,24 @@ class UserTableUnitTest {
     assertTrue(flights.contains(dbs.flight1))
   }
 
-  /*
   @Test
-  fun createUserTest() = runTest {
-    val id = "new-user"
-    val user = dbs.tempUser.toUserSchema(id).toModel()
-    userTable.createUser(id, dbs.tempUser.email, onError = { assertNull(it) })
+  fun getUsersAvailableOnTest() = runTest {
+    var availableUsers =
+        userTable.getUsersAvailableOn(
+            flightTable = flightTable, dbs.date1, TimeSlot.AM, onError = { assertNull(it) })
 
-    val tempUserExists = tempUserTable.get(dbs.tempUser.email, onError = { assertNull(it) })
-    assertEquals(null, tempUserExists)
+    assertEquals(listOf<User>(), availableUsers)
 
-    val userExists = userTable.get(id, onError = { assertNull(it) })
-    assertEquals(user, userExists)
+    availableUsers =
+        userTable.getUsersAvailableOn(
+            flightTable = flightTable, dbs.date1, TimeSlot.PM, onError = { assertNull(it) })
+
+    assertEquals(listOf(dbs.crew2), availableUsers)
+
+    availableUsers =
+        userTable.getUsersAvailableOn(
+            flightTable = flightTable, dbs.dateNoFlight, TimeSlot.AM, onError = { assertNull(it) })
+
+    assertEquals(listOf(dbs.pilot2), availableUsers)
   }
-  */
-
 }
