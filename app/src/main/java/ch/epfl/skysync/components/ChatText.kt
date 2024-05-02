@@ -36,26 +36,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ch.epfl.skysync.models.message.ChatMessage
+import ch.epfl.skysync.models.message.MessageDateFormatter
+import ch.epfl.skysync.models.message.MessageType
 import ch.epfl.skysync.ui.theme.lightOrange
-
-enum class MessageType {
-  SENT,
-  RECEIVED,
-}
-
-data class ChatMessage(
-    val sender: String,
-    val messageType: MessageType,
-    val profilePicture: ImageVector?,
-    val message: String,
-    val time: String
-)
 
 /**
  * Composable function representing a chat screen.
@@ -93,7 +82,11 @@ fun ChatTextBody(messages: List<ChatMessage>) {
   LazyColumn(Modifier.fillMaxHeight(0.875f).testTag("ChatTextBody"), state = lazyListState) {
     items(messages.size) { index -> ChatBubble(message = messages[index], index = "$index") }
   }
-  LaunchedEffect(Unit) { lazyListState.scrollToItem(messages.size - 1) }
+  LaunchedEffect(Unit) {
+    if (messages.isNotEmpty()) {
+      lazyListState.scrollToItem(messages.size - 1)
+    }
+  }
 }
 /**
  * Composable function representing a chat bubble.
@@ -105,8 +98,8 @@ fun ChatTextBody(messages: List<ChatMessage>) {
 fun ChatBubble(message: ChatMessage, index: String) {
   var isMyMessage = false
   val image = message.profilePicture
-  val messageContent = message.message
-  val time = message.time
+  val messageContent = message.message.content
+  val time = MessageDateFormatter.format(message.message.date)
   if (message.messageType == MessageType.SENT) {
     isMyMessage = true
   }

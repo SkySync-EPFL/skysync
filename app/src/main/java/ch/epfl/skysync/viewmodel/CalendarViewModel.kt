@@ -10,6 +10,7 @@ import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.CalendarDifferenceType
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
+import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
 import kotlinx.coroutines.Job
@@ -87,14 +88,23 @@ class CalendarViewModel(
   /** Fetch the user from the database Update asynchronously the [CalendarUiState.user] reference */
   private suspend fun refreshUser() {
     loadingCounter.value += 1
-    val newUser = userTable.get(uid, this::onError)
+    var newUser = userTable.get(uid, this::onError)
     loadingCounter.value -= 1
     if (newUser == null) {
-      // TODO: display not found message
-    } else {
-      user.value = newUser
-      originalAvailabilityCalendar = newUser.availabilities.copy()
+      newUser =
+          Admin(
+              uid,
+              "unknown",
+              "unknown",
+              AvailabilityCalendar(),
+              FlightGroupCalendar(),
+          )
+      loadingCounter.value += 1
+      userTable.set(uid, newUser, {})
+      loadingCounter.value -= 1
     }
+    user.value = newUser
+    originalAvailabilityCalendar = newUser.availabilities.copy()
   }
 
   /** Callback executed when an error occurs on database-related operations */

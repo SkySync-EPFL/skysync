@@ -70,10 +70,13 @@ class UserTableUnitTest {
         listOf(
                 dbs.availability1Crew1,
                 dbs.availability2Crew1,
+                dbs.availability3Crew1,
                 dbs.availability1Crew2,
                 dbs.availability2Crew2,
+                dbs.availability3Crew2,
                 dbs.availability1Pilot1,
                 dbs.availability2Pilot1,
+                dbs.availability3Pilot1,
                 dbs.availability1Pilot2,
                 dbs.availability2Pilot2,
                 dbs.availability3Pilot2,

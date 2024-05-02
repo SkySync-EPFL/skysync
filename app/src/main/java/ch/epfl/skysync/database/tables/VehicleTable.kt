@@ -1,6 +1,6 @@
 package ch.epfl.skysync.database.tables
 
-import ch.epfl.skysync.database.DateLocalDateConverter
+import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.VehicleSchema
@@ -38,7 +38,7 @@ class VehicleTable(db: FirestoreDatabase) :
       onError: ((Exception) -> Unit)?
   ): List<Vehicle> = coroutineScope {
     withErrorCallback(onError) {
-      val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
+      val dateFilter = Filter.equalTo("date", DateUtility.localDateToDate(localDate))
       val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
       val flightFilter = Filter.and(dateFilter, timeslotFilter)
 

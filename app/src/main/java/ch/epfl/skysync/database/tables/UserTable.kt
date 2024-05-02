@@ -1,6 +1,6 @@
 package ch.epfl.skysync.database.tables
 
-import ch.epfl.skysync.database.DateLocalDateConverter
+import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.UserSchema
@@ -10,6 +10,7 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.Filter
+import com.google.firebase.firestore.Query
 import java.time.LocalDate
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -75,7 +76,7 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
       onError: ((Exception) -> Unit)?
   ): List<User> = coroutineScope {
     withErrorCallback(onError) {
-      val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
+      val dateFilter = Filter.equalTo("date", DateUtility.localDateToDate(localDate))
       val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
       val dateTimeSlotFilter = Filter.and(dateFilter, timeslotFilter)
 
@@ -151,18 +152,21 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
     }
   }
 
-  override suspend fun query(filter: Filter, onError: ((Exception) -> Unit)?): List<User> =
-      coroutineScope {
-        withErrorCallback(onError) {
-          val users = super.query(filter, onError = null)
-          users
-              .map { user ->
-                async { user.availabilities.addCells(retrieveAvailabilities(user.id)) }
-              }
-              .awaitAll()
-          users
-        }
-      }
+  override suspend fun query(
+      filter: Filter,
+      limit: Long?,
+      orderBy: String?,
+      orderByDirection: Query.Direction,
+      onError: ((Exception) -> Unit)?
+  ): List<User> = coroutineScope {
+    withErrorCallback(onError) {
+      val users = super.query(filter, limit, orderBy, orderByDirection, onError = null)
+      users
+          .map { user -> async { user.availabilities.addCells(retrieveAvailabilities(user.id)) } }
+          .awaitAll()
+      users
+    }
+  }
 
   override suspend fun delete(id: String, onError: ((Exception) -> Unit)?): Unit = coroutineScope {
     withErrorCallback(onError) {

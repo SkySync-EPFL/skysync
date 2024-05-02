@@ -10,6 +10,7 @@ import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.rememberNavController
 import androidx.test.rule.GrantPermissionRule
 import ch.epfl.skysync.screens.FlightScreen
+import ch.epfl.skysync.viewmodel.TimerViewModel
 import org.junit.Rule
 import org.junit.Test
 
@@ -24,7 +25,7 @@ class FlightScreenPermissionTest {
   fun flightScreen_PermissionGranted_ShowsMapAndFAB() {
     composeTestRule.setContent {
       val navController = rememberNavController()
-      FlightScreen(navController)
+      FlightScreen(navController, TimerViewModel.createViewModel())
     }
 
     composeTestRule.onNodeWithTag("LoadingIndicator").assertIsNotDisplayed()

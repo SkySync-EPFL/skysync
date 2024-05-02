@@ -1,6 +1,6 @@
 package ch.epfl.skysync.database.tables
 
-import ch.epfl.skysync.database.DateLocalDateConverter
+import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.FlightStatus
 import ch.epfl.skysync.database.Table
@@ -8,6 +8,7 @@ import ch.epfl.skysync.database.schemas.FlightMemberSchema
 import ch.epfl.skysync.database.schemas.FlightSchema
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
+import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -16,6 +17,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.Filter
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -50,10 +52,31 @@ class FlightTable(db: FirestoreDatabase) :
               flightType = flightType,
               balloon = balloon,
               basket = basket,
-              date = DateLocalDateConverter.dateToLocalDate(schema.date!!),
+              date = DateUtility.dateToLocalDate(schema.date!!),
               timeSlot = schema.timeSlot!!,
               vehicles = vehicles)
-      FlightStatus.CONFIRMED -> throw NotImplementedError()
+      FlightStatus.CONFIRMED -> {
+        // balloon and basket must be specified in confirmed flight
+        if (balloon == null || basket == null) {
+          throw Exception("Internal error: Invalid confirmed flight.")
+        }
+        ConfirmedFlight(
+            id = schema.id!!,
+            nPassengers = schema.numPassengers!!,
+            team = team,
+            flightType = flightType,
+            balloon = balloon,
+            basket = basket,
+            date = DateUtility.dateToLocalDate(schema.date!!),
+            timeSlot = schema.timeSlot!!,
+            vehicles = vehicles,
+            remarks = schema.remarks!!,
+            color = schema.color!!,
+            meetupTimeTeam = DateUtility.stringToLocalTime(schema.meetupTimeTeam!!),
+            departureTimeTeam = DateUtility.stringToLocalTime(schema.departureTimeTeam!!),
+            meetupTimePassenger = DateUtility.stringToLocalTime(schema.meetupTimePassenger!!),
+            meetupLocationPassenger = schema.meetupLocationPassenger!!)
+      }
       FlightStatus.FINISHED -> throw NotImplementedError()
     }
   }
@@ -193,23 +216,28 @@ class FlightTable(db: FirestoreDatabase) :
     }
   }
 
-  override suspend fun query(filter: Filter, onError: ((Exception) -> Unit)?): List<Flight> =
-      coroutineScope {
-        withErrorCallback(onError) {
-          val schemas = db.query(path, filter, clazz)
-          schemas
-              .map { schema ->
-                async {
-                  val flight = retrieveFlight(schema)
-                  if (flight == null) {
-                    // report
-                  }
-                  flight!!
-                }
+  override suspend fun query(
+      filter: Filter,
+      limit: Long?,
+      orderBy: String?,
+      orderByDirection: Query.Direction,
+      onError: ((Exception) -> Unit)?
+  ): List<Flight> = coroutineScope {
+    withErrorCallback(onError) {
+      val schemas = db.query(path, filter, clazz)
+      schemas
+          .map { schema ->
+            async {
+              val flight = retrieveFlight(schema)
+              if (flight == null) {
+                // report
               }
-              .awaitAll()
-        }
-      }
+              flight!!
+            }
+          }
+          .awaitAll()
+    }
+  }
 
   /**
    * This will generate a new id for this flight and disregard any previously set id. This will

@@ -3,7 +3,9 @@ package ch.epfl.skysync.database
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.Query.Direction
 import kotlin.reflect.KClass
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * Represent a table in the database
@@ -47,7 +49,7 @@ abstract class Table<M, S : Schema<M>>(
    * @param onError Callback called when an error occurs
    */
   open suspend fun get(id: String, onError: ((Exception) -> Unit)? = null): M? {
-    return db.getItem(path, id, clazz)?.toModel()
+    return withErrorCallback(onError) { db.getItem(path, id, clazz)?.toModel() }
   }
 
   /**
@@ -56,7 +58,7 @@ abstract class Table<M, S : Schema<M>>(
    * @param onError Callback called when an error occurs
    */
   open suspend fun getAll(onError: ((Exception) -> Unit)? = null): List<M> {
-    return db.getAll(path, clazz).map { it.toModel() }
+    return withErrorCallback(onError) { db.getAll(path, clazz).map { it.toModel() } }
   }
 
   /**
@@ -65,8 +67,16 @@ abstract class Table<M, S : Schema<M>>(
    * @param filter The filter to apply to the query
    * @param onError Callback called when an error occurs
    */
-  open suspend fun query(filter: Filter, onError: ((Exception) -> Unit)? = null): List<M> {
-    return db.query(path, filter, clazz).map { it.toModel() }
+  open suspend fun query(
+      filter: Filter,
+      limit: Long? = null,
+      orderBy: String? = null,
+      orderByDirection: Direction = Query.Direction.ASCENDING,
+      onError: ((Exception) -> Unit)? = null
+  ): List<M> {
+    return withErrorCallback(onError) {
+      db.query(path, filter, clazz, limit, orderBy, orderByDirection).map { it.toModel() }
+    }
   }
 
   /**
@@ -76,7 +86,7 @@ abstract class Table<M, S : Schema<M>>(
    * @param onError Callback called when an error occurs
    */
   open suspend fun delete(id: String, onError: ((Exception) -> Unit)? = null) {
-    db.deleteItem(path, id)
+    withErrorCallback(onError) { db.deleteItem(path, id) }
   }
 
   /**
@@ -89,7 +99,7 @@ abstract class Table<M, S : Schema<M>>(
    * @param onError Callback called when an error occurs
    */
   open suspend fun queryDelete(filter: Filter, onError: ((Exception) -> Unit)? = null) {
-    db.queryDelete(path, filter)
+    withErrorCallback(onError) { db.queryDelete(path, filter) }
   }
 
   /**
@@ -106,12 +116,14 @@ abstract class Table<M, S : Schema<M>>(
    */
   open fun queryListener(
       filter: Filter,
-      onChange: (ListenerUpdate<S>) -> Unit,
+      onChange: suspend (ListenerUpdate<S>) -> Unit,
+      coroutineScope: CoroutineScope,
       limit: Long? = null,
       orderBy: String? = null,
       orderByDirection: Query.Direction = Query.Direction.ASCENDING,
   ): ListenerRegistration {
-    return db.queryListener(path, filter, clazz, onChange, limit, orderBy, orderByDirection)
+    return db.queryListener(
+        path, filter, clazz, onChange, coroutineScope, limit, orderBy, orderByDirection)
   }
 
   /**
@@ -122,6 +134,6 @@ abstract class Table<M, S : Schema<M>>(
    * @param onError Callback called when an error occurs
    */
   open suspend fun deleteTable(onError: ((Exception) -> Unit)? = null) {
-    db.deleteTable(path)
+    withErrorCallback(onError) { db.deleteTable(path) }
   }
 }

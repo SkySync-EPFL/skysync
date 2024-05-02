@@ -1,51 +1,61 @@
 package ch.epfl.skysync.components
 
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import org.junit.Before
+import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
 
 class TimerTest {
   @get:Rule val composeTestRule = createComposeRule()
 
-  @Before
-  fun setUp() {
-    composeTestRule.setContent { Timer(modifier = Modifier) }
-  }
-
   @Test
-  fun timerIsDisplayed() {
+  fun timerIsDisplayedWithWithButton() {
+    composeTestRule.setContent {
+      Timer(
+          modifier = Modifier, currentTimer = "0:0:0", isRunning = false, onStart = {}, onStop = {})
+    }
     composeTestRule.onNodeWithTag("Timer").assertExists()
+    composeTestRule.onNodeWithTag("Timer Value").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("Start Button").assertIsDisplayed()
+    composeTestRule.onNodeWithText("0:0:0").assertIsDisplayed()
   }
 
   @Test
-  fun timerValueIsDisplayed() {
-    composeTestRule.onNodeWithTag("Timer Value").assertExists()
-  }
-
-  @Test
-  fun timerStartButtonIsDisplayed() {
-    composeTestRule.onNodeWithTag("Start Button").assertExists()
-  }
-
-  @OptIn(ExperimentalTestApi::class)
-  @Test
-  fun timerResetButtonIsDisplayed() {
-    composeTestRule.onNodeWithTag("Timer Value").assertTextContains("00:00:00")
+  fun correctButtonIsDisplayedAndClickableIfPaused() {
+    var controlVariableOnStart = false
+    var controlVariableOnStop = false
+    composeTestRule.setContent {
+      Timer(
+          modifier = Modifier,
+          currentTimer = "0:0:0",
+          isRunning = false,
+          onStart = { controlVariableOnStart = true },
+          onStop = { controlVariableOnStop = true })
+    }
     composeTestRule.onNodeWithTag("Start Button").performClick()
-    composeTestRule.waitUntilAtLeastOneExists(
-        hasText("00:00:02", substring = true), timeoutMillis = 2010)
-    composeTestRule.onNodeWithTag("Reset Button").assertExists()
+    assert(controlVariableOnStart)
+    assertFalse(controlVariableOnStop)
   }
 
   @Test
-  fun timerValueIsUpdated() {
-    composeTestRule.onNodeWithTag("Start Button").performClick()
+  fun correctButtonIsDisplayedAndClickableIfRunning() {
+    var controlVariableOnStart = false
+    var controlVariableOnStop = false
+    composeTestRule.setContent {
+      Timer(
+          modifier = Modifier,
+          currentTimer = "0:0:0",
+          isRunning = true,
+          onStart = { controlVariableOnStart = true },
+          onStop = { controlVariableOnStop = true })
+    }
+    composeTestRule.onNodeWithTag("Stop Button").performClick()
+    assert(controlVariableOnStop)
+    assertFalse(controlVariableOnStart)
   }
 }
