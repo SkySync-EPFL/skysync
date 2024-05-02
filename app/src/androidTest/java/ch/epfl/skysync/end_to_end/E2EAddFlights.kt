@@ -42,7 +42,7 @@ class E2EAddFlights {
         homeGraph(repository, navController, dbs.admin1.id)
       }
     }
-      composeTestRule.onNodeWithText("SwipeRefreshLayout").assertDoesNotExist()
+    composeTestRule.onNodeWithText("SwipeRefreshLayout").assertDoesNotExist()
   }
 
   @Test
