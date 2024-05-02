@@ -71,6 +71,7 @@ import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.ui.theme.veryLightBlue
 import ch.epfl.skysync.ui.theme.veryLightJasmine
 import ch.epfl.skysync.ui.theme.veryLightRed
@@ -87,58 +88,61 @@ fun FlightHistoryScreen(
     navController: NavHostController,
     allFlights: List<FinishedFlight> = emptyList()
 ) {
-  Scaffold(topBar = { CustomTopAppBar(navController = navController, title = "Flight History") }) {
-      padding ->
-    Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-      if (allFlights.isEmpty()) {
-        Text(
-            modifier = Modifier.padding(padding).testTag("No Flight"),
-            text = "No flights available")
-      } else {
-        var beginDate: LocalDate? by remember { mutableStateOf(null) }
-        var endDate: LocalDate? by remember { mutableStateOf(null) }
-        var beginFlightTime: LocalTime? by remember { mutableStateOf(null) }
-        var endFlightTime: LocalTime? by remember { mutableStateOf(null) }
-        var flightType: FlightType? by remember { mutableStateOf(null) }
-        var showFilters by remember { mutableStateOf(false) }
-        if (showFilters) {
-          FiltersMenu(
-              onDismissRequest = { showFilters = false },
-              onConfirmRequest = {
-                  tmpBeginDate,
-                  tmpEndDate,
-                  tmpBeginFlightTime,
-                  tmpEndFlightTime,
-                  tmpFlightType ->
-                beginDate = tmpBeginDate
-                endDate = tmpEndDate
-                beginFlightTime = tmpBeginFlightTime
-                endFlightTime = tmpEndFlightTime
-                flightType = tmpFlightType
-                showFilters = false
-              })
-        }
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.Top) {
-          FlightSearchBar(
-              modifier = Modifier.fillMaxWidth().weight(3f),
-              onSearch = { /* TODO search for flights by location name */},
-              results = allFlights)
-          IconButton(
-              modifier = Modifier.testTag("Filter Button"),
-              onClick = { showFilters = !showFilters },
-              content = {
-                Icon(
-                    modifier = Modifier.padding(top = 16.dp),
-                    painter = painterResource(id = R.drawable.baseline_filter_list_alt_24),
-                    contentDescription = "Filters")
-              })
+  Scaffold(
+      topBar = { CustomTopAppBar(navController = navController, title = "Flight History") },
+      bottomBar = { AdminBottomBar(navController = navController) }) { padding ->
+        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+          if (allFlights.isEmpty()) {
+            Text(
+                modifier = Modifier.padding(padding).testTag("No Flight"),
+                text = "No flights available")
+          } else {
+            var beginDate: LocalDate? by remember { mutableStateOf(null) }
+            var endDate: LocalDate? by remember { mutableStateOf(null) }
+            var beginFlightTime: LocalTime? by remember { mutableStateOf(null) }
+            var endFlightTime: LocalTime? by remember { mutableStateOf(null) }
+            var flightType: FlightType? by remember { mutableStateOf(null) }
+            var showFilters by remember { mutableStateOf(false) }
+            if (showFilters) {
+              FiltersMenu(
+                  onDismissRequest = { showFilters = false },
+                  onConfirmRequest = {
+                      tmpBeginDate,
+                      tmpEndDate,
+                      tmpBeginFlightTime,
+                      tmpEndFlightTime,
+                      tmpFlightType ->
+                    beginDate = tmpBeginDate
+                    endDate = tmpEndDate
+                    beginFlightTime = tmpBeginFlightTime
+                    endFlightTime = tmpEndFlightTime
+                    flightType = tmpFlightType
+                    showFilters = false
+                  })
+            }
+            Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.Top) {
+              FlightSearchBar(
+                  modifier = Modifier.fillMaxWidth().weight(3f),
+                  onSearch = { /* TODO search for flights by location name */},
+                  results = allFlights)
+              IconButton(
+                  modifier = Modifier.testTag("Filter Button"),
+                  onClick = { showFilters = !showFilters },
+                  content = {
+                    Icon(
+                        modifier = Modifier.padding(top = 16.dp),
+                        painter = painterResource(id = R.drawable.baseline_filter_list_alt_24),
+                        contentDescription = "Filters")
+                  })
+            }
+          }
+          LazyColumn() {
+            itemsIndexed(allFlights) { id, flight ->
+              HistoryCard(flight, Modifier.testTag("Card $id"))
+            }
+          }
         }
       }
-      LazyColumn() {
-        itemsIndexed(allFlights) { id, flight -> HistoryCard(flight, Modifier.testTag("Card $id")) }
-      }
-    }
-  }
 }
 
 /**

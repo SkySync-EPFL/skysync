@@ -115,7 +115,12 @@ class FlightsViewModel(
   fun refreshAvailableBalloons() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
-          // TODO: use filtered query
+          _availableBalloons.value =
+              repository.balloonTable.getBalloonsAvailableOn(
+                  flightTable = repository.flightTable,
+                  localDate = date!!,
+                  timeslot = timeSlot!!,
+                  onError = { onError(it) })
           _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
         } else {
           _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
@@ -125,8 +130,12 @@ class FlightsViewModel(
   fun refreshAvailableUsers() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
-          // TODO: use filtered query
-          _availableUsers.value = repository.userTable.getAll(onError = { onError(it) })
+          _availableUsers.value =
+              repository.userTable.getUsersAvailableOn(
+                  flightTable = repository.flightTable,
+                  localDate = date!!,
+                  timeslot = timeSlot!!,
+                  onError = { onError(it) })
         } else {
           _availableUsers.value = repository.userTable.getAll(onError = { onError(it) })
         }
@@ -135,8 +144,12 @@ class FlightsViewModel(
   fun refreshAvailableVehicles() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
-          // TODO: use filtered query
-          _availableVehicles.value = repository.vehicleTable.getAll(onError = { onError(it) })
+          _availableVehicles.value =
+              repository.vehicleTable.getVehiclesAvailableOn(
+                  flightTable = repository.flightTable,
+                  localDate = date!!,
+                  timeslot = timeSlot!!,
+                  onError = { onError(it) })
         } else {
           _availableVehicles.value = repository.vehicleTable.getAll(onError = { onError(it) })
         }
@@ -145,8 +158,12 @@ class FlightsViewModel(
   fun refreshAvailableBaskets() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
-          // TODO: use filtered query
-          _availableBaskets.value = repository.basketTable.getAll(onError = { onError(it) })
+          _availableBaskets.value =
+              repository.basketTable.getBasketsAvailableOn(
+                  flightTable = repository.flightTable,
+                  localDate = date!!,
+                  timeslot = timeSlot!!,
+                  onError = { onError(it) })
         } else {
           _availableBaskets.value = repository.basketTable.getAll(onError = { onError(it) })
         }
