@@ -27,6 +27,7 @@ import ch.epfl.skysync.screens.TextScreen
 import ch.epfl.skysync.screens.confirmationScreen
 import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
+import ch.epfl.skysync.viewmodel.FlightsOverviewViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
 
@@ -60,9 +61,9 @@ fun NavGraphBuilder.homeGraph(
         onMessageUpdate(group, update)
       }
 
-      val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
-      flightsViewModel.refresh()
-      HomeScreen(navController, flightsViewModel)
+      val flightsOverviewViewModel = FlightsOverviewViewModel.createViewModel(repository, uid)
+      flightsOverviewViewModel.refresh()
+      HomeScreen(navController, flightsOverviewViewModel)
     }
     composable(
         route = Route.FLIGHT_DETAILS + "/{Flight ID}",
