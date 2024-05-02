@@ -240,6 +240,8 @@ class FlightTable(db: FirestoreDatabase) :
   }
 
   /**
+   * Add a new flight to the database
+   *
    * This will generate a new id for this flight and disregard any previously set id. This will
    * create the [Flight.team] (and in the process the [User.assignedFlights])
    *
