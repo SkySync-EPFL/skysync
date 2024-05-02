@@ -466,12 +466,11 @@ fun RoleField(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically) {
-      val title = role.roleType.description.lowercase()
 
 
       CustomDropDownMenu(
           defaultPadding = defaultPadding,
-          title = title,
+          title = "overview:${role.roleType.description}",
           value = role.assignedUser,
           onclickMenu = { item -> onReassign(item)},
           items = availableUsers,
@@ -519,6 +518,7 @@ fun AddRole(showAddMemberDialog: Boolean,
     var addNewAssignee: User? by remember { mutableStateOf(null) }
     if (showAddMemberDialog) {
         AlertDialog(
+            modifier = Modifier.testTag("User Dialog Field"),
             onDismissRequest = {
                 onclickDismiss()
                 addNewRole = null
@@ -552,6 +552,7 @@ fun AddRole(showAddMemberDialog: Boolean,
             },
             confirmButton = {
                 Button(
+                    modifier = Modifier.testTag("Add Role Button"),
                     onClick = {
                         roleNotChosenError = addNewRole == null
                         if (!roleNotChosenError) {

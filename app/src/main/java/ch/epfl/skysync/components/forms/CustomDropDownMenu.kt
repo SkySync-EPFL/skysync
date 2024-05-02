@@ -45,7 +45,7 @@ fun <T> CustomDropDownMenu(
         onExpandedChange = { expanded = !expanded }) {
           OutlinedTextField(
               value = showString(value),
-              modifier = Modifier.fillMaxWidth().menuAnchor(),
+              modifier = Modifier.fillMaxWidth().menuAnchor().testTag("selected $title dropdown"),
               readOnly = true,
               onValueChange = {},
               trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },

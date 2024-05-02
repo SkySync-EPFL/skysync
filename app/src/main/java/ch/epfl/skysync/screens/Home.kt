@@ -44,7 +44,6 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
-import ch.epfl.skysync.viewmodel.FlightsOverviewViewModel
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
