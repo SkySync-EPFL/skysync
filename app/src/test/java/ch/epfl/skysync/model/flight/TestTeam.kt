@@ -1,6 +1,5 @@
 package ch.epfl.skysync.model.flight
 
-import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.Role
@@ -16,8 +15,20 @@ import org.junit.Test
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class TestTeam {
-  val testUser1 = Crew("jo", "blunt", UNSET_ID, AvailabilityCalendar(), FlightGroupCalendar())
-  val testUser2 = Crew("peter", "brown", UNSET_ID, AvailabilityCalendar(), FlightGroupCalendar())
+  val testUser1 =
+      Crew(
+          firstname = "jo",
+          lastname = "blunt",
+          email = "jo.blunt@gmail.com",
+          availabilities = AvailabilityCalendar(),
+          assignedFlights = FlightGroupCalendar())
+  val testUser2 =
+      Crew(
+          firstname = "peter",
+          lastname = "brown",
+          email = "peter.brown",
+          availabilities = AvailabilityCalendar(),
+          assignedFlights = FlightGroupCalendar())
 
   @Test
   fun `isComplete() returns true if all roles assigned`() {
