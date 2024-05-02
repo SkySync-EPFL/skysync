@@ -8,6 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import ch.epfl.skysync.screens.FlightScreen
+import ch.epfl.skysync.viewmodel.TimerViewModel
 import org.junit.Rule
 import org.junit.Test
 
@@ -21,7 +22,7 @@ class FlightScreenNoPermissionTest {
 
     composeTestRule.setContent {
       val navController = rememberNavController()
-      FlightScreen(navController)
+      FlightScreen(navController, TimerViewModel.createViewModel())
     }
 
     val denyButton = uiDevice.findObject(UiSelector().text("Don’t allow"))

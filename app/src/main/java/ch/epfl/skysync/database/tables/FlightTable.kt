@@ -1,6 +1,6 @@
 package ch.epfl.skysync.database.tables
 
-import ch.epfl.skysync.database.DateLocalDateConverter
+import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.FlightStatus
 import ch.epfl.skysync.database.Table
@@ -8,6 +8,7 @@ import ch.epfl.skysync.database.schemas.FlightMemberSchema
 import ch.epfl.skysync.database.schemas.FlightSchema
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
+import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -51,10 +52,31 @@ class FlightTable(db: FirestoreDatabase) :
               flightType = flightType,
               balloon = balloon,
               basket = basket,
-              date = DateLocalDateConverter.dateToLocalDate(schema.date!!),
+              date = DateUtility.dateToLocalDate(schema.date!!),
               timeSlot = schema.timeSlot!!,
               vehicles = vehicles)
-      FlightStatus.CONFIRMED -> throw NotImplementedError()
+      FlightStatus.CONFIRMED -> {
+        // balloon and basket must be specified in confirmed flight
+        if (balloon == null || basket == null) {
+          throw Exception("Internal error: Invalid confirmed flight.")
+        }
+        ConfirmedFlight(
+            id = schema.id!!,
+            nPassengers = schema.numPassengers!!,
+            team = team,
+            flightType = flightType,
+            balloon = balloon,
+            basket = basket,
+            date = DateUtility.dateToLocalDate(schema.date!!),
+            timeSlot = schema.timeSlot!!,
+            vehicles = vehicles,
+            remarks = schema.remarks!!,
+            color = schema.color!!,
+            meetupTimeTeam = DateUtility.stringToLocalTime(schema.meetupTimeTeam!!),
+            departureTimeTeam = DateUtility.stringToLocalTime(schema.departureTimeTeam!!),
+            meetupTimePassenger = DateUtility.stringToLocalTime(schema.meetupTimePassenger!!),
+            meetupLocationPassenger = schema.meetupLocationPassenger!!)
+      }
       FlightStatus.FINISHED -> throw NotImplementedError()
     }
   }
