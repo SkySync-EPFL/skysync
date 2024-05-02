@@ -68,7 +68,6 @@ import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.FinishedFlight
-import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.Team
@@ -92,7 +91,9 @@ fun FlightHistoryScreen(
       padding ->
     Column(modifier = Modifier.fillMaxSize().padding(padding)) {
       if (allFlights.isEmpty()) {
-        Text(modifier = Modifier.padding(padding), text = "No flights available")
+        Text(
+            modifier = Modifier.padding(padding).testTag("No Flight"),
+            text = "No flights available")
       } else {
         var beginDate: LocalDate? by remember { mutableStateOf(null) }
         var endDate: LocalDate? by remember { mutableStateOf(null) }
@@ -120,7 +121,7 @@ fun FlightHistoryScreen(
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
           FlightSearchBar(
               modifier = Modifier.fillMaxWidth().weight(3f),
-              onSearch = { query -> allFlights.filter { it.date.toString().contains(query) } },
+              onSearch = { /* TODO search for flights by location name */},
               results = allFlights)
           IconButton(
               modifier = Modifier.testTag("Filter Button"),
@@ -139,6 +140,12 @@ fun FlightHistoryScreen(
   }
 }
 
+/**
+ * Representation of a finished flight
+ *
+ * @param flight flight to be displayed
+ * @param modifier modifier for the card (there for the test tag)
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryCard(flight: FinishedFlight, modifier: Modifier) {
@@ -289,7 +296,7 @@ fun DateRangeSelector(onDone: (LocalDate, LocalDate) -> Unit) {
   var endDate: LocalDate? = null
   DateRangePicker(
       state,
-      modifier = Modifier,
+      modifier = Modifier.testTag("Date Range Selector"),
       dateFormatter = DatePickerFormatter("yy MM dd", "yy MM dd", "yy MM dd"),
       dateValidator = dateValidator(),
       title = {
@@ -363,14 +370,17 @@ fun getFormattedTime(time: LocalTime?): String {
 /** Search bar for flights with the location of the flight as filter */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FlightSearchBar(modifier: Modifier, onSearch: (String) -> Unit, results: List<Flight>) {
+fun FlightSearchBar(modifier: Modifier, onSearch: (String) -> Unit, results: List<FinishedFlight>) {
   var query by remember { mutableStateOf("") }
   var active by rememberSaveable { mutableStateOf(false) }
   SearchBar(
-      modifier = modifier,
+      modifier = modifier.testTag("Search Bar"),
       query = query,
       onQueryChange = { query = it },
-      onSearch = onSearch,
+      onSearch = {
+        onSearch(it)
+        active = false
+      },
       active = active,
       onActiveChange = { active = it },
       placeholder = { Text(" Search for a location") },
@@ -386,7 +396,13 @@ fun FlightSearchBar(modifier: Modifier, onSearch: (String) -> Unit, results: Lis
         }
       }) {
         LazyColumn {
-          items(results) { flight -> ListItem(headlineContent = { Text(flight.date.toString()) }) }
+          items(results) { flight ->
+            ListItem(
+                headlineContent = {
+                  Text("take off : ${flight.takeOffLocation.provider.toString()}")
+                  Text("landing : ${flight.landingLocation.provider.toString()}")
+                })
+          }
         }
       }
 }
