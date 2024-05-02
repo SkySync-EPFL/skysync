@@ -16,4 +16,8 @@ data class Crew(
   override fun addRoleType(roleType: RoleType): Crew {
     return this.copy(roleTypes = roleTypes + roleType)
   }
+
+    override fun toString(): String {
+        return "$firstname $lastname"
+    }
 }

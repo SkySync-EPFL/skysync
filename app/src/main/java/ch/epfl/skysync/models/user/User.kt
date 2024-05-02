@@ -17,4 +17,5 @@ interface User {
   fun canAssumeRole(roleType: RoleType): Boolean {
     return roleTypes.contains(roleType)
   }
+
 }

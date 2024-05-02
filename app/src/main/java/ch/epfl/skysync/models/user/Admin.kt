@@ -16,4 +16,8 @@ data class Admin(
   override fun addRoleType(roleType: RoleType): Admin {
     return this.copy(roleTypes = roleTypes + roleType)
   }
+
+    override fun toString(): String {
+        return "$firstname $lastname"
+    }
 }
