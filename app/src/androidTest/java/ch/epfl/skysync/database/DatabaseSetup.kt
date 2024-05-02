@@ -19,6 +19,8 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
+import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
@@ -32,6 +34,7 @@ import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.Date
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -127,6 +130,25 @@ class DatabaseSetup {
           timeSlot = TimeSlot.AM,
           vehicles = listOf(vehicle1),
           id = UNSET_ID)
+
+  var flight4 =
+      ConfirmedFlight(
+          id = UNSET_ID,
+          nPassengers = 2,
+          team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
+          flightType = flightType1,
+          balloon = balloon1,
+          basket = basket1,
+          date = LocalDate.of(2024, 8, 12),
+          timeSlot = TimeSlot.PM,
+          vehicles = listOf(vehicle2),
+          remarks = listOf("remark 1", "remark 2"),
+          color = FlightColor.BLUE,
+          meetupTimeTeam = LocalTime.of(13, 30, 0),
+          departureTimeTeam = LocalTime.of(13, 45, 0),
+          meetupTimePassenger = LocalTime.of(14, 0, 0),
+          meetupLocationPassenger = "location",
+      )
 
   var messageGroup1 =
       MessageGroup(name = "Group 1", userIds = setOf(admin2.id, pilot1.id, crew1.id))
@@ -230,10 +252,19 @@ class DatabaseSetup {
             basket = basket1,
             vehicles = listOf(vehicle1),
         )
+    flight4 =
+        flight4.copy(
+            team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
+            flightType = flightType1,
+            balloon = balloon1,
+            basket = basket1,
+            vehicles = listOf(vehicle2),
+        )
 
     // now that the IDs are set, add the flights/messages
     listOf(
             launch { flight1 = flight1.copy(id = flightTable.add(flight1)) },
+            launch { flight4 = flight4.copy(id = flightTable.add(flight4)) },
             launch { message1 = message1.copy(id = messageTable.add(messageGroup1.id, message1)) },
             launch { message2 = message2.copy(id = messageTable.add(messageGroup1.id, message2)) },
             launch { message3 = message3.copy(id = messageTable.add(messageGroup2.id, message3)) },
