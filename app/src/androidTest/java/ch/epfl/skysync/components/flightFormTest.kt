@@ -189,7 +189,7 @@ class FlightFormTest {
 
   @Test
   fun fondueFieldIsDisplayedCorrectly() {
-    composeTestRule.onNodeWithText(RoleType.MAITRE_FONDUE.name).assertIsNotDisplayed()
+    composeTestRule.onNodeWithText(RoleType.MAITRE_FONDUE.description).assertIsNotDisplayed()
 
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
@@ -198,8 +198,8 @@ class FlightFormTest {
     composeTestRule.onNodeWithText("Fondue").performClick()
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasText(RoleType.MAITRE_FONDUE.name))
-    composeTestRule.onNodeWithText(RoleType.MAITRE_FONDUE.name).assertIsDisplayed()
+        .performScrollToNode(hasText(RoleType.MAITRE_FONDUE.description))
+    composeTestRule.onNodeWithText(RoleType.MAITRE_FONDUE.description).assertIsDisplayed()
   }
 
   @Test
