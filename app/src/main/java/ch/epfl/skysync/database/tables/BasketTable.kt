@@ -9,6 +9,7 @@ import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.Flight
 import com.google.firebase.firestore.Filter
 import java.time.LocalDate
+import kotlinx.coroutines.coroutineScope
 
 /** Represent the "basket" table */
 class BasketTable(db: FirestoreDatabase) :
@@ -36,18 +37,17 @@ class BasketTable(db: FirestoreDatabase) :
       localDate: LocalDate,
       timeslot: TimeSlot,
       onError: ((Exception) -> Unit)?
-  ): List<Basket> {
-    val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
-    val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
-    val flightFilter = Filter.and(dateFilter, timeslotFilter)
+  ): List<Basket> = coroutineScope {
+    withErrorCallback(onError) {
+      val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
+      val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
+      val flightFilter = Filter.and(dateFilter, timeslotFilter)
 
-    val unavailableBasketsIds: Set<String> =
-        flightTable
-            .query(flightFilter, onError)
-            .mapNotNull { flight: Flight -> flight.basket?.id }
-            .toSet()
+      val unavailableBasketsIds: Set<String> =
+          flightTable.query(flightFilter).mapNotNull { flight: Flight -> flight.basket?.id }.toSet()
 
-    return getAll(onError).filterNot { basket: Basket -> basket.id in unavailableBasketsIds }
+      getAll().filterNot { basket: Basket -> basket.id in unavailableBasketsIds }
+    }
   }
 
   companion object {

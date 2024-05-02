@@ -9,6 +9,7 @@ import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Flight
 import com.google.firebase.firestore.Filter
 import java.time.LocalDate
+import kotlinx.coroutines.coroutineScope
 
 /** Represent the "balloon" table */
 class BalloonTable(db: FirestoreDatabase) :
@@ -36,18 +37,20 @@ class BalloonTable(db: FirestoreDatabase) :
       localDate: LocalDate,
       timeslot: TimeSlot,
       onError: ((Exception) -> Unit)?
-  ): List<Balloon> {
-    val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
-    val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
-    val flightFilter = Filter.and(dateFilter, timeslotFilter)
+  ): List<Balloon> = coroutineScope {
+    withErrorCallback(onError) {
+      val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
+      val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
+      val flightFilter = Filter.and(dateFilter, timeslotFilter)
 
-    val unavailableBalloonIds: Set<String> =
-        flightTable
-            .query(flightFilter, onError)
-            .mapNotNull { flight: Flight -> flight.balloon?.id }
-            .toSet()
+      val unavailableBalloonIds: Set<String> =
+          flightTable
+              .query(flightFilter)
+              .mapNotNull { flight: Flight -> flight.balloon?.id }
+              .toSet()
 
-    return getAll(onError).filterNot { balloon: Balloon -> balloon.id in unavailableBalloonIds }
+      getAll().filterNot { balloon: Balloon -> balloon.id in unavailableBalloonIds }
+    }
   }
 
   companion object {

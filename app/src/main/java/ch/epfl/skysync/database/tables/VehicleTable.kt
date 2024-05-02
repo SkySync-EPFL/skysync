@@ -9,6 +9,7 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.Vehicle
 import com.google.firebase.firestore.Filter
 import java.time.LocalDate
+import kotlinx.coroutines.coroutineScope
 
 /** Represent the "vehicle" table */
 class VehicleTable(db: FirestoreDatabase) :
@@ -35,18 +36,20 @@ class VehicleTable(db: FirestoreDatabase) :
       localDate: LocalDate,
       timeslot: TimeSlot,
       onError: ((Exception) -> Unit)?
-  ): List<Vehicle> {
-    val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
-    val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
-    val flightFilter = Filter.and(dateFilter, timeslotFilter)
+  ): List<Vehicle> = coroutineScope {
+    withErrorCallback(onError) {
+      val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
+      val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
+      val flightFilter = Filter.and(dateFilter, timeslotFilter)
 
-    val unavailableVehicleIds: List<String> =
-        flightTable
-            .query(flightFilter, onError)
-            .flatMap { flight: Flight -> flight.vehicles }
-            .map { vehicle: Vehicle -> vehicle.id }
+      val unavailableVehicleIds: List<String> =
+          flightTable
+              .query(flightFilter)
+              .flatMap { flight: Flight -> flight.vehicles }
+              .map { vehicle: Vehicle -> vehicle.id }
 
-    return getAll(onError).filterNot { vehicle: Vehicle -> vehicle.id in unavailableVehicleIds }
+      getAll().filterNot { vehicle: Vehicle -> vehicle.id in unavailableVehicleIds }
+    }
   }
 
   companion object {

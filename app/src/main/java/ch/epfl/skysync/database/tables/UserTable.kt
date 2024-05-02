@@ -74,45 +74,44 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
       timeslot: TimeSlot,
       onError: ((Exception) -> Unit)?
   ): List<User> = coroutineScope {
-    val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
-    val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
-    val dateTimeSlotFilter = Filter.and(dateFilter, timeslotFilter)
+    withErrorCallback(onError) {
+      val dateFilter = Filter.equalTo("date", DateLocalDateConverter.localDateToDate(localDate))
+      val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
+      val dateTimeSlotFilter = Filter.and(dateFilter, timeslotFilter)
 
-    // Retrieve all flights of the given day, timeslot
-    val flightsIds =
-        flightTable.query(dateTimeSlotFilter, onError).map { flight: Flight -> flight.id }
+      // Retrieve all flights of the given day, timeslot
+      val flightsIds = flightTable.query(dateTimeSlotFilter).map { flight: Flight -> flight.id }
 
-    // Retrieve all possible available members
-    var potentialAvailableUsers = getAll(onError)
+      // Retrieve all possible available members
+      var potentialAvailableUsers = getAll()
 
-    // If there are flights on the given day
-    // Retrieve all members of these flights (they are not available)
-    if (flightsIds.isNotEmpty()) {
-      val unavailableUserIds =
-          flightMemberTable.query(Filter.inArray("flightId", flightsIds), onError).map { fm ->
-            fm.userId
-          }
-      // Remove these user from the possible available members
-      // Now there are only user left who can be available on the given day and timeslot
-      potentialAvailableUsers =
-          potentialAvailableUsers.filterNot { user: User -> user.id in unavailableUserIds }
-    }
-    // Return all user who are available on the given day and timeslot
-    return@coroutineScope potentialAvailableUsers
-        .map { user: User ->
-          async {
-            val availableUsers =
-                availabilityTable.query(
-                    Filter.and(Filter.equalTo("userId", user.id), dateTimeSlotFilter))
+      // If there are flights on the given day
+      // Retrieve all members of these flights (they are not available)
+      if (flightsIds.isNotEmpty()) {
+        val unavailableUserIds =
+            flightMemberTable.query(Filter.inArray("flightId", flightsIds)).map { fm -> fm.userId }
+        // Remove these user from the possible available members
+        // Now there are only user left who can be available on the given day and timeslot
+        potentialAvailableUsers =
+            potentialAvailableUsers.filterNot { user: User -> user.id in unavailableUserIds }
+      }
+      // Return all user who are available on the given day and timeslot
+      potentialAvailableUsers
+          .map { user: User ->
+            async {
+              val availableUsers =
+                  availabilityTable.query(
+                      Filter.and(Filter.equalTo("userId", user.id), dateTimeSlotFilter))
 
-            if (availableUsers.firstOrNull()?.status == AvailabilityStatus.OK) {
-              return@async user
+              if (availableUsers.firstOrNull()?.status == AvailabilityStatus.OK) {
+                return@async user
+              }
+              return@async null
             }
-            return@async null
           }
-        }
-        .awaitAll()
-        .filterNotNull()
+          .awaitAll()
+          .filterNotNull()
+    }
   }
 
   /** Remove user from all its flight assignments */
