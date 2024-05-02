@@ -139,15 +139,12 @@ fun FlightForm(
           }
         }
         LazyColumn(
-            modifier = Modifier
-                .padding(padding)
-                .weight(1f)
-                .testTag("Flight Lazy Column"),
+            modifier = Modifier.padding(padding).weight(1f).testTag("Flight Lazy Column"),
             state = lazyListState,
             verticalArrangement = Arrangement.SpaceBetween) {
               // Field getting the number of passengers. Only number can be entered
               item {
-                  EnterPassengerNumber(defaultPadding, nbPassengersValue, nbPassengersValueError)
+                EnterPassengerNumber(defaultPadding, nbPassengersValue, nbPassengersValueError)
               }
               // The date field is a clickable field that opens a date picker
               item {
@@ -201,45 +198,46 @@ fun FlightForm(
                     defaultPadding = defaultPadding,
                     crewMembers = teamMembers,
                     allRoleTypes = allRoleTypes,
-                    availableUsers = availableUsers
-                )
+                    availableUsers = availableUsers)
               }
               teamMembers.withIndex().forEach() { (id, role) ->
                 item {
-                    RoleField(
-                        defaultPadding= defaultPadding,
-                        role=role,
-                        id = id,
-                        onDelete = { teamMembers.removeAt(id) },
-                        onReassign = { user -> teamMembers[id] = Role(role.roleType, user) },
-                        availableUsers = availableUsers,
-                )
+                  RoleField(
+                      defaultPadding = defaultPadding,
+                      role = role,
+                      id = id,
+                      onDelete = { teamMembers.removeAt(id) },
+                      onReassign = { user -> teamMembers[id] = Role(role.roleType, user) },
+                      availableUsers = availableUsers,
+                  )
                 }
               }
-//              if (flightTypeValue != null) {
-//                flightTypeValue!!.specialRoles.withIndex().forEach { (id, roleType) ->
-//                  item {
-//                    RoleField(
-//                        defaultPadding,
-//                        smallPadding,
-//                        Role(roleType),
-//                        id,
-//                        { specialRoles.removeAt(id) },
-//                        "Special",
-//                        availableUsers = emptyList(),
-//                    )
-//                      RoleField(
-//                          defaultPadding= defaultPadding,
-//                          smallPadding = smallPadding,
-//                          role=role,
-//                          id = id,
-//                          onDelete = { crewMembers.removeAt(id) },
-//                          onReassign = { user -> crewMembers[id] = Role(role.roleType, user) },
-//                          availableUsers = availableUsers,
-//                      )
-//                  }
-//                }
-//              }
+              //              if (flightTypeValue != null) {
+              //                flightTypeValue!!.specialRoles.withIndex().forEach { (id, roleType)
+              // ->
+              //                  item {
+              //                    RoleField(
+              //                        defaultPadding,
+              //                        smallPadding,
+              //                        Role(roleType),
+              //                        id,
+              //                        { specialRoles.removeAt(id) },
+              //                        "Special",
+              //                        availableUsers = emptyList(),
+              //                    )
+              //                      RoleField(
+              //                          defaultPadding= defaultPadding,
+              //                          smallPadding = smallPadding,
+              //                          role=role,
+              //                          id = id,
+              //                          onDelete = { crewMembers.removeAt(id) },
+              //                          onReassign = { user -> crewMembers[id] =
+              // Role(role.roleType, user) },
+              //                          availableUsers = availableUsers,
+              //                      )
+              //                  }
+              //                }
+              //              }
               // Drop down menu for the vehicle
               item {
                 Row(
@@ -252,9 +250,8 @@ fun FlightForm(
                           style = MaterialTheme.typography.headlineSmall)
                       IconButton(
                           modifier =
-                          Modifier
-                              .padding(horizontal = defaultPadding)
-                              .testTag("Add Vehicle Button"),
+                              Modifier.padding(horizontal = defaultPadding)
+                                  .testTag("Add Vehicle Button"),
                           onClick = {
                             if (listVehiclesValue.size < availableVehicles.size) {
                               addVehicle = true
@@ -348,10 +345,7 @@ fun FlightForm(
             }
         // Button to add the flight to the list of flights
         Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(defaultPadding)
-                .testTag("$title Button"),
+            modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("$title Button"),
             onClick = {
               nbPassengersValueError = nbPassengerInputValidation(nbPassengersValue.value)
               flightTypeValueError = flightTypeInputValidation(flightTypeValue)
@@ -381,9 +375,6 @@ fun FlightForm(
     }
   }
 }
-
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -421,11 +412,10 @@ fun DatePickerField(
 
   OutlinedTextField(
       modifier =
-      Modifier
-          .fillMaxWidth()
-          .padding(defaultPadding)
-          .clickable(onClick = onclickField)
-          .testTag("Date Field"),
+          Modifier.fillMaxWidth()
+              .padding(defaultPadding)
+              .clickable(onClick = onclickField)
+              .testTag("Date Field"),
       enabled = false,
       value =
           String.format(
@@ -455,30 +445,28 @@ fun RoleField(
     specialName: String = "",
     availableUsers: List<User>,
 ) {
-    Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = defaultPadding)
-            .testTag("$specialName User $id"),
-        text = role.roleType.toString(),
-    )
+  Text(
+      modifier =
+          Modifier.fillMaxWidth()
+              .padding(horizontal = defaultPadding)
+              .testTag("$specialName User $id"),
+      text = role.roleType.toString(),
+  )
   Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically) {
+        CustomDropDownMenu(
+            defaultPadding = defaultPadding,
+            title = "overview:${role.roleType.description}",
+            value = role.assignedUser,
+            onclickMenu = { item -> onReassign(item) },
+            items = availableUsers,
+            showString = { it?.lastname ?: "choose a user" },
+            isError = false,
+            messageError = "no message")
 
-
-      CustomDropDownMenu(
-          defaultPadding = defaultPadding,
-          title = "overview:${role.roleType.description}",
-          value = role.assignedUser,
-          onclickMenu = { item -> onReassign(item)},
-          items = availableUsers,
-          showString = {it?.lastname ?: "choose a user"},
-          isError = false,
-          messageError = "no message")
-
-        IconButton(onClick = {onDelete()}) {
+        IconButton(onClick = { onDelete() }) {
           Icon(
               modifier = Modifier.testTag("Delete $specialName Crew Member $id"),
               imageVector = Icons.Default.Delete,
@@ -488,119 +476,119 @@ fun RoleField(
 }
 
 @Composable
-fun EnterPassengerNumber(defaultPadding: Dp,
-                         nbPassengersValue: MutableState<String>,
-                         nbPassengersValueError: Boolean){
-    TitledInputTextField(
-        padding = defaultPadding,
-        title = "Number of passengers",
-        value = nbPassengersValue.value,
-        onValueChange = { value -> nbPassengersValue.value = value.filter { it.isDigit() } },
-        isError = nbPassengersValueError,
-        messageError =
-        if (nbPassengersValueError) "Please enter a valid number" else "",
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-    )
+fun EnterPassengerNumber(
+    defaultPadding: Dp,
+    nbPassengersValue: MutableState<String>,
+    nbPassengersValueError: Boolean
+) {
+  TitledInputTextField(
+      padding = defaultPadding,
+      title = "Number of passengers",
+      value = nbPassengersValue.value,
+      onValueChange = { value -> nbPassengersValue.value = value.filter { it.isDigit() } },
+      isError = nbPassengersValueError,
+      messageError = if (nbPassengersValueError) "Please enter a valid number" else "",
+      keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+  )
 }
 
-
-
 @Composable
-fun AddRole(showAddMemberDialog: Boolean,
-            onclickDismiss: () -> Unit,
-            defaultPadding: Dp,
-            allRoleTypes: List<RoleType>,
-            allAvailableUsers: List<User>,
-            onConfirm: (RoleType, User?) -> Unit,
-            ){
-    var addNewRole: RoleType? by remember { mutableStateOf(null) }
-    var roleNotChosenError: Boolean by remember { mutableStateOf(false) }
-    var addNewAssignee: User? by remember { mutableStateOf(null) }
-    if (showAddMemberDialog) {
-        AlertDialog(
-            modifier = Modifier.testTag("User Dialog Field"),
-            onDismissRequest = {
+fun AddRole(
+    showAddMemberDialog: Boolean,
+    onclickDismiss: () -> Unit,
+    defaultPadding: Dp,
+    allRoleTypes: List<RoleType>,
+    allAvailableUsers: List<User>,
+    onConfirm: (RoleType, User?) -> Unit,
+) {
+  var addNewRole: RoleType? by remember { mutableStateOf(null) }
+  var roleNotChosenError: Boolean by remember { mutableStateOf(false) }
+  var addNewAssignee: User? by remember { mutableStateOf(null) }
+  if (showAddMemberDialog) {
+    AlertDialog(
+        modifier = Modifier.testTag("User Dialog Field"),
+        onDismissRequest = {
+          onclickDismiss()
+          addNewRole = null
+          roleNotChosenError = false
+          addNewAssignee = null
+        },
+        title = { Text("Add New Member") },
+        text = {
+          Column {
+            CustomDropDownMenu(
+                defaultPadding = defaultPadding,
+                title = "Role Type",
+                value = addNewRole,
+                onclickMenu = { item ->
+                  addNewRole = item
+                  roleNotChosenError = false
+                },
+                items = allRoleTypes,
+                showString = { it?.description ?: "choose a role *" },
+                isError = roleNotChosenError,
+                messageError = "Please choose a role type")
+            CustomDropDownMenu(
+                defaultPadding = defaultPadding,
+                title = "Assigned User",
+                value = addNewAssignee,
+                onclickMenu = { item -> addNewAssignee = item },
+                items = allAvailableUsers,
+                showString = { it?.displayString() ?: "choose a user" },
+            )
+          }
+        },
+        confirmButton = {
+          Button(
+              modifier = Modifier.testTag("Add Role Button"),
+              onClick = {
+                roleNotChosenError = addNewRole == null
+                if (!roleNotChosenError) {
+                  onConfirm(addNewRole!!, addNewAssignee)
+                  addNewRole = null
+                  roleNotChosenError = false
+                  addNewAssignee = null
+                }
+              }) {
+                Text("Add")
+              }
+        },
+        dismissButton = {
+          Button(
+              onClick = {
                 onclickDismiss()
                 addNewRole = null
                 roleNotChosenError = false
                 addNewAssignee = null
-                               },
-            title = { Text("Add New Member") },
-            text = {
-                Column {
-                    CustomDropDownMenu(
-                        defaultPadding = defaultPadding,
-                        title = "Role Type",
-                        value = addNewRole,
-                        onclickMenu = {
-                            item -> addNewRole = item
-                            roleNotChosenError = false },
-                        items = allRoleTypes,
-                        showString = { it?.description ?: "choose a role *" },
-                        isError = roleNotChosenError,
-                        messageError = "Please choose a role type"
-                    )
-                    CustomDropDownMenu(
-                        defaultPadding = defaultPadding,
-                        title = "Assigned User",
-                        value = addNewAssignee,
-                        onclickMenu = { item -> addNewAssignee = item},
-                        items = allAvailableUsers,
-                        showString = { it?.displayString()?: "choose a user"},
-                    )
-                }
-            },
-            confirmButton = {
-                Button(
-                    modifier = Modifier.testTag("Add Role Button"),
-                    onClick = {
-                        roleNotChosenError = addNewRole == null
-                        if (!roleNotChosenError) {
-                            onConfirm(addNewRole!!, addNewAssignee)
-                            addNewRole = null
-                            roleNotChosenError = false
-                            addNewAssignee = null
-                        }
-                    }) {
-                    Text("Add")
-                }
-            },
-            dismissButton = {
-                Button(onClick = {
-                    onclickDismiss()
-                    addNewRole = null
-                    roleNotChosenError = false
-                    addNewAssignee = null
-                }) { Text("Cancel") }
-            })
-    }
-
+              }) {
+                Text("Cancel")
+              }
+        })
+  }
 }
 
-
 @Composable
-fun TeamHeader(defaultPadding: Dp,
-               crewMembers: MutableList<Role>,
-                allRoleTypes: List<RoleType>,
-               availableUsers: List<User>){
-    var showAddMemberDialog by remember { mutableStateOf(false) }
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically) {
+fun TeamHeader(
+    defaultPadding: Dp,
+    crewMembers: MutableList<Role>,
+    allRoleTypes: List<RoleType>,
+    availableUsers: List<User>
+) {
+  var showAddMemberDialog by remember { mutableStateOf(false) }
+  Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically) {
         Text(
             modifier = Modifier.padding(horizontal = defaultPadding),
             text = "Team",
             style = MaterialTheme.typography.headlineSmall,
         )
         IconButton(
-            modifier =
-            Modifier
-                .padding(horizontal = defaultPadding)
-                .testTag("Add Crew Button"),
+            modifier = Modifier.padding(horizontal = defaultPadding).testTag("Add Crew Button"),
             onClick = { showAddMemberDialog = true },
         ) {
-            Icon(Icons.Default.Add, contentDescription = "Add Crew Member")
+          Icon(Icons.Default.Add, contentDescription = "Add Crew Member")
         }
         AddRole(
             showAddMemberDialog = showAddMemberDialog,
@@ -609,15 +597,11 @@ fun TeamHeader(defaultPadding: Dp,
             allRoleTypes = allRoleTypes,
             allAvailableUsers = availableUsers,
             onConfirm = { roleType, user ->
-                crewMembers.add(Role(roleType, user))
-                showAddMemberDialog = false
-            }
-
-        )
-    }
+              crewMembers.add(Role(roleType, user))
+              showAddMemberDialog = false
+            })
+      }
 }
-
-
 
 @Composable
 @Preview

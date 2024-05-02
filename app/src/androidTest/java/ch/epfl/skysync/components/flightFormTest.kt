@@ -9,7 +9,6 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -39,8 +38,8 @@ class FlightFormTest {
   private var navController: TestNavHostController = mockk("navController", relaxed = true)
   private val title: String = "Modify Flight"
 
-    lateinit var user1: User
-    lateinit var user2: User
+  lateinit var user1: User
+  lateinit var user2: User
 
   @Before
   fun setup() {
@@ -62,32 +61,30 @@ class FlightFormTest {
               Basket("Basket 2", false),
           )
 
-        val userFirstname1 = "First1"
-        val userFirstname2  = "First2"
+      val userFirstname1 = "First1"
+      val userFirstname2 = "First2"
 
-        val userLastname1 = "Last1"
-        val userLastname2 = "Last2"
+      val userLastname1 = "Last1"
+      val userLastname2 = "Last2"
 
+      user1 =
+          Crew(
+              id = "User 0",
+              firstname = userFirstname1,
+              lastname = userLastname1,
+              availabilities = AvailabilityCalendar(),
+              assignedFlights = FlightGroupCalendar(),
+          )
+      user2 =
+          Crew(
+              id = "User 1",
+              firstname = userFirstname2,
+              lastname = userLastname2,
+              availabilities = AvailabilityCalendar(),
+              assignedFlights = FlightGroupCalendar(),
+          )
 
-        user1 = Crew(
-            id = "User 0",
-            firstname = userFirstname1,
-            lastname = userLastname1,
-            availabilities = AvailabilityCalendar(),
-            assignedFlights = FlightGroupCalendar(),
-        )
-        user2 = Crew(
-            id = "User 1",
-            firstname = userFirstname2,
-            lastname = userLastname2,
-            availabilities = AvailabilityCalendar(),
-            assignedFlights = FlightGroupCalendar(),
-        )
-
-        val availableUsers = listOf(
-            user1,
-            user2
-        )
+      val availableUsers = listOf(user1, user2)
       val allRoleTypes = RoleType.entries
       navController = TestNavHostController(LocalContext.current)
       FlightForm(
@@ -266,23 +263,25 @@ class FlightFormTest {
     composeTestRule.onNodeWithTag("Add Crew Button").performClick()
     composeTestRule.onNodeWithTag("Role Type Menu").performClick()
     composeTestRule.onNodeWithText(RoleType.SERVICE_ON_BOARD.description).performClick()
-      composeTestRule.onNodeWithTag("selected Role Type dropdown").assertTextContains(RoleType.SERVICE_ON_BOARD.description)
+    composeTestRule
+        .onNodeWithTag("selected Role Type dropdown")
+        .assertTextContains(RoleType.SERVICE_ON_BOARD.description)
     composeTestRule.onNodeWithTag("Assigned User Menu").performClick()
-      val user1_tag = user1.firstname  + " " + user1.lastname
+    val user1_tag = user1.firstname + " " + user1.lastname
     composeTestRule.onNodeWithText(user1_tag).performClick()
     composeTestRule.onNodeWithTag("selected Assigned User dropdown").assertTextContains(user1_tag)
-      composeTestRule.onNodeWithTag("Add Role Button").performClick()
-      composeTestRule.onNodeWithText(user1_tag).assertExists()
+    composeTestRule.onNodeWithTag("Add Role Button").performClick()
+    composeTestRule.onNodeWithText(user1_tag).assertExists()
   }
 
-    @Test
-    fun canAssignUser() {
-        composeTestRule
-            .onNodeWithTag("Flight Lazy Column")
-            .performScrollToNode(hasTestTag("overview:Crew Menu"))
-        composeTestRule.onAllNodesWithTag("overview:Crew Menu")[0].performClick()
-        val user1_tag = user1.firstname  + " " + user1.lastname
-    }
+  @Test
+  fun canAssignUser() {
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("overview:Crew Menu"))
+    composeTestRule.onAllNodesWithTag("overview:Crew Menu")[0].performClick()
+    val user1_tag = user1.firstname + " " + user1.lastname
+  }
 
   @Test
   fun addAVehicleWorksCorrectly() {

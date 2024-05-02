@@ -20,13 +20,13 @@ import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
+import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Date
 
 /** ViewModel for the user */
 class FlightsViewModel(
@@ -49,8 +49,11 @@ class FlightsViewModel(
     }
   }
 
-    private val date = MutableStateFlow<Date?>(null)
-    private val timeSlot = MutableStateFlow<TimeSlot?>(null)
+  var date: LocalDate? = null
+    private set
+
+  var timeSlot: TimeSlot? = null
+    private set
 
   private val _currentFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
   private val _availableBalloons: MutableStateFlow<List<Balloon>> = MutableStateFlow(emptyList())
@@ -75,21 +78,21 @@ class FlightsViewModel(
     refreshAvailableBaskets()
     refreshCurrentFlightTypes()
     refreshAvailableVehicles()
-      refreshAvailableUsers()
+    refreshAvailableUsers()
   }
 
-    private fun refreshFilteredByDateAndTimeSlot() {
-        refreshAvailableBalloons()
-        refreshAvailableBaskets()
-        refreshAvailableVehicles()
-        refreshAvailableUsers()
-    }
+  private fun refreshFilteredByDateAndTimeSlot() {
+    refreshAvailableBalloons()
+    refreshAvailableBaskets()
+    refreshAvailableVehicles()
+    refreshAvailableUsers()
+  }
 
-    fun setDateAndTimeSlot(date: Date, timeSlot: TimeSlot) {
-        this.date.value = date
-        this.timeSlot.value = timeSlot
-        refreshFilteredByDateAndTimeSlot()
-    }
+  fun setDateAndTimeSlot(date: LocalDate, timeSlot: TimeSlot) {
+    this.date = date
+    this.timeSlot = timeSlot
+    refreshFilteredByDateAndTimeSlot()
+  }
 
   fun refreshUserAndFlights() =
       viewModelScope.launch {
@@ -105,49 +108,48 @@ class FlightsViewModel(
         }
       }
 
-    fun hasDateAndTimeSlot(): Boolean {
-        return date.value != null && timeSlot.value != null
-    }
+  fun hasDateAndTimeSlot(): Boolean {
+    return date != null && timeSlot != null
+  }
 
   fun refreshAvailableBalloons() =
       viewModelScope.launch {
-          if (hasDateAndTimeSlot()) {
-              //TODO: use filtered query
-              _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
-          } else {
-              _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
-          }
+        if (hasDateAndTimeSlot()) {
+          // TODO: use filtered query
+          _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
+        } else {
+          _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
+        }
       }
 
   fun refreshAvailableUsers() =
       viewModelScope.launch {
-          if (hasDateAndTimeSlot()) {
-              //TODO: use filtered query
-              _availableUsers.value = repository.userTable.getAll(onError = { onError(it) })
-          } else {
-              _availableUsers.value = repository.userTable.getAll(onError = { onError(it) })
-          }
-
+        if (hasDateAndTimeSlot()) {
+          // TODO: use filtered query
+          _availableUsers.value = repository.userTable.getAll(onError = { onError(it) })
+        } else {
+          _availableUsers.value = repository.userTable.getAll(onError = { onError(it) })
+        }
       }
 
   fun refreshAvailableVehicles() =
       viewModelScope.launch {
-          if (hasDateAndTimeSlot()) {
-              //TODO: use filtered query
-              _availableVehicles.value = repository.vehicleTable.getAll(onError = { onError(it) })
-          } else {
-              _availableVehicles.value = repository.vehicleTable.getAll(onError = { onError(it) })
-          }
+        if (hasDateAndTimeSlot()) {
+          // TODO: use filtered query
+          _availableVehicles.value = repository.vehicleTable.getAll(onError = { onError(it) })
+        } else {
+          _availableVehicles.value = repository.vehicleTable.getAll(onError = { onError(it) })
+        }
       }
 
   fun refreshAvailableBaskets() =
       viewModelScope.launch {
-          if (hasDateAndTimeSlot()) {
-              //TODO: use filtered query
-              _availableBaskets.value = repository.basketTable.getAll(onError = { onError(it) })
-          } else {
-              _availableBaskets.value = repository.basketTable.getAll(onError = { onError(it) })
-          }
+        if (hasDateAndTimeSlot()) {
+          // TODO: use filtered query
+          _availableBaskets.value = repository.basketTable.getAll(onError = { onError(it) })
+        } else {
+          _availableBaskets.value = repository.basketTable.getAll(onError = { onError(it) })
+        }
       }
 
   fun refreshCurrentFlightTypes() =

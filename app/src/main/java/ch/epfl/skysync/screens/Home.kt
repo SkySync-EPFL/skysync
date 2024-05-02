@@ -44,6 +44,7 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
+import ch.epfl.skysync.viewmodel.FlightsViewModel
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -130,7 +131,7 @@ fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
 // Scaffold wrapper for the Home Screen
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(navController: NavHostController, viewModel: FlightsOverviewViewModel) {
+fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
   val currentFlights by viewModel.currentFlights.collectAsStateWithLifecycle()
   Scaffold(
       modifier = Modifier.fillMaxSize(),

@@ -21,5 +21,4 @@ interface User {
   fun displayString(): String {
     return "$firstname $lastname"
   }
-
 }
