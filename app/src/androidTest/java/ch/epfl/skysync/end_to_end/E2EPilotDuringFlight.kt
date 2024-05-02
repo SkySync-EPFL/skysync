@@ -2,14 +2,13 @@ package ch.epfl.skysync.end_to_end
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
@@ -103,11 +102,10 @@ class E2EPilotDuringFlight {
       // Waits for the UI to become idle
       composeTestRule.waitForIdle()
 
-      // Scrolls to the group chat and clicks on it
-      composeTestRule
-          .onNodeWithTag("GroupChatBody")
-          .performScrollToNode(hasTestTag("GroupCard$index"))
-      composeTestRule.onNodeWithTag("GroupCard$index").assertIsDisplayed()
+      // clicks on group chat
+      composeTestRule.waitUntil(5000) {
+        composeTestRule.onAllNodesWithTag("GroupCard$index").fetchSemanticsNodes().isNotEmpty()
+      }
       composeTestRule.onNodeWithTag("GroupCard$index").performClick()
 
       // Inputs and sends a message
