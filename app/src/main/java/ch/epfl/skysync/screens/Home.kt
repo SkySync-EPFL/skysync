@@ -1,7 +1,6 @@
 package ch.epfl.skysync.screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,7 +44,7 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
-import ch.epfl.skysync.viewmodel.FlightsViewModel
+import ch.epfl.skysync.viewmodel.FlightsOverviewViewModel
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -132,7 +131,7 @@ fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
 // Scaffold wrapper for the Home Screen
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
+fun HomeScreen(navController: NavHostController, viewModel: FlightsOverviewViewModel) {
   val currentFlights by viewModel.currentFlights.collectAsStateWithLifecycle()
   Scaffold(
       modifier = Modifier.fillMaxSize(),
@@ -149,10 +148,6 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
     UpcomingFlights(currentFlights) { selectedFlight ->
-      // Here is where you'd navigate to a new screen. For now, just log a message.
-      val some = viewModel
-      Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
-
       navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
       // Example navigation call: navController.navigate("FlightDetails.id")
     }
