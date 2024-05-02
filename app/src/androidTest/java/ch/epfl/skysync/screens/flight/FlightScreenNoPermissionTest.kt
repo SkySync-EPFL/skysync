@@ -7,23 +7,40 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
+import ch.epfl.skysync.Repository
+import ch.epfl.skysync.database.DatabaseSetup
+import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.screens.FlightScreen
+import ch.epfl.skysync.viewmodel.LocationViewModel
 import ch.epfl.skysync.viewmodel.TimerViewModel
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class FlightScreenNoPermissionTest {
   @get:Rule val composeTestRule = createComposeRule()
 
+  @Before
+  fun setUpNavHost() {
+    val dbs = DatabaseSetup()
+    val db = FirestoreDatabase(useEmulator = true)
+    val repository = Repository(db)
+    composeTestRule.setContent {
+      val locationViewModel = LocationViewModel.createViewModel(repository)
+      val navController = rememberNavController()
+      val uid = dbs.pilot1.id
+      FlightScreen(
+          navController = navController,
+          TimerViewModel.createViewModel(),
+          locationViewModel = locationViewModel,
+          uid)
+    }
+  }
+
   @Test
   fun flightScreen_PermissionRequested_AndDenied() {
 
     val uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-
-    composeTestRule.setContent {
-      val navController = rememberNavController()
-      FlightScreen(navController, TimerViewModel.createViewModel())
-    }
 
     val denyButton = uiDevice.findObject(UiSelector().text("Don’t allow"))
     if (denyButton.exists() && denyButton.isEnabled) {

@@ -35,6 +35,7 @@ import ch.epfl.skysync.screens.confirmationScreen
 import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
+import ch.epfl.skysync.viewmodel.LocationViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
 import ch.epfl.skysync.viewmodel.TimerViewModel
 
@@ -56,7 +57,10 @@ fun NavGraphBuilder.homeGraph(
           ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
       ChatScreen(navController, chatViewModel)
     }
-    composable(Route.FLIGHT) { FlightScreen(navController, timer!!) }
+    composable(Route.FLIGHT) {
+      val locationViewModel = LocationViewModel.createViewModel(repository)
+      FlightScreen(navController, timer!!, locationViewModel, uid!!)
+    }
     composable(Route.HOME) { entry ->
 
       // get the MessageListenerSharedViewModel here so that it gets
