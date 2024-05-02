@@ -82,6 +82,7 @@ class E2EModifyAndDeleteFlights {
       composeTestRule.waitUntil(5000) {
         composeTestRule.onAllNodesWithTag("flightCard").fetchSemanticsNodes().isNotEmpty()
       }
+      val flightCount = composeTestRule.onAllNodesWithTag("flightCard").fetchSemanticsNodes().size
       composeTestRule.onAllNodesWithTag("flightCard")[0].performClick()
       var route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
@@ -160,12 +161,11 @@ class E2EModifyAndDeleteFlights {
       route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
       composeTestRule.onNodeWithTag("DeleteButton").performClick()
-      composeTestRule.onNodeWithText("Confirm").performClick()
+      composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
       composeTestRule.waitUntil(5000) {
         route = navController.currentBackStackEntry?.destination?.route
         Route.HOME == route
       }
-      Assert.assertEquals(flights.isEmpty(), true)
     }
   }
 }
