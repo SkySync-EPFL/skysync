@@ -30,12 +30,14 @@ import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.LocationViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
+import ch.epfl.skysync.viewmodel.TimerViewModel
 
 /** Graph of the main screens of the app */
 fun NavGraphBuilder.homeGraph(
     repository: Repository,
     navController: NavHostController,
-    uid: String?
+    uid: String?,
+    timer: TimerViewModel? = null
 ) {
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
     personalCalendar(repository, navController, uid)
@@ -50,7 +52,7 @@ fun NavGraphBuilder.homeGraph(
     }
     composable(Route.FLIGHT) {
       val locationViewModel = LocationViewModel.createViewModel(repository)
-      FlightScreen(navController, locationViewModel, uid!!)
+      FlightScreen(navController,timer!!, locationViewModel, uid!!)
     }
     composable(Route.HOME) { entry ->
 
@@ -64,7 +66,7 @@ fun NavGraphBuilder.homeGraph(
         onMessageUpdate(group, update)
       }
 
-      val flightsViewModel = FlightsViewModel.createViewModel(repository)
+      val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
       flightsViewModel.refresh()
       HomeScreen(navController, flightsViewModel)
     }
@@ -73,12 +75,12 @@ fun NavGraphBuilder.homeGraph(
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          val flightsViewModel = FlightsViewModel.createViewModel(repository)
+          val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
           FlightDetailScreen(
               navController = navController, flightId = flightId, viewModel = flightsViewModel)
         }
     composable(Route.ADD_FLIGHT) {
-      val flightsViewModel = FlightsViewModel.createViewModel(repository)
+      val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
       AddFlightScreen(navController, flightsViewModel)
     }
     composable(
@@ -86,7 +88,7 @@ fun NavGraphBuilder.homeGraph(
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          val flightsViewModel = FlightsViewModel.createViewModel(repository)
+          val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
           confirmationScreen(navController, flightId, flightsViewModel)
         }
 
@@ -95,7 +97,7 @@ fun NavGraphBuilder.homeGraph(
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          val flightsViewModel = FlightsViewModel.createViewModel(repository)
+          val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
           ModifyFlightScreen(navController, flightsViewModel, flightId)
         }
     composable(Route.ADD_USER) { AddUserScreen(navController = navController) }

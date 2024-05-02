@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -45,6 +46,10 @@ class AvailabiltyCalendarTest {
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(repository, navController, dbs.admin1.id)
       }
+    }
+    composeTestRule.waitUntil {
+      val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
+      nodes.fetchSemanticsNodes().isNotEmpty()
     }
     composeTestRule.onNodeWithText("Calendar").performClick()
   }

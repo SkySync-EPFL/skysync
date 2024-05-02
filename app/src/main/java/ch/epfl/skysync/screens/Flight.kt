@@ -31,12 +31,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.Timer
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.TimerViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -61,13 +63,17 @@ import com.google.maps.android.compose.rememberMarkerState
  */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun FlightScreen(
-    navController: NavHostController,
-    locationViewModel: LocationViewModel,
-    uid: String
-) {
+fun FlightScreen(navController: 
+    NavHostController, 
+    timer: TimerViewModel, 
+    locationViewModel: LocationViewModel, 
+    uid: String) {
   // Access to the application context.
   val context = LocalContext.current
+
+  val currentTime by timer.counter.collectAsStateWithLifecycle()
+  val flightIsStarted by timer.isRunning.collectAsStateWithLifecycle()
+
   // Manages the state of location permissions.
   val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
   // Provides access to the Fused Location Provider API.
@@ -158,7 +164,14 @@ fun FlightScreen(
               modifier =
                   Modifier.fillMaxSize().padding(start = 32.dp, bottom = 88.dp, top = 100.dp),
               contentAlignment = Alignment.BottomStart) {
-                Timer(Modifier.align(Alignment.TopEnd).testTag("Timer"))
+                Timer(
+                    Modifier.align(Alignment.TopEnd).testTag("Timer"),
+                    currentTimer = currentTime,
+                    isRunning = flightIsStarted,
+                    onStart = { timer.start() },
+                    onStop = { timer.stop() },
+                )
+
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()) {
@@ -236,10 +249,10 @@ fun FlightScreen(
 @Composable
 @Preview
 fun FlightScreenPreview() {
-    val navController = rememberNavController()
+  val navController = rememberNavController()
     val db: FirestoreDatabase = FirestoreDatabase()
     val repository: Repository = Repository(db)
     val locationViewModel =
         LocationViewModel.createViewModel(repository)
-    FlightScreen(navController = navController, locationViewModel = locationViewModel, uid)
-}*/
+  FlightScreen(navController = navController, timer = TimerViewModel(), locationViewModel = locationViewModel, uid)
+}

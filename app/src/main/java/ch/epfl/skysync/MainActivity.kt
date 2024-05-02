@@ -14,6 +14,7 @@ import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.MainGraph
 import ch.epfl.skysync.ui.theme.SkySyncTheme
+import ch.epfl.skysync.viewmodel.TimerViewModel
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
@@ -48,11 +49,14 @@ class MainActivity : ComponentActivity() {
       SkySyncTheme {
         val navController = rememberNavController()
         Scaffold(snackbarHost = { GlobalSnackbarHost() }) {
+          val timerVm = TimerViewModel.createViewModel() // is shared between all screens
           MainGraph(
               repository = repository,
               navHostController = navController,
               signInLauncher = signInLauncher,
-              uid = user.value?.uid)
+              uid = user.value?.uid,
+              timer = timerVm,
+          )
         }
       }
     }
