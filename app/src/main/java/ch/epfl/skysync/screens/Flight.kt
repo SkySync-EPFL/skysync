@@ -32,7 +32,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.components.Timer
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.navigation.BottomBar
@@ -193,11 +192,11 @@ fun FlightScreen(
         }
       },
       bottomBar = { BottomBar(navController) }) { padding ->
-        if (locationPermission.status.isGranted && userLocation == defaultLocation) {
+        /*if (locationPermission.status.isGranted && userLocation == defaultLocation) {
           LoadingComponent(isLoading = true, onRefresh = {}, content = {})
-        }
+        }*/
         // Renders the Google Map or a permission request message based on the permission status.
-        if (locationPermission.status.isGranted && userLocation != defaultLocation) {
+        if (locationPermission.status.isGranted) {
           GoogleMap(
               modifier = Modifier.fillMaxSize().padding(padding).testTag("Map"),
               cameraPositionState = cameraPositionState) {
