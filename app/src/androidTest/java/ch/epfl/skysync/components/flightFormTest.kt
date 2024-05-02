@@ -2,7 +2,6 @@ package ch.epfl.skysync.components
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasTestTag
@@ -270,9 +269,7 @@ class FlightFormTest {
     composeTestRule.onNodeWithText(user1_tag).performClick()
     composeTestRule.onNodeWithTag("selected Assigned User dropdown").assertTextContains(user1_tag)
     composeTestRule.onNodeWithTag("Add Role Button").performClick()
-      composeTestRule
-          .onNodeWithTag("Flight Lazy Column")
-          .performScrollToNode(hasText(user1_tag))
+    composeTestRule.onNodeWithTag("Flight Lazy Column").performScrollToNode(hasText(user1_tag))
     composeTestRule.onNodeWithText(user1_tag).assertIsDisplayed()
   }
 
@@ -284,9 +281,7 @@ class FlightFormTest {
     composeTestRule.onAllNodesWithTag("overview:Crew Menu")[0].performClick()
     val user1_tag = user1.firstname + " " + user1.lastname
     composeTestRule.onNodeWithText(user1_tag).performClick()
-      composeTestRule
-          .onNodeWithText(user1_tag)
-          .assertIsDisplayed()
+    composeTestRule.onNodeWithText(user1_tag).assertIsDisplayed()
   }
 
   @Test
