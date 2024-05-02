@@ -35,6 +35,7 @@ class HomeNavigationTest {
         homeGraph(repository, navController, dbs.admin1.id)
       }
     }
+    composeTestRule.onNodeWithText("SwipeRefreshLayout").assertDoesNotExist()
   }
 
   @Test
