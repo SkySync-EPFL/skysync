@@ -1,6 +1,7 @@
 package ch.epfl.skysync.end_to_end
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -79,6 +80,8 @@ class E2EModifyAndDeleteFlights {
   fun modifyAndDeleteFlight() {
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
+        composeTestRule.waitUntil(5000){
+            composeTestRule.onAllNodesWithTag("flightCard").fetchSemanticsNodes().isNotEmpty()}
       composeTestRule.onAllNodesWithTag("flightCard")[0].performClick()
       var route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
@@ -86,6 +89,8 @@ class E2EModifyAndDeleteFlights {
       route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.MODIFY_FLIGHT + "/{Flight ID}", route)
       viewModelAdmin.refreshUserAndFlights().join()
+        composeTestRule.waitUntil(5000){
+            composeTestRule.onAllNodesWithTag("Flight Lazy Column").fetchSemanticsNodes().isNotEmpty()}
       composeTestRule.onNodeWithTag("Flight Lazy Column").assertExists()
 
       composeTestRule
@@ -147,13 +152,16 @@ class E2EModifyAndDeleteFlights {
       flightIsCreated = flights.any { it.nPassengers == 11 }
       Assert.assertEquals(true, flightIsCreated)
 
-      composeTestRule.waitForIdle()
+        composeTestRule.waitUntil(5000){
+            composeTestRule.onAllNodesWithTag("flightCard").fetchSemanticsNodes().isNotEmpty()}
       composeTestRule.onNodeWithTag("flightCard").performClick()
       route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
       composeTestRule.onNodeWithTag("DeleteButton").performClick()
-      route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.HOME, route)
+        composeTestRule.onNodeWithText("Confirm").performClick()
+        composeTestRule.waitUntil(5000){
+            route = navController.currentBackStackEntry?.destination?.route
+            Route.HOME== route}
       Assert.assertEquals(flights.isEmpty(), true)
     }
   }

@@ -48,7 +48,7 @@ class E2EPilotDuringFlight {
     composeTestRule.setContent {
       messageListenerSharedViewModel = MessageListenerSharedViewModel.createViewModel()
       chatViewModel =
-          ChatViewModel.createViewModel(dbs.admin2.id, messageListenerSharedViewModel, repository)
+          ChatViewModel.createViewModel(dbs.pilot1.id, messageListenerSharedViewModel, repository)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       val t = TimerViewModel.createViewModel()
