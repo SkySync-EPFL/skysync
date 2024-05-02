@@ -1,11 +1,16 @@
 package ch.epfl.skysync.end_to_end
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
@@ -73,59 +78,82 @@ class E2EModifyAndDeleteFlights {
   @Test
   fun modifyAndDeleteFlight() {
     runTest {
-      // Refreshes user and flights data asynchronously
       viewModelAdmin.refreshUserAndFlights().join()
-
-      // Clicks on a flight card to view details
-      composeTestRule.onNodeWithTag("flightCard").performClick()
+      composeTestRule.onAllNodesWithTag("flightCard")[0].performClick()
       var route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
-
-      // Clicks on the "EditButton" to modify the flight
       composeTestRule.onNodeWithTag("EditButton").performClick()
       route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.MODIFY_FLIGHT + "/{Flight ID}", route)
-
-      // Waits for the flight details to load
-      composeTestRule.waitForIdle()
-      Thread.sleep(2000) // Optional sleep if needed
-
-      // Asserts that the "Flight is loading..." text disappears and "Flight Lazy Column" appears
-      composeTestRule.onNodeWithText("Flight is loading...").assertDoesNotExist()
+      viewModelAdmin.refreshUserAndFlights().join()
       composeTestRule.onNodeWithTag("Flight Lazy Column").assertExists()
 
-      // Modifies flight details such as number of passengers, date, flight type, vehicle, time
-      // slot, balloon, and basket
-      // Similar actions as in the "addFlightAsAdmin" test
+      composeTestRule
+          .onNodeWithTag("Flight Lazy Column")
+          .performScrollToNode(hasTestTag("Number of passengers"))
+      composeTestRule.onNodeWithTag("Number of passengers").performClick()
+      composeTestRule.onNodeWithTag("Number of passengers").performTextClearance()
+      composeTestRule.onNodeWithTag("Number of passengers").performTextInput("11")
 
-      // Clicks on the "Modify Flight" button to confirm flight modification
+      // Clicks on the "Date Field" and selects "OK" from the dialog
+
+      composeTestRule
+          .onNodeWithTag("Flight Lazy Column")
+          .performScrollToNode(hasTestTag("Date Field"))
+      composeTestRule.onNodeWithTag("Date Field").performClick()
+      composeTestRule.onNodeWithText("OK").performClick()
+
+      // Performs similar actions for selecting flight type, vehicle, time slot, balloon, and basket
+      composeTestRule
+          .onNodeWithTag("Flight Lazy Column")
+          .performScrollToNode(hasTestTag("Flight Type Menu"))
+      composeTestRule.onNodeWithTag("Flight Type Menu").performClick()
+      composeTestRule.waitForIdle()
+      composeTestRule.onNodeWithTag("Flight Type 1").performClick()
+
+      composeTestRule
+          .onNodeWithTag("Flight Lazy Column")
+          .performScrollToNode(hasTestTag("Vehicle 0 Menu"))
+      composeTestRule.onNodeWithTag("Vehicle 0 Menu").performClick()
+      composeTestRule.onNodeWithTag("Vehicle 0 1").performClick()
+
+      composeTestRule
+          .onNodeWithTag("Flight Lazy Column")
+          .performScrollToNode(hasTestTag("Time Slot Menu"))
+      composeTestRule.onNodeWithTag("Time Slot Menu").performClick()
+      composeTestRule.onNodeWithTag("Time Slot 1").performClick()
+
+      composeTestRule
+          .onNodeWithTag("Flight Lazy Column")
+          .performScrollToNode(hasTestTag("Balloon Menu"))
+      composeTestRule.onNodeWithTag("Balloon Menu").performClick()
+      composeTestRule.onNodeWithTag("Balloon 1").performClick()
+
+      composeTestRule
+          .onNodeWithTag("Flight Lazy Column")
+          .performScrollToNode(hasTestTag("Basket Menu"))
+      composeTestRule.onNodeWithTag("Basket Menu").performClick()
+      composeTestRule.onNodeWithTag("Basket 1").performClick()
+
+      // Clicks on the "Add Flight" button to confirm flight addition
       val title1 = "Modify Flight"
       composeTestRule.onNodeWithTag("$title1 Button").performClick()
 
-      // Checks if navigation goes back to the home route after modifying flight
+      // Checks if navigation goes back to the home route after adding flight
       route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.HOME, route)
-
-      // Verifies if the flight with 11 passengers is modified successfully
       var flightIsCreated = false
       val flights = repository.flightTable.getAll(onError = { Assert.assertNotNull(it) })
       flightIsCreated = flights.any { it.nPassengers == 11 }
       Assert.assertEquals(true, flightIsCreated)
 
-      // Clicks on a flight card to view details again
       composeTestRule.waitForIdle()
       composeTestRule.onNodeWithTag("flightCard").performClick()
       route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
-
-      // Deletes the flight by clicking on the "DeleteButton"
       composeTestRule.onNodeWithTag("DeleteButton").performClick()
-
-      // Checks if navigation goes back to the home route after deleting flight
       route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.HOME, route)
-
-      // Asserts that the flights list is empty after deletion
       Assert.assertEquals(flights.isEmpty(), true)
     }
   }
