@@ -173,7 +173,7 @@ class DatabaseSetup {
           basket = basket3,
           date = date1,
           timeSlot = TimeSlot.PM,
-          vehicles = listOf(vehicle1, vehicle2, vehicle3),
+          vehicles = listOf(vehicle1, vehicle2),
           id = UNSET_ID)
 
   var messageGroup1 = MessageGroup(userIds = setOf(admin2.id, pilot1.id, crew1.id))
@@ -325,7 +325,7 @@ class DatabaseSetup {
             flightType = flightType1,
             balloon = balloon1,
             basket = basket3,
-            vehicles = listOf(vehicle1, vehicle2, vehicle3),
+            vehicles = listOf(vehicle1, vehicle2),
         )
 
     // now that the IDs are set, add the flights/messages
