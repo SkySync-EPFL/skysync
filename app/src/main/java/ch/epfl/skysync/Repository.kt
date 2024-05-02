@@ -6,6 +6,7 @@ import ch.epfl.skysync.database.tables.BalloonTable
 import ch.epfl.skysync.database.tables.BasketTable
 import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.database.tables.FlightTypeTable
+import ch.epfl.skysync.database.tables.LocationTable
 import ch.epfl.skysync.database.tables.MessageGroupTable
 import ch.epfl.skysync.database.tables.MessageTable
 import ch.epfl.skysync.database.tables.UserTable
@@ -22,4 +23,5 @@ class Repository(db: FirestoreDatabase) {
   val vehicleTable: VehicleTable = VehicleTable(db)
   val messageGroupTable: MessageGroupTable = MessageGroupTable(db)
   val messageTable: MessageTable = MessageTable(db)
+  val locationTable: LocationTable = LocationTable(db)
 }
