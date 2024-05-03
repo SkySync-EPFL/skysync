@@ -61,8 +61,9 @@ class FlightScreenPermissionTest {
 
   @After
   fun tearDown() {
-      val it = android.Manifest.permission.ACCESS_FINE_LOCATION
-      InstrumentationRegistry.getInstrumentation().uiAutomation.
-      executeShellCommand("pm revoke ${getTargetContext().packageName} $it")
+    val it = android.Manifest.permission.ACCESS_FINE_LOCATION
+    InstrumentationRegistry.getInstrumentation()
+        .uiAutomation
+        .executeShellCommand("pm revoke ${getTargetContext().packageName} $it")
   }
 }

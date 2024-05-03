@@ -125,10 +125,12 @@ class E2EPilotDuringFlight {
       composeTestRule.onNodeWithTag("Stop Button").performClick()
     }
   }
-    @After
-    fun tearDown() {
-      val it = android.Manifest.permission.ACCESS_FINE_LOCATION
-      InstrumentationRegistry.getInstrumentation().uiAutomation.
-      executeShellCommand("pm revoke ${getTargetContext().packageName} $it")
-    }
+
+  @After
+  fun tearDown() {
+    val it = android.Manifest.permission.ACCESS_FINE_LOCATION
+    InstrumentationRegistry.getInstrumentation()
+        .uiAutomation
+        .executeShellCommand("pm revoke ${getTargetContext().packageName} $it")
+  }
 }
