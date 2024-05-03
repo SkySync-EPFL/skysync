@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.rememberNavController
+import androidx.test.InstrumentationRegistry.getTargetContext
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import ch.epfl.skysync.Repository
@@ -60,9 +61,8 @@ class FlightScreenPermissionTest {
 
   @After
   fun tearDown() {
-    InstrumentationRegistry.getInstrumentation()
-        .uiAutomation
-        .executeShellCommand(
-            "pm revoke ${androidx.test.InstrumentationRegistry.getTargetContext().packageName} android.permission.WRITE_EXTERNAL_STORAGE")
+      val it = android.Manifest.permission.ACCESS_FINE_LOCATION
+      InstrumentationRegistry.getInstrumentation().uiAutomation.
+      executeShellCommand("pm revoke ${getTargetContext().packageName} $it")
   }
 }

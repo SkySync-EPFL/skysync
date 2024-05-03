@@ -125,12 +125,10 @@ class E2EPilotDuringFlight {
       composeTestRule.onNodeWithTag("Stop Button").performClick()
     }
   }
-
-  @After
-  fun tearDown() {
-    InstrumentationRegistry.getInstrumentation()
-        .uiAutomation
-        .executeShellCommand(
-            "pm revoke ${getTargetContext().packageName} android.permission.WRITE_EXTERNAL_STORAGE")
-  }
+    @After
+    fun tearDown() {
+      val it = android.Manifest.permission.ACCESS_FINE_LOCATION
+      InstrumentationRegistry.getInstrumentation().uiAutomation.
+      executeShellCommand("pm revoke ${getTargetContext().packageName} $it")
+    }
 }
