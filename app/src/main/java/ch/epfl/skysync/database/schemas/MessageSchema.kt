@@ -14,6 +14,7 @@ val UNSET_USER =
         id = UNSET_ID,
         firstname = "",
         lastname = "",
+        email = "",
         availabilities = AvailabilityCalendar(),
         assignedFlights = FlightGroupCalendar())
 

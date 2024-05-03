@@ -2,12 +2,12 @@ package ch.epfl.skysync.components
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -16,12 +16,16 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.components.forms.FlightForm
+import ch.epfl.skysync.models.calendar.AvailabilityCalendar
+import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.user.Crew
+import ch.epfl.skysync.models.user.User
 import io.mockk.mockk
 import org.junit.Before
 import org.junit.Rule
@@ -32,6 +36,9 @@ class FlightFormTest {
   @get:Rule val composeTestRule = createComposeRule()
   private var navController: TestNavHostController = mockk("navController", relaxed = true)
   private val title: String = "Modify Flight"
+
+  lateinit var user1: User
+  lateinit var user2: User
 
   @Before
   fun setup() {
@@ -52,6 +59,33 @@ class FlightFormTest {
               Basket("Basket 1", true),
               Basket("Basket 2", false),
           )
+
+      val userFirstname1 = "First1"
+      val userFirstname2 = "First2"
+
+      val userLastname1 = "Last1"
+      val userLastname2 = "Last2"
+
+      user1 =
+          Crew(
+              id = "User 0",
+              firstname = userFirstname1,
+              lastname = userLastname1,
+              email = "user@gmail.com",
+              availabilities = AvailabilityCalendar(),
+              assignedFlights = FlightGroupCalendar(),
+          )
+      user2 =
+          Crew(
+              id = "User 1",
+              firstname = userFirstname2,
+              lastname = userLastname2,
+              email = "user@gmail.com",
+              availabilities = AvailabilityCalendar(),
+              assignedFlights = FlightGroupCalendar(),
+          )
+
+      val availableUsers = listOf(user1, user2)
       val allRoleTypes = RoleType.entries
       navController = TestNavHostController(LocalContext.current)
       FlightForm(
@@ -61,10 +95,11 @@ class FlightFormTest {
           title = title,
           allFlightTypes = allFlights,
           allRoleTypes = allRoleTypes,
-          allVehicles = allVehicles,
-          allBalloons = allBalloons,
-          allBaskets = allBaskets,
-          flightAction = { _ -> })
+          availableVehicles = allVehicles,
+          availableBalloons = allBalloons,
+          availableBaskets = allBaskets,
+          availableUsers = availableUsers,
+          onSaveFlight = { _ -> })
     }
   }
 
@@ -154,18 +189,17 @@ class FlightFormTest {
   }
 
   @Test
-  fun fondueFieldIsDisplayedCorrectly() {
-    composeTestRule.onNodeWithText(RoleType.MAITRE_FONDUE.name).assertIsNotDisplayed()
+  fun crewFieldIsDisplayedCorrectly() {
 
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
         .performScrollToNode(hasTestTag("Flight Type Menu"))
     composeTestRule.onNodeWithTag("Flight Type Menu").performClick()
-    composeTestRule.onNodeWithText("Fondue").performClick()
+    composeTestRule.onNodeWithText("Discovery").performClick()
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasText(RoleType.MAITRE_FONDUE.name))
-    composeTestRule.onNodeWithText(RoleType.MAITRE_FONDUE.name).assertIsDisplayed()
+        .performScrollToNode(hasText(RoleType.CREW.description))
+    composeTestRule.onNodeWithText(RoleType.CREW.description).assertIsDisplayed()
   }
 
   @Test
@@ -228,13 +262,28 @@ class FlightFormTest {
         .performScrollToNode(hasTestTag("Add Crew Button"))
     composeTestRule.onNodeWithTag("Add Crew Button").performClick()
     composeTestRule.onNodeWithTag("Role Type Menu").performClick()
-    composeTestRule.onNodeWithText(RoleType.SERVICE_ON_BOARD.name).performClick()
-    composeTestRule.onNodeWithTag("User Dialog Field").performClick()
-    composeTestRule.onNodeWithTag("User Dialog Field").performTextInput("test")
-    composeTestRule.onNodeWithTag("User Dialog Field").assertTextContains("test")
-    composeTestRule.onNode(hasText("Add")).performClick()
-    composeTestRule.onNodeWithTag("Flight Lazy Column").performScrollToNode(hasTestTag(" User 2"))
-    composeTestRule.onNodeWithText(RoleType.SERVICE_ON_BOARD.name).assertIsDisplayed()
+    composeTestRule.onNodeWithText(RoleType.SERVICE_ON_BOARD.description).performClick()
+    composeTestRule
+        .onNodeWithTag("selected Role Type dropdown")
+        .assertTextContains(RoleType.SERVICE_ON_BOARD.description)
+    composeTestRule.onNodeWithTag("Assigned User Menu").performClick()
+    val user1_tag = user1.firstname + " " + user1.lastname
+    composeTestRule.onNodeWithText(user1_tag).performClick()
+    composeTestRule.onNodeWithTag("selected Assigned User dropdown").assertTextContains(user1_tag)
+    composeTestRule.onNodeWithTag("Add Role Button").performClick()
+    composeTestRule.onNodeWithTag("Flight Lazy Column").performScrollToNode(hasText(user1_tag))
+    composeTestRule.onNodeWithText(user1_tag).assertIsDisplayed()
+  }
+
+  @Test
+  fun canAssignUser() {
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("overview:Crew Menu"))
+    composeTestRule.onAllNodesWithTag("overview:Crew Menu")[0].performClick()
+    val user1_tag = user1.firstname + " " + user1.lastname
+    composeTestRule.onNodeWithText(user1_tag).performClick()
+    composeTestRule.onNodeWithText(user1_tag).assertIsDisplayed()
   }
 
   @Test

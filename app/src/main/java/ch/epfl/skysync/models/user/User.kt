@@ -8,6 +8,7 @@ interface User {
   val id: String
   val firstname: String
   val lastname: String
+  val email: String
   val availabilities: AvailabilityCalendar
   val assignedFlights: FlightGroupCalendar
   val roleTypes: Set<RoleType>
@@ -16,5 +17,9 @@ interface User {
 
   fun canAssumeRole(roleType: RoleType): Boolean {
     return roleTypes.contains(roleType)
+  }
+
+  fun displayString(): String {
+    return "$firstname $lastname"
   }
 }

@@ -3,7 +3,9 @@ package ch.epfl.skysync.database.tables
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.RoleType
+import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.Filter
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
@@ -65,7 +67,21 @@ class UserTableUnitTest {
     val availabilities = availabilityTable.getAll(onError = { assertNull(it) })
 
     assertTrue(
-        listOf(dbs.availability2, dbs.availability3, dbs.availability4, dbs.availability5)
+        listOf(
+                dbs.availability1Crew1,
+                dbs.availability2Crew1,
+                dbs.availability3Crew1,
+                dbs.availability1Crew2,
+                dbs.availability2Crew2,
+                dbs.availability3Crew2,
+                dbs.availability1Pilot1,
+                dbs.availability2Pilot1,
+                dbs.availability3Pilot1,
+                dbs.availability1Pilot2,
+                dbs.availability2Pilot2,
+                dbs.availability3Pilot2,
+                dbs.availability1Admin1,
+                dbs.availability2Admin1)
             .containsAll(availabilities))
 
     val flightMembers =
@@ -86,5 +102,26 @@ class UserTableUnitTest {
     val flights =
         userTable.retrieveAssignedFlights(flightTable, dbs.pilot1.id, onError = { assertNull(it) })
     assertTrue(flights.contains(dbs.flight1))
+  }
+
+  @Test
+  fun getUsersAvailableOnTest() = runTest {
+    var availableUsers =
+        userTable.getUsersAvailableOn(
+            flightTable = flightTable, dbs.date1, TimeSlot.AM, onError = { assertNull(it) })
+
+    assertEquals(listOf<User>(), availableUsers)
+
+    availableUsers =
+        userTable.getUsersAvailableOn(
+            flightTable = flightTable, dbs.date1, TimeSlot.PM, onError = { assertNull(it) })
+
+    assertEquals(listOf(dbs.crew2), availableUsers)
+
+    availableUsers =
+        userTable.getUsersAvailableOn(
+            flightTable = flightTable, dbs.dateNoFlight, TimeSlot.AM, onError = { assertNull(it) })
+
+    assertEquals(listOf(dbs.pilot2), availableUsers)
   }
 }

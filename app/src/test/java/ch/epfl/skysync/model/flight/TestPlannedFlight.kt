@@ -36,6 +36,7 @@ class TestPlannedFlight {
             id = "1",
             firstname = "Paul",
             lastname = "Panzer",
+            email = "paul.panzer@gmail.com",
             availabilities = AvailabilityCalendar(),
             assignedFlights = FlightGroupCalendar())
 

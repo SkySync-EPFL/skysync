@@ -48,11 +48,11 @@ class CalendarViewModelTest {
     assertEquals(
         AvailabilityStatus.NO,
         availabilityCalendar.getAvailabilityStatus(
-            dbs.availability3.date, dbs.availability3.timeSlot))
+            dbs.availability1Admin1.date, dbs.availability1Admin1.timeSlot))
     assertEquals(
         AvailabilityStatus.OK,
         availabilityCalendar.getAvailabilityStatus(
-            dbs.availability4.date, dbs.availability4.timeSlot))
+            dbs.availability2Admin1.date, dbs.availability2Admin1.timeSlot))
 
     val newDate = LocalDate.of(2024, 8, 11)
 
@@ -62,7 +62,7 @@ class CalendarViewModelTest {
     assertEquals(AvailabilityStatus.OK, status)
 
     // delete an availability using nextAvailabilityStatus
-    status = availabilityCalendar.nextAvailabilityStatus(dbs.availability3.date, TimeSlot.AM)
+    status = availabilityCalendar.nextAvailabilityStatus(dbs.availability1Admin1.date, TimeSlot.AM)
 
     assertEquals(AvailabilityStatus.UNDEFINED, status)
 
@@ -76,6 +76,6 @@ class CalendarViewModelTest {
         AvailabilityStatus.OK, user!!.availabilities.getAvailabilityStatus(newDate, TimeSlot.AM))
     assertEquals(
         AvailabilityStatus.UNDEFINED,
-        user!!.availabilities.getAvailabilityStatus(dbs.availability3.date, TimeSlot.AM))
+        user!!.availabilities.getAvailabilityStatus(dbs.availability1Admin1.date, TimeSlot.AM))
   }
 }

@@ -3,8 +3,6 @@ package ch.epfl.skysync.database.tables
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.database.schemas.FlightMemberSchema
-import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
@@ -31,6 +29,9 @@ class FlightTableUnitTest {
   fun getTest() = runTest {
     val flight = flightTable.get(dbs.flight1.id, onError = { assertNull(it) })
     assertEquals(dbs.flight1, flight)
+
+    var confirmedFlight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) })!!
+    assertEquals(dbs.flight4, confirmedFlight)
   }
 
   @Test
@@ -44,11 +45,12 @@ class FlightTableUnitTest {
 
     assertEquals(updateFlight1, flight)
 
-    var flightMembers = flightMemberTable.getAll(onError = { assertNull(it) })
-
+    val flightMembers =
+        flightMemberTable.getAll(onError = { assertNull(it) }).filter { flightMemberSchema ->
+          flightMemberSchema.flightId == dbs.flight1.id
+        }
     assertEquals(1, flightMembers.size)
-    assertEquals(dbs.flight1.id, flightMembers[0].flightId)
-    assertEquals(dbs.pilot2.id, flightMembers[0].userId)
+    assertEquals(dbs.pilot2.id, flightMembers.find { it.flightId == dbs.flight1.id }?.userId)
   }
 
   @Test
@@ -59,7 +61,9 @@ class FlightTableUnitTest {
 
     val flights = flightTable.getAll(onError = { assertNull(it) })
 
-    assertEquals(listOf<FlightMemberSchema>(), flightMembers)
-    assertEquals(listOf<Flight>(), flights)
+    assertEquals(6, flightMembers.size)
+    assertEquals(
+        listOf(dbs.flight2, dbs.flight3, dbs.flight4).sortedBy { f -> f.id },
+        flights.sortedBy { f -> f.id })
   }
 }
