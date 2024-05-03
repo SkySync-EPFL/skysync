@@ -1,0 +1,47 @@
+name: APK Generation
+on:
+  push:
+    branches:
+      - 'releases/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checking out branch
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Gradle cache
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Grant execute permission for gradlew
+        run: |
+          chmod +x ./gradlew
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2.0.10
+
+      - name: Decode Signing Data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        run: |
+          echo $GITHUB_TOKEN | base64 -di > app/github.properties
+
+      - name: Build Release apk
+        run: |
+          ./gradlew assembleRelease
+      - name: Get release file apk path
+        id: releaseApk
+        run: echo "apkfile=$(find app/build/outputs/apk/release/*.apk)" >> $GITHUB_OUTPUT
+
+      - name: Upload Release Build to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts
+          path: ${{ steps.releaseApk.outputs.apkfile }}
