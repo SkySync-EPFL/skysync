@@ -71,6 +71,7 @@ class FlightFormTest {
               id = "User 0",
               firstname = userFirstname1,
               lastname = userLastname1,
+              email = "user@gmail.com",
               availabilities = AvailabilityCalendar(),
               assignedFlights = FlightGroupCalendar(),
           )
@@ -79,6 +80,7 @@ class FlightFormTest {
               id = "User 1",
               firstname = userFirstname2,
               lastname = userLastname2,
+              email = "user@gmail.com",
               availabilities = AvailabilityCalendar(),
               assignedFlights = FlightGroupCalendar(),
           )
