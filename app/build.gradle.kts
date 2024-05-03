@@ -38,6 +38,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
     }
 
     buildTypes {
@@ -76,6 +77,7 @@ android {
         }
     }
     testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
         packagingOptions {
             jniLibs {
                 useLegacyPackaging = true
@@ -86,7 +88,8 @@ android {
 }
 
 dependencies {
-
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestUtil("androidx.test:orchestrator:1.4.2")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.ui:ui:1.4.0")

@@ -13,8 +13,6 @@ import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
-import androidx.test.InstrumentationRegistry.getTargetContext
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
@@ -25,7 +23,6 @@ import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
 import ch.epfl.skysync.viewmodel.TimerViewModel
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -36,6 +33,7 @@ class E2EPilotDuringFlight {
   @get:Rule
   var permissionRule: GrantPermissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
+
   lateinit var navController: TestNavHostController
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbs = DatabaseSetup()
@@ -106,7 +104,7 @@ class E2EPilotDuringFlight {
       composeTestRule.waitForIdle()
 
       // clicks on group chat
-      composeTestRule.waitUntil(5000) {
+      composeTestRule.waitUntil(2500) {
         composeTestRule.onAllNodesWithTag("GroupCard$index").fetchSemanticsNodes().isNotEmpty()
       }
       composeTestRule.onNodeWithTag("GroupCard$index").performClick()
@@ -124,13 +122,5 @@ class E2EPilotDuringFlight {
       // Stops the timer by clicking on the "Stop Button"
       composeTestRule.onNodeWithTag("Stop Button").performClick()
     }
-  }
-
-  @After
-  fun tearDown() {
-    val it = android.Manifest.permission.ACCESS_FINE_LOCATION
-    InstrumentationRegistry.getInstrumentation()
-        .uiAutomation
-        .executeShellCommand("pm revoke ${getTargetContext().packageName} $it")
   }
 }

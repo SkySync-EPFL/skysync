@@ -8,8 +8,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.rememberNavController
-import androidx.test.InstrumentationRegistry.getTargetContext
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
@@ -17,7 +15,6 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.viewmodel.LocationViewModel
 import ch.epfl.skysync.viewmodel.TimerViewModel
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -57,13 +54,5 @@ class FlightScreenPermissionTest {
     composeTestRule
         .onNodeWithText("X Speed: 0.0 m/s\nY Speed: 0.0 m/s\nAltitude: 0.0 m\nBearing: 0.0 °")
         .assertIsDisplayed()
-  }
-
-  @After
-  fun tearDown() {
-    val it = android.Manifest.permission.ACCESS_FINE_LOCATION
-    InstrumentationRegistry.getInstrumentation()
-        .uiAutomation
-        .executeShellCommand("pm revoke ${getTargetContext().packageName} $it")
   }
 }
