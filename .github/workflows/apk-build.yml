@@ -33,12 +33,13 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2.0.10
 
-      # - name: Decode Signing Data
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      #   run: |
-      #     echo $GITHUB_TOKEN | base64 -di > app/github.properties
+      - name: Load keystore data
+        env:
+          ENCODED_KEYSTORE: ${{ secrets.KEYSTORE_FILE }}
+          ENCODED_PASSWORDS: ${{ secrets.KEYSTORE_PASSWORDS }}
+        run: |
+          echo $ENCODED_KEYSTORE | base64 -di > keystore.jks
+          echo $ENCODED_PASSWORDS | base64 -di > keystore.properties
 
       # Load the google-services.json file that is necessary to launch with the Firebase SDK
       - name: Load Google Service file

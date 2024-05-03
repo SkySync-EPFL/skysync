@@ -26,6 +26,14 @@ jobs:
           submodules: recursive
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis (if we use Sonar Later)
 
+      - name: Load keystore data
+        env:
+          ENCODED_KEYSTORE: ${{ secrets.KEYSTORE_FILE }}
+          ENCODED_PASSWORDS: ${{ secrets.KEYSTORE_PASSWORDS }}
+        run: |
+          echo $ENCODED_KEYSTORE | base64 -di > keystore.jks
+          echo $ENCODED_PASSWORDS | base64 -di > keystore.properties
+
       # Load the google-services.json file that is necessary to launch with the Firebase SDK
       - name: Load Google Service file
         env:
@@ -35,7 +43,7 @@ jobs:
       # Handle secret file
       - name: Load secrets.properties
         env:
-            SECRET_PROPERTIES: ${{ secrets.SECRET_PROPERTIES }}
+          SECRET_PROPERTIES: ${{ secrets.SECRET_PROPERTIES }}
         run: echo $SECRET_PROPERTIES > $GITHUB_WORKSPACE/secrets.properties
 
       # Install the Firebase CLI
