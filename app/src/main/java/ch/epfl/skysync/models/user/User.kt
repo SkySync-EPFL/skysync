@@ -18,4 +18,8 @@ interface User {
   fun canAssumeRole(roleType: RoleType): Boolean {
     return roleTypes.contains(roleType)
   }
+
+  fun displayString(): String {
+    return "$firstname $lastname"
+  }
 }

@@ -73,9 +73,9 @@ fun NavGraphBuilder.homeGraph(
         onMessageUpdate(group, update)
       }
 
-      val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
-      flightsViewModel.refresh()
-      HomeScreen(navController, flightsViewModel)
+      val flightsOverviewViewModel = FlightsViewModel.createViewModel(repository, uid)
+      flightsOverviewViewModel.refresh()
+      HomeScreen(navController, flightsOverviewViewModel)
     }
     composable(
         route = Route.FLIGHT_DETAILS + "/{Flight ID}",
