@@ -37,7 +37,7 @@ jobs:
         env:
           ENCODED_KEYSTORE: ${{ secrets.KEYSTORE_FILE }}
           ENCODED_PASSWORDS: ${{ secrets.KEYSTORE_PASSWORDS }}
-        run:
+        run: |
           echo $ENCODED_KEYSTORE | base64 -di > keystore.jks
           echo $ENCODED_PASSWORDS | base64 -di > keystore.properties
          
