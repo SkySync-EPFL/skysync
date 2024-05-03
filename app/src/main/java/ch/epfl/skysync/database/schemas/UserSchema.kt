@@ -18,6 +18,7 @@ data class UserSchema(
     val userRole: UserRole? = null,
     val firstname: String? = null,
     val lastname: String? = null,
+    val email: String? = null,
     val roleTypes: List<RoleType>? = null,
     val balloonQualification: BalloonQualification? = null,
 ) : Schema<User> {
@@ -28,6 +29,7 @@ data class UserSchema(
               id = id!!,
               firstname = firstname!!,
               lastname = lastname!!,
+              email = email!!,
               availabilities = AvailabilityCalendar(),
               assignedFlights = FlightGroupCalendar(),
               roleTypes = roleTypes!!.toSet(),
@@ -37,6 +39,7 @@ data class UserSchema(
               id = id!!,
               firstname = firstname!!,
               lastname = lastname!!,
+              email = email!!,
               availabilities = AvailabilityCalendar(),
               assignedFlights = FlightGroupCalendar(),
               roleTypes = roleTypes!!.toSet(),
@@ -46,6 +49,7 @@ data class UserSchema(
               id = id!!,
               firstname = firstname!!,
               lastname = lastname!!,
+              email = email!!,
               availabilities = AvailabilityCalendar(),
               assignedFlights = FlightGroupCalendar(),
               roleTypes = roleTypes!!.toSet(),
@@ -69,6 +73,7 @@ data class UserSchema(
           userRole = userRole,
           firstname = model.firstname,
           lastname = model.lastname,
+          email = model.email,
           roleTypes = model.roleTypes.toList(),
           balloonQualification = qualification)
     }

@@ -9,6 +9,7 @@ data class Admin(
     override val id: String = UNSET_ID,
     override val firstname: String,
     override val lastname: String,
+    override val email: String,
     override val availabilities: AvailabilityCalendar,
     override val assignedFlights: FlightGroupCalendar,
     override val roleTypes: Set<RoleType> = setOf(),

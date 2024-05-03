@@ -25,13 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.forms.TitledDropDownMenu
 import ch.epfl.skysync.components.forms.TitledInputTextField
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.BalloonQualification
-import ch.epfl.skysync.models.user.Admin
-import ch.epfl.skysync.models.user.Crew
-import ch.epfl.skysync.models.user.Pilot
-import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.ui.theme.lightOrange
 
 @Composable
@@ -133,6 +127,8 @@ fun AddUserScreen(navController: NavController) {
                         emailError,
                         balloonQualificationError)
                 if (!isError) {
+
+                  /*
                   val user: User
                   when (roleValue) {
                     "Admin" -> {
@@ -161,6 +157,8 @@ fun AddUserScreen(navController: NavController) {
                               availabilities = AvailabilityCalendar())
                     }
                   }
+
+                     */
                   // TODO: Add user to the database
                   navController.popBackStack()
                 }

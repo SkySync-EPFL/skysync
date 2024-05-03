@@ -96,6 +96,7 @@ class CalendarViewModel(
               uid,
               "unknown",
               "unknown",
+              "",
               AvailabilityCalendar(),
               FlightGroupCalendar(),
           )

@@ -1,6 +1,5 @@
 package ch.epfl.skysync.model.user
 
-import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.BalloonQualification
@@ -20,13 +19,13 @@ class TestUsers {
   fun `create Pilot`() {
     val pilot =
         Pilot(
-            "John",
-            "Deer",
-            UNSET_ID,
-            AvailabilityCalendar(),
-            FlightGroupCalendar(),
-            setOf(RoleType.PILOT, RoleType.CREW),
-            BalloonQualification.LARGE)
+            firstname = "John",
+            lastname = "Deer",
+            email = "john.deer@gmail.com",
+            availabilities = AvailabilityCalendar(),
+            assignedFlights = FlightGroupCalendar(),
+            roleTypes = setOf(RoleType.PILOT, RoleType.CREW),
+            qualification = BalloonQualification.LARGE)
 
     val pilotWithRoleType = pilot.addRoleType(RoleType.MAITRE_FONDUE)
     assertEquals(false, pilot.canAssumeRole(RoleType.MAITRE_FONDUE))
@@ -37,11 +36,23 @@ class TestUsers {
 
   @Test
   fun `create Crew`() {
-    val crew = Crew("John", "Deer", UNSET_ID, AvailabilityCalendar(), FlightGroupCalendar())
+    val crew =
+        Crew(
+            firstname = "John",
+            lastname = "Deer",
+            email = "john.deer@gmail.com",
+            availabilities = AvailabilityCalendar(),
+            assignedFlights = FlightGroupCalendar())
   }
 
   @Test
   fun `create Admin`() {
-    val admin = Admin("John", "Deer", UNSET_ID, AvailabilityCalendar(), FlightGroupCalendar())
+    val admin =
+        Admin(
+            firstname = "John",
+            lastname = "Deer",
+            email = "john.deer@gmail.com",
+            availabilities = AvailabilityCalendar(),
+            assignedFlights = FlightGroupCalendar())
   }
 }
