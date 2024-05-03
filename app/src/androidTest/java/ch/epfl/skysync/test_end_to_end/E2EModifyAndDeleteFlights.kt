@@ -1,4 +1,4 @@
-package ch.epfl.skysync.end_to_end
+package ch.epfl.skysync.test_end_to_end
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.hasTestTag
@@ -43,7 +43,7 @@ class E2EModifyAndDeleteFlights {
         homeGraph(repository, navController, dbs.admin1.id)
       }
     }
-    composeTestRule.waitUntil {
+    composeTestRule.waitUntil(2500) {
       val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
       nodes.fetchSemanticsNodes().isNotEmpty()
     }

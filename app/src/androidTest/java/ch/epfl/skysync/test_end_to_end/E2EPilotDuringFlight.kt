@@ -1,4 +1,4 @@
-package ch.epfl.skysync.end_to_end
+package ch.epfl.skysync.test_end_to_end
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
@@ -63,7 +63,7 @@ class E2EPilotDuringFlight {
   }
 
   @Test
-  fun addFlightAsAdmin() {
+  fun useMapAndChatAsPilot() {
     runTest {
       // Refreshes chat and user data asynchronously
       chatViewModel.refresh().join()

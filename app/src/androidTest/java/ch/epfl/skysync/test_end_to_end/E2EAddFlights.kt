@@ -1,4 +1,4 @@
-package ch.epfl.skysync.end_to_end
+package ch.epfl.skysync.test_end_to_end
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.hasTestTag
