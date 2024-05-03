@@ -38,9 +38,9 @@ jobs:
           ENCODED_KEYSTORE: ${{ secrets.KEYSTORE_FILE }}
           ENCODED_PASSWORDS: ${{ secrets.KEYSTORE_PASSWORDS }}
         run: |
-          echo $ENCODED_KEYSTORE
-          echo $ENCODED_KEYSTORE | base64 -di > keystore.jks
           echo $ENCODED_PASSWORDS | base64 -di > keystore.properties
+          echo $ENCODED_KEYSTORE
+         
 
       # Load the google-services.json file that is necessary to launch with the Firebase SDK
       - name: Load Google Service file
