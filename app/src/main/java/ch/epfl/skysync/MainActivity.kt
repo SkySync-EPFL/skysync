@@ -18,21 +18,47 @@ import ch.epfl.skysync.viewmodel.TimerViewModel
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
   private lateinit var signInLauncher: ActivityResultLauncher<Intent>
-  private val user = mutableStateOf<FirebaseUser?>(null)
+  private val userId = mutableStateOf<String?>(null)
   private val db: FirestoreDatabase = FirestoreDatabase()
   private val repository: Repository = Repository(db)
 
+  private fun onError(e: Exception) {
+    // TODO
+  }
+
   private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
     if (result.resultCode == RESULT_OK) {
-      user.value = FirebaseAuth.getInstance().currentUser
-      SnackbarManager.showMessage("Successfully signed in")
-    } else {
-      SnackbarManager.showMessage("Authentication failed")
+      val incomingUser = FirebaseAuth.getInstance().currentUser!!
+      val email = incomingUser.email!!
+
+      runBlocking {
+        val userExists = repository.userTable.get(incomingUser.uid)
+        if (userExists != null) {
+          userId.value = incomingUser.uid
+
+          return@runBlocking
+        }
+
+        val tempUser = repository.tempUserTable.get(email)
+        if (tempUser != null) {
+          repository.userTable.set(
+              incomingUser.uid, tempUser.toUserSchema(incomingUser.uid).toModel())
+          repository.tempUserTable.delete(email)
+          userId.value = incomingUser.uid
+        } else {
+          userId.value = "default-user"
+        }
+      }
     }
+
+    val snackBarText =
+        if (userId.value == "default-user") "Authentication with default Admin user"
+        else "Authentication Successful"
+    SnackbarManager.showMessage(snackBarText)
   }
 
   @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -54,7 +80,7 @@ class MainActivity : ComponentActivity() {
               repository = repository,
               navHostController = navController,
               signInLauncher = signInLauncher,
-              uid = user.value?.uid,
+              uid = userId.value,
               timer = timerVm,
           )
         }

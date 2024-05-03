@@ -115,6 +115,7 @@ fun NavGraphBuilder.homeGraph(
                   "testID",
                   "John",
                   "Doe",
+                  "john.doe@gmail.com",
                   AvailabilityCalendar(mutableListOf()),
                   FlightGroupCalendar(),
                   setOf(RoleType.PILOT),

@@ -20,6 +20,7 @@ import kotlinx.coroutines.coroutineScope
 class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema::class, PATH) {
   private val availabilityTable = AvailabilityTable(db)
   private val flightMemberTable = FlightMemberTable(db)
+  private val tempUserTable = TempUserTable(db)
 
   /** Retrieve and set all availabilities linked to the user */
   private suspend fun retrieveAvailabilities(userId: String): List<Availability> {

@@ -17,7 +17,14 @@ import org.junit.Test
  */
 class TestRole {
   lateinit var unassignedCrewRole: Role
-  val testUser = Crew("jo", "blunt", UNSET_ID, AvailabilityCalendar(), FlightGroupCalendar())
+  val testUser =
+      Crew(
+          id = UNSET_ID,
+          firstname = "jo",
+          lastname = "blunt",
+          email = "jo.blunt@gmail.com",
+          availabilities = AvailabilityCalendar(),
+          assignedFlights = FlightGroupCalendar())
 
   @Before
   fun setUp() {
