@@ -40,7 +40,7 @@ class LocationViewModelTest {
   fun testLocationUpdate() = runTest {
     val testLocation = Location(dbs.pilot1.id, LatLng(10.0, 10.0))
 
-    locationViewModel.updateLocation(testLocation).join()
+    locationViewModel.addLocation(testLocation).join()
 
     // add a little delay to wait for the listener to be triggered
     SystemClock.sleep(200)

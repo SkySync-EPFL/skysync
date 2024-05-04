@@ -69,8 +69,8 @@ class LocationViewModel(repository: Repository) : ViewModel() {
    *
    * @param location The new location to update in the database.
    */
-  fun updateLocation(location: Location) =
-      viewModelScope.launch { locationTable.updateLocation(location, onError = { onError(it) }) }
+  fun addLocation(location: Location) =
+      viewModelScope.launch { locationTable.addLocation(location, onError = { onError(it) }) }
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {

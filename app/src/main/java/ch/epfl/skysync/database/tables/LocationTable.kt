@@ -5,23 +5,22 @@ import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.LocationSchema
 import ch.epfl.skysync.models.location.Location
-import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.CoroutineScope
 
 class LocationTable(db: FirestoreDatabase) :
     Table<Location, LocationSchema>(db, LocationSchema::class, PATH) {
 
   /**
-   * Update the location of a user in the database.
+   * Add a new location of a user to the database.
    *
-   * @param location The location to update.
-   * @param onError Optional error handler for catching exceptions.
+   * @param location The location to add
+   * @param onError Callback called when an error occurs
    */
-  suspend fun updateLocation(location: Location, onError: ((Exception) -> Unit)? = null) {
-    val schema = LocationSchema.fromModel(location)
-    return withErrorCallback(onError) { db.setItem(path, location.id, schema) }
+  suspend fun addLocation(location: Location, onError: ((Exception) -> Unit)? = null) {
+    return withErrorCallback(onError) { db.addItem(path, LocationSchema.fromModel(location)) }
   }
 
   /**
@@ -36,7 +35,10 @@ class LocationTable(db: FirestoreDatabase) :
       coroutineScope: CoroutineScope,
   ): ListenerRegistration {
     return queryListener(
-        Filter.equalTo(FieldPath.documentId(), userId),
+        Filter.equalTo("userId", userId),
+        limit = 1,
+        orderBy = "time",
+        orderByDirection = Query.Direction.DESCENDING,
         onChange = { update ->
           onChange(
               ListenerUpdate(

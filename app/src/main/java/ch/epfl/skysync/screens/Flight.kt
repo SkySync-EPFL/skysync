@@ -35,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.Timer
 import ch.epfl.skysync.models.location.Location
+import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.LocationViewModel
@@ -48,7 +49,6 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -72,6 +72,7 @@ fun FlightScreen(
   // Access to the application context.
   val context = LocalContext.current
 
+  val rawTime by timer.rawCounter.collectAsStateWithLifecycle()
   val currentTime by timer.counter.collectAsStateWithLifecycle()
   val flightIsStarted by timer.isRunning.collectAsStateWithLifecycle()
 
@@ -82,14 +83,14 @@ fun FlightScreen(
   // List of the locations of the other Team members
   val locations = locationViewModel.locations.collectAsState().value
   // State holding the current location initialized to Lausanne as default value.
-  val defaultLocation = LatLng(46.516, 6.63282)
+  val defaultLocation = LocationPoint(0, 46.516, 6.63282)
   var userLocation by remember { mutableStateOf(defaultLocation) }
   // Remembers and controls the camera position state for the map.
   val cameraPositionState = rememberCameraPositionState {
-    position = CameraPosition.fromLatLngZoom(userLocation, 13f)
+    position = CameraPosition.fromLatLngZoom(userLocation.latlng(), 13f)
   }
   // Manages the state of the map marker.
-  val markerState = rememberMarkerState(position = userLocation)
+  val markerState = rememberMarkerState(position = userLocation.latlng())
   // User's informations
   var speed by remember { mutableStateOf(0f) } // Speed in meters/second
   var altitude by remember { mutableStateOf(0.0) } // Altitude in meters
@@ -103,15 +104,20 @@ fun FlightScreen(
       object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
           locationResult.lastLocation?.let {
-            val newLocation = LatLng(it.latitude, it.longitude)
+            val newLocation =
+                LocationPoint(
+                    time = (rawTime / 1000).toInt(),
+                    latitude = it.latitude,
+                    longitude = it.longitude,
+                )
 
             // Update local location
             userLocation = newLocation
 
             // Update location for other users
-            locationViewModel.updateLocation(Location(uid, newLocation))
+            locationViewModel.addLocation(Location(userId = uid, data = newLocation))
             // Update marker position
-            markerState.position = newLocation
+            markerState.position = newLocation.latlng()
             // Update user's informations
             speed = it.speed // Update speed
             bearing = it.bearing // Update Bearing
@@ -180,7 +186,7 @@ fun FlightScreen(
                           onClick = {
                             // Moves the camera to the current location when clicked.
                             userLocation
-                                .let { CameraUpdateFactory.newLatLngZoom(it, 13f) }
+                                .let { CameraUpdateFactory.newLatLngZoom(it.latlng(), 13f) }
                                 .let { cameraPositionState.move(it) }
                           },
                           containerColor = lightOrange) {
@@ -218,9 +224,9 @@ fun FlightScreen(
 
                 // Markers for the locations of other users
                 locations.forEach { location ->
-                  val otherUserLocation = location.value
+                  val otherUserLocation = location.data
                   Marker(
-                      state = rememberMarkerState(position = otherUserLocation),
+                      state = rememberMarkerState(position = otherUserLocation.latlng()),
                       title = "Location of user ${location.id}")
                 }
               }
