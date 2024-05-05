@@ -1,7 +1,6 @@
 package ch.epfl.skysync
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasText
@@ -12,10 +11,11 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import androidx.navigation.compose.ComposeNavigator
-import androidx.navigation.testing.TestNavHostController
+import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.confirmation
+import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
@@ -26,6 +26,12 @@ import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.navigation.Route
+import io.mockk.confirmVerified
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit4.MockKRule
+import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -33,9 +39,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+
 class ConfirmFlightUITest {
   @get:Rule val composeTestRule = createComposeRule()
-  lateinit var navController: TestNavHostController
+  @get:Rule val mockkRule = MockKRule(this)
+  @RelaxedMockK lateinit var navController: NavHostController
+
   private var planedFlight =
       mutableStateOf(
           PlannedFlight(
@@ -53,9 +62,9 @@ class ConfirmFlightUITest {
   fun setUpNavHost() {
     composeTestRule.setContent {
       val repository = Repository(FirestoreDatabase(useEmulator = true))
-      navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
-      confirmation(plannedFlight = planedFlight.value) {}
+      confirmation(plannedFlight = planedFlight.value) {
+        println("PATATE")
+        navController.navigate(Route.MAIN)}
     }
   }
   // test of info to verify by a user
@@ -205,5 +214,30 @@ class ConfirmFlightUITest {
     composeTestRule.onNodeWithText("Enter Remark").performTextInput(wantedRemark)
     composeTestRule.onNodeWithText("Add Remark").performClick()
     composeTestRule.onNodeWithText(wantedRemark).assertIsDisplayed()
+  }
+
+  @Test
+  fun confirmButtonWorksWhenDismiss() = runTest {
+    composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
+    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
+    composeTestRule.onNodeWithText("Confirm").performClick()
+    composeTestRule.onNodeWithTag("AlertDialog").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("AlertDialogDismiss").performClick()
+    composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
+
+    // Test that navigate was not called (the route is not meaningful)
+    verify(exactly = 0) { navController.navigate(Route.MAIN) }
+  }
+
+  @Test
+  fun confirmButtonWorksWhenConfirm() = runTest {
+    composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
+    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
+    composeTestRule.onNodeWithText("Confirm").performClick()
+    composeTestRule.onNodeWithTag("AlertDialog").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
+
+    verify { navController.navigate(Route.MAIN) }
+    confirmVerified(navController)
   }
 }
