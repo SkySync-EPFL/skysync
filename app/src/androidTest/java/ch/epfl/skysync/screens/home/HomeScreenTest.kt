@@ -1,7 +1,6 @@
 package ch.epfl.skysync.screens.home
 
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.navigation.compose.ComposeNavigator
@@ -29,6 +28,7 @@ class HomeScreenTest {
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
   }
+
   @Test
   fun crewAndPilotHasNoButton() {
     composeTestRule.setContent {

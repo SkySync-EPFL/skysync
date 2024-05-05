@@ -11,7 +11,6 @@ import ch.epfl.skysync.components.ConfirmFlightDetailUi
 import ch.epfl.skysync.components.FlightDetailUi
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.navigation.AdminBottomBar
-import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
@@ -23,7 +22,8 @@ fun AdminFlightDetailScreen(
 ) {
 
   val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
-  Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { AdminBottomBar(navController) }) { padding ->
+  Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { AdminBottomBar(navController) }) {
+      padding ->
     if (flight is ConfirmedFlight) {
       ConfirmFlightDetailUi(
           confirmedFlight = flight as ConfirmedFlight,

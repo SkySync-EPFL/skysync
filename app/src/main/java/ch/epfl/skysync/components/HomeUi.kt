@@ -1,7 +1,5 @@
 package ch.epfl.skysync.components
 
-import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,15 +16,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,95 +30,85 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
-import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.Flight
-import ch.epfl.skysync.models.user.Admin
-import ch.epfl.skysync.navigation.AdminBottomBar
-import ch.epfl.skysync.navigation.BottomBar
-import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.ui.theme.Purple40
-import ch.epfl.skysync.ui.theme.lightOrange
-import ch.epfl.skysync.viewmodel.FlightsViewModel
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
 fun UpcomingFlights(flights: List<Flight>?, color: Color, onFlightClick: (String) -> Unit) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text(
-            text = "Upcoming flights",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            modifier =
+  Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Text(
+        text = "Upcoming flights",
+        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+        modifier =
             Modifier.background(
-                color = color, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                    color = color, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .fillMaxWidth()
                 .padding(16.dp),
-            color = Color.White,
-            textAlign = TextAlign.Center)
+        color = Color.White,
+        textAlign = TextAlign.Center)
 
-        Spacer(modifier = Modifier.height(16.dp))
-        if (flights == null) {
-            LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
-        } else if (flights.isEmpty()) {
-            // Handle case when no upcoming flights
-            Box(
-                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f),
-                contentAlignment = Alignment.Center) {
-                Text(
-                    text = "No upcoming flights",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                    color = Color.Black)
-            }
-        } else {
-            // Display the flights in a LazyColumn if the list is not empty
-            LazyColumn { items(flights) { flight -> FlightRow(flight, onFlightClick) } }
-        }
+    Spacer(modifier = Modifier.height(16.dp))
+    if (flights == null) {
+      LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
+    } else if (flights.isEmpty()) {
+      // Handle case when no upcoming flights
+      Box(
+          modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f),
+          contentAlignment = Alignment.Center) {
+            Text(
+                text = "No upcoming flights",
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                color = Color.Black)
+          }
+    } else {
+      // Display the flights in a LazyColumn if the list is not empty
+      LazyColumn { items(flights) { flight -> FlightRow(flight, onFlightClick) } }
     }
+  }
 }
 
 @Composable
 fun FlightRow(flight: Flight, onFlightClick: (String) -> Unit) {
-    // Card for an individual flight, clickable to navigate to details
-    Card(
-        modifier =
-        Modifier.fillMaxWidth()
-            .clickable { onFlightClick(flight.id) }
-            .padding(vertical = 4.dp)
-            .testTag("flightCard"),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-    ) {
-        Surface(modifier = Modifier.fillMaxWidth(), color = flight.getFlightStatus().displayColor) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start) {
-                Text(
-                    text =
+  // Card for an individual flight, clickable to navigate to details
+  Card(
+      modifier =
+          Modifier.fillMaxWidth()
+              .clickable { onFlightClick(flight.id) }
+              .padding(vertical = 4.dp)
+              .testTag("flightCard"),
+      elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+  ) {
+    Surface(modifier = Modifier.fillMaxWidth(), color = flight.getFlightStatus().displayColor) {
+      Row(
+          modifier = Modifier.fillMaxWidth().padding(16.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.Start) {
+            Text(
+                text =
                     flight.date.format(
                         DateTimeFormatter.ofPattern("E\ndd").withLocale(Locale.ENGLISH)),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.alignByBaseline(),
-                    color = Color.Black)
-                // Spacer for horizontal separation
-                Spacer(modifier = Modifier.width(16.dp))
-                // Column for flight details
-                Column(modifier = Modifier.weight(0.7f).padding(start = 16.dp)) {
-                    // Text for flight type and passenger count
-                    Text(
-                        text = "${flight.flightType.name} - ${flight.nPassengers} pax",
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black)
-                    // Text for flight time slot
-                    Text(text = flight.timeSlot.toString(), color = Color.Gray)
-                }
-                Text(
-                    text = flight.getFlightStatus().toString(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.alignByBaseline(),
-                    color = Color.Gray)
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.alignByBaseline(),
+                color = Color.Black)
+            // Spacer for horizontal separation
+            Spacer(modifier = Modifier.width(16.dp))
+            // Column for flight details
+            Column(modifier = Modifier.weight(0.7f).padding(start = 16.dp)) {
+              // Text for flight type and passenger count
+              Text(
+                  text = "${flight.flightType.name} - ${flight.nPassengers} pax",
+                  fontWeight = FontWeight.Bold,
+                  color = Color.Black)
+              // Text for flight time slot
+              Text(text = flight.timeSlot.toString(), color = Color.Gray)
             }
-        }
+            Text(
+                text = flight.getFlightStatus().toString(),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.alignByBaseline(),
+                color = Color.Gray)
+          }
     }
+  }
 }

@@ -6,7 +6,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.screens.admin.AdminCalendarScreen
-import ch.epfl.skysync.screens.crewpilot.CalendarScreen
 import ch.epfl.skysync.viewmodel.CalendarViewModel
 
 fun NavGraphBuilder.adminpersonalCalendar(

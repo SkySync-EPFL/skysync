@@ -19,7 +19,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import ch.epfl.skysync.components.AvailabilityCalendar
 import ch.epfl.skysync.components.FlightCalendar
 import ch.epfl.skysync.navigation.AdminBottomBar
-import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.viewmodel.CalendarViewModel

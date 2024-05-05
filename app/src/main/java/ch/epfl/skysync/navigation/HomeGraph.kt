@@ -7,27 +7,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.ListenerUpdate
-import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.message.Message
 import ch.epfl.skysync.models.message.MessageGroup
-import ch.epfl.skysync.screens.crewpilot.ChatScreen
-import ch.epfl.skysync.screens.admin.FlightHistoryScreen
-import ch.epfl.skysync.screens.crewpilot.FlightScreen
-import ch.epfl.skysync.screens.crewpilot.HomeScreen
 import ch.epfl.skysync.screens.LoadingScreen
-import ch.epfl.skysync.screens.crewpilot.TextScreen
-import ch.epfl.skysync.screens.crewpilot.FlightDetailScreen
-import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
-import ch.epfl.skysync.viewmodel.LocationViewModel
-import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
 import ch.epfl.skysync.viewmodel.TimerViewModel
 
 /** Graph of the main screens of the app */
@@ -38,13 +26,13 @@ fun NavGraphBuilder.homeGraph(
     timer: TimerViewModel? = null
 ) {
   navigation(startDestination = Route.LOADING, route = Route.MAIN) {
-      adminGraph(repository, navController, uid, timer)
-        crewPilotGraph(repository, navController, uid, timer)
-      composable(Route.LOADING) {
-          val flightsOverviewViewModel = FlightsViewModel.createViewModel(repository, uid)
-          flightsOverviewViewModel.refresh()
-          LoadingScreen(navController = navController, viewModel = flightsOverviewViewModel)
-      }
+    adminGraph(repository, navController, uid, timer)
+    crewPilotGraph(repository, navController, uid, timer)
+    composable(Route.LOADING) {
+      val flightsOverviewViewModel = FlightsViewModel.createViewModel(repository, uid)
+      flightsOverviewViewModel.refresh()
+      LoadingScreen(navController = navController, viewModel = flightsOverviewViewModel)
+    }
   }
 }
 

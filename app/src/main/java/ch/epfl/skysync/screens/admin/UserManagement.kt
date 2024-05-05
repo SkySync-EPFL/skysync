@@ -42,7 +42,6 @@ import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.AdminBottomBar
-import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange

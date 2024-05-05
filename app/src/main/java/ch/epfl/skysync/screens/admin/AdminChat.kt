@@ -10,7 +10,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.GroupChat
 import ch.epfl.skysync.navigation.AdminBottomBar
-import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.ChatViewModel
 
@@ -24,7 +23,9 @@ fun AdminChatScreen(navController: NavHostController, viewModel: ChatViewModel) 
     println("GroupDetails $groupDetails")
     GroupChat(
         groupList = groupDetails,
-        onClick = { selectedGroup -> navController.navigate(Route.ADMIN_TEXT + "/${selectedGroup.id}") },
+        onClick = { selectedGroup ->
+          navController.navigate(Route.ADMIN_TEXT + "/${selectedGroup.id}")
+        },
         paddingValues = padding)
   }
 }

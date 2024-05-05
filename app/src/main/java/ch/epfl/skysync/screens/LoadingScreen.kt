@@ -11,18 +11,14 @@ import ch.epfl.skysync.viewmodel.FlightsViewModel
 
 @Composable
 fun LoadingScreen(navController: NavHostController, viewModel: FlightsViewModel) {
-    val user by viewModel.currentUser.collectAsStateWithLifecycle()
-    if(user == null) {
-        LoadingComponent(isLoading = true, onRefresh = { /*TODO*/ }) {}
+  val user by viewModel.currentUser.collectAsStateWithLifecycle()
+  if (user == null) {
+    LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
+  } else {
+    if (user is Admin) {
+      navController.navigate(Route.ADMIN)
+    } else {
+      navController.navigate(Route.CREW_PILOT)
     }
-    else{
-        if(user is Admin){
-            navController.navigate(Route.ADMIN)
-        }
-        else{
-            navController.navigate(Route.CREW_PILOT)
-        }
-    }
-
-
+  }
 }

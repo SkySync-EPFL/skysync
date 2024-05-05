@@ -12,11 +12,11 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.components.FlightDetailUi
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.components.FlightDetailUi
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
