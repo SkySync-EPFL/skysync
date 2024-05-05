@@ -108,6 +108,7 @@ fun NavGraphBuilder.homeGraph(
           ModifyFlightScreen(navController, flightsViewModel, flightId)
         }
     composable(Route.ADD_USER) { AddUserScreen(navController = navController) }
+
     composable(Route.USER) {
       val users =
           listOf(
