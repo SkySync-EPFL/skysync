@@ -57,7 +57,7 @@ class E2EModifyAndDeleteFlights {
       }
       composeTestRule.onAllNodesWithTag("flightCard")[0].performClick()
       var route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
+      Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
       composeTestRule.onNodeWithTag("EditButton").performClick()
       route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.MODIFY_FLIGHT + "/{Flight ID}", route)
@@ -90,7 +90,7 @@ class E2EModifyAndDeleteFlights {
 
       // Checks if navigation goes back to the home route after adding flight
       route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.HOME, route)
+      Assert.assertEquals(Route.ADMIN_HOME, route)
       var flightIsCreated = false
       val flights = repository.flightTable.getAll(onError = { Assert.assertNotNull(it) })
       flightIsCreated = flights.any { it.nPassengers == 11 }
@@ -106,7 +106,7 @@ class E2EModifyAndDeleteFlights {
       composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
       composeTestRule.waitUntil(2500) {
         route = navController.currentBackStackEntry?.destination?.route
-        Route.HOME == route
+        Route.ADMIN_HOME == route
       }
     }
   }

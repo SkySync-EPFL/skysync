@@ -35,7 +35,7 @@ class IntegrateFlightDetailTest {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.admin1.id)
+        homeGraph(repository, navController, dbs.crew1.id)
       }
     }
     composeTestRule.waitUntil {

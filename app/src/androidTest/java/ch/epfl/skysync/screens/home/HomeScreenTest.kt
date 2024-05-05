@@ -29,21 +29,6 @@ class HomeScreenTest {
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
   }
-
-  @Test
-  fun adminHasButton() {
-    composeTestRule.setContent {
-      navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
-      flightsViewModel = FlightsViewModel.createViewModel(repository, dbs.admin1.id)
-      HomeScreen(navController = navController, viewModel = flightsViewModel)
-    }
-    runTest {
-      flightsViewModel.refreshUserAndFlights().join()
-      composeTestRule.onNodeWithTag("addFlightButton").assertIsDisplayed()
-    }
-  }
-
   @Test
   fun crewAndPilotHasNoButton() {
     composeTestRule.setContent {

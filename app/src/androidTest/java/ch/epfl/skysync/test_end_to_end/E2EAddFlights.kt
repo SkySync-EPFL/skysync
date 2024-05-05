@@ -115,7 +115,7 @@ class E2EAddFlights {
 
     // Checks if navigation goes back to the home route after adding flight
     route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(Route.HOME, route)
+    Assert.assertEquals(Route.ADMIN_HOME, route)
 
     // Checks if the flight with 13 passengers is created successfully
     var flightIsCreated = false
