@@ -62,7 +62,9 @@ class CalendarViewModelTest {
     assertEquals(AvailabilityStatus.OK, status)
 
     // delete an availability using nextAvailabilityStatus
-    status = availabilityCalendar.nextAvailabilityStatus(dbs.availability1Admin1.date, TimeSlot.AM)
+    status =
+        availabilityCalendar.nextAvailabilityStatus(
+            dbs.availability1Admin1.date, dbs.availability1Admin1.timeSlot)
 
     assertEquals(AvailabilityStatus.UNDEFINED, status)
 
@@ -77,5 +79,55 @@ class CalendarViewModelTest {
     assertEquals(
         AvailabilityStatus.UNDEFINED,
         user!!.availabilities.getAvailabilityStatus(dbs.availability1Admin1.date, TimeSlot.AM))
+  }
+
+  @Test
+  fun testCancelAvailabilities() = runTest {
+    calendarViewModel.refresh().join()
+
+    val availabilityCalendar = calendarViewModel.uiState.value.availabilityCalendar
+
+    assertEquals(
+        AvailabilityStatus.NO,
+        availabilityCalendar.getAvailabilityStatus(
+            dbs.availability1Admin1.date, dbs.availability1Admin1.timeSlot))
+    assertEquals(
+        AvailabilityStatus.OK,
+        availabilityCalendar.getAvailabilityStatus(
+            dbs.availability2Admin1.date, dbs.availability2Admin1.timeSlot))
+
+    val newDate = LocalDate.of(2024, 8, 11)
+
+    // create a new availability using nextAvailabilityStatus
+    var status = availabilityCalendar.nextAvailabilityStatus(newDate, TimeSlot.AM)
+
+    assertEquals(AvailabilityStatus.OK, status)
+
+    // delete an availability using nextAvailabilityStatus
+    status =
+        availabilityCalendar.nextAvailabilityStatus(
+            dbs.availability1Admin1.date, dbs.availability1Admin1.timeSlot)
+
+    assertEquals(AvailabilityStatus.UNDEFINED, status)
+
+    calendarViewModel.cancelAvailabilities()
+
+    val user = userTable.get(dbs.admin1.id, onError = { assertNull(it) })
+
+    assertNotNull(user)
+
+    assertEquals(
+        AvailabilityStatus.NO,
+        user!!
+            .availabilities
+            .getAvailabilityStatus(dbs.availability1Admin1.date, dbs.availability1Admin1.timeSlot))
+    assertEquals(
+        AvailabilityStatus.OK,
+        user!!
+            .availabilities
+            .getAvailabilityStatus(dbs.availability2Admin1.date, dbs.availability2Admin1.timeSlot))
+    assertEquals(
+        AvailabilityStatus.UNDEFINED,
+        user!!.availabilities.getAvailabilityStatus(newDate, TimeSlot.AM))
   }
 }
