@@ -160,30 +160,22 @@ class CalendarViewModel(
         refreshUser()
       }
 
-  /**
-   * Cancels the modification made in the current availability calendar
-   */
+  /** Cancels the modification made in the current availability calendar */
   fun cancelAvailabilities() =
-    viewModelScope.launch {
-      val user = user.value ?: return@launch
-      val availabilityCalendar = user.availabilities
+      viewModelScope.launch {
+        val user = user.value ?: return@launch
+        val availabilityCalendar = user.availabilities
 
-      val differences =
-          originalAvailabilityCalendar.getDifferencesWithOtherCalendar(availabilityCalendar)
+        val differences =
+            originalAvailabilityCalendar.getDifferencesWithOtherCalendar(availabilityCalendar)
 
-      val jobs = mutableListOf<Job>()
-      for ((_, availability) in differences) {
-        jobs.add(
-            launch {
-              val oldStatus =
-                  originalAvailabilityCalendar.getAvailabilityStatus(
-                      availability.date, availability.timeSlot)
-              user.availabilities.setAvailabilityByDate(
-                  availability.date, availability.timeSlot, oldStatus)
-            })
+        for ((_, availability) in differences) {
+          val oldStatus =
+              originalAvailabilityCalendar.getAvailabilityStatus(
+                  availability.date, availability.timeSlot)
+
+          user.availabilities.setAvailabilityByDate(
+              availability.date, availability.timeSlot, oldStatus)
+        }
       }
-        jobs.forEach { it.join() }
-        refreshUser()
-    }
-  }
-
+}
