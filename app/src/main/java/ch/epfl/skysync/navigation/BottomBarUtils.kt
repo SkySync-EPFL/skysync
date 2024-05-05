@@ -33,7 +33,14 @@ sealed class BottomBarScreen(val route: String, val title: String, @DrawableRes 
   data object Stats :
       BottomBarScreen(
           route = Route.STATS, title = "Stats", icon = R.drawable.baseline_equalizer_24)
+    data object AdminHome:
+        BottomBarScreen(route = Route.ADMIN_HOME, title = "Home", icon = R.drawable.baseline_home_24)
+    data object AdminChat:
+        BottomBarScreen(route = Route.ADMIN_CHAT, title = "Chat", icon = R.drawable.baseline_chat_24)
+    data object AdminCalendar:
+        BottomBarScreen(route = Route.ADMIN_CALENDAR, title = "Calendar", icon = R.drawable.baseline_calendar_month_24)
 }
+
 
 @Composable
 fun RowScope.AddItem(

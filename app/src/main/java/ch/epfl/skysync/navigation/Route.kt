@@ -22,4 +22,16 @@ object Route {
   const val TEXT = "Text"
 
   const val LOGIN = "Login"
+
+  const val LOADING = "Loading"
+  const val ADMIN = "Admin"
+  const val ADMIN_HOME = "Admin Home"
+  const val ADMIN_FLIGHT_DETAILS = "Admin Flight Details"
+  const val ADMIN_CALENDAR = "Admin Calendar"
+  const val ADMIN_CHAT = "Admin Chat"
+  const val ADMIN_TEXT = "Admin Text"
+  const val ADMIN_AVAILABILITY_CALENDAR = "Admin Availability Calendar"
+  const val ADMIN_FLIGHT_CALENDAR = "Admin Flight Calendar"
+
+  const val CREW_PILOT = "Crew Pilot"
 }

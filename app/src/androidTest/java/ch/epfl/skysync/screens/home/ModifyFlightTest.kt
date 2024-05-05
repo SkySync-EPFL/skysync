@@ -15,10 +15,9 @@ import ch.epfl.skysync.database.tables.FlightTypeTable
 import ch.epfl.skysync.database.tables.VehicleTable
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
-import ch.epfl.skysync.screens.ModifyFlightScreen
+import ch.epfl.skysync.screens.admin.ModifyFlightScreen
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

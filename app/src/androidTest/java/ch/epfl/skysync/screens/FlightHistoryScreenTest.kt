@@ -20,6 +20,7 @@ import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.screens.admin.FlightHistoryScreen
 import java.time.LocalDate
 import java.time.LocalTime
 import org.junit.Before

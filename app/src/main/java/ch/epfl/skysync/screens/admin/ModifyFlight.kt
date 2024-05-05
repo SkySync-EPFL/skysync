@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.admin
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,18 +11,23 @@ import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
 @Composable
-fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewModel) {
+fun ModifyFlightScreen(
+    navController: NavHostController,
+    viewModel: FlightsViewModel,
+    flightId: String
+) {
   val allFlightTypes by viewModel.currentFlightTypes.collectAsStateWithLifecycle()
   val allBalloons by viewModel.currentBalloons.collectAsStateWithLifecycle()
   val allBaskets by viewModel.currentBaskets.collectAsStateWithLifecycle()
   val allVehicles by viewModel.currentVehicles.collectAsStateWithLifecycle()
-  val allRoleTypes = RoleType.entries
   val availableUsers by viewModel.availableUsers.collectAsStateWithLifecycle()
+  val flightToModify by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
+  val allRoleTypes = RoleType.entries
   FlightForm(
-      currentFlight = null,
+      currentFlight = flightToModify,
       navController = navController,
-      modifyMode = false,
-      title = "Add Flight",
+      title = "Modify Flight",
+      modifyMode = true,
       allFlightTypes = allFlightTypes,
       allRoleTypes = allRoleTypes,
       availableVehicles = allVehicles,
@@ -30,7 +35,7 @@ fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewMode
       availableBaskets = allBaskets,
       availableUsers = availableUsers,
       onSaveFlight = { flight: PlannedFlight ->
-        viewModel.addFlight(flight)
-        navController.navigate(Route.HOME)
+        viewModel.modifyFlight(flight)
+        navController.navigate(Route.ADMIN_HOME)
       })
 }

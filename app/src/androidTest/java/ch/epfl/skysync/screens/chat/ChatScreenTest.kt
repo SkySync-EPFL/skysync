@@ -9,7 +9,7 @@ import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.screens.ChatScreen
+import ch.epfl.skysync.screens.crewpilot.ChatScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
 import org.junit.Before

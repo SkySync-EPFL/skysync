@@ -5,26 +5,27 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.screens.admin.AdminCalendarScreen
 import ch.epfl.skysync.screens.crewpilot.CalendarScreen
 import ch.epfl.skysync.viewmodel.CalendarViewModel
 
-fun NavGraphBuilder.personalCalendar(
+fun NavGraphBuilder.adminpersonalCalendar(
     repository: Repository,
     navController: NavHostController,
     uid: String?
 ) {
-  navigation(startDestination = Route.AVAILABILITY_CALENDAR, route = Route.CALENDAR) {
-    composable(Route.AVAILABILITY_CALENDAR) {
+  navigation(startDestination = Route.ADMIN_AVAILABILITY_CALENDAR, route = Route.ADMIN_CALENDAR) {
+    composable(Route.ADMIN_AVAILABILITY_CALENDAR) {
       val viewModel =
           CalendarViewModel.createViewModel(
               uid!!, repository.userTable, repository.availabilityTable)
-      CalendarScreen(navController, Route.AVAILABILITY_CALENDAR, viewModel)
+      AdminCalendarScreen(navController, Route.AVAILABILITY_CALENDAR, viewModel)
     }
-    composable(Route.FLIGHT_CALENDAR) {
+    composable(Route.ADMIN_FLIGHT_CALENDAR) {
       val viewModel =
           CalendarViewModel.createViewModel(
               uid!!, repository.userTable, repository.availabilityTable)
-      CalendarScreen(navController, Route.FLIGHT_CALENDAR, viewModel)
+      AdminCalendarScreen(navController, Route.FLIGHT_CALENDAR, viewModel)
     }
   }
 }

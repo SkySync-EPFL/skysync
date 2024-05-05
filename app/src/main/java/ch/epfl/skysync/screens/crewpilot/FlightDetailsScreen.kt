@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens.flightDetail
+package ch.epfl.skysync.screens.crewpilot
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConfirmFlightDetailUi
+import ch.epfl.skysync.components.FlightDetailUi
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route

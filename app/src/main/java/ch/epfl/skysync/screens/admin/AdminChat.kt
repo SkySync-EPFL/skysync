@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.admin
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
@@ -9,21 +9,22 @@ import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.GroupChat
+import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.ChatViewModel
 
 @Composable
-fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel) {
+fun AdminChatScreen(navController: NavHostController, viewModel: ChatViewModel) {
   Scaffold(
       modifier = Modifier.fillMaxSize().testTag("ChatScreenScaffold"),
-      bottomBar = { BottomBar(navController) },
+      bottomBar = { AdminBottomBar(navController) },
   ) { padding ->
     val groupDetails by viewModel.getGroupDetails().collectAsStateWithLifecycle()
     println("GroupDetails $groupDetails")
     GroupChat(
         groupList = groupDetails,
-        onClick = { selectedGroup -> navController.navigate(Route.TEXT + "/${selectedGroup.id}") },
+        onClick = { selectedGroup -> navController.navigate(Route.ADMIN_TEXT + "/${selectedGroup.id}") },
         paddingValues = padding)
   }
 }

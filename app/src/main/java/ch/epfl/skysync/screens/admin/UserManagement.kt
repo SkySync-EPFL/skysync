@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.admin
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -41,6 +41,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.User
+import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
@@ -180,7 +181,7 @@ fun UserManagementScreen(navController: NavHostController, users: List<User>) {
           )
         }
       },
-      bottomBar = { BottomBar(navController) },
+      bottomBar = { AdminBottomBar(navController) },
       floatingActionButton = {
         FloatingActionButton(
             onClick = { navController.navigate(Route.ADD_USER) }, containerColor = lightOrange) {
