@@ -1,7 +1,6 @@
 package ch.epfl.skysync.screens
 
 import android.annotation.SuppressLint
-import android.location.Location
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,37 +33,20 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.components.LoadingComponent
-import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
-import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.flight.Balloon
-import ch.epfl.skysync.models.flight.BalloonQualification
-import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
-import ch.epfl.skysync.models.flight.FlightType
-import ch.epfl.skysync.models.flight.Role
-import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
-import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -205,7 +187,7 @@ fun UserDetailTopAppBar(user: User, onBackClicked: () -> Unit) {
               navigationIconContentColor = Color.Black))
 }
 
-class MockUser(
+/*class MockUser(
     override val id: String,
     override val firstname: String,
     override val lastname: String,
@@ -280,4 +262,4 @@ fun UserDetailsPreview() {
 
   // Preview of Home Screen
   UserDetailsScreen(navController = navController, allFlights, user)
-}
+}*/
