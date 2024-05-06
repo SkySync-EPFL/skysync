@@ -6,6 +6,7 @@ import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.reports.CrewReport
 import ch.epfl.skysync.models.user.Crew
+import java.sql.Time
 import org.junit.Rule
 import org.junit.Test
 
@@ -23,6 +24,7 @@ class CrewReportScreenTest {
             AvailabilityCalendar(),
             FlightGroupCalendar(),
             setOf(RoleType.PILOT))
-    CrewReport("id", crew, 1, 1, 1, true, true, true, mapOf(), true, 1, "comments")
+    CrewReport(
+        "id", crew, 1, 1, 1, true, true, true, Time(0L), Time(0L), true, 1L, "comments", mapOf())
   }
 }

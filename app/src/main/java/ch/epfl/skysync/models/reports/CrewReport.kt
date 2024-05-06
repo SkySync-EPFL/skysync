@@ -2,6 +2,7 @@ package ch.epfl.skysync.models.reports
 
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.Crew
+import java.sql.Time
 
 data class CrewReport(
     val id: String,
@@ -12,8 +13,10 @@ data class CrewReport(
     val littleChampagneToFarmer: Boolean,
     val bigChampagneToFarmer: Boolean,
     val prestigeChampagneToFarmer: Boolean,
-    val vehicleProblems: Map<Vehicle, String>,
-    val didTakePause: Boolean,
-    val pauseDuration: Long?,
-    val comments: String
-)
+    override val begin: Time,
+    override val end: Time,
+    override val pause: Boolean,
+    override val pauseDuration: Long,
+    override val comments: String,
+    override val vehicleProblems: Map<Vehicle, String>
+) : Report

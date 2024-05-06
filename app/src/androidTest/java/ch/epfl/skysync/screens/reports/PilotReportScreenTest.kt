@@ -30,6 +30,20 @@ class PilotReportScreenTest {
             setOf(RoleType.PILOT),
             BalloonQualification.MEDIUM)
     val location = Location(UNSET_ID, LatLng(0.2, 0.3))
-    PilotReport("id", pilot, 1, Time(200L), location, location, Time(0L))
+    val time = Time(0L)
+    PilotReport(
+        "id",
+        pilot,
+        1,
+        Time(200L),
+        location,
+        location,
+        time,
+        time,
+        time,
+        true,
+        time.time,
+        "comments",
+        mapOf())
   }
 }
