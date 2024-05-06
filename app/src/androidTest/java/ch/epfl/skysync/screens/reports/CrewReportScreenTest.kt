@@ -24,7 +24,6 @@ class CrewReportScreenTest {
             AvailabilityCalendar(),
             FlightGroupCalendar(),
             setOf(RoleType.PILOT))
-    CrewReport(
-        "id", crew, 1, 1, 1, true, true, true, Time(0L), Time(0L), true, 1L, "comments", mapOf())
+    CrewReport("id", crew, 1, 1, 1, Time(0L), Time(0L), 1L, "comments", mapOf())
   }
 }

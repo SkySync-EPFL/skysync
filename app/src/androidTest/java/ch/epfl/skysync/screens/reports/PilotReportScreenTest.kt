@@ -41,8 +41,7 @@ class PilotReportScreenTest {
         time,
         time,
         time,
-        true,
-        time.time,
+        1L,
         "comments",
         mapOf())
   }
