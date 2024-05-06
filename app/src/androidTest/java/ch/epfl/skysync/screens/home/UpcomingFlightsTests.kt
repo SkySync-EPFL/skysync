@@ -7,7 +7,6 @@ import androidx.compose.ui.test.performClick
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
-import ch.epfl.skysync.screens.UpcomingFlights
 import ch.epfl.skysync.ui.theme.lightOrange
 import java.time.LocalDate
 import org.junit.Assert.assertTrue

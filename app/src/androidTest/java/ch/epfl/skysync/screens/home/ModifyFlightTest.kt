@@ -2,6 +2,8 @@ package ch.epfl.skysync.screens.home
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
@@ -61,6 +63,6 @@ class ModifyFlightTest {
       ModifyFlightScreen(
           navController = navController, viewModel = viewModelAdmin, flightId = dbSetup.flight1.id)
     }
-    // composeTestRule.onNodeWithTag("Modify Flight Button").performClick()
+    //composeTestRule.onNodeWithTag("Modify Flight Button").performClick()
   }
 }

@@ -27,7 +27,7 @@ import ch.epfl.skysync.screens.AddUserScreen
 import ch.epfl.skysync.screens.ChatScreen
 import ch.epfl.skysync.screens.FlightHistoryScreen
 import ch.epfl.skysync.screens.FlightScreen
-import ch.epfl.skysync.screens.HomeScreen
+import ch.epfl.skysync.screens.home.HomeScreen
 import ch.epfl.skysync.screens.ModifyFlightScreen
 import ch.epfl.skysync.screens.TextScreen
 import ch.epfl.skysync.screens.UserManagementScreen
