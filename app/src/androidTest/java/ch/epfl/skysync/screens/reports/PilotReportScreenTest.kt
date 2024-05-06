@@ -32,17 +32,6 @@ class PilotReportScreenTest {
     val location = Location(UNSET_ID, LatLng(0.2, 0.3))
     val time = Time(0L)
     PilotReport(
-        "id",
-        pilot,
-        1,
-        Time(200L),
-        location,
-        location,
-        time,
-        time,
-        time,
-        1L,
-        "comments",
-        mapOf())
+        "id", pilot, 1, Time(200L), location, location, time, time, time, 1L, "comments", mapOf())
   }
 }

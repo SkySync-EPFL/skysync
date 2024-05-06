@@ -7,7 +7,7 @@ import java.util.Date
 
 data class CrewReport(
     val id: String = UNSET_ID,
-    val author: Crew,
+    override val author: Crew,
     val littleChampagne: Int,
     val bigChampagne: Int,
     val prestigeChampagne: Int,
