@@ -1,4 +1,4 @@
-package ch.epfl.skysync
+package ch.epfl.skysync.components
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
@@ -12,14 +12,8 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.NavHostController
-import ch.epfl.skysync.components.confirmation
 import ch.epfl.skysync.database.DatabaseSetup
-import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.flight.Balloon
-import ch.epfl.skysync.models.flight.BalloonQualification
-import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
@@ -31,70 +25,57 @@ import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.verify
-import kotlinx.coroutines.test.runTest
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-
 
 class ConfirmFlightUITest {
   @get:Rule val composeTestRule = createComposeRule()
   @get:Rule val mockkRule = MockKRule(this)
   @RelaxedMockK lateinit var navController: NavHostController
 
-  private var planedFlight =
-      mutableStateOf(
-          PlannedFlight(
-              "1234",
-              26,
-              FlightType.DISCOVERY,
-              Team(listOf(Role(RoleType.CREW))),
-              Balloon("Ballon Name", BalloonQualification.LARGE, "Ballon Name"),
-              Basket("Basket Name", true, "1234"),
-              LocalDate.now().plusDays(3),
-              TimeSlot.PM,
-              listOf(Vehicle("Peugeot 308", "1234"))))
+  private val dbs = DatabaseSetup()
+
+  private var plannedFlight = mutableStateOf(dbs.flight1)
 
   @Before
   fun setUpNavHost() {
     composeTestRule.setContent {
-      val repository = Repository(FirestoreDatabase(useEmulator = true))
-      confirmation(plannedFlight = planedFlight.value) {
-        println("PATATE")
-        navController.navigate(Route.MAIN)}
+      confirmation(plannedFlight.value) { navController.navigate(Route.MAIN) }
     }
   }
   // test of info to verify by a user
   @Test
   fun verifyTitle() {
-    val id = planedFlight.value.id
+    val id = plannedFlight.value.id
     composeTestRule.onNodeWithText("Confirmation of Flight $id").assertIsDisplayed()
   }
 
   @Test
   fun verifyNbPassengers() {
-    val passengerNb = planedFlight.value.nPassengers
+    val passengerNb = plannedFlight.value.nPassengers
     composeTestRule.onNodeWithText(passengerNb.toString()).assertIsDisplayed()
   }
 
   @Test
   fun verifyFlightType() {
-    val flightType = planedFlight.value.flightType
+    val flightType = plannedFlight.value.flightType
     composeTestRule.onNodeWithText(flightType.name).assertIsDisplayed()
   }
 
   @Test
   fun verifyRoles() {
-    val rolesLists = planedFlight.value.team.roles
+    val rolesLists = plannedFlight.value.team.roles
     rolesLists.forEach() { (role) -> composeTestRule.onNodeWithText(role.name).assertIsDisplayed() }
   }
 
   @Test
   fun verifyBalloon() {
-    val balloon = planedFlight.value.balloon
+    val balloon = plannedFlight.value.balloon
     if (balloon != null) {
       composeTestRule.onNodeWithText(balloon.name).assertIsDisplayed()
     }
@@ -102,7 +83,7 @@ class ConfirmFlightUITest {
 
   @Test
   fun verifyBasket() {
-    val basket = planedFlight.value.basket
+    val basket = plannedFlight.value.basket
     if (basket != null) {
       composeTestRule.onNodeWithText(basket.name).assertIsDisplayed()
     }
@@ -110,7 +91,7 @@ class ConfirmFlightUITest {
 
   @Test
   fun verifyNullValues() {
-    planedFlight.value =
+    plannedFlight.value =
         PlannedFlight(
             "1234",
             3,
@@ -127,8 +108,8 @@ class ConfirmFlightUITest {
 
   @Test
   fun verifyDateAndTimeSlotShown() {
-    val date = planedFlight.value.date
-    val timeSlot = planedFlight.value.timeSlot
+    val date = plannedFlight.value.date
+    val timeSlot = plannedFlight.value.timeSlot
     composeTestRule
         .onNodeWithText(
             (date.dayOfMonth.toString() + " " + date.month.toString() + " $timeSlot").lowercase())
@@ -137,7 +118,7 @@ class ConfirmFlightUITest {
 
   @Test
   fun verifyVehicles() {
-    val vehicles = planedFlight.value.vehicles
+    val vehicles = plannedFlight.value.vehicles
     vehicles.forEach() { (vehicle) -> composeTestRule.onNodeWithText(vehicle).assertIsDisplayed() }
   }
   // test of info to enter by user
