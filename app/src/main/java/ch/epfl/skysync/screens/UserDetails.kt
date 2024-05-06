@@ -186,4 +186,3 @@ fun UserDetailTopAppBar(user: User, onBackClicked: () -> Unit) {
               titleContentColor = Color.Black,
               navigationIconContentColor = Color.Black))
 }
-
