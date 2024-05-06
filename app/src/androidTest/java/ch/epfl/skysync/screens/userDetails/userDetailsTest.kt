@@ -24,7 +24,7 @@ import java.time.LocalTime
 import org.junit.Rule
 import org.junit.Test
 
-class userDetailsTest {
+class UserDetailsTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   private val dbs = DatabaseSetup()
@@ -73,7 +73,7 @@ class userDetailsTest {
       UserDetailsScreen(navController = rememberNavController(), allFlights = listOf(), user = user)
     }
     // Check for elements
-    composeTestRule.onNodeWithText("No completed flights").assertIsDisplayed()
+    composeTestRule.onNodeWithText("No flights").assertIsDisplayed()
   }
 
   @Test
