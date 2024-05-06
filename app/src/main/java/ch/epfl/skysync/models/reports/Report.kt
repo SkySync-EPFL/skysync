@@ -1,13 +1,13 @@
 package ch.epfl.skysync.models.reports
 
 import ch.epfl.skysync.models.flight.Vehicle
-import java.sql.Time
+import java.util.Date
 
 interface Report {
-  val begin: Time
-  val end: Time
+  val begin: Date
+  val end: Date
   val pause: Boolean
-  val pauseDuration: Long
+  val pauseDuration: Long // in milliseconds
   val comments: String
   val vehicleProblems: Map<Vehicle, String>
 }

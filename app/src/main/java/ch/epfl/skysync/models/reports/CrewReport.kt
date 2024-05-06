@@ -1,22 +1,20 @@
 package ch.epfl.skysync.models.reports
 
+import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.Crew
-import java.sql.Time
+import java.util.Date
 
 data class CrewReport(
-    val id: String,
+    val id: String = UNSET_ID,
     val author: Crew,
     val littleChampagne: Int,
     val bigChampagne: Int,
     val prestigeChampagne: Int,
-    val littleChampagneToFarmer: Boolean,
-    val bigChampagneToFarmer: Boolean,
-    val prestigeChampagneToFarmer: Boolean,
-    override val begin: Time,
-    override val end: Time,
+    override val begin: Date,
+    override val end: Date,
     override val pause: Boolean,
-    override val pauseDuration: Long,
+    override val pauseDuration: Long, // in milliseconds
     override val comments: String,
     override val vehicleProblems: Map<Vehicle, String>
 ) : Report

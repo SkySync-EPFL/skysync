@@ -1,22 +1,23 @@
 package ch.epfl.skysync.models.reports
 
+import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.user.Pilot
-import java.sql.Time
+import java.util.Date
 
 data class PilotReport(
-    val id: String,
+    val id: String = UNSET_ID,
     val author: Pilot,
     val effectivePax: Int,
-    val takeOffTime: Time,
+    val takeOffTime: Date,
     val takeOffLocation: Location,
     val landingLocation: Location,
-    val landingTime: Time,
-    override val begin: Time,
-    override val end: Time,
+    val landingTime: Date,
+    override val begin: Date,
+    override val end: Date,
     override val pause: Boolean,
-    override val pauseDuration: Long,
+    override val pauseDuration: Long, // in milliseconds
     override val comments: String,
     override val vehicleProblems: Map<Vehicle, String>
 ) : Report
