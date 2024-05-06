@@ -19,7 +19,7 @@ class LocationTable(db: FirestoreDatabase) :
    * @param location The location to add
    * @param onError Callback called when an error occurs
    */
-  suspend fun addLocation(location: Location, onError: ((Exception) -> Unit)? = null) {
+  suspend fun addLocation(location: Location, onError: ((Exception) -> Unit)? = null): String {
     return withErrorCallback(onError) { db.addItem(path, LocationSchema.fromModel(location)) }
   }
 

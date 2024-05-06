@@ -6,7 +6,7 @@ import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.models.location.Location
-import com.google.android.gms.maps.model.LatLng
+import ch.epfl.skysync.models.location.LocationPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.job
 import kotlinx.coroutines.test.runTest
@@ -31,16 +31,13 @@ class LocationTableTest {
   }
 
   @Test
-  fun updateLocationTest() = runTest {
-    val originalLocation = Location(id = dbs.pilot1.id, value = LatLng(40.7128, -74.0060))
-    locationTable.updateLocation(originalLocation)
-    val newLocation = Location(id = dbs.crew1.id, value = LatLng(37.7749, -122.4194))
-    locationTable.updateLocation(newLocation, onError = { assertNull(it) })
+  fun addLocationTest() = runTest {
+    val location = Location(userId = dbs.pilot1.id, data = LocationPoint(0, 40.7128, -74.0060))
+    val id = locationTable.addLocation(location, onError = { assertNull(it) })
+    val getLocation = locationTable.get(id, onError = { assertNull(it) })
 
-    val updatedLocation = locationTable.get(dbs.crew1.id, onError = { assertNull(it) })
-    assertNotNull(updatedLocation)
-    assertEquals(37.7749, updatedLocation!!.value.latitude, 0.001)
-    assertEquals(-122.4194, updatedLocation.value.longitude, 0.001)
+    assertNotNull(getLocation)
+    assertEquals(location.copy(id = id), getLocation)
   }
 
   @Test
@@ -48,34 +45,29 @@ class LocationTableTest {
     val updates: MutableList<ListenerUpdate<Location>> = mutableListOf()
     val userIds = listOf(dbs.pilot2.id, dbs.admin2.id)
 
-    // Mocking real-time updates
     val listenerRegistrations =
         userIds.map { userId ->
           locationTable.listenForLocationUpdates(
               userId, onChange = { update -> updates.add(update) }, coroutineScope = this)
         }
 
-    val newLocation = Location(id = dbs.pilot2.id, value = LatLng(34.0522, -118.2437))
-    locationTable.updateLocation(newLocation)
+    // query the database to let the time for the listener to get their first update
+    locationTable.getAll()
+    locationTable.getAll()
 
-    val updatedLocation = Location(id = dbs.pilot2.id, value = LatLng(0.0, 0.0))
-    locationTable.updateLocation(updatedLocation)
+    val newLocation1 = Location(userId = dbs.pilot2.id, data = LocationPoint(0, 34.0522, -118.2437))
+    locationTable.addLocation(newLocation1)
+
+    val newLocation2 = Location(userId = dbs.admin2.id, data = LocationPoint(3, 0.0, 0.0))
+    locationTable.addLocation(newLocation2)
 
     this.coroutineContext.job.children.forEach { it.join() } // Wait for all coroutines to finish
+    updates.forEach { println(it) }
 
-    // The order of the listener triggers is:
-    // - Add new location
-    // - Initial listener query result
-    // - update location
-    // as the first update as it needs to wait for a requests and is not
-    // a coroutine (it is not blocking as it is executed by the listener)
-    // while the listener is triggered before the add operation is performed
-    // see doc (https://firebase.google.com/docs/firestore/query-data/listen#events-local-changes)
-    assertEquals(3, updates.size)
-    assertEquals(newLocation.value.latitude, updates[0].adds[0].value.latitude, 0.001)
-    assertEquals(updatedLocation.value.latitude, updates[2].updates[0].value.latitude, 0.001)
+    assertEquals(4, updates.size)
+    assertEquals(newLocation1.data, updates[2].adds[0].data)
+    assertEquals(newLocation2.data, updates[3].adds[0].data)
 
-    // Clean up listeners
     listenerRegistrations.forEach { it.remove() }
   }
 

@@ -9,33 +9,38 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.RoleType
+import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.user.User
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class LocationViewModel(repository: Repository) : ViewModel() {
+class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
 
   companion object {
     @Composable
-    fun createViewModel(repository: Repository): LocationViewModel {
+    fun createViewModel(uid: String, repository: Repository): LocationViewModel {
       return viewModel<LocationViewModel>(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return LocationViewModel(repository) as T
+                  return LocationViewModel(uid, repository) as T
                 }
               })
     }
   }
 
   private val locationTable = repository.locationTable
+  private val flightTraceTable = repository.flightTraceTable
   private val listeners = mutableListOf<ListenerRegistration>()
   private val users = mutableMapOf<String, User>()
 
+  private var flightId: String? = null
+  private var pilotId: String? = null
   private val _inFlight = MutableStateFlow<Boolean>(false)
   val inFlight: StateFlow<Boolean> = _inFlight.asStateFlow()
 
@@ -76,7 +81,9 @@ class LocationViewModel(repository: Repository) : ViewModel() {
   /** Update the flight trace locations according to the received update */
   private fun updateFlightLocations(update: ListenerUpdate<Location>) {
     var locations = _flightLocations.value
-    val updatedLocations = update.adds + update.updates + update.deletes
+    // do not take deletions into account, as it is just deletions from the query results
+    // that is: it is not the location with the highest time anymore
+    val updatedLocations = update.adds + update.updates
     locations =
         locations.filter { location -> updatedLocations.find { it.id == location.id } == null }
     // add new locations
@@ -96,12 +103,39 @@ class LocationViewModel(repository: Repository) : ViewModel() {
     // TODO: display error message
   }
 
-  /** Reset the internal mutable attributes */
+  /** Reset the internal flight specific attributes */
   private fun reset() {
     users.clear()
     listeners.forEach { it.remove() }
     listeners.clear()
+    _currentLocations.value = emptyMap()
+    _flightLocations.value = emptyList()
   }
+
+  /**
+   * Save the flight trace to the flight trace table.
+   *
+   * Note: The flight trace is composed of the locations of the pilot, but this function can be
+   * called from any member of the flight, thus responsibility of the call of this function needs to
+   * be clearly defined.
+   */
+  fun saveFlightTrace() =
+      viewModelScope.launch {
+        if (!_inFlight.value || flightId == null || pilotId == null) {
+          onError(Exception("Can not save the flight trace while not in flight."))
+          return@launch
+        }
+        // first verify that the number of locations in local and in the database match
+        // as the pilot could already have deleted his locations
+        val locations =
+            locationTable.query(Filter.equalTo("userId", pilotId!!), onError = { onError(it) })
+        if (_flightLocations.value.size != locations.size) {
+          onError(Exception("Can not save the flight trace (consistency issue)."))
+          return@launch
+        }
+        val flightTrace = FlightTrace(data = _flightLocations.value.map { it.data })
+        flightTraceTable.set(flightId!!, flightTrace, onError = { onError(it) })
+      }
 
   /**
    * Setup the view model to be in "flight-mode", setup listeners on flight members' to track their
@@ -109,26 +143,32 @@ class LocationViewModel(repository: Repository) : ViewModel() {
    */
   fun startFlight(flight: ConfirmedFlight) {
     reset()
+    flightId = flight.id
 
     val users = flight.team.roles.map { it.assignedUser!! }
     users.forEach { this.users[it.id] = it }
 
     val userIds = users.map { it.id }
-    val pilotId = flight.team.roles.find { it.roleType == RoleType.PILOT }?.assignedUser!!.id
+    pilotId = flight.team.roles.find { it.roleType == RoleType.PILOT }?.assignedUser?.id
     if (pilotId == null) {
       onError(Exception("Missing a pilot on flight."))
       return
     }
     _inFlight.value = true
 
-    addLocationListeners(userIds, pilotId)
+    addLocationListeners(userIds, pilotId!!)
   }
 
-  /** Stop the flight, clean listeners */
-  fun endFlight() {
-    reset()
-    _inFlight.value = false
-  }
+  /** Stop the flight Clean listeners and delete all locations of the user */
+  fun endFlight() =
+      viewModelScope.launch {
+        reset()
+
+        locationTable.queryDelete(Filter.equalTo("userId", uid), onError = { onError(it) })
+
+        flightId = null
+        _inFlight.value = false
+      }
 
   override fun onCleared() {
     reset()

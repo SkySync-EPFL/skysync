@@ -50,14 +50,39 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 
+data class UserMetrics(
+    val speed: Float,
+    val altitude: Double,
+    val bearing: Float,
+    val verticalSpeed: Double,
+    val location: LocationPoint,
+) {
+  fun withUpdate(
+      speed: Float,
+      altitude: Double,
+      bearing: Float,
+      location: LocationPoint,
+  ): UserMetrics {
+    var verticalSpeed = (altitude - this.altitude) / (location.time - this.location.time)
+    if (!verticalSpeed.isFinite()) {
+      verticalSpeed = 0.0
+    }
+    return UserMetrics(speed, altitude, bearing, verticalSpeed, location)
+  }
+
+  override fun toString(): String {
+    return "Horizontal Speed: %.2f m/s\nVertical Speed: %.2f m/s\nAltitude: %.0f m\nBearing: %.2f °"
+        .format(speed, verticalSpeed, altitude, bearing)
+  }
+}
+
 @Composable
-fun MarkerAtLocation(location: Location, user: User) {
+fun UserLocationMarker(location: Location, user: User) {
   return Marker(state = rememberMarkerState(position = location.data.latlng()), title = user.name())
 }
 
@@ -76,38 +101,25 @@ fun FlightScreen(
     locationViewModel: LocationViewModel,
     uid: String
 ) {
-  // Access to the application context.
-  val context = LocalContext.current
-
   val rawTime by timer.rawCounter.collectAsStateWithLifecycle()
   val currentTime by timer.counter.collectAsStateWithLifecycle()
   val flightIsStarted by timer.isRunning.collectAsStateWithLifecycle()
 
   val currentLocations = locationViewModel.currentLocations.collectAsState().value
 
-  // Manages the state of location permissions.
   val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
-  // Provides access to the Fused Location Provider API.
-  val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+  val fusedLocationClient = LocationServices.getFusedLocationProviderClient(LocalContext.current)
 
   // State holding the current location initialized to Lausanne as default value.
   val defaultLocation = LocationPoint(0, 46.516, 6.63282)
-  var userLocation by remember { mutableStateOf(defaultLocation) }
-  // Remembers and controls the camera position state for the map.
-  val cameraPositionState = rememberCameraPositionState {
-    position = CameraPosition.fromLatLngZoom(userLocation.latlng(), 13f)
-  }
-  // Manages the state of the map marker.
-  val markerState = rememberMarkerState(position = userLocation.latlng())
-  // User's informations
-  var speed by remember { mutableStateOf(0f) } // Speed in meters/second
-  var altitude by remember { mutableStateOf(0.0) } // Altitude in meters
-  var bearing by remember { mutableStateOf(0f) } // Direction in degrees
-  var verticalSpeed by remember { mutableStateOf(0.0) } // Vertical speed in meters/second
-  var previousAltitude by remember { mutableStateOf<Double?>(null) }
-  var previousTime by remember { mutableStateOf<Long?>(null) }
 
-  // Callback to receive location updates
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(defaultLocation.latlng(), 13f)
+  }
+  val markerState = rememberMarkerState(position = defaultLocation.latlng())
+
+  var metrics by remember { mutableStateOf(UserMetrics(0.0f, 0.0, 0.0f, 0.0, defaultLocation)) }
+
   val locationCallback =
       object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
@@ -119,39 +131,20 @@ fun FlightScreen(
                     longitude = it.longitude,
                 )
 
-            // Update local location
-            userLocation = newLocation
-
-            // Update location for other users
             locationViewModel.addLocation(Location(userId = uid, data = newLocation))
-            // Update marker position
+
             markerState.position = newLocation.latlng()
-            // Update user's informations
-            speed = it.speed // Update speed
-            bearing = it.bearing // Update Bearing
-            val currentTime = System.currentTimeMillis()
-            previousAltitude?.let { prevAlt ->
-              verticalSpeed =
-                  if (previousTime != null) {
-                    (it.altitude - prevAlt) / ((currentTime - previousTime!!) / 1000.0)
-                  } else {
-                    0.0
-                  }
-            }
-            altitude = it.altitude
-            previousAltitude = it.altitude
-            previousTime = currentTime
+            metrics = metrics.withUpdate(it.speed, it.altitude, it.bearing, newLocation)
           }
         }
       }
 
-  // DisposableEffect to handle location updates and permissions.
   DisposableEffect(locationPermission) {
     // Defines the location request parameters.
     val locationRequest =
         LocationRequest.create().apply {
-          interval = 2000 // Interval for location updates.
-          fastestInterval = 2000 // Fastest interval for location updates.
+          interval = 2000
+          fastestInterval = 2000
         }
 
     // Requests location updates if permission is granted.
@@ -159,7 +152,6 @@ fun FlightScreen(
       try {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
       } catch (e: SecurityException) {
-        // Exception handling if the permission was rejected.
         Log.e("FlightScreen", "Failed to request location updates", e)
       }
     } else {
@@ -173,7 +165,6 @@ fun FlightScreen(
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       floatingActionButton = {
-        // Floating action button to center the map on the current location.
         if (locationPermission.status.isGranted) {
           Box(
               modifier =
@@ -193,8 +184,10 @@ fun FlightScreen(
                       FloatingActionButton(
                           onClick = {
                             // Moves the camera to the current location when clicked.
-                            userLocation
-                                .let { CameraUpdateFactory.newLatLngZoom(it.latlng(), 13f) }
+                            metrics
+                                .let {
+                                  CameraUpdateFactory.newLatLngZoom(it.location.latlng(), 13f)
+                                }
                                 .let { cameraPositionState.move(it) }
                           },
                           containerColor = lightOrange) {
@@ -220,9 +213,6 @@ fun FlightScreen(
         }
       },
       bottomBar = { BottomBar(navController) }) { padding ->
-        /*if (locationPermission.status.isGranted && userLocation == defaultLocation) {
-          LoadingComponent(isLoading = true, onRefresh = {}, content = {})
-        }*/
         // Renders the Google Map or a permission request message based on the permission status.
         if (locationPermission.status.isGranted) {
           GoogleMap(
@@ -230,14 +220,12 @@ fun FlightScreen(
               cameraPositionState = cameraPositionState) {
                 Marker(state = markerState, title = "Your Location", snippet = "You are here")
 
-                // Markers for the locations of other users
                 currentLocations.values.forEach { (user, location) ->
-                  MarkerAtLocation(location, user)
+                  UserLocationMarker(location, user)
                 }
               }
           Text(
-              text =
-                  "X Speed: $speed m/s\nY Speed: $verticalSpeed m/s\nAltitude: $altitude m\nBearing: $bearing °",
+              text = "$metrics",
               style = MaterialTheme.typography.bodyLarge,
               modifier =
                   Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
@@ -245,7 +233,6 @@ fun FlightScreen(
                       .padding(6.dp))
         }
         if (!locationPermission.status.isGranted) {
-          // Displays a message if location permission is denied.
           Box(
               modifier = Modifier.fillMaxSize().padding(16.dp),
               contentAlignment = Alignment.Center) {
