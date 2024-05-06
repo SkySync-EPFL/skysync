@@ -98,17 +98,15 @@ fun FlightForm(
         var flightTypeValue: FlightType? by remember { mutableStateOf(currentFlight?.flightType) }
         var flightTypeValueError by remember { mutableStateOf(false) }
 
-
-          val chosenVehicles: MutableState<List<Vehicle?>> = remember {
-              if (currentFlight?.vehicles == null) {
-                mutableStateOf(listOf(null))
-              } else if (currentFlight.vehicles.isNotEmpty()) {
-                mutableStateOf(currentFlight.vehicles)
-              } else {
-                mutableStateOf(listOf(null))
-              }
+        val chosenVehicles: MutableState<List<Vehicle?>> = remember {
+          if (currentFlight?.vehicles == null) {
+            mutableStateOf(listOf(null))
+          } else if (currentFlight.vehicles.isNotEmpty()) {
+            mutableStateOf(currentFlight.vehicles)
+          } else {
+            mutableStateOf(listOf(null))
+          }
         }
-
 
         var timeSlotValue: TimeSlot by remember {
           mutableStateOf(currentFlight?.timeSlot ?: TimeSlot.AM)
@@ -252,9 +250,9 @@ fun FlightForm(
                               Modifier.padding(horizontal = defaultPadding)
                                   .testTag("Add Vehicle Button"),
                           onClick = {
-                              val tempMutableList = chosenVehicles.value.toMutableList()
-                              tempMutableList.add(null)
-                              chosenVehicles.value = tempMutableList.toList()
+                            val tempMutableList = chosenVehicles.value.toMutableList()
+                            tempMutableList.add(null)
+                            chosenVehicles.value = tempMutableList.toList()
                           },
                       ) {
                         Icon(Icons.Default.Add, contentDescription = "Add Vehicle")
@@ -271,20 +269,19 @@ fun FlightForm(
                             defaultPadding = defaultPadding,
                             title = "Vehicle $idList",
                             value = car,
-                            onclickMenu = {
-                                item ->
-                                val tempMutableList = chosenVehicles.value.toMutableList()
-                                tempMutableList[idList] = item
-                                chosenVehicles.value = tempMutableList.toList()
-                                          },
+                            onclickMenu = { item ->
+                              val tempMutableList = chosenVehicles.value.toMutableList()
+                              tempMutableList[idList] = item
+                              chosenVehicles.value = tempMutableList.toList()
+                            },
                             items = availableVehicles,
-                            showString = { it?.name?: "choose vehicle" })
+                            showString = { it?.name ?: "choose vehicle" })
                         IconButton(
                             modifier = Modifier.testTag("Delete Vehicle $idList Button"),
                             onClick = {
-                                val tempMutableList = chosenVehicles.value.toMutableList()
-                                tempMutableList.removeAt(idList)
-                                chosenVehicles.value = tempMutableList.toList()
+                              val tempMutableList = chosenVehicles.value.toMutableList()
+                              tempMutableList.removeAt(idList)
+                              chosenVehicles.value = tempMutableList.toList()
                             },
                         ) {
                           Icon(Icons.Default.Delete, contentDescription = "Delete Vehicle $idList")
@@ -404,7 +401,6 @@ fun flightTypeInputValidation(flightTypeValue: FlightType?): Boolean {
 fun inputValidation(nbPassengersValueError: Boolean, flightTypeValueError: Boolean): Boolean {
   return nbPassengersValueError || flightTypeValueError
 }
-
 
 @Composable
 fun RoleField(
