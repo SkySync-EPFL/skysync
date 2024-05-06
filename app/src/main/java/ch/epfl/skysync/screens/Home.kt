@@ -54,7 +54,7 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
           },
           floatingActionButtonPosition = FabPosition.End,
       ) { paddingValues ->
-        FlightsList(currentFlights, lightOrange, paddingValues, "Upcoming Flights") { selectedFlight
+        FlightsList(currentFlights, lightOrange, paddingValues, "Upcoming flights") { selectedFlight
           ->
           navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
         }
@@ -68,7 +68,7 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
           },
           floatingActionButtonPosition = FabPosition.End,
       ) { paddingValues ->
-        FlightsList(currentFlights, Purple40, paddingValues, "Upcoming Flights") { selectedFlight ->
+        FlightsList(currentFlights, Purple40, paddingValues, "Upcoming flights") { selectedFlight ->
           navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
         }
       }
