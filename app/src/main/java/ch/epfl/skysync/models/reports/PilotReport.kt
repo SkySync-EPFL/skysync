@@ -8,7 +8,7 @@ import java.util.Date
 
 data class PilotReport(
     val id: String = UNSET_ID,
-    val author: Pilot,
+    override val author: Pilot,
     val effectivePax: Int,
     val takeOffTime: Date,
     val takeOffLocation: Location,
