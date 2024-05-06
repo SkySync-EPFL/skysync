@@ -99,6 +99,15 @@ fun NavGraphBuilder.homeGraph(
           confirmationScreen(navController, flightId, flightsViewModel)
         }
 
+    /*composable(
+        Route.USER_DETAILS + "/{User ID}",
+        arguments = listOf(navArgument("User ID") { type = NavType.StringType })) { backStackEntry
+        ->
+        val userId = backStackEntry.arguments?.getString("User ID") ?: UNSET_ID
+        val userDetailsViewModel = userDetailsViewModel.createViewModel(repository, userId)
+        UserDetailsScreen(navController, userDetailsViewModel)
+    }*/
+
     composable(
         route = Route.MODIFY_FLIGHT + "/{Flight ID}",
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
