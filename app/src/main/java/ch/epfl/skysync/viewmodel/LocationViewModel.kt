@@ -6,7 +6,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.database.ListenerUpdate
+import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.location.Location
+import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,40 +32,55 @@ class LocationViewModel(repository: Repository) : ViewModel() {
     }
   }
 
-  // Temporary
-  private val userTable = repository.userTable
-
   private val locationTable = repository.locationTable
   private val listeners = mutableListOf<ListenerRegistration>()
+  private val users = mutableMapOf<String, User>()
 
-  // Flow to observe location updates
-  private val _locations = MutableStateFlow<List<Location>>(emptyList())
-  val locations: StateFlow<List<Location>> = _locations.asStateFlow()
+  private val _inFlight = MutableStateFlow<Boolean>(false)
+  val inFlight: StateFlow<Boolean> = _inFlight.asStateFlow()
+
+  private val _currentLocations = MutableStateFlow<Map<String, Pair<User, Location>>>(emptyMap())
+  val currentLocations: StateFlow<Map<String, Pair<User, Location>>> =
+      _currentLocations.asStateFlow()
+
+  private val _flightLocations = MutableStateFlow<List<Location>>(emptyList())
+  val flightLocations: StateFlow<List<Location>> = _flightLocations.asStateFlow()
 
   /**
    * Fetches the location of a list of user IDs and listens for updates.
    *
    * @param userIds List of user IDs whose locations are to be fetched and observed.
+   * @param pilotId The ID of the pilot that is used to construct the trace of the flight
    */
-  private fun addLocationListeners(userIds: List<String>) {
+  private fun addLocationListeners(userIds: List<String>, pilotId: String) {
     listeners +=
         userIds.map { userId ->
           locationTable.listenForLocationUpdates(
               userId,
               { update ->
-                var locations = _locations.value
-
-                // remove current locations that will be updated/added
-                locations =
-                    locations.filter { location ->
-                      update.adds.find { it.id == location.id } == null &&
-                          update.updates.find { it.id == location.id } == null
-                    }
-                // add new locations
-                _locations.value = locations + update.adds + update.updates
+                if (userId == pilotId) {
+                  updateFlightLocations(update)
+                }
+                if (update.adds.isEmpty()) {
+                  return@listenForLocationUpdates
+                }
+                val user = users[userId]!!
+                val lastLocation = update.adds.last()
+                _currentLocations.value =
+                    _currentLocations.value.plus(Pair(userId, Pair(user, lastLocation)))
               },
               viewModelScope)
         }
+  }
+
+  /** Update the flight trace locations according to the received update */
+  private fun updateFlightLocations(update: ListenerUpdate<Location>) {
+    var locations = _flightLocations.value
+    val updatedLocations = update.adds + update.updates + update.deletes
+    locations =
+        locations.filter { location -> updatedLocations.find { it.id == location.id } == null }
+    // add new locations
+    _flightLocations.value = (locations + update.adds + update.updates).sortedBy { it.data.time }
   }
 
   /**
@@ -77,18 +96,42 @@ class LocationViewModel(repository: Repository) : ViewModel() {
     // TODO: display error message
   }
 
-  init {
-    // Temporary to show it works, will later be connected to a "start/stop flight" button for ex
-    // Will need a shared ViewModel later
-    viewModelScope.launch {
-      val userIds = userTable.getAll().map { it.id }
-      addLocationListeners(userIds)
+  /** Reset the internal mutable attributes */
+  private fun reset() {
+    users.clear()
+    listeners.forEach { it.remove() }
+    listeners.clear()
+  }
+
+  /**
+   * Setup the view model to be in "flight-mode", setup listeners on flight members' to track their
+   * current location and start to construct flight trace.
+   */
+  fun startFlight(flight: ConfirmedFlight) {
+    reset()
+
+    val users = flight.team.roles.map { it.assignedUser!! }
+    users.forEach { this.users[it.id] = it }
+
+    val userIds = users.map { it.id }
+    val pilotId = flight.team.roles.find { it.roleType == RoleType.PILOT }?.assignedUser!!.id
+    if (pilotId == null) {
+      onError(Exception("Missing a pilot on flight."))
+      return
     }
+    _inFlight.value = true
+
+    addLocationListeners(userIds, pilotId)
+  }
+
+  /** Stop the flight, clean listeners */
+  fun endFlight() {
+    reset()
+    _inFlight.value = false
   }
 
   override fun onCleared() {
-    listeners.forEach { it.remove() }
-    listeners.clear()
+    reset()
     super.onCleared()
   }
 }

@@ -36,6 +36,7 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.Timer
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.LocationViewModel
@@ -49,10 +50,16 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+
+@Composable
+fun MarkerAtLocation(location: Location, user: User) {
+  return Marker(state = rememberMarkerState(position = location.data.latlng()), title = user.name())
+}
 
 /**
  * This composable function renders a screen with a map that shows the user's current location. It
@@ -76,12 +83,13 @@ fun FlightScreen(
   val currentTime by timer.counter.collectAsStateWithLifecycle()
   val flightIsStarted by timer.isRunning.collectAsStateWithLifecycle()
 
+  val currentLocations = locationViewModel.currentLocations.collectAsState().value
+
   // Manages the state of location permissions.
   val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
   // Provides access to the Fused Location Provider API.
   val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-  // List of the locations of the other Team members
-  val locations = locationViewModel.locations.collectAsState().value
+
   // State holding the current location initialized to Lausanne as default value.
   val defaultLocation = LocationPoint(0, 46.516, 6.63282)
   var userLocation by remember { mutableStateOf(defaultLocation) }
@@ -223,11 +231,8 @@ fun FlightScreen(
                 Marker(state = markerState, title = "Your Location", snippet = "You are here")
 
                 // Markers for the locations of other users
-                locations.forEach { location ->
-                  val otherUserLocation = location.data
-                  Marker(
-                      state = rememberMarkerState(position = otherUserLocation.latlng()),
-                      title = "Location of user ${location.id}")
+                currentLocations.values.forEach { (user, location) ->
+                  MarkerAtLocation(location, user)
                 }
               }
           Text(
