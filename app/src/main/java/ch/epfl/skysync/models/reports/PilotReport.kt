@@ -16,8 +16,7 @@ data class PilotReport(
     val landingTime: Date,
     override val begin: Date,
     override val end: Date,
-    override val pause: Boolean,
-    override val pauseDuration: Long, // in milliseconds
+    override val pauseDuration: Long?, // in milliseconds
     override val comments: String,
     override val vehicleProblems: Map<Vehicle, String>
 ) : Report

@@ -6,8 +6,7 @@ import java.util.Date
 interface Report {
   val begin: Date
   val end: Date
-  val pause: Boolean
-  val pauseDuration: Long // in milliseconds
+  val pauseDuration: Long? // in milliseconds
   val comments: String
   val vehicleProblems: Map<Vehicle, String>
 }
