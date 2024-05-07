@@ -3,6 +3,7 @@ package ch.epfl.skysync.test_end_to_end
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
@@ -84,13 +85,11 @@ class E2ECrewFlightDetail {
         composeTestRule.onNodeWithText("Flight Detail").assertIsDisplayed()
         composeTestRule.onNodeWithText(flight.nPassengers.toString() + " Pax").assertIsDisplayed()
 
-        composeTestRule.onNodeWithText("Balloon").assertIsDisplayed()
         var expected = flight.balloon?.name ?: "None"
-        composeTestRule.onNodeWithTag("Balloon$expected").assertIsDisplayed()
+        plannedFlightHelper("Balloon", "Balloon$expected")
 
-        composeTestRule.onNodeWithText("Basket").assertIsDisplayed()
         expected = flight.basket?.name ?: "None"
-        composeTestRule.onNodeWithTag("Basket$expected").assertIsDisplayed()
+        plannedFlightHelper("Basket", "Basket$expected")
 
         composeTestRule.onNodeWithText(flight.flightType.name).assertIsDisplayed()
         composeTestRule.onNodeWithText(flight.date.toString()).assertIsDisplayed()
@@ -106,16 +105,9 @@ class E2ECrewFlightDetail {
           composeTestRule.onNodeWithTag("Team $i").assertIsDisplayed()
         }
 
-        composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Balloon"))
-        composeTestRule.onNodeWithText("Balloon").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("Balloon${flight.balloon.name}").assertIsDisplayed()
-
-        composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Basket"))
-        composeTestRule.onNodeWithTag("Basket").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("Basket${flight.basket.name}").assertIsDisplayed()
-
-        composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Date"))
-        composeTestRule.onNodeWithText(flight.date.toString()).assertIsDisplayed()
+        confirmedFlightHelper("Balloon", "Balloon" + flight.balloon.name)
+        confirmedFlightHelper("Basket", "Basket" + flight.basket.name)
+        confirmedFlightHelper("Date", "Date" + flight.date.toString())
 
         flight.vehicles.forEachIndexed { i, _ ->
           composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Vehicle $i"))
@@ -130,18 +122,30 @@ class E2ECrewFlightDetail {
         composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Flight Color"))
         composeTestRule.onNodeWithTag("Flight Color").assertIsDisplayed()
 
-        composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Meetup Time Team"))
-        composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Departure Time Team"))
-        composeTestRule
-            .onNodeWithTag("body")
-            .performScrollToNode(hasTestTag("Meetup Time Passenger"))
-        composeTestRule
-            .onNodeWithTag("body")
-            .performScrollToNode(hasTestTag("Meetup Location Passenger"))
+        confirmedFlightHelper(
+            "Meetup Time Team", "Meetup Time Team" + flight.meetupTimeTeam.toString())
+        confirmedFlightHelper(
+            "Departure Time Team", "Departure Time Team" + flight.departureTimeTeam.toString())
+        confirmedFlightHelper(
+            "Meetup Time Passenger",
+            "Meetup Time Passenger" + flight.meetupTimePassenger.toString())
+        confirmedFlightHelper(
+            "Meetup Location Passenger",
+            "Meetup Location Passenger" + flight.meetupLocationPassenger)
       }
       composeTestRule.onNodeWithText("Back").performClick()
       route = navController.currentBackStackEntry?.destination?.route
       assertEquals(Route.HOME, route)
     }
+  }
+
+  private fun confirmedFlightHelper(text: String, testTag: String) {
+    composeTestRule.onNodeWithTag("body").performScrollToNode(hasText(text))
+    composeTestRule.onNodeWithTag(testTag).assertIsDisplayed()
+  }
+
+  private fun plannedFlightHelper(text: String, testTag: String) {
+    composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(testTag).assertIsDisplayed()
   }
 }
