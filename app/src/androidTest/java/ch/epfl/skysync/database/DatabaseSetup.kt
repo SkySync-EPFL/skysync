@@ -224,17 +224,17 @@ class DatabaseSetup {
           meetupTimePassenger = LocalTime.of(14, 0, 0),
           meetupLocationPassenger = "location",
       )
-    var flight5 =
-        PlannedFlight(
-            nPassengers = 4,
-            team = Team(roles = listOf(Role(RoleType.PILOT, pilot2), Role(RoleType.CREW, crew2))),
-            flightType = flightType1,
-            balloon = balloon2,
-            basket = basket2,
-            date = LocalDate.now(),
-            timeSlot = TimeSlot.PM,
-            vehicles = listOf(vehicle2, vehicle3),
-            id = UNSET_ID)
+  var flight5 =
+      PlannedFlight(
+          nPassengers = 4,
+          team = Team(roles = listOf(Role(RoleType.PILOT, pilot2), Role(RoleType.CREW, crew2))),
+          flightType = flightType1,
+          balloon = balloon2,
+          basket = basket2,
+          date = LocalDate.now(),
+          timeSlot = TimeSlot.PM,
+          vehicles = listOf(vehicle2, vehicle3),
+          id = UNSET_ID)
 
   var messageGroup1 =
       MessageGroup(name = "Group 1", userIds = setOf(admin2.id, pilot1.id, crew1.id))
@@ -421,20 +421,20 @@ class DatabaseSetup {
             basket = basket1,
             vehicles = listOf(vehicle2),
         )
-      flight5 =
-          flight5.copy(
-              team =
-              Team(
-                  roles =
-                  listOf(Role(RoleType.PILOT, pilot2), Role(RoleType.CREW, crew2)).sortedBy {
-                          role: Role ->
-                      role.roleType
-                  }),
-              flightType = flightType1,
-              balloon = balloon2,
-              basket = basket2,
-              vehicles = listOf(vehicle2, vehicle3),
-          )
+    flight5 =
+        flight5.copy(
+            team =
+                Team(
+                    roles =
+                        listOf(Role(RoleType.PILOT, pilot2), Role(RoleType.CREW, crew2)).sortedBy {
+                            role: Role ->
+                          role.roleType
+                        }),
+            flightType = flightType1,
+            balloon = balloon2,
+            basket = basket2,
+            vehicles = listOf(vehicle2, vehicle3),
+        )
 
     // now that the IDs are set, add the flights/messages
     listOf(
