@@ -91,7 +91,7 @@ class FlightsViewModelTest {
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
       val currentFlights = viewModelAdmin.currentFlights.value
-      assertEquals(4, currentFlights?.size)
+      assertEquals(5, currentFlights?.size)
     }
   }
 
@@ -115,7 +115,7 @@ class FlightsViewModelTest {
     runTest {
       viewModelCrewPilot.refreshUserAndFlights().join()
       val currentFlights = viewModelCrewPilot.currentFlights.value
-      assertEquals(1, currentFlights?.size)
+      assertEquals(2, currentFlights?.size)
     }
   }
 
@@ -219,7 +219,7 @@ class FlightsViewModelTest {
               id = flightTable.add(flightWithoutCrew, onError = { assertNull(it) }))
 
       viewModelAdmin.refreshUserAndFlights().join()
-      assertEquals(6, viewModelAdmin.currentFlights.value?.size)
+      assertEquals(7, viewModelAdmin.currentFlights.value?.size)
     }
   }
 
@@ -251,7 +251,7 @@ class FlightsViewModelTest {
 
       viewModelAdmin.refreshUserAndFlights().join()
 
-      assertEquals(5, viewModelAdmin.currentFlights.value?.size)
+      assertEquals(6, viewModelAdmin.currentFlights.value?.size)
     }
   }
 
@@ -297,7 +297,7 @@ class FlightsViewModelTest {
               id = UNSET_ID)
       viewModelAdmin.refreshUserAndFlights().join()
       val initFlights = viewModelAdmin.currentFlights.value
-      assertEquals(4, initFlights?.size)
+      assertEquals(5, initFlights?.size)
 
       flight1 = flight1.copy(id = flightTable.add(flight1, onError = { assertNull(it) }))
 
@@ -306,7 +306,7 @@ class FlightsViewModelTest {
       viewModelAdmin.refreshUserAndFlights().join()
       val withFlightsAdded = viewModelAdmin.currentFlights.value
 
-      assertEquals(6, withFlightsAdded?.size)
+      assertEquals(7, withFlightsAdded?.size)
 
       viewModelAdmin.deleteFlight(flight1.id).join()
 
@@ -314,7 +314,7 @@ class FlightsViewModelTest {
 
       val withOneFlightDeleted = viewModelAdmin.currentFlights.value
 
-      assertEquals(5, withOneFlightDeleted?.size)
+      assertEquals(6, withOneFlightDeleted?.size)
       assertTrue(withOneFlightDeleted?.contains(flight2) ?: false)
       assertFalse(withOneFlightDeleted?.contains(flight1) ?: true)
     }
@@ -358,7 +358,7 @@ class FlightsViewModelTest {
 
       viewModelAdmin.refreshUserAndFlights().join()
 
-      assertEquals(5, viewModelAdmin.currentFlights.value?.size)
+      assertEquals(6, viewModelAdmin.currentFlights.value?.size)
       assertTrue(viewModelAdmin.currentFlights.value?.contains(modifiedFlight) ?: false)
     }
   }
