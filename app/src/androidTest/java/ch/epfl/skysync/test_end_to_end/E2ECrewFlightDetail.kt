@@ -73,7 +73,7 @@ class E2ECrewFlightDetail {
     assertEquals(assignedFlight, retrievedFlights)
 
     for (flight in assignedFlight) {
-      composeTestRule.onNodeWithTag("flightCard + ${flight.id}").performClick()
+      composeTestRule.onNodeWithTag("flightCard${flight.id}").performClick()
       var route = navController.currentBackStackEntry?.destination?.route
       assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
 

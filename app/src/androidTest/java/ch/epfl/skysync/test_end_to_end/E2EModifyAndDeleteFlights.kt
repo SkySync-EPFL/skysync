@@ -68,11 +68,11 @@ class E2EModifyAndDeleteFlights {
       val plannedFlight = dbs.flight1
       composeTestRule.waitUntil(2500) {
         composeTestRule
-            .onAllNodesWithTag("flightCard + ${plannedFlight.id}")
+            .onAllNodesWithTag("flightCard${plannedFlight.id}")
             .fetchSemanticsNodes()
             .isNotEmpty()
       }
-      composeTestRule.onNodeWithTag("flightCard + ${plannedFlight.id}").performClick()
+      composeTestRule.onNodeWithTag("flightCard${plannedFlight.id}").performClick()
       var route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
       composeTestRule.onNodeWithTag("EditButton").performClick()
@@ -115,11 +115,11 @@ class E2EModifyAndDeleteFlights {
 
       composeTestRule.waitUntil(2500) {
         composeTestRule
-            .onAllNodesWithTag("flightCard + ${plannedFlight.id}")
+            .onAllNodesWithTag("flightCard${plannedFlight.id}")
             .fetchSemanticsNodes()
             .isNotEmpty()
       }
-      composeTestRule.onNodeWithTag("flightCard + ${plannedFlight.id}").performClick()
+      composeTestRule.onNodeWithTag("flightCard${plannedFlight.id}").performClick()
       route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
       composeTestRule.onNodeWithTag("DeleteButton").performClick()
