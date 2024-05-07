@@ -7,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.tables.AvailabilityTable
+import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
@@ -25,6 +26,7 @@ class CalendarViewModelTest {
   private val dbs = DatabaseSetup()
   private val userTable = UserTable(db)
   private val availabilityTable = AvailabilityTable(db)
+  private val flightTable = FlightTable(db)
   private lateinit var calendarViewModel: CalendarViewModel
 
   @Before
@@ -33,7 +35,8 @@ class CalendarViewModelTest {
     dbs.fillDatabase(db)
     composeTestRule.setContent {
       calendarViewModel =
-          CalendarViewModel.createViewModel(dbs.admin1.id, userTable, availabilityTable)
+          CalendarViewModel.createViewModel(
+              dbs.admin1.id, userTable, availabilityTable, flightTable)
       val uiState = calendarViewModel.uiState.collectAsStateWithLifecycle()
       Text(text = uiState.value.user?.firstname ?: "Bob")
     }

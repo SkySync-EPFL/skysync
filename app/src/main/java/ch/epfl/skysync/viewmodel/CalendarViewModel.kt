@@ -11,7 +11,6 @@ import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.CalendarDifferenceType
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
-import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
@@ -19,7 +18,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -64,15 +62,13 @@ class CalendarViewModel(
   private val user: MutableStateFlow<User?> = MutableStateFlow(null)
   private val loadingCounter = MutableStateFlow(0)
 
-
   private var originalAvailabilityCalendar = AvailabilityCalendar()
 
   val uiState: StateFlow<CalendarUiState> =
       combine(user, loadingCounter) { user, loadingCounter ->
-          val flights = userTable.retrieveAssignedFlights(
-              flightTable,
-              user?.id?: "",
-              onError = { onError(it) })
+            val flights =
+                userTable.retrieveAssignedFlights(
+                    flightTable, user?.id ?: "", onError = { onError(it) })
 
             CalendarUiState(
                 user,
@@ -94,20 +90,7 @@ class CalendarViewModel(
    *
    * (Starts a new coroutine)
    */
-  fun refresh() = viewModelScope.launch {
-      refreshUser()
-  }
-
-
-//    suspend fun refreshFlights(){
-//        if (user.value != null) {
-//            _currentFlights.value
-//            userTable.retrieveAssignedFlights(
-//                flightTable,
-//                user.value!!.id,
-//                onError = { onError(it) })
-//        }
-//    }
+  fun refresh() = viewModelScope.launch { refreshUser() }
 
   /** Fetch the user from the database Update asynchronously the [CalendarUiState.user] reference */
   private suspend fun refreshUser() {

@@ -376,6 +376,7 @@ class DatabaseSetup {
         )
     flight2 =
         flight2.copy(
+            date = LocalDate.now(),
             team =
                 Team(
                     roles =
