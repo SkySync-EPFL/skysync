@@ -224,6 +224,17 @@ class DatabaseSetup {
           meetupTimePassenger = LocalTime.of(14, 0, 0),
           meetupLocationPassenger = "location",
       )
+    var flight5 =
+        PlannedFlight(
+            nPassengers = 4,
+            team = Team(roles = listOf(Role(RoleType.PILOT, pilot2), Role(RoleType.CREW, crew2))),
+            flightType = flightType1,
+            balloon = balloon2,
+            basket = basket2,
+            date = LocalDate.now(),
+            timeSlot = TimeSlot.PM,
+            vehicles = listOf(vehicle2, vehicle3),
+            id = UNSET_ID)
 
   var messageGroup1 =
       MessageGroup(name = "Group 1", userIds = setOf(admin2.id, pilot1.id, crew1.id))
@@ -376,7 +387,6 @@ class DatabaseSetup {
         )
     flight2 =
         flight2.copy(
-            date = LocalDate.now(),
             team =
                 Team(
                     roles =
@@ -411,6 +421,20 @@ class DatabaseSetup {
             basket = basket1,
             vehicles = listOf(vehicle2),
         )
+      flight5 =
+          flight5.copy(
+              team =
+              Team(
+                  roles =
+                  listOf(Role(RoleType.PILOT, pilot2), Role(RoleType.CREW, crew2)).sortedBy {
+                          role: Role ->
+                      role.roleType
+                  }),
+              flightType = flightType1,
+              balloon = balloon2,
+              basket = basket2,
+              vehicles = listOf(vehicle2, vehicle3),
+          )
 
     // now that the IDs are set, add the flights/messages
     listOf(
@@ -418,6 +442,7 @@ class DatabaseSetup {
             launch { flight2 = flight2.copy(id = flightTable.add(flight2)) },
             launch { flight3 = flight3.copy(id = flightTable.add(flight3)) },
             launch { flight4 = flight4.copy(id = flightTable.add(flight4)) },
+            launch { flight5 = flight5.copy(id = flightTable.add(flight5)) },
             launch { message1 = message1.copy(id = messageTable.add(messageGroup1.id, message1)) },
             launch { message2 = message2.copy(id = messageTable.add(messageGroup1.id, message2)) },
             launch { message3 = message3.copy(id = messageTable.add(messageGroup2.id, message3)) },

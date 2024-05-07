@@ -13,13 +13,19 @@ import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.database.tables.FlightTable
+import ch.epfl.skysync.models.flight.Role
+import ch.epfl.skysync.models.flight.RoleType
+import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.time.LocalDate
 
 class CalendarIntegrationTest {
   @get:Rule val composeTestRule = createComposeRule()
@@ -53,9 +59,9 @@ class CalendarIntegrationTest {
     Assert.assertEquals(route, Route.FLIGHT_CALENDAR)
 
     composeTestRule.waitUntil(3000) {
-      val nodes = composeTestRule.onAllNodesWithText(dbs.flight2.flightType.name)
+      val nodes = composeTestRule.onAllNodesWithText(dbs.flight5.flightType.name)
       nodes.fetchSemanticsNodes().isNotEmpty()
     }
-    composeTestRule.onNodeWithText(dbs.flight2.flightType.name).assertIsDisplayed()
+    composeTestRule.onNodeWithText(dbs.flight5.flightType.name).assertIsDisplayed()
   }
 }
