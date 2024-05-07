@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.RoleType
@@ -100,7 +101,7 @@ class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    // TODO: display error message
+    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
   }
 
   /** Reset the internal flight specific attributes */
