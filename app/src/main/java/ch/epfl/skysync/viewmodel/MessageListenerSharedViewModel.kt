@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.database.tables.MessageGroupTable
 import ch.epfl.skysync.models.message.Message
@@ -133,6 +134,6 @@ class MessageListenerSharedViewModel : ViewModel() {
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    // TODO: display error message
+    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
   }
 }

@@ -8,6 +8,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 // Singleton object to manage snackbar messages.
 object SnackbarManager {
@@ -27,20 +33,28 @@ object SnackbarManager {
 // Composable function that hosts a Snackbar. It listens for messages from the SnackbarManager.
 @Composable
 fun GlobalSnackbarHost() {
-  // Remember a SnackbarHostState which controls the snackbar queue.
   val snackbarHostState = remember { SnackbarHostState() }
   val snackbarManager = SnackbarManager
 
-  // LaunchedEffect to listen to messages from SnackbarManager and show them as they arrive.
   LaunchedEffect(snackbarManager) {
-    snackbarManager.messagesFlow.collect { message -> snackbarHostState.showSnackbar(message) }
+    snackbarManager.messagesFlow.collect { message ->
+      snackbarHostState.showSnackbar(message)
+    }
   }
 
-  // The actual SnackbarHost that will display the snackbars.
-  SnackbarHost(
+  // Wrapping the SnackbarHost within a Box composable with Alignment.Top
+  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    SnackbarHost(
       hostState = snackbarHostState,
-      snackbar = { snackbarData -> Snackbar(snackbarData = snackbarData) })
+      snackbar = { snackbarData ->
+        Snackbar(
+          snackbarData = snackbarData,
+        )
+      }
+    )
+  }
 }
+
 
 // Preview of how the snackbar system works within a Scaffold. Useful for seeing the behavior in the
 // design tool.
