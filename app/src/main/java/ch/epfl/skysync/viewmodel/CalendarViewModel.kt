@@ -6,10 +6,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.database.tables.AvailabilityTable
+import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.CalendarDifferenceType
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
+import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
@@ -17,6 +19,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -38,6 +41,7 @@ class CalendarViewModel(
     private val uid: String,
     private val userTable: UserTable,
     private val availabilityTable: AvailabilityTable,
+    private val flightTable: FlightTable
 ) : ViewModel() {
   companion object {
     @Composable
@@ -45,12 +49,13 @@ class CalendarViewModel(
         uid: String,
         userTable: UserTable,
         availabilityTable: AvailabilityTable,
+        flightTable: FlightTable
     ): CalendarViewModel {
       return viewModel<CalendarViewModel>(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return CalendarViewModel(uid, userTable, availabilityTable) as T
+                  return CalendarViewModel(uid, userTable, availabilityTable, flightTable) as T
                 }
               })
     }
@@ -59,14 +64,37 @@ class CalendarViewModel(
   private val user: MutableStateFlow<User?> = MutableStateFlow(null)
   private val loadingCounter = MutableStateFlow(0)
 
+
+    private val currentFlights:  StateFlow<List<Flight>> = user.map {
+        if (it != null) {
+            userTable.retrieveAssignedFlights(
+                flightTable,
+                it.id,
+                onError = { onError(it) })
+        }
+        else{
+            emptyList()
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = WhileUiSubscribed,
+        initialValue = emptyList()
+    )
+
+
   private var originalAvailabilityCalendar = AvailabilityCalendar()
 
   val uiState: StateFlow<CalendarUiState> =
       combine(user, loadingCounter) { user, loadingCounter ->
+          val flights = userTable.retrieveAssignedFlights(
+              flightTable,
+              user?.id?: "",
+              onError = { onError(it) })
+
             CalendarUiState(
                 user,
                 user?.availabilities ?: AvailabilityCalendar(),
-                user?.assignedFlights ?: FlightGroupCalendar(),
+                FlightGroupCalendar().addFlightList(flights),
                 loadingCounter > 0)
           }
           .stateIn(
@@ -83,7 +111,20 @@ class CalendarViewModel(
    *
    * (Starts a new coroutine)
    */
-  fun refresh() = viewModelScope.launch { refreshUser() }
+  fun refresh() = viewModelScope.launch {
+      refreshUser()
+  }
+
+
+//    suspend fun refreshFlights(){
+//        if (user.value != null) {
+//            _currentFlights.value
+//            userTable.retrieveAssignedFlights(
+//                flightTable,
+//                user.value!!.id,
+//                onError = { onError(it) })
+//        }
+//    }
 
   /** Fetch the user from the database Update asynchronously the [CalendarUiState.user] reference */
   private suspend fun refreshUser() {

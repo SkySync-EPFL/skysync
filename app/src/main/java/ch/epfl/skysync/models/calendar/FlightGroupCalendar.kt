@@ -44,4 +44,10 @@ class FlightGroupCalendar : CalendarModel<FlightGroup>() {
   fun getFlightGroupByDate(date: LocalDate, timeSlot: TimeSlot): FlightGroup? {
     return getByDate(date, timeSlot)
   }
+
+  fun addFlightList(flights: List<Flight>): FlightGroupCalendar {
+    if (flights.isEmpty()) return this
+    flights.forEach { flight -> addFlightByDate(flight.date, flight.timeSlot, flight) }
+    return this
+  }
 }
