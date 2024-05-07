@@ -152,6 +152,7 @@ class ConfirmFlightUITest {
     val wantedHour = wantedTimeSet.hour
     val wantedMinute = wantedTimeSet.minute
     val tag = "MeetUp"
+    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextClearance()
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextInput(wantedHour.toString())
     composeTestRule.onNodeWithTag(tag + "/Minutes").performTextClearance()
