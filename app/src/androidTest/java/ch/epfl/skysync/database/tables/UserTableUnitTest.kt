@@ -33,8 +33,18 @@ class UserTableUnitTest {
     var user = userTable.get(dbs.admin1.id, onError = { assertNull(it) })
     assertEquals(dbs.admin1, user)
 
-    user = userTable.get(dbs.admin2.id, onError = { assertNull(it) })
-    assertEquals(dbs.admin2, user)
+    var availabilities =
+        userTable.retrieveAvailabilities(dbs.admin1.id, onError = { assertNull(it) })
+    assertEquals(
+        listOf(dbs.availability1Admin1, dbs.availability2Admin1).sortedBy { it.id },
+        availabilities.sortedBy { it.id })
+
+    availabilities = userTable.retrieveAvailabilities(dbs.pilot1.id, onError = { assertNull(it) })
+    assertEquals(
+        listOf(dbs.availability1Pilot1, dbs.availability2Pilot1, dbs.availability3Pilot1).sortedBy {
+          it.id
+        },
+        availabilities.sortedBy { it.id })
 
     user = userTable.get(dbs.crew1.id, onError = { assertNull(it) })
     assertEquals(dbs.crew1, user)
