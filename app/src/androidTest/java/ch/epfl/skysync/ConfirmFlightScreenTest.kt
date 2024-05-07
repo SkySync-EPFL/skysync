@@ -55,6 +55,7 @@ class ConfirmFlightScreenTest {
       nodes[i].performClick()
       var route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
+
       composeTestRule.onNodeWithText("Confirm").performClick()
       composeTestRule.waitForIdle()
       route = navController.currentBackStackEntry?.destination?.route
@@ -63,7 +64,7 @@ class ConfirmFlightScreenTest {
           .onNodeWithTag("LazyList")
           .performScrollToNode(hasText("Confirm"))
           .assertIsDisplayed()
-      composeTestRule.onNodeWithText("Confirm").performClick()
+      composeTestRule.onNodeWithTag("ConfirmThisFlightButton").performClick()
       composeTestRule.waitForIdle()
       route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.HOME, route)

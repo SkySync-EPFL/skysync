@@ -100,8 +100,6 @@ class CalendarViewModel(
     loadingCounter.value += 1
     var newUser = userTable.get(uid, this::onError)!!
     newUser.availabilities.addCells(userTable.retrieveAvailabilities(uid, this::onError))
-    val flights = userTable.retrieveAssignedFlights(flightTable, uid, this::onError)
-    flights.forEach { newUser.assignedFlights.addFlightByDate(it.date, it.timeSlot, it) }
     loadingCounter.value -= 1
     user.value = newUser
     originalAvailabilityCalendar = newUser.availabilities.copy()
