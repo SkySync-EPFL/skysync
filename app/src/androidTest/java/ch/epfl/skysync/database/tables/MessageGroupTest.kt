@@ -1,5 +1,6 @@
 package ch.epfl.skysync.database.tables
 
+import android.os.SystemClock
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.MainCoroutineRule
 import ch.epfl.skysync.database.DatabaseSetup
@@ -55,6 +56,10 @@ class MessageGroupTest {
             { update -> listenerUpdates.add(update) },
             coroutineScope = this,
             onError = { assertNull(it) })
+
+    // add a little delay to wait for the listener to be triggered
+    SystemClock.sleep(300)
+
     var newMessage1 = Message(user = dbs.crew1, date = Date.from(Instant.now()), content = "New")
     newMessage1 = newMessage1.copy(id = messageTable.add(dbs.messageGroup1.id, newMessage1))
 
@@ -76,20 +81,20 @@ class MessageGroupTest {
     // for a requests and is not a coroutine (it is not blocking as it is executed by the listener)
     assertEquals(
         ListenerUpdate(
-            isFirstUpdate = false,
-            isLocalUpdate = true,
+            isFirstUpdate = true,
+            isLocalUpdate = false,
             adds = listOf(dbs.message2, dbs.message1),
             updates = listOf(),
             deletes = listOf()),
-        listenerUpdates[1])
+        listenerUpdates[0])
     assertEquals(
         ListenerUpdate(
-            isFirstUpdate = true,
+            isFirstUpdate = false,
             isLocalUpdate = true,
             adds = listOf(newMessage1),
             updates = listOf(),
             deletes = listOf()),
-        listenerUpdates[0])
+        listenerUpdates[1])
     assertEquals(
         ListenerUpdate(
             isFirstUpdate = false,
