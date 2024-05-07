@@ -25,13 +25,13 @@ import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.screens.AddFlightScreen
 import ch.epfl.skysync.screens.AddUserScreen
 import ch.epfl.skysync.screens.ChatScreen
+import ch.epfl.skysync.screens.ConfirmationScreen
 import ch.epfl.skysync.screens.FlightHistoryScreen
 import ch.epfl.skysync.screens.FlightScreen
 import ch.epfl.skysync.screens.HomeScreen
 import ch.epfl.skysync.screens.ModifyFlightScreen
 import ch.epfl.skysync.screens.TextScreen
 import ch.epfl.skysync.screens.UserManagementScreen
-import ch.epfl.skysync.screens.confirmationScreen
 import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
@@ -96,7 +96,7 @@ fun NavGraphBuilder.homeGraph(
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
           val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
-          confirmationScreen(navController, flightId, flightsViewModel)
+          ConfirmationScreen(navController, flightId, flightsViewModel)
         }
 
     /*composable(

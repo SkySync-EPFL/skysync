@@ -12,6 +12,7 @@ import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
+import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -186,11 +187,14 @@ class FlightsViewModel(
       viewModelScope.launch { repository.flightTable.delete(flightId, onError = { onError(it) }) }
 
   /** adds the given flight to the db and the viewmodel */
-  fun addFlight(
-      flight: PlannedFlight,
-  ) =
+  fun addFlight(flight: PlannedFlight) =
       viewModelScope.launch {
         val flightId = repository.flightTable.add(flight, onError = { onError(it) })
+      }
+
+  fun addConfirmedFlight(flight: ConfirmedFlight) =
+      viewModelScope.launch {
+        repository.flightTable.update(flight.id, flight, onError = { onError(it) })
       }
 
   fun getFlight(flightId: String): StateFlow<Flight?> {

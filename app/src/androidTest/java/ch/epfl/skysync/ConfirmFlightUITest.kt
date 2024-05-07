@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
-import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -14,7 +14,7 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
-import ch.epfl.skysync.components.confirmation
+import ch.epfl.skysync.components.Confirmation
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
@@ -55,7 +55,7 @@ class ConfirmFlightUITest {
       val repository = Repository(FirestoreDatabase(useEmulator = true))
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      confirmation(plannedFlight = planedFlight.value) {}
+      Confirmation(plannedFlight = planedFlight.value) {}
     }
   }
   // test of info to verify by a user
@@ -134,14 +134,14 @@ class ConfirmFlightUITest {
   // test of info to enter by user
   @Test
   fun canColorsBeChoosen() {
-    composeTestRule.onNodeWithText("Select Option").performClick()
+    composeTestRule.onNodeWithText("Select Color").performClick()
     composeTestRule.onNodeWithText("RED").performClick()
     composeTestRule.onNodeWithText("RED").assertIsDisplayed()
   }
 
   @Test
   fun verifyGoodColorChoosing() {
-    composeTestRule.onNodeWithText("Select Option").performClick()
+    composeTestRule.onNodeWithText("Select Color").performClick()
     composeTestRule.onNodeWithText("RED").performClick()
     composeTestRule.onNodeWithText("BLUE").assertIsNotDisplayed()
   }
@@ -169,7 +169,7 @@ class ConfirmFlightUITest {
     val wantedHour = wantedTimeSet.hour
     val wantedMinute = wantedTimeSet.minute
     val tag = "Departure"
-    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
+    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasTestTag(tag + "/SetTime"))
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextClearance()
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextInput(wantedHour.toString())
     composeTestRule.onNodeWithTag(tag + "/Minutes").performTextClearance()

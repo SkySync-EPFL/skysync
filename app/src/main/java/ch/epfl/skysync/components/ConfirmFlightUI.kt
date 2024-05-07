@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -43,7 +44,7 @@ import java.time.format.DateTimeFormatter
  * @param plannedFlight The planned flight for which the confirmation screen is displayed.
  */
 @Composable
-fun confirmation(plannedFlight: PlannedFlight, confirmClick: () -> Unit) {
+fun Confirmation(plannedFlight: PlannedFlight, confirmClick: (ConfirmedFlight) -> Unit) {
   val id: String = plannedFlight.id
   val nPassengers: Int = plannedFlight.nPassengers
   val flightType: FlightType = plannedFlight.flightType
@@ -54,12 +55,11 @@ fun confirmation(plannedFlight: PlannedFlight, confirmClick: () -> Unit) {
   val timeSlot = plannedFlight.timeSlot
   val vehicles: List<Vehicle> = plannedFlight.vehicles
 
-  var remarks: List<String> = emptyList()
-  var Teamcolor = FlightColor.NO_COLOR
-  var meetupTimeTeam = LocalTime.now()
-  var departureTimeTeam = meetupTimeTeam.plusHours(1)
-  var meetupTimePassenger = departureTimeTeam.plusHours(1)
-  var meetupLocationPassenger = "Nancy"
+  val remarks: List<String> = emptyList()
+  val meetupTimeTeam = LocalTime.now()
+  val departureTimeTeam = meetupTimeTeam.plusHours(1)
+  val meetupTimePassenger = departureTimeTeam.plusHours(1)
+  val meetupLocationPassenger = "Nancy"
 
   val fontSize = 17.sp
 
@@ -73,7 +73,7 @@ fun confirmation(plannedFlight: PlannedFlight, confirmClick: () -> Unit) {
           textAlign = TextAlign.Center)
       Text(
           modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
-          text = "Informations to confirm",
+          text = "Information to confirm",
           fontSize = 20.sp,
           fontWeight = FontWeight.Bold,
           textAlign = TextAlign.Center)
@@ -97,13 +97,20 @@ fun confirmation(plannedFlight: PlannedFlight, confirmClick: () -> Unit) {
       }
       Text(
           modifier = Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 16.dp),
-          text = "Informations to enter",
+          text = "Information to enter",
           fontSize = 20.sp,
           fontWeight = FontWeight.Bold,
           textAlign = TextAlign.Center)
       // color choosing:
-      var selectedOption by remember { mutableStateOf<String?>(null) }
-      val options = listOf("RED", "BLUE", "ORANGE", "YELLOW", "PINK", "NO_COLOR")
+      var selectedOption by remember { mutableStateOf(FlightColor.NO_COLOR) }
+      val options =
+          listOf(
+              FlightColor.RED,
+              FlightColor.BLUE,
+              FlightColor.ORANGE,
+              FlightColor.YELLOW,
+              FlightColor.PINK,
+              FlightColor.NO_COLOR)
       Row() {
         Column(Modifier.fillMaxWidth(0.5f)) {
           Spacer(modifier = Modifier.height(5.dp))
@@ -118,9 +125,7 @@ fun confirmation(plannedFlight: PlannedFlight, confirmClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
               OptionSelector(
-                  options = options,
-                  onOptionSelected = { option -> selectedOption = option },
-                  65.dp)
+                  options = options, onOptionSelected = { option -> selectedOption = option })
             }
       }
 
@@ -211,12 +216,37 @@ fun confirmation(plannedFlight: PlannedFlight, confirmClick: () -> Unit) {
               }
             })
       }
-      Box(modifier = Modifier.fillMaxWidth().padding(2.dp), contentAlignment = Alignment.Center) {
-        ClickButton(
-            text = "Confirm",
-            onClick = { confirmClick() },
-            modifier = Modifier.fillMaxWidth(0.7f).testTag("ConfirmThisFlightButton"),
-            color = Color.Green)
+      if (balloon != null &&
+          basket != null &&
+          selectedTime != null &&
+          selectedTime1 != null &&
+          selectedTime2 != null) {
+
+        Box(modifier = Modifier.fillMaxWidth().padding(2.dp), contentAlignment = Alignment.Center) {
+          val flight =
+              ConfirmedFlight(
+                  id = plannedFlight.id,
+                  nPassengers = plannedFlight.nPassengers,
+                  team = plannedFlight.team,
+                  flightType = plannedFlight.flightType,
+                  balloon = plannedFlight.balloon,
+                  basket = plannedFlight.basket,
+                  date = plannedFlight.date,
+                  timeSlot = plannedFlight.timeSlot,
+                  vehicles = plannedFlight.vehicles,
+                  remarks = remarkList,
+                  color = selectedOption,
+                  meetupTimeTeam = selectedTime!!,
+                  departureTimeTeam = selectedTime1!!,
+                  meetupTimePassenger = selectedTime2!!,
+                  meetupLocationPassenger = location)
+
+          ClickButton(
+              text = "Confirm",
+              onClick = { confirmClick(flight) },
+              modifier = Modifier.fillMaxWidth(0.7f).testTag("ConfirmThisFlightButton"),
+              color = Color.Green)
+        }
       }
     }
   }
@@ -261,8 +291,8 @@ fun TimePicker(
 ) {
   val startHour = baseTime.hour
   val startMinute = baseTime.minute
-  var hours by remember { mutableStateOf(startHour) }
-  var minutes by remember { mutableStateOf(startMinute) }
+  var hours by remember { mutableIntStateOf(startHour) }
+  var minutes by remember { mutableIntStateOf(startMinute) }
   val keyboardController = LocalSoftwareKeyboardController.current
 
   Column(modifier = Modifier.padding(8.dp).height(height), horizontalAlignment = Alignment.Start) {
@@ -325,36 +355,31 @@ fun TimePicker(
  * @param options The list of options to display in the dropdown menu.
  * @param onOptionSelected A lambda function to handle when an option is selected. Accepts a string
  *   parameter representing the selected option.
- * @param height The height of the dropdown menu.
  */
 @Composable
-fun OptionSelector(options: List<String>, onOptionSelected: (String) -> Unit, height: Dp) {
+fun OptionSelector(
+    options: List<FlightColor>,
+    onOptionSelected: (FlightColor) -> Unit,
+) {
   var expanded by remember { mutableStateOf(false) }
-  var selectedIndex by remember { mutableStateOf(0) }
-  var selectedOption by remember { mutableStateOf<String?>(null) }
-  var selected by remember { mutableStateOf("Select Option") }
-  Column(
-      modifier = Modifier.fillMaxWidth().height(height),
-      horizontalAlignment = Alignment.CenterHorizontally) {
-        OutlinedButton(onClick = { expanded = true }) { Text(text = selected) }
+  var selected by remember { mutableStateOf("Select Color") }
+  Column {
+    OutlinedButton(onClick = { expanded = true }) { Text(text = selected) }
 
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-          options.forEachIndexed { index, option ->
-            DropdownMenuItem(
-                onClick = {
-                  selectedIndex = index
-                  selectedOption = option
-                  expanded = false
-                  onOptionSelected(option)
-                },
-                modifier = Modifier.padding(vertical = 1.dp).testTag(option)) {
-                  Text(text = option)
-                }
-          }
-        }
-
-        selectedOption?.let { selected = it }
+    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      options.forEach { option ->
+        DropdownMenuItem(
+            onClick = {
+              selected = option.toString()
+              expanded = false
+              onOptionSelected(option)
+            },
+            modifier = Modifier.padding(vertical = 1.dp).testTag(option.toString())) {
+              Text(text = option.toString())
+            }
       }
+    }
+  }
 }
 /**
  * Composable function to create an element with a text input field, a button to add the input as a
@@ -379,7 +404,7 @@ fun AddElementComposable(
         TextField(
             value = remarkText,
             onValueChange = { remarkText = it },
-            label = { Text("Enter " + title) },
+            label = { Text("Enter $title") },
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
             keyboardActions =
                 KeyboardActions(
@@ -395,7 +420,7 @@ fun AddElementComposable(
               remarkText = ""
             },
             colors = ButtonDefaults.buttonColors(backgroundColor = lightOrange)) {
-              Text("Add " + title)
+              Text("Add $title")
             }
 
         Column {
