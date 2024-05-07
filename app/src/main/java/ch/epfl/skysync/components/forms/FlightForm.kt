@@ -101,10 +101,8 @@ fun FlightForm(
         val chosenVehicles: MutableState<List<Vehicle?>> = remember {
           if (currentFlight?.vehicles == null) {
             mutableStateOf(listOf(null))
-          } else if (currentFlight.vehicles.isNotEmpty()) {
-            mutableStateOf(currentFlight.vehicles)
           } else {
-            mutableStateOf(listOf(null))
+            mutableStateOf(currentFlight.vehicles)
           }
         }
 
