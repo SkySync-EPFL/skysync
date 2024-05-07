@@ -1,19 +1,17 @@
 package ch.epfl.skysync.components
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 
 // Singleton object to manage snackbar messages.
 object SnackbarManager {
@@ -37,24 +35,20 @@ fun GlobalSnackbarHost() {
   val snackbarManager = SnackbarManager
 
   LaunchedEffect(snackbarManager) {
-    snackbarManager.messagesFlow.collect { message ->
-      snackbarHostState.showSnackbar(message)
-    }
+    snackbarManager.messagesFlow.collect { message -> snackbarHostState.showSnackbar(message) }
   }
 
   // Wrapping the SnackbarHost within a Box composable with Alignment.Top
   Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     SnackbarHost(
-      hostState = snackbarHostState,
-      snackbar = { snackbarData ->
-        Snackbar(
-          snackbarData = snackbarData,
-        )
-      }
-    )
+        hostState = snackbarHostState,
+        snackbar = { snackbarData ->
+          Snackbar(
+              snackbarData = snackbarData,
+          )
+        })
   }
 }
-
 
 // Preview of how the snackbar system works within a Scaffold. Useful for seeing the behavior in the
 // design tool.

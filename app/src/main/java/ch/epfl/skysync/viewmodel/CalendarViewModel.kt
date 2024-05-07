@@ -111,7 +111,7 @@ class CalendarViewModel(
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-      SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
   }
 
   /**
