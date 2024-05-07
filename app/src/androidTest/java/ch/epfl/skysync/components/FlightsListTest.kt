@@ -1,5 +1,6 @@
-package ch.epfl.skysync.screens.home
+package ch.epfl.skysync.components
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -7,24 +8,30 @@ import androidx.compose.ui.test.performClick
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
-import ch.epfl.skysync.screens.UpcomingFlights
 import ch.epfl.skysync.ui.theme.lightOrange
 import java.time.LocalDate
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
-class UpcomingFlightsTests {
+class FlightListsTests {
 
   @get:Rule val composeTestRule = createComposeRule()
+
+  val padding = PaddingValues()
 
   @Test
   fun upcomingFlightsDisplaysNoFlightsWhenListIsEmpty() {
     composeTestRule.setContent {
-      UpcomingFlights(flights = emptyList(), color = lightOrange, onFlightClick = {})
+      FlightsList(
+          flights = emptyList(),
+          color = lightOrange,
+          padding,
+          "Upcoming Flights",
+          onFlightClick = {})
     }
 
-    composeTestRule.onNodeWithText("No upcoming flights").assertIsDisplayed()
+    composeTestRule.onNodeWithText("No flights").assertIsDisplayed()
   }
 
   @Test
@@ -42,7 +49,12 @@ class UpcomingFlightsTests {
             id = "testFlightId")
 
     composeTestRule.setContent {
-      UpcomingFlights(flights = listOf(testFlight), color = lightOrange, onFlightClick = {})
+      FlightsList(
+          flights = listOf(testFlight),
+          color = lightOrange,
+          padding,
+          "Upcoming Flights",
+          onFlightClick = {})
     }
 
     composeTestRule.onNodeWithText("Discovery - 1 pax").assertIsDisplayed()
@@ -64,7 +76,7 @@ class UpcomingFlightsTests {
             id = "testFlightId")
 
     composeTestRule.setContent {
-      UpcomingFlights(flights = listOf(testFlight), color = lightOrange) {
+      FlightsList(flights = listOf(testFlight), color = lightOrange, padding, "Upcoming Flights") {
         wasClicked = it == testFlight.id
       }
     }
@@ -73,21 +85,4 @@ class UpcomingFlightsTests {
 
     assertTrue("Flight click callback was not triggered with the correct flight", wasClicked)
   }
-
-  /*@Test
-  fun floatingActionButton_onClick_logsMessage() {
-    val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-    val flights = mutableListOf<PlannedFlight>()
-    composeTestRule.setContent { HomeScreen(navController, flights) }
-
-    // Perform a click on the FAB
-    composeTestRule.onNodeWithContentDescription("Add").performClick()
-
-    // This is where you'd verify the expected behavior. Since we can't directly check Logcat output
-    // here,
-    // consider verifying navigation or state changes instead. For demonstration purposes, we'll
-    // assume
-    // a successful test if the FAB is clickable, which has already been performed above.
-    // In real-world scenarios, replace this with actual verification logic.
-  }*/
 }

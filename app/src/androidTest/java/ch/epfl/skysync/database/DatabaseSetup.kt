@@ -46,6 +46,9 @@ import kotlinx.coroutines.launch
  *
  * Define sample data and a standard database state ([fillDatabase]). Designed to be used on a blank
  * database, use [clearDatabase] to clear any existing data.
+ *
+ * Users do not have availabilities nor assignedFlights filled, this is done by design as these
+ * attributes have to be retrieve with specific methods (and not with a simple .get)
  */
 class DatabaseSetup {
   var admin1 =
@@ -295,7 +298,6 @@ class DatabaseSetup {
               availability2Admin1 =
                   availability2Admin1.copy(
                       id = availabilityTable.add(admin1.id, availability2Admin1))
-              admin1.availabilities.addCells(listOf(availability1Admin1, availability2Admin1))
             },
             launch { userTable.set(admin2.id, admin2) },
             launch {
@@ -306,8 +308,6 @@ class DatabaseSetup {
                   availability2Crew1.copy(id = availabilityTable.add(crew1.id, availability2Crew1))
               availability3Crew1 =
                   availability3Crew1.copy(id = availabilityTable.add(crew1.id, availability3Crew1))
-              crew1.availabilities.addCells(
-                  listOf(availability1Crew1, availability2Crew1, availability3Crew1))
             },
             launch {
               userTable.set(pilot1.id, pilot1)
@@ -320,8 +320,6 @@ class DatabaseSetup {
               availability3Pilot1 =
                   availability3Pilot1.copy(
                       id = availabilityTable.add(pilot1.id, availability3Pilot1))
-              pilot1.availabilities.addCells(
-                  listOf(availability1Pilot1, availability2Pilot1, availability3Pilot1))
             },
             launch {
               userTable.set(crew2.id, crew2)
@@ -331,9 +329,6 @@ class DatabaseSetup {
                   availability2Crew2.copy(id = availabilityTable.add(crew2.id, availability2Crew2))
               availability3Crew2 =
                   availability3Crew2.copy(id = availabilityTable.add(crew2.id, availability3Crew2))
-
-              crew2.availabilities.addCells(
-                  listOf(availability1Crew2, availability2Crew2, availability3Crew2))
             },
             launch {
               userTable.set(pilot2.id, pilot2)
@@ -347,8 +342,6 @@ class DatabaseSetup {
               availability3Pilot2 =
                   availability3Pilot2.copy(
                       id = availabilityTable.add(pilot2.id, availability3Pilot2))
-              pilot2.availabilities.addCells(
-                  listOf(availability1Pilot2, availability2Pilot2, availability3Pilot2))
             },
             launch { tempUserTable.set(tempUser.email, tempUser) })
         .forEach { it.join() }
