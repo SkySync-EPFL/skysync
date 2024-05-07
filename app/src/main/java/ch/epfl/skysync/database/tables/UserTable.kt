@@ -10,7 +10,6 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.Filter
-import com.google.firebase.firestore.Query
 import java.time.LocalDate
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -22,9 +21,17 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
   private val flightMemberTable = FlightMemberTable(db)
   private val tempUserTable = TempUserTable(db)
 
-  /** Retrieve and set all availabilities linked to the user */
-  private suspend fun retrieveAvailabilities(userId: String): List<Availability> {
-    return availabilityTable.query(Filter.equalTo("userId", userId))
+  /**
+   * Retrieve and set all availabilities linked to the user
+   *
+   * @param id The id of the user
+   * @param onError Callback called when an error occurs
+   */
+  suspend fun retrieveAvailabilities(
+      id: String,
+      onError: ((Exception) -> Unit)? = null
+  ): List<Availability> {
+    return availabilityTable.query(Filter.equalTo("userId", id), onError = onError)
   }
 
   /** Delete all availabilities linked to the user */
@@ -76,44 +83,15 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
   /**
    * Get an user by ID
    *
-   * This will get the user and its availabilities but not its assigned flights, this has to be done
-   * separately using [retrieveAssignedFlights].
+   * This will only get the user:
+   * - to get its assigned flights, use [retrieveAssignedFlights].
+   * - to get its availabilities, use [retrieveAvailabilities].
    *
    * @param id The id of the user
    * @param onError Callback called when an error occurs
    */
   override suspend fun get(id: String, onError: ((Exception) -> Unit)?): User? {
-    return withErrorCallback(onError) {
-      val user = super.get(id, onError = null) ?: return@withErrorCallback null
-      user.availabilities.addCells(retrieveAvailabilities(user.id))
-      user
-    }
-  }
-
-  override suspend fun getAll(onError: ((Exception) -> Unit)?): List<User> = coroutineScope {
-    withErrorCallback(onError) {
-      val users = super.getAll(onError = null)
-      users
-          .map { user -> async { user.availabilities.addCells(retrieveAvailabilities(user.id)) } }
-          .awaitAll()
-      users
-    }
-  }
-
-  override suspend fun query(
-      filter: Filter,
-      limit: Long?,
-      orderBy: String?,
-      orderByDirection: Query.Direction,
-      onError: ((Exception) -> Unit)?
-  ): List<User> = coroutineScope {
-    withErrorCallback(onError) {
-      val users = super.query(filter, limit, orderBy, orderByDirection, onError = null)
-      users
-          .map { user -> async { user.availabilities.addCells(retrieveAvailabilities(user.id)) } }
-          .awaitAll()
-      users
-    }
+    return super.get(id, onError = onError)
   }
 
   override suspend fun delete(id: String, onError: ((Exception) -> Unit)?): Unit = coroutineScope {
