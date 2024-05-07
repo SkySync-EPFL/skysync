@@ -52,7 +52,6 @@ fun FlightsList(
     if (flights == null) {
       LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
     } else if (flights.isEmpty()) {
-      // Handle case when no upcoming flights
       Box(
           modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f),
           contentAlignment = Alignment.Center) {
