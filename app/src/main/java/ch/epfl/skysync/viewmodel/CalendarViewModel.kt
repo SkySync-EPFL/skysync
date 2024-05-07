@@ -65,23 +65,6 @@ class CalendarViewModel(
   private val loadingCounter = MutableStateFlow(0)
 
 
-    private val currentFlights:  StateFlow<List<Flight>> = user.map {
-        if (it != null) {
-            userTable.retrieveAssignedFlights(
-                flightTable,
-                it.id,
-                onError = { onError(it) })
-        }
-        else{
-            emptyList()
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = WhileUiSubscribed,
-        initialValue = emptyList()
-    )
-
-
   private var originalAvailabilityCalendar = AvailabilityCalendar()
 
   val uiState: StateFlow<CalendarUiState> =
