@@ -10,5 +10,5 @@ import ch.epfl.skysync.models.UNSET_ID
 data class Location(
     val id: String = UNSET_ID,
     val userId: String,
-    val data: LocationPoint,
+    val point: LocationPoint,
 )

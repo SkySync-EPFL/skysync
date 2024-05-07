@@ -12,7 +12,7 @@ class FlightTraceSchemaTest {
     val flightTrace =
         FlightTrace(
             id = "flight-id",
-            data =
+            trace =
                 listOf(
                     LocationPoint(0, 1.0, -1.0),
                     LocationPoint(12, 123.003453, -17.0543675),

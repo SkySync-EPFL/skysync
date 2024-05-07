@@ -32,7 +32,7 @@ class LocationTableTest {
 
   @Test
   fun addLocationTest() = runTest {
-    val location = Location(userId = dbs.pilot1.id, data = LocationPoint(0, 40.7128, -74.0060))
+    val location = Location(userId = dbs.pilot1.id, point = LocationPoint(0, 40.7128, -74.0060))
     val id = locationTable.addLocation(location, onError = { assertNull(it) })
     val getLocation = locationTable.get(id, onError = { assertNull(it) })
 
@@ -55,18 +55,19 @@ class LocationTableTest {
     locationTable.getAll()
     locationTable.getAll()
 
-    val newLocation1 = Location(userId = dbs.pilot2.id, data = LocationPoint(0, 34.0522, -118.2437))
+    val newLocation1 =
+        Location(userId = dbs.pilot2.id, point = LocationPoint(0, 34.0522, -118.2437))
     locationTable.addLocation(newLocation1)
 
-    val newLocation2 = Location(userId = dbs.admin2.id, data = LocationPoint(3, 0.0, 0.0))
+    val newLocation2 = Location(userId = dbs.admin2.id, point = LocationPoint(3, 0.0, 0.0))
     locationTable.addLocation(newLocation2)
 
     this.coroutineContext.job.children.forEach { it.join() } // Wait for all coroutines to finish
     updates.forEach { println(it) }
 
     assertEquals(4, updates.size)
-    assertEquals(newLocation1.data, updates[2].adds[0].data)
-    assertEquals(newLocation2.data, updates[3].adds[0].data)
+    assertEquals(newLocation1.point, updates[2].adds[0].point)
+    assertEquals(newLocation2.point, updates[3].adds[0].point)
 
     listenerRegistrations.forEach { it.remove() }
   }

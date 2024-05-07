@@ -25,9 +25,9 @@ data class LocationSchema(
       return LocationSchema(
           id = model.id,
           userId = model.userId,
-          time = model.data.time,
-          latitude = model.data.latitude,
-          longitude = model.data.longitude)
+          time = model.point.time,
+          latitude = model.point.latitude,
+          longitude = model.point.longitude)
     }
   }
 }

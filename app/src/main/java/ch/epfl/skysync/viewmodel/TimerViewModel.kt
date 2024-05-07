@@ -25,7 +25,7 @@ class TimerViewModel : ViewModel() {
   private var lastTimestamp = 0L
   private val _counter = MutableStateFlow(0L)
 
-  val rawCounter = _counter.stateIn(viewModelScope, started = WhileUiSubscribed, initialValue = 0)
+  val rawCounter = _counter.asStateFlow()
 
   /** The current value of the counter formatted as a string in the format "HH:MM:SS". */
   val counter =

@@ -17,7 +17,7 @@ data class FlightTraceSchema(
 ) : Schema<FlightTrace> {
 
   override fun toModel(): FlightTrace {
-    return FlightTrace(id = id!!, data = unpackData(data!!.toBytes()))
+    return FlightTrace(id = id!!, trace = unpackData(data!!.toBytes()))
   }
 
   companion object {
@@ -50,7 +50,7 @@ data class FlightTraceSchema(
     fun fromModel(model: FlightTrace): FlightTraceSchema {
       return FlightTraceSchema(
           id = model.id,
-          data = Blob.fromBytes(packData(model.data)),
+          data = Blob.fromBytes(packData(model.trace)),
       )
     }
   }

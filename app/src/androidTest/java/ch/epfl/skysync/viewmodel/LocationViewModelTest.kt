@@ -51,22 +51,22 @@ class LocationViewModelTest {
     // having the program working with out of order location updates is not a strict requirement
     // but it's still nice to have
     locationViewModel
-        .addLocation(Location(userId = dbs.pilot1.id, data = LocationPoint(0, 0.0, 0.0)))
+        .addLocation(Location(userId = dbs.pilot1.id, point = LocationPoint(0, 0.0, 0.0)))
         .join()
     locationViewModel
-        .addLocation(Location(userId = dbs.crew1.id, data = LocationPoint(2, 0.0, 0.0)))
+        .addLocation(Location(userId = dbs.crew1.id, point = LocationPoint(2, 0.0, 0.0)))
         .join()
     locationViewModel
-        .addLocation(Location(userId = dbs.crew2.id, data = LocationPoint(2, 0.0, 0.0)))
+        .addLocation(Location(userId = dbs.crew2.id, point = LocationPoint(2, 0.0, 0.0)))
         .join()
     locationViewModel
-        .addLocation(Location(userId = dbs.pilot1.id, data = LocationPoint(3, 0.0, 0.0)))
+        .addLocation(Location(userId = dbs.pilot1.id, point = LocationPoint(3, 0.0, 0.0)))
         .join()
     locationViewModel
-        .addLocation(Location(userId = dbs.crew1.id, data = LocationPoint(1, 0.0, 0.0)))
+        .addLocation(Location(userId = dbs.crew1.id, point = LocationPoint(1, 0.0, 0.0)))
         .join()
     locationViewModel
-        .addLocation(Location(userId = dbs.pilot1.id, data = LocationPoint(0, 0.0, 0.0)))
+        .addLocation(Location(userId = dbs.pilot1.id, point = LocationPoint(0, 0.0, 0.0)))
         .join()
 
     val locations = locationViewModel.currentLocations.value
@@ -75,9 +75,9 @@ class LocationViewModelTest {
     assertEquals(setOf(dbs.pilot1.id, dbs.crew1.id, dbs.crew2.id), locations.keys)
 
     // verify that the current location is the one with the highest time
-    assertEquals(3, locations[dbs.pilot1.id]!!.second.data.time)
-    assertEquals(2, locations[dbs.crew1.id]!!.second.data.time)
-    assertEquals(2, locations[dbs.crew2.id]!!.second.data.time)
+    assertEquals(3, locations[dbs.pilot1.id]!!.second.point.time)
+    assertEquals(2, locations[dbs.crew1.id]!!.second.point.time)
+    assertEquals(2, locations[dbs.crew2.id]!!.second.point.time)
 
     locationViewModel.endFlight().join()
 
@@ -97,19 +97,19 @@ class LocationViewModelTest {
     // here we need to have the update in order to have all the locations in the flight trace
     // as the locations that are out of order are discarded (which is a feature not a bug...)
     locationViewModel
-        .addLocation(Location(userId = dbs.pilot1.id, data = LocationPoint(0, 12.0, 0.0)))
+        .addLocation(Location(userId = dbs.pilot1.id, point = LocationPoint(0, 12.0, 0.0)))
         .join()
     locationViewModel
-        .addLocation(Location(userId = dbs.crew1.id, data = LocationPoint(2, 13.0, 0.0)))
+        .addLocation(Location(userId = dbs.crew1.id, point = LocationPoint(2, 13.0, 0.0)))
         .join()
     locationViewModel
-        .addLocation(Location(userId = dbs.crew2.id, data = LocationPoint(2, -13.03, 0.0)))
+        .addLocation(Location(userId = dbs.crew2.id, point = LocationPoint(2, -13.03, 0.0)))
         .join()
     locationViewModel
-        .addLocation(Location(userId = dbs.pilot1.id, data = LocationPoint(2, 0.0, -12.0)))
+        .addLocation(Location(userId = dbs.pilot1.id, point = LocationPoint(2, 0.0, -12.0)))
         .join()
     locationViewModel
-        .addLocation(Location(userId = dbs.pilot1.id, data = LocationPoint(3, 1.0, 0.0)))
+        .addLocation(Location(userId = dbs.pilot1.id, point = LocationPoint(3, 1.0, 0.0)))
         .join()
 
     locationViewModel.saveFlightTrace().join()
@@ -119,7 +119,7 @@ class LocationViewModelTest {
     assertEquals(
         FlightTrace(
             id = dbs.flight4.id,
-            data =
+            trace =
                 listOf(
                     LocationPoint(0, 12.0, 0.0),
                     LocationPoint(2, 0.0, -12.0),

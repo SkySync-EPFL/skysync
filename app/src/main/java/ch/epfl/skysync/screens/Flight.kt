@@ -36,6 +36,7 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.Timer
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.models.location.UserMetrics
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
@@ -55,35 +56,10 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 
-data class UserMetrics(
-    val speed: Float,
-    val altitude: Double,
-    val bearing: Float,
-    val verticalSpeed: Double,
-    val location: LocationPoint,
-) {
-  fun withUpdate(
-      speed: Float,
-      altitude: Double,
-      bearing: Float,
-      location: LocationPoint,
-  ): UserMetrics {
-    var verticalSpeed = (altitude - this.altitude) / (location.time - this.location.time)
-    if (!verticalSpeed.isFinite()) {
-      verticalSpeed = 0.0
-    }
-    return UserMetrics(speed, altitude, bearing, verticalSpeed, location)
-  }
-
-  override fun toString(): String {
-    return "Horizontal Speed: %.2f m/s\nVertical Speed: %.2f m/s\nAltitude: %.0f m\nBearing: %.2f °"
-        .format(speed, verticalSpeed, altitude, bearing)
-  }
-}
-
 @Composable
 fun UserLocationMarker(location: Location, user: User) {
-  return Marker(state = rememberMarkerState(position = location.data.latlng()), title = user.name())
+  return Marker(
+      state = rememberMarkerState(position = location.point.latlng()), title = user.name())
 }
 
 /**
@@ -131,7 +107,7 @@ fun FlightScreen(
                     longitude = it.longitude,
                 )
 
-            locationViewModel.addLocation(Location(userId = uid, data = newLocation))
+            locationViewModel.addLocation(Location(userId = uid, point = newLocation))
 
             markerState.position = newLocation.latlng()
             metrics = metrics.withUpdate(it.speed, it.altitude, it.bearing, newLocation)

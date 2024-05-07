@@ -87,7 +87,7 @@ class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
     locations =
         locations.filter { location -> updatedLocations.find { it.id == location.id } == null }
     // add new locations
-    _flightLocations.value = (locations + update.adds + update.updates).sortedBy { it.data.time }
+    _flightLocations.value = (locations + update.adds + update.updates).sortedBy { it.point.time }
   }
 
   /**
@@ -133,7 +133,7 @@ class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
           onError(Exception("Can not save the flight trace (consistency issue)."))
           return@launch
         }
-        val flightTrace = FlightTrace(data = _flightLocations.value.map { it.data })
+        val flightTrace = FlightTrace(trace = _flightLocations.value.map { it.point })
         flightTraceTable.set(flightId!!, flightTrace, onError = { onError(it) })
       }
 

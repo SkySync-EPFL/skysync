@@ -4,5 +4,5 @@ import ch.epfl.skysync.models.UNSET_ID
 
 data class FlightTrace(
     val id: String = UNSET_ID,
-    val data: List<LocationPoint>,
+    val trace: List<LocationPoint>,
 )
