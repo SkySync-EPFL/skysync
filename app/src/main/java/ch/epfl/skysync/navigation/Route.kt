@@ -13,7 +13,7 @@ object Route {
   const val CHAT = "Chat"
   const val FLIGHT_DETAILS = "Flight Details"
   const val CONFIRM_FLIGHT = "Confirm Flight"
-
+  const val USER_DETAILS = "User Details"
   const val USER = "User"
   const val ADD_USER = "Add User"
 

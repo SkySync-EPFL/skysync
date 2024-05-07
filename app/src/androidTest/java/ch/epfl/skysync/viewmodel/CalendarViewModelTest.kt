@@ -4,6 +4,7 @@ import androidx.compose.material.Text
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.tables.AvailabilityTable
@@ -34,9 +35,7 @@ class CalendarViewModelTest {
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
     composeTestRule.setContent {
-      calendarViewModel =
-          CalendarViewModel.createViewModel(
-              dbs.admin1.id, userTable, availabilityTable, flightTable)
+      calendarViewModel = CalendarViewModel.createViewModel(dbs.admin1.id, Repository(db))
       val uiState = calendarViewModel.uiState.collectAsStateWithLifecycle()
       Text(text = uiState.value.user?.firstname ?: "Bob")
     }
@@ -74,6 +73,10 @@ class CalendarViewModelTest {
     val user = userTable.get(dbs.admin1.id, onError = { assertNull(it) })
 
     assertNotNull(user)
+
+    user!!
+        .availabilities
+        .addCells(userTable.retrieveAvailabilities(dbs.admin1.id, onError = { assertNull(it) }))
 
     assertEquals(
         AvailabilityStatus.OK, user!!.availabilities.getAvailabilityStatus(newDate, TimeSlot.AM))
