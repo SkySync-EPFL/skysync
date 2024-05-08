@@ -56,7 +56,7 @@ fun FlightDetailUi(
     confirmClick: () -> Unit,
     padding: PaddingValues,
     flight: Flight?,
-    bottom: @Composable (()-> Unit,()-> Unit,()-> Unit) -> Unit
+    bottom: @Composable (() -> Unit, () -> Unit, () -> Unit) -> Unit
 ) {
   var showDialog by remember { mutableStateOf(false) }
 

@@ -12,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.components.FlightDetailBottom
 import ch.epfl.skysync.components.FlightDetailUi
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
@@ -50,7 +51,9 @@ class FlightDetailUiTest {
           confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${dbs.flight1.id}") },
           padding = PaddingValues(0.dp),
           flight = dbs.flight1,
-      )
+          bottom = { deleteClick, editClick, confirmClick ->
+            FlightDetailBottom(deleteClick, editClick, confirmClick)
+          })
     }
   }
 

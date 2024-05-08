@@ -32,7 +32,7 @@ class AdminBottomBarTest {
       val repository = Repository(db)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      NavHost(navController = navController, startDestination = Route.MAIN) {
+      NavHost(navController = navController, startDestination = Route.ADMIN) {
         homeGraph(repository, navController, dbs.admin1.id)
       }
     }
