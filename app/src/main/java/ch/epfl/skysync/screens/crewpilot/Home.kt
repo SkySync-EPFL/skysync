@@ -24,17 +24,12 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       bottomBar = { BottomBar(navController) },
-      floatingActionButton = {
-        // Define the FloatingActionButton to create a flight
-      },
+      floatingActionButton = {},
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
     UpcomingFlights(currentFlights, Purple40) { selectedFlight ->
-      // Here is where you'd navigate to a new screen. For now, just log a message.
       Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
-
       navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
-      // Example navigation call: navController.navigate("FlightDetails.id")
     }
   }
 }

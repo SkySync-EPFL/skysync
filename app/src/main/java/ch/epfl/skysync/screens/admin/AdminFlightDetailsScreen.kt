@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConfirmFlightDetailUi
+import ch.epfl.skysync.components.FlightDetailBottom
 import ch.epfl.skysync.components.FlightDetailUi
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.navigation.AdminBottomBar
@@ -42,6 +43,7 @@ fun AdminFlightDetailScreen(
           confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
           padding = padding,
           flight = flight,
+          bottom = { deleteClick, editClick, confirmClick -> FlightDetailBottom(deleteClick, editClick, confirmClick) }
       )
     }
   }

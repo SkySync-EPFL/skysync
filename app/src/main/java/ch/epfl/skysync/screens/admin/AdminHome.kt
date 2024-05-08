@@ -43,10 +43,8 @@ fun AdminHomeScreen(navController: NavHostController, viewModel: FlightsViewMode
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
     UpcomingFlights(currentFlights, lightOrange) { selectedFlight ->
-      // Here is where you'd navigate to a new screen. For now, just log a message.
       Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
       navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/${selectedFlight}")
-      // Example navigation call: navController.navigate("FlightDetails.id")
     }
   }
 }

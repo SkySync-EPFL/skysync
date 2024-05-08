@@ -56,6 +56,7 @@ fun FlightDetailUi(
     confirmClick: () -> Unit,
     padding: PaddingValues,
     flight: Flight?,
+    bottom: @Composable (()-> Unit,()-> Unit,()-> Unit) -> Unit
 ) {
   var showDialog by remember { mutableStateOf(false) }
 
@@ -81,8 +82,7 @@ fun FlightDetailUi(
       } else {
         FlightDetailBody(flight, padding)
       }
-      FlightDetailBottom(
-          editClick = editClick, confirmClick = confirmClick, deleteClick = { showDialog = true })
+      bottom(editClick, confirmClick) { showDialog = true }
     }
   }
 }
@@ -155,9 +155,9 @@ fun FlightDetailBody(flight: Flight, padding: PaddingValues) {
  */
 @Composable
 fun FlightDetailBottom(
-    deleteClick: () -> Unit,
     editClick: () -> Unit,
     confirmClick: () -> Unit,
+    deleteClick: () -> Unit,
 ) {
   Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
     Row(
