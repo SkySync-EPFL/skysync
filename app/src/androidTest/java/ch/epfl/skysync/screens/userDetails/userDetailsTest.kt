@@ -64,7 +64,7 @@ class UserDetailsTest {
     }
     // Check for elements
     composeTestRule.onNodeWithText("Completed Flights").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("flightCard").assertExists()
+    composeTestRule.onNodeWithTag("flightCard" + "testFlightId").assertExists()
   }
 
   @Test
