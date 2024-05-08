@@ -99,7 +99,7 @@ fun NavGraphBuilder.adminGraph(
               ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
           val groupId = entry.arguments?.getString("Group ID")
           if (groupId == null) {
-            navController.navigate(Route.HOME)
+            navController.navigate(Route.ADMIN_HOME)
             return@composable
           }
           AdminTextScreen(navController, groupId, chatViewModel)
