@@ -10,6 +10,9 @@ import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.CalendarDifferenceType
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
+import ch.epfl.skysync.models.user.Admin
+import ch.epfl.skysync.models.user.Crew
+import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
 import kotlinx.coroutines.Job
@@ -156,21 +159,11 @@ class CalendarViewModel(
       }
 
   /** Cancels the modification made in the current availability calendar */
-  fun cancelAvailabilities() =
-      viewModelScope.launch {
-        val user = user.value ?: return@launch
-        val availabilityCalendar = user.availabilities
-
-        val differences =
-            originalAvailabilityCalendar.getDifferencesWithOtherCalendar(availabilityCalendar)
-
-        for ((_, availability) in differences) {
-          val oldStatus =
-              originalAvailabilityCalendar.getAvailabilityStatus(
-                  availability.date, availability.timeSlot)
-
-          user.availabilities.setAvailabilityByDate(
-              availability.date, availability.timeSlot, oldStatus)
-        }
-      }
+  fun cancelAvailabilities() {
+    when (val user = user.value) {
+      is Admin -> this.user.value = user.copy(availabilities = originalAvailabilityCalendar.copy())
+      is Crew -> this.user.value = user.copy(availabilities = originalAvailabilityCalendar.copy())
+      is Pilot -> this.user.value = user.copy(availabilities = originalAvailabilityCalendar.copy())
+    }
+  }
 }
