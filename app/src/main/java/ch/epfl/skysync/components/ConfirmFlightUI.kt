@@ -216,34 +216,23 @@ fun Confirmation(plannedFlight: PlannedFlight, confirmClick: (ConfirmedFlight) -
               }
             })
       }
-      if (balloon != null &&
-          basket != null &&
-          selectedTime != null &&
+      if (selectedTime != null &&
           selectedTime1 != null &&
           selectedTime2 != null) {
 
         Box(modifier = Modifier.fillMaxWidth().padding(2.dp), contentAlignment = Alignment.Center) {
-          val flight =
-              ConfirmedFlight(
-                  id = plannedFlight.id,
-                  nPassengers = plannedFlight.nPassengers,
-                  team = plannedFlight.team,
-                  flightType = plannedFlight.flightType,
-                  balloon = plannedFlight.balloon,
-                  basket = plannedFlight.basket,
-                  date = plannedFlight.date,
-                  timeSlot = plannedFlight.timeSlot,
-                  vehicles = plannedFlight.vehicles,
-                  remarks = remarkList,
-                  color = selectedOption,
-                  meetupTimeTeam = selectedTime!!,
-                  departureTimeTeam = selectedTime1!!,
-                  meetupTimePassenger = selectedTime2!!,
-                  meetupLocationPassenger = location)
-
           ClickButton(
               text = "Confirm",
-              onClick = { confirmClick(flight) },
+              onClick = {
+                confirmClick(
+                    plannedFlight.confirmFlight(
+                        meetupTimeTeam = selectedTime!!,
+                        departureTimeTeam = selectedTime1!!,
+                        meetupTimePassenger = selectedTime2!!,
+                        meetupLocationPassenger = location,
+                        remarks = remarkList,
+                        color = selectedOption))
+              },
               modifier = Modifier.fillMaxWidth(0.7f).testTag("ConfirmThisFlightButton"),
               color = Color.Green)
         }
