@@ -405,9 +405,7 @@ fun RoleField(
 ) {
   Text(
       modifier =
-          Modifier.fillMaxWidth()
-              .padding(horizontal = defaultPadding)
-              .testTag("RoleField $id"),
+          Modifier.fillMaxWidth().padding(horizontal = defaultPadding).testTag("RoleField $id"),
       text = role.roleType.description,
   )
   Row(
@@ -426,12 +424,11 @@ fun RoleField(
             messageError = "no message")
 
         IconButton(
-            modifier = Modifier.testTag("Delete Crew Member $id"),
-            onClick = { onDelete() }) {
-          Icon(
-              imageVector = Icons.Default.Delete,
-              contentDescription = "Delete $specialName Crew Member")
-        }
+            modifier = Modifier.testTag("Delete Crew Member $id"), onClick = { onDelete() }) {
+              Icon(
+                  imageVector = Icons.Default.Delete,
+                  contentDescription = "Delete $specialName Crew Member")
+            }
       }
 }
 
