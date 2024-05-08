@@ -2,12 +2,16 @@ package ch.epfl.skysync
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.components.GlobalSnackbarHost
 import ch.epfl.skysync.components.SnackbarManager
@@ -19,6 +23,10 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.runBlocking
+import android.Manifest
+import android.app.AlertDialog
+import android.util.Log
+import android.widget.Toast
 
 class MainActivity : ComponentActivity() {
   private lateinit var signInLauncher: ActivityResultLauncher<Intent>
@@ -26,6 +34,40 @@ class MainActivity : ComponentActivity() {
   private val db: FirestoreDatabase = FirestoreDatabase()
   private val repository: Repository = Repository(db)
 
+  // [START ask_post_notifications]
+  // Declare the launcher at the top of your Activity/Fragment:
+  private val requestPermissionLauncher = registerForActivityResult(
+    ActivityResultContracts.RequestPermission(),
+  ) { isGranted: Boolean ->
+    if(!isGranted) {
+      Toast.makeText(this, "Notifications are disabled for this app. You won't receive alerts about assigned flight be careful", Toast.LENGTH_LONG).show();
+    }
+  }
+
+  private fun askNotificationPermission() {
+    // This is only necessary for API level >= 33 (TIRAMISU)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+        // FCM SDK (and your app) can post notifications.
+      } else {
+        // Display an educational UI explaining to the user the features that will be enabled
+        // by them granting the POST_NOTIFICATION permission.
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setTitle("Notification Permission")
+          .setMessage("Granting notification permission will allow you to receive important alerts about assigned flights")
+          .setPositiveButton("OK") { _, _ ->
+            // If the user selects "OK," directly request the permission.
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+          }
+          .setNegativeButton("No thanks") { _, _ ->
+            // If the user selects "No thanks," allow the user to continue without notifications.
+            // You can handle this case accordingly.
+          }
+          .show()
+      }
+    }
+  }
+  // [END ask_post_notifications]
   private fun onError(e: Exception) {
     SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
   }
@@ -64,13 +106,12 @@ class MainActivity : ComponentActivity() {
   @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
     // Initialize the signInLauncher
     signInLauncher =
         registerForActivityResult(FirebaseAuthUIActivityResultContract()) { res ->
           this.onSignInResult(res)
         }
-
+    askNotificationPermission()
     setContent {
       SkySyncTheme {
         val navController = rememberNavController()
