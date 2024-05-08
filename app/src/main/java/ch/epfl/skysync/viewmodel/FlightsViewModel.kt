@@ -55,6 +55,9 @@ class FlightsViewModel(
     var date: LocalDate? = null
         private set
 
+    var date2: LocalDate? = null
+        private set
+
     var timeSlot: TimeSlot? = null
         private set
 
