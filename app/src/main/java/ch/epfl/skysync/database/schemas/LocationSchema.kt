@@ -2,24 +2,32 @@ package ch.epfl.skysync.database.schemas
 
 import ch.epfl.skysync.database.Schema
 import ch.epfl.skysync.models.location.Location
-import com.google.android.gms.maps.model.LatLng
+import ch.epfl.skysync.models.location.LocationPoint
 import com.google.firebase.firestore.DocumentId
 
 data class LocationSchema(
     @DocumentId val id: String? = null,
+    val userId: String? = null,
+    val time: Int? = null,
     val latitude: Double? = null,
     val longitude: Double? = null
 ) : Schema<Location> {
   override fun toModel(): Location {
-    return Location(id!!, LatLng(latitude!!, longitude!!))
+    return Location(
+        id!!,
+        userId!!,
+        LocationPoint(time!!, latitude!!, longitude!!),
+    )
   }
 
   companion object {
-    fun fromModel(location: Location): LocationSchema {
+    fun fromModel(model: Location): LocationSchema {
       return LocationSchema(
-          id = location.id,
-          latitude = location.value.latitude,
-          longitude = location.value.longitude)
+          id = model.id,
+          userId = model.userId,
+          time = model.point.time,
+          latitude = model.point.latitude,
+          longitude = model.point.longitude)
     }
   }
 }

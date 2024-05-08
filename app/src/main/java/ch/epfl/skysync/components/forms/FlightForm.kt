@@ -419,7 +419,7 @@ fun RoleField(
             value = role.assignedUser,
             onclickMenu = { item -> onReassign(item) },
             items = availableUsers,
-            showString = { it?.displayString() ?: "choose a user" },
+            showString = { it?.name() ?: "choose a user" },
             isError = false,
             messageError = "no message")
 
@@ -491,7 +491,7 @@ fun AddRole(
                 value = addNewAssignee,
                 onclickMenu = { item -> addNewAssignee = item },
                 items = allAvailableUsers,
-                showString = { it?.displayString() ?: "choose a user" },
+                showString = { it?.name() ?: "choose a user" },
             )
           }
         },

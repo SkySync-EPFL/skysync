@@ -46,8 +46,12 @@ data class Team(val roles: List<Role>) {
     return addRoles(Role.initRoles(rolesToAdd))
   }
 
+  private fun sortedRoles(): List<Role> {
+    return roles.sortedBy { it.assignedUser?.id ?: it.roleType.name }
+  }
+
   override fun hashCode(): Int {
-    return roles.sortedBy { it.roleType }.hashCode()
+    return sortedRoles().hashCode()
   }
 
   override fun equals(other: Any?): Boolean {
@@ -55,6 +59,6 @@ data class Team(val roles: List<Role>) {
     if (other::class != this::class) return false
     // we do not take into account the order in which the roles have been added
     // when performing equality check
-    return (other as Team).roles.sortedBy { it.roleType } == this.roles.sortedBy { it.roleType }
+    return (other as Team).sortedRoles() == this.sortedRoles()
   }
 }
