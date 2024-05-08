@@ -17,13 +17,13 @@ fun NavGraphBuilder.adminpersonalCalendar(
     composable(Route.ADMIN_AVAILABILITY_CALENDAR) {
       val viewModel =
           CalendarViewModel.createViewModel(
-              uid!!, repository.userTable, repository.availabilityTable)
+              uid!!, repository)
       AdminCalendarScreen(navController, Route.AVAILABILITY_CALENDAR, viewModel)
     }
     composable(Route.ADMIN_FLIGHT_CALENDAR) {
       val viewModel =
           CalendarViewModel.createViewModel(
-              uid!!, repository.userTable, repository.availabilityTable)
+              uid!!, repository)
       AdminCalendarScreen(navController, Route.FLIGHT_CALENDAR, viewModel)
     }
   }
