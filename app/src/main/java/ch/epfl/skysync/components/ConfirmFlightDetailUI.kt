@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -18,16 +19,32 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.flight.Balloon
+import ch.epfl.skysync.models.flight.BalloonQualification
+import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FlightColor
+import ch.epfl.skysync.models.flight.FlightType
+import ch.epfl.skysync.models.flight.Role
+import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.ui.theme.Pink40
 import ch.epfl.skysync.ui.theme.lightOrange
+import java.time.LocalDate
+import java.time.LocalTime
 
 /**
  * Composable function for displaying a UI to confirm flight details.
@@ -96,7 +113,7 @@ fun ConfirmFlightDetailBody(confirmedFlight: ConfirmedFlight) {
             padding = 16.dp,
             title = "Meetup Time Passenger",
             value = confirmedFlight.meetupTimePassenger.toString())
-        TitledText(
+        HyperLinkText(
             padding = 16.dp,
             title = "Meetup Location Passenger",
             value = confirmedFlight.meetupLocationPassenger)
@@ -118,6 +135,38 @@ fun ListElementText(text: String, padding: Dp, testTag: String) {
       style = MaterialTheme.typography.bodyLarge,
   )
   Spacer(modifier = Modifier.padding(4.dp))
+}
+@Composable
+fun HyperLinkText(title: String, value: String, padding: Dp) {
+    val uriHandler = LocalUriHandler.current
+    val googleMapsLink = "https://www.google.com/maps/search/?api=1&query=${value.replace(" ", "+")}"
+    val string = buildAnnotatedString {
+        pushStringAnnotation(tag = "URL", annotation = googleMapsLink)
+        withStyle(style = SpanStyle(
+            color = MaterialTheme.colorScheme.primary,
+            textDecoration = TextDecoration.Underline)
+        ) {
+            append(value)
+        }
+        pop()
+    }
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = padding),
+        text = title,
+        style = MaterialTheme.typography.headlineSmall,
+        color = Color.Black)
+    Spacer(modifier = Modifier.padding(4.dp))
+
+    ClickableText(text = string, modifier = Modifier.padding(horizontal = padding.plus(4.dp)), style = MaterialTheme.typography.bodyLarge, onClick = { offset ->
+        string.getStringAnnotations(tag = "URL", start = offset, end = offset).firstOrNull()
+            ?.let {
+                    stringAnnotation ->
+                uriHandler.openUri(stringAnnotation.item)
+            }
+    })
+    Spacer(modifier = Modifier.padding(12.dp))
 }
 /**
  * Composable function for displaying team details.
@@ -263,4 +312,32 @@ fun ConfirmedFlightDetailBottom(okClick: () -> Unit) {
           Text(text = "OK", color = Color.White, overflow = TextOverflow.Clip)
         }
   }
+}
+@Composable
+@Preview
+fun Preview(){
+    ConfirmFlightDetailUi(
+        confirmedFlight = ConfirmedFlight(
+            id = "1",
+            nPassengers = 1,
+            flightType = FlightType.FONDUE,
+            team = Team(
+                roles = listOf()
+            ),
+            balloon = Balloon("1", BalloonQualification.MEDIUM),
+            basket = Basket("1", true),
+            date = LocalDate.now(),
+            timeSlot = TimeSlot.AM,
+            vehicles = listOf(Vehicle("1", "Vehicle 1")),
+            remarks = listOf("Remark 1", "Remark 2"),
+            color = FlightColor.RED,
+            meetupTimeTeam = LocalTime.now(),
+            departureTimeTeam = LocalTime.now(),
+            meetupTimePassenger = LocalTime.now(),
+            meetupLocationPassenger = "Location 1"
+        ),
+        backClick = {},
+        paddingValues = PaddingValues(16.dp),
+        okClick = {}
+    )
 }
