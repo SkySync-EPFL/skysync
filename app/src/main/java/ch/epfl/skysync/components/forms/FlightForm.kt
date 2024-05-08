@@ -226,33 +226,6 @@ fun FlightForm(
                   )
                 }
               }
-              //              if (flightTypeValue != null) {
-              //                flightTypeValue!!.specialRoles.withIndex().forEach { (id, roleType)
-              // ->
-              //                  item {
-              //                    RoleField(
-              //                        defaultPadding,
-              //                        smallPadding,
-              //                        Role(roleType),
-              //                        id,
-              //                        { specialRoles.removeAt(id) },
-              //                        "Special",
-              //                        availableUsers = emptyList(),
-              //                    )
-              //                      RoleField(
-              //                          defaultPadding= defaultPadding,
-              //                          smallPadding = smallPadding,
-              //                          role=role,
-              //                          id = id,
-              //                          onDelete = { crewMembers.removeAt(id) },
-              //                          onReassign = { user -> crewMembers[id] =
-              // Role(role.roleType, user) },
-              //                          availableUsers = availableUsers,
-              //                      )
-              //                  }
-              //                }
-              //              }
-              // Drop down menu for the vehicle
               item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -434,7 +407,7 @@ fun RoleField(
       modifier =
           Modifier.fillMaxWidth()
               .padding(horizontal = defaultPadding)
-              .testTag("$specialName User $id"),
+              .testTag("RoleField $id"),
       text = role.roleType.description,
   )
   Row(
@@ -452,9 +425,10 @@ fun RoleField(
             isError = false,
             messageError = "no message")
 
-        IconButton(onClick = { onDelete() }) {
+        IconButton(
+            modifier = Modifier.testTag("Delete Crew Member $id"),
+            onClick = { onDelete() }) {
           Icon(
-              modifier = Modifier.testTag("Delete $specialName Crew Member $id"),
               imageVector = Icons.Default.Delete,
               contentDescription = "Delete $specialName Crew Member")
         }

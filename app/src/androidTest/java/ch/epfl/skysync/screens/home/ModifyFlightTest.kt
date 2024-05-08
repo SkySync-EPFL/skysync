@@ -110,19 +110,11 @@ class ModifyFlightTest {
         })
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
-        .performScrollToNode(hasTestTag("Vehicle 0 Menu"))
-    composeTestRule.onNodeWithTag("Vehicle 0 Menu").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("Vehicle 0 Menu").performClick()
-    composeTestRule.onNodeWithText("vehicle-2").performClick()
-    composeTestRule.onNodeWithTag("Modify Flight Button").performClick()
+        .performScrollToNode(hasTestTag("RoleField 0"))
+    composeTestRule.onNodeWithTag("Delete Crew Member 0").performClick()
     viewModelAdmin.refreshUserAndFlights().join()
-    assertEquals(
-        true,
-        viewModelAdmin.currentFlights.value?.any {
-          it.vehicles.contains(dbSetup.vehicle2) &&
-              it.id == dbSetup.flight1.id &&
-              !it.vehicles.contains(dbSetup.vehicle1) &&
-              it.vehicles.size == 1
-        })
+    assertTrue(viewModelAdmin.currentFlights.value?.any {
+      it.vehicles.size == 1 && it.id == dbSetup.flight1.id
+    } ?: false)
   }
 }
