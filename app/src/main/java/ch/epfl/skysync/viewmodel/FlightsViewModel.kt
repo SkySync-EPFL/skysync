@@ -55,13 +55,11 @@ class FlightsViewModel(
     var date: LocalDate? = null
         private set
 
-    var date2: LocalDate? = null
-        private set
 
     var timeSlot: TimeSlot? = null
         private set
 
-    private var currentFlightId: MutableStateFlow<String?> = MutableStateFlow(null)
+    //private var currentFlightId: MutableStateFlow<String?> = MutableStateFlow(null)
 
 
     private val _currentFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
@@ -81,13 +79,13 @@ class FlightsViewModel(
     val currentUser = _currentUser.asStateFlow()
     val availableUsers = _availableUsers.asStateFlow()
 
-    private var currentFlight: StateFlow<Flight?> =
-        combine(currentFlightId, _currentFlights) { fid, flights ->
-            flights?.find { it.id == (fid ?: "") }
-        }.stateIn(
-                scope = viewModelScope,
-                started = WhileUiSubscribed,
-                initialValue = null)
+//    private var currentFlight: StateFlow<Flight?> =
+//        combine(currentFlightId, _currentFlights) { fid, flights ->
+//            flights?.find { it.id == (fid ?: "") }
+//        }.stateIn(
+//                scope = viewModelScope,
+//                started = WhileUiSubscribed,
+//                initialValue = null)
 
 
     fun refresh() {
@@ -210,10 +208,17 @@ class FlightsViewModel(
         val flightId = repository.flightTable.add(flight, onError = { onError(it) })
       }
 
-  fun getFlight(flightId: String): StateFlow<Flight?> {
-      currentFlightId.value = flightId
-      return currentFlight
-  }
+//  fun getFlight(flightId: String): StateFlow<Flight?> {
+//      currentFlightId.value = flightId
+//      return currentFlight
+//  }
+    fun getFlight(flightId: String): StateFlow<Flight?> =
+        _currentFlights.map { flights ->
+            flights?.find { it.id == (flightId) }
+        }.stateIn(
+            scope = viewModelScope,
+            started = WhileUiSubscribed,
+            initialValue = null)
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
