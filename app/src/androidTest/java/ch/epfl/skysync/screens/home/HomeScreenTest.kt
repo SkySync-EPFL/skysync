@@ -9,6 +9,7 @@ import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.screens.HomeScreen
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
