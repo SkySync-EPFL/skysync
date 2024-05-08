@@ -88,6 +88,8 @@ fun FlightForm(
         val defaultPadding = 16.dp
         val smallPadding = 8.dp
 
+        val defaultTimeSlot = TimeSlot.AM
+
         var nbPassengersValue = remember {
           mutableStateOf(currentFlight?.nPassengers?.toString() ?: "")
         }
@@ -101,6 +103,7 @@ fun FlightForm(
                 refreshDate(currentFlight.date, currentFlight.timeSlot)
                 currentFlight.date
               } else {
+                refreshDate(LocalDate.now(), defaultTimeSlot)
                 LocalDate.now()
               })
         }
@@ -117,7 +120,7 @@ fun FlightForm(
         }
 
         var timeSlotValue: TimeSlot by remember {
-          mutableStateOf(currentFlight?.timeSlot ?: TimeSlot.AM)
+          mutableStateOf(currentFlight?.timeSlot ?: defaultTimeSlot)
         }
 
         var balloonValue: Balloon? by remember { mutableStateOf(currentFlight?.balloon) }
@@ -207,7 +210,8 @@ fun FlightForm(
                     defaultPadding = defaultPadding,
                     crewMembers = teamMembers,
                     allRoleTypes = allRoleTypes,
-                    availableUsers = availableUsers)
+                    availableUsers =
+                        availableUsers.filterNot { Team(teamMembers).getUsers().contains(it) })
               }
               teamMembers.withIndex().forEach() { (id, role) ->
                 item {
@@ -217,7 +221,8 @@ fun FlightForm(
                       id = id,
                       onDelete = { teamMembers.removeAt(id) },
                       onReassign = { user -> teamMembers[id] = Role(role.roleType, user) },
-                      availableUsers = availableUsers,
+                      availableUsers =
+                          availableUsers.filterNot { Team(teamMembers).getUsers().contains(it) },
                   )
                 }
               }
@@ -278,6 +283,7 @@ fun FlightForm(
                       horizontalArrangement = Arrangement.SpaceBetween,
                       verticalAlignment = Alignment.CenterVertically) {
                         CustomDropDownMenu(
+                            modifier = Modifier.weight(1f),
                             defaultPadding = defaultPadding,
                             title = "Vehicle $idList",
                             value = car,
@@ -436,6 +442,7 @@ fun RoleField(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically) {
         CustomDropDownMenu(
+            modifier = Modifier.weight(1f),
             defaultPadding = defaultPadding,
             title = "overview:${role.roleType.description}",
             value = role.assignedUser,
@@ -551,7 +558,7 @@ fun TeamHeader(
     defaultPadding: Dp,
     crewMembers: MutableList<Role>,
     allRoleTypes: List<RoleType>,
-    availableUsers: List<User>
+    availableUsers: List<User>,
 ) {
   var showAddMemberDialog by remember { mutableStateOf(false) }
   Row(

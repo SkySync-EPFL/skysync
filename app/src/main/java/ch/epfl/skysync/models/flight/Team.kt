@@ -18,6 +18,10 @@ data class Team(val roles: List<Role>) {
     return roles.isNotEmpty() && roles.all { it.isAssigned() }
   }
 
+  fun getUsers(): List<User> {
+    return roles.mapNotNull { it.assignedUser }
+  }
+
   /** assigns the given user to the first role with the given role type */
   fun assign(user: User, roleType: RoleType): Team {
     // Todo: to be implemented
