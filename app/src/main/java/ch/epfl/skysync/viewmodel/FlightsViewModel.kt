@@ -9,8 +9,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
@@ -27,7 +25,6 @@ import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -37,59 +34,56 @@ class FlightsViewModel(
     val repository: Repository,
     val userId: String?,
 ) : ViewModel() {
-    companion object {
-        @Composable
-        fun createViewModel(
-            repository: Repository,
-            userId: String?,
-        ): FlightsViewModel {
-            return viewModel<FlightsViewModel>(
-                factory =
-                object : ViewModelProvider.Factory {
-                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                        return FlightsViewModel(repository, userId) as T
-                    }
-                })
-        }
+  companion object {
+    @Composable
+    fun createViewModel(
+        repository: Repository,
+        userId: String?,
+    ): FlightsViewModel {
+      return viewModel<FlightsViewModel>(
+          factory =
+              object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                  return FlightsViewModel(repository, userId) as T
+                }
+              })
     }
+  }
 
-    var date: LocalDate? = null
-        private set
+  var date: LocalDate? = null
+    private set
 
+  var timeSlot: TimeSlot? = null
+    private set
 
-    var timeSlot: TimeSlot? = null
-        private set
+  // private var currentFlightId: MutableStateFlow<String?> = MutableStateFlow(null)
 
-    //private var currentFlightId: MutableStateFlow<String?> = MutableStateFlow(null)
+  private val _currentFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
+  private val _availableBalloons: MutableStateFlow<List<Balloon>> = MutableStateFlow(emptyList())
+  private val _availableBaskets: MutableStateFlow<List<Basket>> = MutableStateFlow(emptyList())
+  private val _currentFlightTypes: MutableStateFlow<List<FlightType>> =
+      MutableStateFlow(emptyList())
+  private val _availableVehicles: MutableStateFlow<List<Vehicle>> = MutableStateFlow(emptyList())
+  private val _currentUser = MutableStateFlow<User?>(null)
+  private val _availableUsers = MutableStateFlow(emptyList<User>())
 
+  val currentFlights = _currentFlights.asStateFlow()
+  val currentBalloons = _availableBalloons.asStateFlow()
+  val currentBaskets = _availableBaskets.asStateFlow()
+  val currentFlightTypes = _currentFlightTypes.asStateFlow()
+  val currentVehicles = _availableVehicles.asStateFlow()
+  val currentUser = _currentUser.asStateFlow()
+  val availableUsers = _availableUsers.asStateFlow()
 
-    private val _currentFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
-    private val _availableBalloons: MutableStateFlow<List<Balloon>> = MutableStateFlow(emptyList())
-    private val _availableBaskets: MutableStateFlow<List<Basket>> = MutableStateFlow(emptyList())
-    private val _currentFlightTypes: MutableStateFlow<List<FlightType>> =
-        MutableStateFlow(emptyList())
-    private val _availableVehicles: MutableStateFlow<List<Vehicle>> = MutableStateFlow(emptyList())
-    private val _currentUser = MutableStateFlow<User?>(null)
-    private val _availableUsers = MutableStateFlow(emptyList<User>())
+  //    private var currentFlight: StateFlow<Flight?> =
+  //        combine(currentFlightId, _currentFlights) { fid, flights ->
+  //            flights?.find { it.id == (fid ?: "") }
+  //        }.stateIn(
+  //                scope = viewModelScope,
+  //                started = WhileUiSubscribed,
+  //                initialValue = null)
 
-    val currentFlights = _currentFlights.asStateFlow()
-    val currentBalloons = _availableBalloons.asStateFlow()
-    val currentBaskets = _availableBaskets.asStateFlow()
-    val currentFlightTypes = _currentFlightTypes.asStateFlow()
-    val currentVehicles = _availableVehicles.asStateFlow()
-    val currentUser = _currentUser.asStateFlow()
-    val availableUsers = _availableUsers.asStateFlow()
-
-//    private var currentFlight: StateFlow<Flight?> =
-//        combine(currentFlightId, _currentFlights) { fid, flights ->
-//            flights?.find { it.id == (fid ?: "") }
-//        }.stateIn(
-//                scope = viewModelScope,
-//                started = WhileUiSubscribed,
-//                initialValue = null)
-
-
-    fun refresh() {
+  fun refresh() {
     refreshUserAndFlights()
     refreshAvailableBalloons()
     refreshAvailableBaskets()
@@ -209,17 +203,14 @@ class FlightsViewModel(
         val flightId = repository.flightTable.add(flight, onError = { onError(it) })
       }
 
-//  fun getFlight(flightId: String): StateFlow<Flight?> {
-//      currentFlightId.value = flightId
-//      return currentFlight
-//  }
-    fun getFlight(flightId: String): StateFlow<Flight?> =
-        _currentFlights.map { flights ->
-            flights?.find { it.id == (flightId) }
-        }.stateIn(
-            scope = viewModelScope,
-            started = WhileUiSubscribed,
-            initialValue = null)
+  //  fun getFlight(flightId: String): StateFlow<Flight?> {
+  //      currentFlightId.value = flightId
+  //      return currentFlight
+  //  }
+  fun getFlight(flightId: String): StateFlow<Flight?> =
+      _currentFlights
+          .map { flights -> flights?.find { it.id == (flightId) } }
+          .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {

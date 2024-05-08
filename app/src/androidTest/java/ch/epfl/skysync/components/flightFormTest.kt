@@ -101,7 +101,7 @@ class FlightFormTest {
           availableUsers = availableUsers,
           onSaveFlight = { _ -> },
           refreshDate = { _, _ -> },
-          )
+      )
     }
   }
 

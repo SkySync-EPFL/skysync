@@ -38,6 +38,6 @@ fun ModifyFlightScreen(
         viewModel.modifyFlight(flight)
         navController.navigate(Route.HOME)
       },
-      refreshDate = {date, timeSlot -> viewModel.setDateAndTimeSlot(date, timeSlot)},
+      refreshDate = { date, timeSlot -> viewModel.setDateAndTimeSlot(date, timeSlot) },
   )
 }

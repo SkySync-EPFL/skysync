@@ -77,7 +77,7 @@ fun FlightForm(
     availableBaskets: List<Basket>,
     availableUsers: List<User>,
     onSaveFlight: (PlannedFlight) -> Unit,
-    refreshDate : (LocalDate, TimeSlot) -> Unit,
+    refreshDate: (LocalDate, TimeSlot) -> Unit,
 ) {
   Scaffold(modifier = Modifier.fillMaxSize(), topBar = { CustomTopAppBar(navController, title) }) {
       padding ->
@@ -94,16 +94,15 @@ fun FlightForm(
         var nbPassengersValueError by remember { mutableStateOf(false) }
 
         var openDatePicker by remember { mutableStateOf(false) }
-        var dateValue by remember { mutableStateOf(
-            if (currentFlight != null) {
+        var dateValue by remember {
+          mutableStateOf(
+              if (currentFlight != null) {
                 // in order to refresh date & timeslot once on init of FlightForm
                 refreshDate(currentFlight.date, currentFlight.timeSlot)
                 currentFlight.date
-            }else{
+              } else {
                 LocalDate.now()
-
-            }
-        )
+              })
         }
 
         var flightTypeValue: FlightType? by remember { mutableStateOf(currentFlight?.flightType) }
@@ -168,7 +167,7 @@ fun FlightForm(
                             Instant.ofEpochMilli(timeInMillis)
                                 .atZone(ZoneId.of("GMT"))
                                 .toLocalDate()
-                          refreshDate(dateValue, timeSlotValue)
+                        refreshDate(dateValue, timeSlotValue)
                       }
                     },
                     onclickDismiss = { openDatePicker = false },
@@ -184,8 +183,9 @@ fun FlightForm(
                     title = timeSlotTitle,
                     value = timeSlotValue,
                     onclickMenu = { item ->
-                        timeSlotValue = item
-                        refreshDate(dateValue, item)},
+                      timeSlotValue = item
+                      refreshDate(dateValue, item)
+                    },
                     items = TimeSlot.entries)
               }
               // Drop down menu for the flight type
@@ -608,6 +608,5 @@ fun FlightFormPreview() {
       emptyList(),
       emptyList(),
       onSaveFlight = {},
-        refreshDate = { _, _ -> }
-  )
+      refreshDate = { _, _ -> })
 }

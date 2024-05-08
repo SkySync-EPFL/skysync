@@ -33,6 +33,6 @@ fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewMode
         viewModel.addFlight(flight)
         navController.navigate(Route.HOME)
       },
-      refreshDate = {date, timeSlot -> viewModel.setDateAndTimeSlot(date, timeSlot)},
+      refreshDate = { date, timeSlot -> viewModel.setDateAndTimeSlot(date, timeSlot) },
   )
 }
