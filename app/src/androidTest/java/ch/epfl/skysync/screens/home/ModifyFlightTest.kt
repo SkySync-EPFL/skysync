@@ -1,7 +1,16 @@
 package ch.epfl.skysync.screens.home
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInput
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
@@ -49,9 +58,10 @@ class ModifyFlightTest {
   }
 
   @Test
-  fun openModifyAFlight() {
+  fun checkModifyPassengerCountWorks() = runTest {
     composeTestRule.setContent {
       viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      val currentFlights = viewModelAdmin.currentFlights.collectAsStateWithLifecycle()
       val navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
@@ -60,6 +70,58 @@ class ModifyFlightTest {
       ModifyFlightScreen(
           navController = navController, viewModel = viewModelAdmin, flightId = dbSetup.flight1.id)
     }
-    // composeTestRule.onNodeWithTag("Modify Flight Button").performClick()
+    viewModelAdmin.refreshUserAndFlights().join()
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Number of passengers"))
+    composeTestRule.onNodeWithTag("Number of passengers").performClick()
+    composeTestRule.onNodeWithTag("Number of passengers").performTextClearance()
+    composeTestRule.onNodeWithTag("Number of passengers").performTextInput("24")
+    composeTestRule.onNodeWithTag("Modify Flight Button").performClick()
+    viewModelAdmin.refreshUserAndFlights().join()
+    assertEquals(
+        viewModelAdmin.currentFlights.value?.any {
+          it.nPassengers == 24 && it.id == dbSetup.flight1.id
+        },
+        true)
+  }
+
+  @Test
+  fun checkAssignVehicleIsPersistent() = runTest {
+    composeTestRule.setContent {
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      val currentFlights = viewModelAdmin.currentFlights.collectAsStateWithLifecycle()
+      val navController = TestNavHostController(LocalContext.current)
+      navController.navigatorProvider.addNavigator(ComposeNavigator())
+      NavHost(navController = navController, startDestination = Route.MAIN) {
+        homeGraph(repository, navController, dbSetup.admin1.id)
+      }
+      ModifyFlightScreen(
+          navController = navController, viewModel = viewModelAdmin, flightId = dbSetup.flight1.id)
+    }
+    viewModelAdmin.refreshUserAndFlights().join()
+    assertEquals(
+        true,
+        viewModelAdmin.currentFlights.value?.any {
+          it.vehicles.contains(dbSetup.vehicle1) &&
+              it.id == dbSetup.flight1.id &&
+              it.vehicles.size == 1
+        })
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Vehicle 0 Menu"))
+    composeTestRule.onNodeWithTag("Vehicle 0 Menu").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("Vehicle 0 Menu").performClick()
+    composeTestRule.onNodeWithText("vehicle-2").performClick()
+    composeTestRule.onNodeWithTag("Modify Flight Button").performClick()
+    viewModelAdmin.refreshUserAndFlights().join()
+    assertEquals(
+        true,
+        viewModelAdmin.currentFlights.value?.any {
+          it.vehicles.contains(dbSetup.vehicle2) &&
+              it.id == dbSetup.flight1.id &&
+              !it.vehicles.contains(dbSetup.vehicle1) &&
+              it.vehicles.size == 1
+        })
   }
 }

@@ -17,8 +17,10 @@ import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
+import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
@@ -52,10 +54,25 @@ class E2EModifyAndDeleteFlights {
   @Test
   fun modifyAndDeleteFlight() {
     runTest {
+      val assignedFlight =
+          listOf(dbs.flight1, dbs.flight2, dbs.flight3, dbs.flight4).sortedBy { flight: Flight ->
+            flight.id
+          }
+      val retrievedFlights =
+          repository.flightTable.getAll(onError = { Assert.assertNull(it) }).sortedBy {
+              flight: Flight ->
+            flight.id
+          }
+
+      assertEquals(assignedFlight, retrievedFlights)
+      val plannedFlight = dbs.flight1
       composeTestRule.waitUntil(2500) {
-        composeTestRule.onAllNodesWithTag("flightCard").fetchSemanticsNodes().isNotEmpty()
+        composeTestRule
+            .onAllNodesWithTag("flightCard${plannedFlight.id}")
+            .fetchSemanticsNodes()
+            .isNotEmpty()
       }
-      composeTestRule.onAllNodesWithTag("flightCard")[0].performClick()
+      composeTestRule.onNodeWithTag("flightCard${plannedFlight.id}").performClick()
       var route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
       composeTestRule.onNodeWithTag("EditButton").performClick()
@@ -97,9 +114,12 @@ class E2EModifyAndDeleteFlights {
       Assert.assertEquals(true, flightIsCreated)
 
       composeTestRule.waitUntil(2500) {
-        composeTestRule.onAllNodesWithTag("flightCard").fetchSemanticsNodes().isNotEmpty()
+        composeTestRule
+            .onAllNodesWithTag("flightCard${plannedFlight.id}")
+            .fetchSemanticsNodes()
+            .isNotEmpty()
       }
-      composeTestRule.onAllNodesWithTag("flightCard")[0].performClick()
+      composeTestRule.onNodeWithTag("flightCard${plannedFlight.id}").performClick()
       route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
       composeTestRule.onNodeWithTag("DeleteButton").performClick()

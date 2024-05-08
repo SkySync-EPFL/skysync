@@ -5,12 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ch.epfl.skysync.database.tables.AvailabilityTable
-import ch.epfl.skysync.database.tables.UserTable
+import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.CalendarDifferenceType
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
-import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
 import kotlinx.coroutines.Job
@@ -31,30 +30,31 @@ data class CalendarUiState(
  * ViewModel for the Calendar screen
  *
  * @param uid The Firebase authentication uid of the user
- * @param userTable The user table
- * @param availabilityTable The availability table
+ * @param repository App repository
  */
 class CalendarViewModel(
     private val uid: String,
-    private val userTable: UserTable,
-    private val availabilityTable: AvailabilityTable,
+    repository: Repository,
 ) : ViewModel() {
   companion object {
     @Composable
     fun createViewModel(
         uid: String,
-        userTable: UserTable,
-        availabilityTable: AvailabilityTable,
+        repository: Repository,
     ): CalendarViewModel {
       return viewModel<CalendarViewModel>(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return CalendarViewModel(uid, userTable, availabilityTable) as T
+                  return CalendarViewModel(uid, repository) as T
                 }
               })
     }
   }
+
+  private val userTable = repository.userTable
+  private val availabilityTable = repository.availabilityTable
+  private val flightTable = repository.flightTable
 
   private val user: MutableStateFlow<User?> = MutableStateFlow(null)
   private val loadingCounter = MutableStateFlow(0)
@@ -79,38 +79,33 @@ class CalendarViewModel(
   }
 
   /**
-   * Fetch the user from the database. Update asynchronously the [CalendarUiState.user] reference
+   * Fetch the user from the database.
+   *
+   * Update asynchronously the [CalendarUiState.user] reference
    *
    * (Starts a new coroutine)
    */
   fun refresh() = viewModelScope.launch { refreshUser() }
 
-  /** Fetch the user from the database Update asynchronously the [CalendarUiState.user] reference */
+  /**
+   * Fetch the user from the database.
+   *
+   * Update asynchronously the [CalendarUiState.user] reference
+   */
   private suspend fun refreshUser() {
     loadingCounter.value += 1
-    var newUser = userTable.get(uid, this::onError)
+    var newUser = userTable.get(uid, this::onError)!!
+    newUser.availabilities.addCells(userTable.retrieveAvailabilities(uid, this::onError))
+    val flights = userTable.retrieveAssignedFlights(flightTable, uid, this::onError)
+    flights.forEach { newUser.assignedFlights.addFlightByDate(it.date, it.timeSlot, it) }
     loadingCounter.value -= 1
-    if (newUser == null) {
-      newUser =
-          Admin(
-              uid,
-              "unknown",
-              "unknown",
-              "",
-              AvailabilityCalendar(),
-              FlightGroupCalendar(),
-          )
-      loadingCounter.value += 1
-      userTable.set(uid, newUser, {})
-      loadingCounter.value -= 1
-    }
     user.value = newUser
     originalAvailabilityCalendar = newUser.availabilities.copy()
   }
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    // TODO: display error message
+    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
   }
 
   /**
