@@ -120,7 +120,10 @@ class DatabaseSetup {
   var availability2Crew1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Crew1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date2)
+    Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date2)
+
+    var availability4Crew1 =
+        Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date2)
 
   var availability1Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -314,6 +317,8 @@ class DatabaseSetup {
                   availability2Crew1.copy(id = availabilityTable.add(crew1.id, availability2Crew1))
               availability3Crew1 =
                   availability3Crew1.copy(id = availabilityTable.add(crew1.id, availability3Crew1))
+                availability4Crew1 =
+                    availability4Crew1.copy(id = availabilityTable.add(crew1.id, availability4Crew1))
             },
             launch {
               userTable.set(pilot1.id, pilot1)

@@ -99,7 +99,9 @@ class FlightFormTest {
           availableBalloons = allBalloons,
           availableBaskets = allBaskets,
           availableUsers = availableUsers,
-          onSaveFlight = { _ -> })
+          onSaveFlight = { _ -> },
+          refreshDate = { _, _ -> },
+          )
     }
   }
 

@@ -94,7 +94,17 @@ fun FlightForm(
         var nbPassengersValueError by remember { mutableStateOf(false) }
 
         var openDatePicker by remember { mutableStateOf(false) }
-        var dateValue by remember { mutableStateOf(currentFlight?.date ?: LocalDate.now()) }
+        var dateValue by remember { mutableStateOf(
+            if (currentFlight != null) {
+                // in order to refresh date & timeslot once on init of FlightForm
+                refreshDate(currentFlight.date, currentFlight.timeSlot)
+                currentFlight.date
+            }else{
+                LocalDate.now()
+
+            }
+        )
+        }
 
         var flightTypeValue: FlightType? by remember { mutableStateOf(currentFlight?.flightType) }
         var flightTypeValueError by remember { mutableStateOf(false) }

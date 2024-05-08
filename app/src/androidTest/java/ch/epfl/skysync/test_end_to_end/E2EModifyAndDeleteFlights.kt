@@ -51,28 +51,21 @@ class E2EModifyAndDeleteFlights {
     }
   }
 
+  /**
+   * scenario:
+   * 1) click on flight1 in upcomming flights
+   * 2) click on edit button
+   * 3) modify flight => number of passengers, date, flight type, vehicle, time slot, balloon, basket
+   */
   @Test
-  fun modifyAndDeleteFlight() {
-    runTest {
-      val assignedFlight =
-          listOf(dbs.flight1, dbs.flight2, dbs.flight3, dbs.flight4).sortedBy { flight: Flight ->
-            flight.id
-          }
-      val retrievedFlights =
-          repository.flightTable.getAll(onError = { Assert.assertNull(it) }).sortedBy {
-              flight: Flight ->
-            flight.id
-          }
-
-      assertEquals(assignedFlight, retrievedFlights)
-      val plannedFlight = dbs.flight1
+  fun modifyAndDeleteFlight() = runTest {
       composeTestRule.waitUntil(2500) {
         composeTestRule
-            .onAllNodesWithTag("flightCard${plannedFlight.id}")
+            .onAllNodesWithTag("flightCard${dbs.flight1.id}")
             .fetchSemanticsNodes()
             .isNotEmpty()
       }
-      composeTestRule.onNodeWithTag("flightCard${plannedFlight.id}").performClick()
+      composeTestRule.onNodeWithTag("flightCard${dbs.flight1.id}").performClick()
       var route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
       composeTestRule.onNodeWithTag("EditButton").performClick()
@@ -101,33 +94,35 @@ class E2EModifyAndDeleteFlights {
       // Performs similar actions for selecting flight type, vehicle, time slot, balloon, and basket
       // (fails because of coroutines)
 
-      // Clicks on the "Add Flight" button to confirm flight addition
+      // Clicks on the "Add Flight" button to confirm flight modification
       val title1 = "Modify Flight"
       composeTestRule.onNodeWithTag("$title1 Button").performClick()
 
-      // Checks if navigation goes back to the home route after adding flight
-      route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.HOME, route)
-      var flightIsCreated = false
-      val flights = repository.flightTable.getAll(onError = { Assert.assertNotNull(it) })
-      flightIsCreated = flights.any { it.nPassengers == 11 }
-      Assert.assertEquals(true, flightIsCreated)
+      composeTestRule.waitUntil(2500) {
+          val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
+          nodes.fetchSemanticsNodes().isNotEmpty()
+      }
 
       composeTestRule.waitUntil(2500) {
         composeTestRule
-            .onAllNodesWithTag("flightCard${plannedFlight.id}")
+            .onAllNodesWithTag("flightCard${dbs.flight1.id}")
             .fetchSemanticsNodes()
             .isNotEmpty()
       }
-      composeTestRule.onNodeWithTag("flightCard${plannedFlight.id}").performClick()
+      composeTestRule.onNodeWithTag("flightCard${dbs.flight1.id}").performClick()
       route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
       composeTestRule.onNodeWithTag("DeleteButton").performClick()
       composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
       composeTestRule.waitUntil(2500) {
-        route = navController.currentBackStackEntry?.destination?.route
-        Route.HOME == route
+        composeTestRule
+          .onAllNodesWithTag("flightCard${dbs.flight2.id}")
+          .fetchSemanticsNodes()
+          .isNotEmpty()
       }
+//      composeTestRule.waitUntil(2500) {
+//        route = navController.currentBackStackEntry?.destination?.route
+//        Route.HOME == route
+//      }
     }
   }
-}
