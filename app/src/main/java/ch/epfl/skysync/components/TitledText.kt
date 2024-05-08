@@ -27,7 +27,7 @@ fun TitledText(
 ) {
 
   Text(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = padding),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = padding).testTag(title + value),
       text = title,
       style = MaterialTheme.typography.headlineSmall,
       color = Color.Black)
