@@ -37,5 +37,7 @@ fun ModifyFlightScreen(
       onSaveFlight = { flight: PlannedFlight ->
         viewModel.modifyFlight(flight)
         navController.navigate(Route.HOME)
-      })
+      },
+      refreshDate = {date, timeSlot -> viewModel.setDateAndTimeSlot(date, timeSlot)},
+  )
 }

@@ -77,6 +77,7 @@ fun FlightForm(
     availableBaskets: List<Basket>,
     availableUsers: List<User>,
     onSaveFlight: (PlannedFlight) -> Unit,
+    refreshDate : (LocalDate, TimeSlot) -> Unit,
 ) {
   Scaffold(modifier = Modifier.fillMaxSize(), topBar = { CustomTopAppBar(navController, title) }) {
       padding ->
@@ -162,6 +163,7 @@ fun FlightForm(
                             Instant.ofEpochMilli(timeInMillis)
                                 .atZone(ZoneId.of("GMT"))
                                 .toLocalDate()
+                          refreshDate(dateValue, timeSlotValue)
                       }
                     },
                     onclickDismiss = { openDatePicker = false },
@@ -176,7 +178,9 @@ fun FlightForm(
                     defaultPadding = defaultPadding,
                     title = timeSlotTitle,
                     value = timeSlotValue,
-                    onclickMenu = { item -> timeSlotValue = item },
+                    onclickMenu = { item ->
+                        timeSlotValue = item
+                        refreshDate(dateValue, item)},
                     items = TimeSlot.entries)
               }
               // Drop down menu for the flight type
@@ -628,5 +632,7 @@ fun FlightFormPreview() {
       emptyList(),
       emptyList(),
       emptyList(),
-      onSaveFlight = {})
+      onSaveFlight = {},
+        refreshDate = { _, _ -> }
+  )
 }
