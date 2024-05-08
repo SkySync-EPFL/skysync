@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import ch.epfl.skysync.components.UpcomingFlights
+import ch.epfl.skysync.components.FlightsList
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
@@ -42,7 +42,7 @@ fun AdminHomeScreen(navController: NavHostController, viewModel: FlightsViewMode
       },
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
-    UpcomingFlights(currentFlights, lightOrange) { selectedFlight ->
+    FlightsList(currentFlights, lightOrange, padding, "Upcoming flights") { selectedFlight ->
       Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
       navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/${selectedFlight}")
     }

@@ -10,7 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import ch.epfl.skysync.components.UpcomingFlights
+import ch.epfl.skysync.components.FlightsList
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.Purple40
@@ -27,7 +27,7 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
       floatingActionButton = {},
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
-    UpcomingFlights(currentFlights, Purple40) { selectedFlight ->
+    FlightsList(currentFlights, Purple40, padding, "Upcoming flights") { selectedFlight ->
       Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
       navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
     }
