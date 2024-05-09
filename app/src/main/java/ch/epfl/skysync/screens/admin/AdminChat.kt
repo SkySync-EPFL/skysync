@@ -16,7 +16,7 @@ import ch.epfl.skysync.viewmodel.ChatViewModel
 @Composable
 fun AdminChatScreen(navController: NavHostController, viewModel: ChatViewModel) {
   Scaffold(
-      modifier = Modifier.fillMaxSize().testTag("ChatScreenScaffold"),
+      modifier = Modifier.fillMaxSize().testTag("AdminChatScreenScaffold"),
       bottomBar = { AdminBottomBar(navController) },
   ) { padding ->
     val groupDetails by viewModel.getGroupDetails().collectAsStateWithLifecycle()

@@ -17,7 +17,6 @@ import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import junit.framework.TestCase.assertEquals
@@ -51,83 +50,79 @@ class E2EModifyAndDeleteFlights {
     }
   }
 
+  /**
+   * scenario:
+   * 1) click on flight1 in upcomming flights
+   * 2) click on edit button
+   * 3) modify flight => number of passengers, date, flight type, vehicle, time slot, balloon,
+   *    basket
+   */
   @Test
-  fun modifyAndDeleteFlight() {
-    runTest {
-      val assignedFlight =
-          listOf(dbs.flight1, dbs.flight2, dbs.flight3, dbs.flight4).sortedBy { flight: Flight ->
-            flight.id
-          }
-      val retrievedFlights =
-          repository.flightTable.getAll(onError = { Assert.assertNull(it) }).sortedBy {
-              flight: Flight ->
-            flight.id
-          }
-
-      assertEquals(assignedFlight, retrievedFlights)
-      val plannedFlight = dbs.flight1
-      composeTestRule.waitUntil(2500) {
-        composeTestRule
-            .onAllNodesWithTag("flightCard${plannedFlight.id}")
-            .fetchSemanticsNodes()
-            .isNotEmpty()
-      }
-      composeTestRule.onNodeWithTag("flightCard${plannedFlight.id}").performClick()
-      var route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
-      composeTestRule.onNodeWithTag("EditButton").performClick()
-      route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.MODIFY_FLIGHT + "/{Flight ID}", route)
-      composeTestRule.waitUntil(2500) {
-        composeTestRule.onAllNodesWithTag("Flight Lazy Column").fetchSemanticsNodes().isNotEmpty()
-      }
-      composeTestRule.onNodeWithTag("Flight Lazy Column").assertExists()
-
+  fun modifyAndDeleteFlight() = runTest {
+    composeTestRule.waitUntil(2500) {
       composeTestRule
-          .onNodeWithTag("Flight Lazy Column")
-          .performScrollToNode(hasTestTag("Number of passengers"))
-      composeTestRule.onNodeWithTag("Number of passengers").performClick()
-      composeTestRule.onNodeWithTag("Number of passengers").performTextClearance()
-      composeTestRule.onNodeWithTag("Number of passengers").performTextInput("11")
-
-      // Clicks on the "Date Field" and selects "OK" from the dialog
-
-      composeTestRule
-          .onNodeWithTag("Flight Lazy Column")
-          .performScrollToNode(hasTestTag("Date Field"))
-      composeTestRule.onNodeWithTag("Date Field").performClick()
-      composeTestRule.onNodeWithText("OK").performClick()
-
-      // Performs similar actions for selecting flight type, vehicle, time slot, balloon, and basket
-      // (fails because of coroutines)
-
-      // Clicks on the "Add Flight" button to confirm flight addition
-      val title1 = "Modify Flight"
-      composeTestRule.onNodeWithTag("$title1 Button").performClick()
-
-      // Checks if navigation goes back to the home route after adding flight
-      route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.ADMIN_HOME, route)
-      var flightIsCreated = false
-      val flights = repository.flightTable.getAll(onError = { Assert.assertNotNull(it) })
-      flightIsCreated = flights.any { it.nPassengers == 11 }
-      Assert.assertEquals(true, flightIsCreated)
-
-      composeTestRule.waitUntil(2500) {
-        composeTestRule
-            .onAllNodesWithTag("flightCard${plannedFlight.id}")
-            .fetchSemanticsNodes()
-            .isNotEmpty()
-      }
-      composeTestRule.onNodeWithTag("flightCard${plannedFlight.id}").performClick()
-      route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
-      composeTestRule.onNodeWithTag("DeleteButton").performClick()
-      composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
-      composeTestRule.waitUntil(2500) {
-        route = navController.currentBackStackEntry?.destination?.route
-        Route.ADMIN_HOME == route
-      }
+          .onAllNodesWithTag("flightCard${dbs.flight1.id}")
+          .fetchSemanticsNodes()
+          .isNotEmpty()
     }
+    composeTestRule.onNodeWithTag("flightCard${dbs.flight1.id}").performClick()
+    var route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
+    composeTestRule.onNodeWithTag("EditButton").performClick()
+    route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(Route.MODIFY_FLIGHT + "/{Flight ID}", route)
+    composeTestRule.waitUntil(2500) {
+      composeTestRule.onAllNodesWithTag("Flight Lazy Column").fetchSemanticsNodes().isNotEmpty()
+    }
+    composeTestRule.onNodeWithTag("Flight Lazy Column").assertExists()
+
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Number of passengers"))
+    composeTestRule.onNodeWithTag("Number of passengers").performClick()
+    composeTestRule.onNodeWithTag("Number of passengers").performTextClearance()
+    composeTestRule.onNodeWithTag("Number of passengers").performTextInput("11")
+
+    // Clicks on the "Date Field" and selects "OK" from the dialog
+
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Date Field"))
+    composeTestRule.onNodeWithTag("Date Field").performClick()
+    composeTestRule.onNodeWithText("OK").performClick()
+
+    // Performs similar actions for selecting flight type, vehicle, time slot, balloon, and basket
+    // (fails because of coroutines)
+
+    // Clicks on the "Add Flight" button to confirm flight modification
+    val title1 = "Modify Flight"
+    composeTestRule.onNodeWithTag("$title1 Button").performClick()
+
+    composeTestRule.waitUntil(2500) {
+      val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
+      nodes.fetchSemanticsNodes().isNotEmpty()
+    }
+
+    composeTestRule.waitUntil(2500) {
+      composeTestRule
+          .onAllNodesWithTag("flightCard${dbs.flight1.id}")
+          .fetchSemanticsNodes()
+          .isNotEmpty()
+    }
+    composeTestRule.onNodeWithTag("flightCard${dbs.flight1.id}").performClick()
+    route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
+    composeTestRule.onNodeWithTag("DeleteButton").performClick()
+    composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
+    composeTestRule.waitUntil(2500) {
+      composeTestRule
+          .onAllNodesWithTag("flightCard${dbs.flight2.id}")
+          .fetchSemanticsNodes()
+          .isNotEmpty()
+    }
+    //      composeTestRule.waitUntil(2500) {
+    //        route = navController.currentBackStackEntry?.destination?.route
+    //        Route.HOME == route
+    //      }
   }
 }

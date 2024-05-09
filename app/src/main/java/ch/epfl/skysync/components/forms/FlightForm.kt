@@ -77,6 +77,7 @@ fun FlightForm(
     availableBaskets: List<Basket>,
     availableUsers: List<User>,
     onSaveFlight: (PlannedFlight) -> Unit,
+    refreshDate: (LocalDate, TimeSlot) -> Unit,
 ) {
   Scaffold(modifier = Modifier.fillMaxSize(), topBar = { CustomTopAppBar(navController, title) }) {
       padding ->
@@ -87,13 +88,25 @@ fun FlightForm(
         val defaultPadding = 16.dp
         val smallPadding = 8.dp
 
+        val defaultTimeSlot = TimeSlot.AM
+
         var nbPassengersValue = remember {
           mutableStateOf(currentFlight?.nPassengers?.toString() ?: "")
         }
         var nbPassengersValueError by remember { mutableStateOf(false) }
 
         var openDatePicker by remember { mutableStateOf(false) }
-        var dateValue by remember { mutableStateOf(currentFlight?.date ?: LocalDate.now()) }
+        var dateValue by remember {
+          mutableStateOf(
+              if (currentFlight != null) {
+                // in order to refresh date & timeslot once on init of FlightForm
+                refreshDate(currentFlight.date, currentFlight.timeSlot)
+                currentFlight.date
+              } else {
+                refreshDate(LocalDate.now(), defaultTimeSlot)
+                LocalDate.now()
+              })
+        }
 
         var flightTypeValue: FlightType? by remember { mutableStateOf(currentFlight?.flightType) }
         var flightTypeValueError by remember { mutableStateOf(false) }
@@ -107,7 +120,7 @@ fun FlightForm(
         }
 
         var timeSlotValue: TimeSlot by remember {
-          mutableStateOf(currentFlight?.timeSlot ?: TimeSlot.AM)
+          mutableStateOf(currentFlight?.timeSlot ?: defaultTimeSlot)
         }
 
         var balloonValue: Balloon? by remember { mutableStateOf(currentFlight?.balloon) }
@@ -157,6 +170,7 @@ fun FlightForm(
                             Instant.ofEpochMilli(timeInMillis)
                                 .atZone(ZoneId.of("GMT"))
                                 .toLocalDate()
+                        refreshDate(dateValue, timeSlotValue)
                       }
                     },
                     onclickDismiss = { openDatePicker = false },
@@ -171,7 +185,10 @@ fun FlightForm(
                     defaultPadding = defaultPadding,
                     title = timeSlotTitle,
                     value = timeSlotValue,
-                    onclickMenu = { item -> timeSlotValue = item },
+                    onclickMenu = { item ->
+                      timeSlotValue = item
+                      refreshDate(dateValue, item)
+                    },
                     items = TimeSlot.entries)
               }
               // Drop down menu for the flight type
@@ -193,7 +210,8 @@ fun FlightForm(
                     defaultPadding = defaultPadding,
                     crewMembers = teamMembers,
                     allRoleTypes = allRoleTypes,
-                    availableUsers = availableUsers)
+                    availableUsers =
+                        availableUsers.filterNot { Team(teamMembers).getUsers().contains(it) })
               }
               teamMembers.withIndex().forEach() { (id, role) ->
                 item {
@@ -203,37 +221,11 @@ fun FlightForm(
                       id = id,
                       onDelete = { teamMembers.removeAt(id) },
                       onReassign = { user -> teamMembers[id] = Role(role.roleType, user) },
-                      availableUsers = availableUsers,
+                      availableUsers =
+                          availableUsers.filterNot { Team(teamMembers).getUsers().contains(it) },
                   )
                 }
               }
-              //              if (flightTypeValue != null) {
-              //                flightTypeValue!!.specialRoles.withIndex().forEach { (id, roleType)
-              // ->
-              //                  item {
-              //                    RoleField(
-              //                        defaultPadding,
-              //                        smallPadding,
-              //                        Role(roleType),
-              //                        id,
-              //                        { specialRoles.removeAt(id) },
-              //                        "Special",
-              //                        availableUsers = emptyList(),
-              //                    )
-              //                      RoleField(
-              //                          defaultPadding= defaultPadding,
-              //                          smallPadding = smallPadding,
-              //                          role=role,
-              //                          id = id,
-              //                          onDelete = { crewMembers.removeAt(id) },
-              //                          onReassign = { user -> crewMembers[id] =
-              // Role(role.roleType, user) },
-              //                          availableUsers = availableUsers,
-              //                      )
-              //                  }
-              //                }
-              //              }
-              // Drop down menu for the vehicle
               item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -264,6 +256,7 @@ fun FlightForm(
                       horizontalArrangement = Arrangement.SpaceBetween,
                       verticalAlignment = Alignment.CenterVertically) {
                         CustomDropDownMenu(
+                            modifier = Modifier.weight(1f),
                             defaultPadding = defaultPadding,
                             title = "Vehicle $idList",
                             value = car,
@@ -412,9 +405,7 @@ fun RoleField(
 ) {
   Text(
       modifier =
-          Modifier.fillMaxWidth()
-              .padding(horizontal = defaultPadding)
-              .testTag("$specialName User $id"),
+          Modifier.fillMaxWidth().padding(horizontal = defaultPadding).testTag("RoleField $id"),
       text = role.roleType.description,
   )
   Row(
@@ -422,21 +413,22 @@ fun RoleField(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically) {
         CustomDropDownMenu(
+            modifier = Modifier.weight(1f),
             defaultPadding = defaultPadding,
             title = "overview:${role.roleType.description}",
             value = role.assignedUser,
             onclickMenu = { item -> onReassign(item) },
             items = availableUsers,
-            showString = { it?.displayString() ?: "choose a user" },
+            showString = { it?.name() ?: "choose a user" },
             isError = false,
             messageError = "no message")
 
-        IconButton(onClick = { onDelete() }) {
-          Icon(
-              modifier = Modifier.testTag("Delete $specialName Crew Member $id"),
-              imageVector = Icons.Default.Delete,
-              contentDescription = "Delete $specialName Crew Member")
-        }
+        IconButton(
+            modifier = Modifier.testTag("Delete Crew Member $id"), onClick = { onDelete() }) {
+              Icon(
+                  imageVector = Icons.Default.Delete,
+                  contentDescription = "Delete $specialName Crew Member")
+            }
       }
 }
 
@@ -499,7 +491,7 @@ fun AddRole(
                 value = addNewAssignee,
                 onclickMenu = { item -> addNewAssignee = item },
                 items = allAvailableUsers,
-                showString = { it?.displayString() ?: "choose a user" },
+                showString = { it?.name() ?: "choose a user" },
             )
           }
         },
@@ -537,7 +529,7 @@ fun TeamHeader(
     defaultPadding: Dp,
     crewMembers: MutableList<Role>,
     allRoleTypes: List<RoleType>,
-    availableUsers: List<User>
+    availableUsers: List<User>,
 ) {
   var showAddMemberDialog by remember { mutableStateOf(false) }
   Row(
@@ -593,5 +585,6 @@ fun FlightFormPreview() {
       emptyList(),
       emptyList(),
       emptyList(),
-      onSaveFlight = {})
+      onSaveFlight = {},
+      refreshDate = { _, _ -> })
 }

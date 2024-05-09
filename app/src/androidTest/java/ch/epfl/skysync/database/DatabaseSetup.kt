@@ -5,7 +5,9 @@ import ch.epfl.skysync.database.tables.BalloonTable
 import ch.epfl.skysync.database.tables.BasketTable
 import ch.epfl.skysync.database.tables.FlightMemberTable
 import ch.epfl.skysync.database.tables.FlightTable
+import ch.epfl.skysync.database.tables.FlightTraceTable
 import ch.epfl.skysync.database.tables.FlightTypeTable
+import ch.epfl.skysync.database.tables.LocationTable
 import ch.epfl.skysync.database.tables.MessageGroupTable
 import ch.epfl.skysync.database.tables.MessageTable
 import ch.epfl.skysync.database.tables.TempUserTable
@@ -254,9 +256,11 @@ class DatabaseSetup {
             launch { UserTable(db).deleteTable(onError = null) },
             launch { TempUserTable(db).deleteTable(onError = null) },
             launch { FlightTable(db).deleteTable(onError = null) },
+            launch { FlightTraceTable(db).deleteTable(onError = null) },
             launch { AvailabilityTable(db).deleteTable(onError = null) },
             launch { MessageTable(db).deleteTable(onError = null) },
             launch { MessageGroupTable(db).deleteTable(onError = null) },
+            launch { LocationTable(db).deleteTable(onError = null) },
         )
         .forEach { it.join() }
   }
@@ -355,13 +359,7 @@ class DatabaseSetup {
     // re-set all the objects that have been added in the db -> they now have IDs
     flight1 =
         flight1.copy(
-            team =
-                Team(
-                    roles =
-                        listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1)).sortedBy {
-                            role: Role ->
-                          role.roleType
-                        }),
+            team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
             flightType = flightType1,
             balloon = balloon1,
             basket = basket1,
@@ -369,13 +367,7 @@ class DatabaseSetup {
         )
     flight2 =
         flight2.copy(
-            team =
-                Team(
-                    roles =
-                        listOf(Role(RoleType.PILOT, pilot2), Role(RoleType.CREW, crew2)).sortedBy {
-                            role: Role ->
-                          role.roleType
-                        }),
+            team = Team(roles = listOf(Role(RoleType.PILOT, pilot2), Role(RoleType.CREW, crew2))),
             flightType = flightType1,
             balloon = balloon2,
             basket = basket2,
@@ -383,13 +375,7 @@ class DatabaseSetup {
         )
     flight3 =
         flight3.copy(
-            team =
-                Team(
-                    roles =
-                        listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1)).sortedBy {
-                            role: Role ->
-                          role.roleType
-                        }),
+            team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
             flightType = flightType1,
             balloon = balloon1,
             basket = basket3,
@@ -397,7 +383,13 @@ class DatabaseSetup {
         )
     flight4 =
         flight4.copy(
-            team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
+            team =
+                Team(
+                    roles =
+                        listOf(
+                            Role(RoleType.PILOT, pilot1),
+                            Role(RoleType.CREW, crew1),
+                            Role(RoleType.CREW, crew2))),
             flightType = flightType1,
             balloon = balloon1,
             basket = basket1,

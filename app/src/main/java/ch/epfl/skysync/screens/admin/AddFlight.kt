@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens.admin
+package ch.epfl.skysync.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,5 +32,7 @@ fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewMode
       onSaveFlight = { flight: PlannedFlight ->
         viewModel.addFlight(flight)
         navController.navigate(Route.ADMIN_HOME)
-      })
+      },
+      refreshDate = { date, timeSlot -> viewModel.setDateAndTimeSlot(date, timeSlot) },
+  )
 }
