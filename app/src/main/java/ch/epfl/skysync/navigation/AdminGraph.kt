@@ -19,9 +19,9 @@ import ch.epfl.skysync.screens.admin.AdminChatScreen
 import ch.epfl.skysync.screens.admin.AdminFlightDetailScreen
 import ch.epfl.skysync.screens.admin.AdminHomeScreen
 import ch.epfl.skysync.screens.admin.AdminTextScreen
+import ch.epfl.skysync.screens.admin.ConfirmationScreen
 import ch.epfl.skysync.screens.admin.ModifyFlightScreen
 import ch.epfl.skysync.screens.admin.UserManagementScreen
-import ch.epfl.skysync.screens.admin.confirmationScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.LocationViewModel
@@ -54,7 +54,7 @@ fun NavGraphBuilder.adminGraph(
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
           val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
-          confirmationScreen(navController, flightId, flightsViewModel)
+          ConfirmationScreen(navController, flightId, flightsViewModel)
         }
     composable(
         route = Route.MODIFY_FLIGHT + "/{Flight ID}",
