@@ -21,7 +21,7 @@ import org.junit.Test
 class SearchBarCustomTest {
   @get:Rule val composeTestRule = createComposeRule()
   private val propositions = RoleType.entries
-    private val testTag = " Search Bar Input"
+  private val testTag = " Search Bar Input"
 
   @Before
   fun setUp() {

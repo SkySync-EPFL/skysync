@@ -390,7 +390,6 @@ fun flightTypeInputValidation(flightTypeValue: FlightType?): Boolean {
   return flightTypeValue == null
 }
 
-
 @Composable
 fun RoleField(
     defaultPadding: Dp,

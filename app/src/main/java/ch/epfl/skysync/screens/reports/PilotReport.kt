@@ -1,27 +1,17 @@
 package ch.epfl.skysync.screens.reports
 
-import android.location.Location
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,21 +21,16 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.components.CustomTopAppBar
-import ch.epfl.skysync.components.TimePickerDialog
-import ch.epfl.skysync.components.forms.CustomDropDownMenu
 import ch.epfl.skysync.components.forms.LocationPickerField
 import ch.epfl.skysync.components.forms.PauseField
-import ch.epfl.skysync.components.forms.SearchBarCustom
 import ch.epfl.skysync.components.forms.TimePickerField
 import ch.epfl.skysync.components.forms.TitledInputTextField
 import ch.epfl.skysync.components.forms.VehicleProblemField
@@ -64,11 +49,11 @@ import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.reports.PilotReport
 import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
-import ch.epfl.skysync.util.getFormattedTime
 import ch.epfl.skysync.util.inputValidation
 import java.time.Instant
 import java.time.LocalDate
@@ -202,7 +187,9 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
                   comments = comments,
                   vehicleProblems = vehicleProblems)
               // TODO save report
-              navHostController.navigate(Route.HOME) { popUpTo(Route.HOME) { inclusive = true } }
+              navHostController.navigate(Route.CREW_HOME) {
+                popUpTo(Route.CREW_HOME) { inclusive = true }
+              }
             }
           }) {
             Text("Submit")
@@ -227,9 +214,11 @@ fun PilotReportScreenPreview() {
           timeSlot = TimeSlot.AM,
           vehicles = listOf(Vehicle("vehicle1"), Vehicle("vehicle2")),
           takeOffTime = Date.from(Instant.now()),
-          takeOffLocation = Location("Lausanne"),
+          takeOffLocation =
+              LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),
           landingTime = Date.from(Instant.now()),
-          landingLocation = Location("Geneva"),
+          landingLocation =
+              LocationPoint(time = 0, latitude = 1.0, longitude = 1.0, name = "test2"),
           flightTime = 10L)
   val pilot =
       Pilot(

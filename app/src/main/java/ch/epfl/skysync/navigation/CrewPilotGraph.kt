@@ -1,6 +1,5 @@
 package ch.epfl.skysync.navigation
 
-import android.location.Location
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -21,6 +20,7 @@ import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.screens.crewpilot.ChatScreen
 import ch.epfl.skysync.screens.crewpilot.FlightDetailScreen
@@ -97,41 +97,44 @@ fun NavGraphBuilder.crewPilotGraph(
     }
     composable(Route.FLIGHT) {
       val locationViewModel = LocationViewModel.createViewModel(uid!!, repository)
-      FlightScreen(navController, timer!!, locationViewModel, uid!!)
+      FlightScreen(navController, timer!!, locationViewModel, uid)
     }
-      composable(
-          Route.PILOT_REPORT + "/{Flight ID}",
-          arguments = listOf(navArgument("Flight ID"){type = NavType.StringType})) { backStackEntry ->
-          //TODO remove when done with viewModel
-          val pilot = Pilot(
-              "testID",
-              "John",
-              "Doe",
-              "",
-              AvailabilityCalendar(),
-              FlightGroupCalendar(),
-              setOf(RoleType.PILOT),
-              BalloonQualification.MEDIUM
-          )
-          //val finishedFlightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          val finishedFlight = FinishedFlight(
-              UNSET_ID,
-              0,
-              Team(Role.initRoles(BASE_ROLES)),
-              FlightType.DISCOVERY,
-              Balloon("Balloon 1", BalloonQualification.MEDIUM),
-              Basket("Basket 1", true),
-              LocalDate.now(),
-              TimeSlot.AM,
-              listOf(),
-              takeOffTime = Date(),
-              takeOffLocation = Location(""),
-              landingTime = Date(),
-              landingLocation = Location(""),
-              flightTime = 0
+    composable(
+        Route.PILOT_REPORT + "/{Flight ID}",
+        arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
+          ->
+          // TODO remove when done with viewModel
+          val pilot =
+              Pilot(
+                  "testID",
+                  "John",
+                  "Doe",
+                  "",
+                  AvailabilityCalendar(),
+                  FlightGroupCalendar(),
+                  setOf(RoleType.PILOT),
+                  BalloonQualification.MEDIUM)
+          // val finishedFlightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
+          val finishedFlight =
+              FinishedFlight(
+                  UNSET_ID,
+                  0,
+                  Team(Role.initRoles(BASE_ROLES)),
+                  FlightType.DISCOVERY,
+                  Balloon("Balloon 1", BalloonQualification.MEDIUM),
+                  Basket("Basket 1", true),
+                  LocalDate.now(),
+                  TimeSlot.AM,
+                  listOf(),
+                  takeOffTime = Date(),
+                  takeOffLocation =
+                      LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),
+                  landingTime = Date(),
+                  landingLocation =
+                      LocationPoint(time = 50, latitude = 1.0, longitude = 1.0, name = "test2"),
+                  flightTime = 0)
 
-          )
           PilotReportScreen(finishedFlight, navController, pilot)
-      }
+        }
   }
 }

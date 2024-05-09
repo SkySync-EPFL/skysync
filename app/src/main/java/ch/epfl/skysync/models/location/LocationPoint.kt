@@ -7,6 +7,7 @@ data class LocationPoint(
     val time: Int,
     val latitude: Double,
     val longitude: Double,
+    val name: String = ""
 ) {
   fun latlng(): LatLng = LatLng(latitude, longitude)
 }

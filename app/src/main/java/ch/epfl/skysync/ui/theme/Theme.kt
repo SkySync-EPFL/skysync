@@ -21,7 +21,9 @@ private val DarkColorScheme =
 
 private val LightColorScheme =
     lightColorScheme(
-        primary = lightOrange, secondary = PurpleGrey40, tertiary = Pink40,
+        primary = lightOrange,
+        secondary = PurpleGrey40,
+        tertiary = Pink40,
 
         // Other default colors to override
         background = Color(0xFFFFFBFE),
@@ -31,7 +33,7 @@ private val LightColorScheme =
         onTertiary = Color.White,
         onBackground = Color(0xFF1C1B1F),
         onSurface = Color(0xFF1C1B1F),
-        )
+    )
 
 @Composable
 fun SkySyncTheme(

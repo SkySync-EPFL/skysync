@@ -184,7 +184,6 @@ fun <T> dropDownInputValidation(value: T): Boolean {
   return value === null
 }
 
-
 @Preview
 @Composable
 fun AddUserScreenPreview() {
