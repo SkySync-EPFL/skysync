@@ -220,15 +220,3 @@ fun FlightScreen(
         }
       }
 }
-/*
-@Composable
-@Preview
-fun FlightScreenPreview() {
-  val navController = rememberNavController()
-    val db: FirestoreDatabase = FirestoreDatabase()
-    val repository: Repository = Repository(db)
-    val locationViewModel =
-        LocationViewModel.createViewModel(repository)
-  FlightScreen(navController = navController, timer = TimerViewModel(), locationViewModel = locationViewModel, uid)
-}
-*/
