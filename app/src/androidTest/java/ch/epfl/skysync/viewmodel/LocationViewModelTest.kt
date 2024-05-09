@@ -1,16 +1,18 @@
 package ch.epfl.skysync.viewmodel
 
-import android.os.SystemClock
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.Location
-import com.google.android.gms.maps.model.LatLng
+import ch.epfl.skysync.models.location.LocationPoint
+import com.google.firebase.firestore.Filter
 import junit.framework.TestCase.assertNotNull
-import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -23,6 +25,9 @@ class LocationViewModelTest {
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbs = DatabaseSetup()
   private val repository: Repository = Repository(db)
+  private val flightTable = repository.flightTable
+  private val flightTraceTable = repository.flightTraceTable
+  private val locationTable = repository.locationTable
   private lateinit var locationViewModel: LocationViewModel
 
   @Before
@@ -30,24 +35,97 @@ class LocationViewModelTest {
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
     composeTestRule.setContent {
-      locationViewModel = LocationViewModel.createViewModel(repository = repository)
+      locationViewModel = LocationViewModel.createViewModel(dbs.pilot1.id, repository = repository)
     }
   }
 
-  @Test fun testInitialLocationSetup() = runTest { assertNotNull(locationViewModel.locations) }
+  @Test
+  fun testInitialLocationSetup() = runTest { assertNotNull(locationViewModel.currentLocations) }
 
   @Test
   fun testLocationUpdate() = runTest {
-    val testLocation = Location(dbs.pilot1.id, LatLng(10.0, 10.0))
+    val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) }) as ConfirmedFlight
 
-    locationViewModel.updateLocation(testLocation).join()
+    locationViewModel.startFlight(flight)
 
-    // add a little delay to wait for the listener to be triggered
-    SystemClock.sleep(200)
+    // having the program working with out of order location updates is not a strict requirement
+    // but it's still nice to have
+    locationViewModel
+        .addLocation(Location(userId = dbs.pilot1.id, point = LocationPoint(0, 0.0, 0.0)))
+        .join()
+    locationViewModel
+        .addLocation(Location(userId = dbs.crew1.id, point = LocationPoint(2, 0.0, 0.0)))
+        .join()
+    locationViewModel
+        .addLocation(Location(userId = dbs.crew2.id, point = LocationPoint(2, 0.0, 0.0)))
+        .join()
+    locationViewModel
+        .addLocation(Location(userId = dbs.pilot1.id, point = LocationPoint(3, 0.0, 0.0)))
+        .join()
+    locationViewModel
+        .addLocation(Location(userId = dbs.crew1.id, point = LocationPoint(1, 0.0, 0.0)))
+        .join()
+    locationViewModel
+        .addLocation(Location(userId = dbs.pilot1.id, point = LocationPoint(0, 0.0, 0.0)))
+        .join()
 
-    val locations = locationViewModel.locations
+    val locations = locationViewModel.currentLocations.value
 
-    // Verify the location is updated in the ViewModel
-    assertTrue(locations.value.contains(testLocation))
+    // all the flight members should have an entry as they all have had new updates
+    assertEquals(setOf(dbs.pilot1.id, dbs.crew1.id, dbs.crew2.id), locations.keys)
+
+    // verify that the current location is the one with the highest time
+    assertEquals(3, locations[dbs.pilot1.id]!!.second.point.time)
+    assertEquals(2, locations[dbs.crew1.id]!!.second.point.time)
+    assertEquals(2, locations[dbs.crew2.id]!!.second.point.time)
+
+    locationViewModel.endFlight().join()
+
+    val pilotLocations =
+        locationTable.query(Filter.equalTo("userId", dbs.pilot1.id), onError = { assertNull(it) })
+
+    // verify that the current user locations are deleted at the end of the flight
+    assertEquals(listOf<Location>(), pilotLocations)
+  }
+
+  @Test
+  fun testSaveFlightTrace() = runTest {
+    val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) }) as ConfirmedFlight
+
+    locationViewModel.startFlight(flight)
+
+    // here we need to have the update in order to have all the locations in the flight trace
+    // as the locations that are out of order are discarded (which is a feature not a bug...)
+    locationViewModel
+        .addLocation(Location(userId = dbs.pilot1.id, point = LocationPoint(0, 12.0, 0.0)))
+        .join()
+    locationViewModel
+        .addLocation(Location(userId = dbs.crew1.id, point = LocationPoint(2, 13.0, 0.0)))
+        .join()
+    locationViewModel
+        .addLocation(Location(userId = dbs.crew2.id, point = LocationPoint(2, -13.03, 0.0)))
+        .join()
+    locationViewModel
+        .addLocation(Location(userId = dbs.pilot1.id, point = LocationPoint(2, 0.0, -12.0)))
+        .join()
+    locationViewModel
+        .addLocation(Location(userId = dbs.pilot1.id, point = LocationPoint(3, 1.0, 0.0)))
+        .join()
+
+    locationViewModel.saveFlightTrace().join()
+
+    val flightTrace = flightTraceTable.get(dbs.flight4.id, onError = { assertNull(it) })
+
+    assertEquals(
+        FlightTrace(
+            id = dbs.flight4.id,
+            trace =
+                listOf(
+                    LocationPoint(0, 12.0, 0.0),
+                    LocationPoint(2, 0.0, -12.0),
+                    LocationPoint(3, 1.0, 0.0),
+                ),
+        ),
+        flightTrace)
   }
 }
