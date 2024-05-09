@@ -119,7 +119,6 @@ class LocationViewModel(uid: String?=null, val repository: Repository) : ViewMod
    * timestamp to update the counter every approx. 100ms.
    */
   fun startTimer() {
-    if (_inFlight.value) return
     _counter.value = 0L
     var newTimeStamp = 0L
     timerJob = viewModelScope.launch {
@@ -137,7 +136,7 @@ class LocationViewModel(uid: String?=null, val repository: Repository) : ViewMod
    * starts the timer, position tracking and flightTrace
    */
   fun startFlight(){
-    if (flightId == null || _personalFlights.value == null) return
+    if (flightId == null || _personalFlights.value == null || _inFlight.value) return
     _inFlight.value = true
     val teamOfCurrentFlight = getCurrentFlight(_personalFlights.value!!, flightId!!).team
     startLocationTracking(teamOfCurrentFlight)

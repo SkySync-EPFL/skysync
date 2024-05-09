@@ -5,8 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,9 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.FlightCard
-import ch.epfl.skysync.components.FlightsList
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.components.Timer
+import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.location.UserMetrics
@@ -63,6 +63,30 @@ import com.google.maps.android.compose.rememberMarkerState
 fun UserLocationMarker(location: Location, user: User) {
   return Marker(
       state = rememberMarkerState(position = location.point.latlng()), title = user.name())
+}
+
+@Composable fun ShowFlightToStart(navController: NavHostController,
+                                  flight: Flight,
+                                  onClick: (String)->Unit){
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = { BottomBar(navController) }) { padding ->
+        // Renders the Google Map or a permission request message based on the permission status.
+        Column (
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+
+        ){
+            Text("Your flight cockpit")
+            Spacer(modifier = Modifier.padding(8.dp))
+            FlightCard(flight = flight) {
+                onClick(it)
+            }
+
+        }
+    }
+
 }
 
 /**
@@ -142,118 +166,132 @@ fun FlightScreen(
     // Cleanup function to stop receiving location updates when the composable is disposed.
     onDispose { fusedLocationClient.removeLocationUpdates(locationCallback) }
   }
-
-  Scaffold(
-      modifier = Modifier.fillMaxSize(),
-      floatingActionButton = {
-          if (personalFlights == null) {
-              LoadingComponent(isLoading = true, onRefresh = {}) {
-              }
-          } else if (personalFlights!!.isEmpty()) {
-              Text("no upcoming flights")
-          } else if (currentFlightId == null) {
-              FlightCard(flight = personalFlights!!.first()) {
-                  inFlightViewModel.setFlightId(it)
-                  currentFlightId = it
-              }
-
-          } else {
-            if (locationPermission.status.isGranted) {
-              Box(
-                  modifier =
-                  Modifier
-                      .fillMaxSize()
-                      .padding(start = 32.dp, bottom = 88.dp, top = 100.dp),
-                  contentAlignment = Alignment.BottomStart
-              ) {
-                  Timer(
-                      Modifier
-                          .align(Alignment.TopEnd)
-                          .testTag("Timer"),
-                      currentTimer = currentTime,
-                      isRunning = flightIsStarted,
-                      onStart = { inFlightViewModel.startFlight() },
-                      onStop = { inFlightViewModel.stopFlight() },
-                  )
-
-                  Row(
-                      horizontalArrangement = Arrangement.SpaceBetween,
-                      modifier = Modifier.fillMaxWidth()
-                  ) {
-                      FloatingActionButton(
-                          onClick = {
-                              // Moves the camera to the current location when clicked.
-                              metrics
-                                  .let {
-                                      CameraUpdateFactory.newLatLngZoom(it.location.latlng(), 13f)
-                                  }
-                                  .let { cameraPositionState.move(it) }
-                          },
-                          containerColor = lightOrange
-                      ) {
-                          Icon(Icons.Default.LocationOn, contentDescription = "Locate Me")
-                      }
-                      FloatingActionButton(
-                          onClick = {
-                              // Here is where you'd navigate to a new screen. For now, just log a
-                              // message.
-                              Log.d(
-                                  "FlightScreen",
-                                  "FloatingActionButton clicked. Implement navigation here."
-                              )
-                              // Example navigation call: navController.navigate("FlightInfos")
-                          },
-                          containerColor = lightOrange
-                      ) {
-                          Icon(
-                              imageVector = Icons.Default.Info,
-                              contentDescription = "Flight infos",
-                              tint = Color.White
-                          )
-                      }
-                  }
-              }
-          }
-
-          }
-      },
-      bottomBar = { BottomBar(navController) }) { padding ->
-        // Renders the Google Map or a permission request message based on the permission status.
-        if (locationPermission.status.isGranted) {
-          GoogleMap(
-              modifier = Modifier
-                  .fillMaxSize()
-                  .padding(padding)
-                  .testTag("Map"),
-              cameraPositionState = cameraPositionState) {
-                Marker(state = markerState, title = "Your Location", snippet = "You are here")
-
-                currentLocations.values.forEach { (user, location) ->
-                  UserLocationMarker(location, user)
-                }
-              }
-          Text(
-              text = "$metrics",
-              style = MaterialTheme.typography.bodyLarge,
-              modifier =
-              Modifier
-                  .padding(top = 16.dp, start = 12.dp, end = 12.dp)
-                  .background(color = Color.White, shape = RoundedCornerShape(8.dp))
-                  .padding(6.dp))
+    if (personalFlights == null){
+        LoadingComponent(isLoading = true, onRefresh = {}) {
         }
-        if (!locationPermission.status.isGranted) {
-          Box(
-              modifier = Modifier
-                  .fillMaxSize()
-                  .padding(16.dp),
-              contentAlignment = Alignment.Center) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                  Text("Access to location is required to use this feature.")
-                  Text("Please enable location permissions in settings.")
-                }
-              }
+    }
+    else if(personalFlights!!.isEmpty()){
+        Text("no upcoming flights")
+    }
+    else if (currentFlightId == null){
+        ShowFlightToStart(navController, personalFlights!!.first()){
+            inFlightViewModel.setFlightId(it)
+            currentFlightId = it
         }
-      }
+    }
+    else{
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            floatingActionButton = {
+                if (locationPermission.status.isGranted) {
+                    Box(
+                        modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(start = 32.dp, bottom = 88.dp, top = 100.dp),
+                        contentAlignment = Alignment.BottomStart
+                    ) {
+                        Timer(
+                            Modifier
+                                .align(Alignment.TopEnd)
+                                .testTag("Timer"),
+                            currentTimer = currentTime,
+                            isRunning = flightIsStarted,
+                            onStart = { inFlightViewModel.startFlight() },
+                            onStop = { inFlightViewModel.stopFlight() },
+                        )
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            FloatingActionButton(
+                                onClick = {
+                                    // Moves the camera to the current location when clicked.
+                                    metrics
+                                        .let {
+                                            CameraUpdateFactory.newLatLngZoom(
+                                                it.location.latlng(),
+                                                13f
+                                            )
+                                        }
+                                        .let { cameraPositionState.move(it) }
+                                },
+                                containerColor = lightOrange
+                            ) {
+                                Icon(Icons.Default.LocationOn, contentDescription = "Locate Me")
+                            }
+                            FloatingActionButton(
+                                onClick = {
+                                    // Here is where you'd navigate to a new screen. For now, just log a
+                                    // message.
+                                    Log.d(
+                                        "FlightScreen",
+                                        "FloatingActionButton clicked. Implement navigation here."
+                                    )
+                                    // Example navigation call: navController.navigate("FlightInfos")
+                                },
+                                containerColor = lightOrange
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Info,
+                                    contentDescription = "Flight infos",
+                                    tint = Color.White
+                                )
+                            }
+                        }
+                    }
+                }
+
+            },
+            bottomBar = { BottomBar(navController) }) { padding ->
+            // Renders the Google Map or a permission request message based on the permission status.
+
+
+                if (locationPermission.status.isGranted) {
+                    GoogleMap(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .testTag("Map"),
+                        cameraPositionState = cameraPositionState
+                    ) {
+                        Marker(
+                            state = markerState,
+                            title = "Your Location",
+                            snippet = "You are here"
+                        )
+
+                        currentLocations.values.forEach { (user, location) ->
+                            UserLocationMarker(location, user)
+                        }
+                    }
+                    Text(
+                        text = "$metrics",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier =
+                        Modifier
+                            .padding(top = 16.dp, start = 12.dp, end = 12.dp)
+                            .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                            .padding(6.dp)
+                    )
+                }
+                if (!locationPermission.status.isGranted) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("Access to location is required to use this feature.")
+                            Text("Please enable location permissions in settings.")
+                        }
+                    }
+                }
+            }
+        }
+
 }
 /*
 @Composable
