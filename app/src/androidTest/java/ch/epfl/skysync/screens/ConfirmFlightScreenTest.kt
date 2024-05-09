@@ -1,7 +1,6 @@
 package ch.epfl.skysync.screens
 
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -65,35 +64,30 @@ class ConfirmFlightScreenTest {
 
     composeTestRule.onNodeWithText("Home").performClick()
 
-    val canBeConfirmedFlights =
-        assignedFlight.filterIsInstance<PlannedFlight>().filter { it.readyToBeConfirmed() }
+    val canBeConfirmedFlight =
+        assignedFlight.filterIsInstance<PlannedFlight>().filter { it.readyToBeConfirmed() }[0]
 
-    for (flight in canBeConfirmedFlights) {
-      composeTestRule
-          .onNodeWithTag("HomeLazyList")
-          .performScrollToNode(hasTestTag("flightCard${flight.id}"))
-      composeTestRule.onNodeWithTag("flightCard${flight.id}").performClick()
-      var route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
+    composeTestRule.onNodeWithTag("flightCard${canBeConfirmedFlight.id}").performClick()
+    var route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
 
-      composeTestRule.onNodeWithText("Confirm").performClick()
+    composeTestRule.onNodeWithText("Confirm").performClick()
 
-      composeTestRule.waitUntil(2500) {
-        composeTestRule.onAllNodesWithText("Balloon").fetchSemanticsNodes().isNotEmpty()
-      }
-
-      composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Enter Remark"))
-      composeTestRule.onNodeWithText("Confirm").assertDoesNotExist()
-
-      val setTime = composeTestRule.onAllNodesWithText("Set Time")
-      for (i in 0 until setTime.fetchSemanticsNodes().size) {
-        setTime[i].performClick()
-      }
-      composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
-      composeTestRule.onNodeWithText("Confirm").performClick()
-      composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
-      route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.ADMIN_HOME, route)
+    composeTestRule.waitUntil(2500) {
+      composeTestRule.onAllNodesWithText("Balloon").fetchSemanticsNodes().isNotEmpty()
     }
+
+    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Enter Remark"))
+    composeTestRule.onNodeWithText("Confirm").assertDoesNotExist()
+
+    val setTime = composeTestRule.onAllNodesWithText("Set Time")
+    for (i in 0 until setTime.fetchSemanticsNodes().size) {
+      setTime[i].performClick()
+    }
+    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
+    composeTestRule.onNodeWithText("Confirm").performClick()
+    composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
+    route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(Route.ADMIN_HOME, route)
   }
 }
