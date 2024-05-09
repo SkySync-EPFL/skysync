@@ -12,4 +12,5 @@ import com.google.android.gms.maps.model.LatLng
 data class Location(
     val id: String = UNSET_ID,
     val value: LatLng,
+    val name : String = "",
 )

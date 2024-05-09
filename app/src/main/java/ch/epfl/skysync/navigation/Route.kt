@@ -14,6 +14,9 @@ object Route {
   const val FLIGHT_DETAILS = "Flight Details"
   const val CONFIRM_FLIGHT = "Confirm Flight"
 
+  const val CREW_REPORT = "Crew Report"
+  const val PILOT_REPORT = "Pilot Report"
+
   const val USER = "User"
   const val ADD_USER = "Add User"
 

@@ -27,6 +27,7 @@ import ch.epfl.skysync.components.forms.TitledDropDownMenu
 import ch.epfl.skysync.components.forms.TitledInputTextField
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.ui.theme.lightOrange
+import ch.epfl.skysync.util.inputValidation
 
 @Composable
 fun AddUserScreen(navController: NavController) {
@@ -183,9 +184,6 @@ fun <T> dropDownInputValidation(value: T): Boolean {
   return value === null
 }
 
-fun inputValidation(vararg errors: Boolean): Boolean {
-  return errors.any { it }
-}
 
 @Preview
 @Composable

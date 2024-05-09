@@ -21,13 +21,13 @@ import org.junit.Test
 class SearchBarCustomTest {
   @get:Rule val composeTestRule = createComposeRule()
   private val propositions = RoleType.entries
+    private val testTag = " Search Bar Input"
 
   @Before
   fun setUp() {
     composeTestRule.setContent {
       var query by remember { mutableStateOf("") }
       var active by remember { mutableStateOf(false) }
-
       SearchBarCustom(
           query = query,
           onQueryChange = { query = it },
@@ -46,26 +46,26 @@ class SearchBarCustomTest {
 
   @Test
   fun isPlaceHolderDisplayed() {
-    composeTestRule.onNodeWithTag("Search Bar Input").assertTextContains("Test Name")
+    composeTestRule.onNodeWithTag(testTag).assertTextContains("Test Name")
   }
 
   @Test
   fun doesSearchBarActiveWorks() {
-    composeTestRule.onNodeWithTag("Search Bar Input").performClick()
+    composeTestRule.onNodeWithTag(testTag).performClick()
     composeTestRule.onNodeWithText(propositions[0].toString()).performClick()
     composeTestRule.onNodeWithTag("Search Propositions").assertIsNotDisplayed()
   }
 
   @Test
   fun doesQueryWorksWell() {
-    composeTestRule.onNodeWithTag("Search Bar Input").performClick()
+    composeTestRule.onNodeWithTag(testTag).performClick()
     composeTestRule.onNodeWithText(propositions[0].toString()).performClick()
-    composeTestRule.onNodeWithTag("Search Bar Input").assertTextContains(propositions[0].toString())
+    composeTestRule.onNodeWithTag(testTag).assertTextContains(propositions[0].toString())
 
-    composeTestRule.onNodeWithTag("Search Bar Input").performClick()
-    composeTestRule.onNodeWithTag("Search Bar Input").performTextClearance()
-    composeTestRule.onNodeWithTag("Search Bar Input").assertTextContains("")
-    composeTestRule.onNodeWithTag("Search Bar Input").performTextInput("Test")
-    composeTestRule.onNodeWithTag("Search Bar Input").assertTextContains("Test")
+    composeTestRule.onNodeWithTag(testTag).performClick()
+    composeTestRule.onNodeWithTag(testTag).performTextClearance()
+    composeTestRule.onNodeWithTag(testTag).assertTextContains("")
+    composeTestRule.onNodeWithTag(testTag).performTextInput("Test")
+    composeTestRule.onNodeWithTag(testTag).assertTextContains("Test")
   }
 }

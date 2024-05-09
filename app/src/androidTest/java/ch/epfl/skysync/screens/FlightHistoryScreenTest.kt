@@ -25,6 +25,8 @@ import java.time.LocalTime
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.time.Instant
+import java.util.Date
 
 class FlightHistoryScreenTest {
   @get:Rule val composeTestRule = createComposeRule()
@@ -42,8 +44,8 @@ class FlightHistoryScreenTest {
               timeSlot = TimeSlot.AM,
               vehicles = emptyList(),
               flightTime = 0L,
-              takeOffTime = LocalTime.now(),
-              landingTime = LocalTime.now(),
+              takeOffTime = Date.from(Instant.now()),
+              landingTime =Date.from(Instant.now()),
               takeOffLocation = Location("Lausanne 1"),
               landingLocation = Location("Lausanne")),
           FinishedFlight(
@@ -57,8 +59,8 @@ class FlightHistoryScreenTest {
               timeSlot = TimeSlot.AM,
               vehicles = emptyList(),
               flightTime = 0L,
-              takeOffTime = LocalTime.now(),
-              landingTime = LocalTime.now(),
+              takeOffTime = Date.from(Instant.now()),
+              landingTime = Date.from(Instant.now()),
               takeOffLocation = Location("Lausanne"),
               landingLocation = Location("Lausanne")))
 

@@ -1,9 +1,12 @@
 package ch.epfl.skysync.models.flight
 
 import android.location.Location
+import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.reports.Report
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.Date
 
 /** Represents the flight when it is finished and the report has been submitted */
 data class FinishedFlight(
@@ -17,13 +20,20 @@ data class FinishedFlight(
     override val timeSlot: TimeSlot,
     override val vehicles: List<Vehicle>,
     val color: FlightColor = FlightColor.NO_COLOR,
-    val takeOffTime: LocalTime,
+    val takeOffTime: Date,
     val takeOffLocation: Location,
-    val landingTime: LocalTime,
+    val landingTime: Date,
     val landingLocation: Location,
-    val flightTime: Long // time in milliseconds
+    val flightTime: Long, // time in milliseconds
+    val reportId : List<Report> = emptyList()
 ) : Flight {
+
+    private var flightStatus = FlightStatus.MISSING_REPORT
   override fun getFlightStatus(): FlightStatus {
-    return FlightStatus.COMPLETED
+    return this.flightStatus
   }
+
+    fun reportCompleted() {
+        this.flightStatus = FlightStatus.COMPLETED
+    }
 }

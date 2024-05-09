@@ -1,8 +1,8 @@
 package ch.epfl.skysync.models.reports
 
+import android.location.Location
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.flight.Vehicle
-import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.user.Pilot
 import java.util.Date
 

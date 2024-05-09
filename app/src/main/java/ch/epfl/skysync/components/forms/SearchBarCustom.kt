@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun <T> SearchBarCustom(
+    title : String = "",
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
@@ -48,7 +49,7 @@ fun <T> SearchBarCustom(
   val animatedHeight by animateDpAsState(targetValue = height, label = "")
   val keyboardController = LocalSoftwareKeyboardController.current
   LaunchedEffect(active) { height = if (active) 300.dp else 90.dp }
-  Column(modifier = Modifier.fillMaxWidth().height(animatedHeight).padding(16.dp)) {
+  Column(modifier = Modifier.fillMaxWidth().height(animatedHeight).padding(bottom = 16.dp, start = 16.dp, end = 16.dp)) {
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
@@ -56,7 +57,7 @@ fun <T> SearchBarCustom(
             Modifier.fillMaxWidth()
                 .focusRequester(focusRequester)
                 .onFocusChanged { focusState -> onActiveChange(focusState.isFocused) }
-                .testTag("Search Bar Input"),
+                .testTag("$title Search Bar Input"),
         singleLine = true,
         placeholder = { Text(text = placeholder) },
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),

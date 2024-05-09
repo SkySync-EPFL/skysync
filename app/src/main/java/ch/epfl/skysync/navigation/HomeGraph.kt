@@ -17,8 +17,16 @@ import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
+import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.flight.BASE_ROLES
+import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
+import ch.epfl.skysync.models.flight.Basket
+import ch.epfl.skysync.models.flight.FinishedFlight
+import ch.epfl.skysync.models.flight.FlightType
+import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
+import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.message.Message
 import ch.epfl.skysync.models.message.MessageGroup
 import ch.epfl.skysync.models.user.Pilot
@@ -33,11 +41,13 @@ import ch.epfl.skysync.screens.TextScreen
 import ch.epfl.skysync.screens.UserManagementScreen
 import ch.epfl.skysync.screens.confirmationScreen
 import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
+import ch.epfl.skysync.screens.reports.PilotReportScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.LocationViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
 import ch.epfl.skysync.viewmodel.TimerViewModel
+import java.time.LocalDate
 
 /** Graph of the main screens of the app */
 fun NavGraphBuilder.homeGraph(
@@ -90,6 +100,40 @@ fun NavGraphBuilder.homeGraph(
       val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
       AddFlightScreen(navController, flightsViewModel)
     }
+      composable(
+          Route.PILOT_REPORT + "/{Flight ID}",
+          arguments = listOf(navArgument("Flight ID"){type = NavType.StringType})) { backStackEntry ->
+          //TODO remove when done with viewModel
+          val pilot = Pilot(
+                "testID",
+                "John",
+                "Doe",
+                "",
+                AvailabilityCalendar(),
+                FlightGroupCalendar(),
+                setOf(RoleType.PILOT),
+                BalloonQualification.MEDIUM
+            )
+          //val finishedFlightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
+          val finishedFlight = FinishedFlight(
+                UNSET_ID,
+                0,
+                Team(Role.initRoles(BASE_ROLES)),
+                FlightType.DISCOVERY,
+                Balloon("Balloon 1", BalloonQualification.MEDIUM),
+                Basket("Basket 1", true),
+                LocalDate.now(),
+                TimeSlot.AM,
+                listOf(),
+                takeOffTime = java.util.Date(),
+                takeOffLocation = android.location.Location(""),
+                landingTime = java.util.Date(),
+                landingLocation = android.location.Location(""),
+                flightTime = 0
+
+          )
+            PilotReportScreen(finishedFlight, navController, pilot)
+      }
     composable(
         Route.CONFIRM_FLIGHT + "/{Flight ID}",
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry

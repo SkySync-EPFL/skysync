@@ -58,6 +58,7 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.User
+import ch.epfl.skysync.util.inputValidation
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -431,9 +432,6 @@ fun flightTypeInputValidation(flightTypeValue: FlightType?): Boolean {
   return flightTypeValue == null
 }
 
-fun inputValidation(nbPassengersValueError: Boolean, flightTypeValueError: Boolean): Boolean {
-  return nbPassengersValueError || flightTypeValueError
-}
 
 @Composable
 fun RoleField(
