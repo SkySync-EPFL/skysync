@@ -25,10 +25,10 @@ fun NavGraphBuilder.crewPilotGraph(
     uid: String?,
     timer: TimerViewModel? = null
 ) {
-  navigation(startDestination = Route.HOME, route = Route.CREW_PILOT) {
+  navigation(startDestination = Route.CREW_HOME, route = Route.CREW_PILOT) {
     personalCalendar(repository, navController, uid)
     composable(
-        route = Route.FLIGHT_DETAILS + "/{Flight ID}",
+        route = Route.CREW_FLIGHT_DETAILS + "/{Flight ID}",
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
@@ -37,7 +37,7 @@ fun NavGraphBuilder.crewPilotGraph(
               navController = navController, flightId = flightId, viewModel = flightsViewModel)
         }
     composable(
-        Route.TEXT + "/{Group ID}",
+        Route.CREW_TEXT + "/{Group ID}",
         arguments = listOf(navArgument("Group ID") { type = NavType.StringType })) { entry ->
           val messageListenerSharedViewModel =
               entry.sharedViewModel<MessageListenerSharedViewModel>(
@@ -48,12 +48,12 @@ fun NavGraphBuilder.crewPilotGraph(
               ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
           val groupId = entry.arguments?.getString("Group ID")
           if (groupId == null) {
-            navController.navigate(Route.HOME)
+            navController.navigate(Route.CREW_HOME)
             return@composable
           }
           TextScreen(navController, groupId, chatViewModel)
         }
-    composable(Route.HOME) { entry ->
+    composable(Route.CREW_HOME) { entry ->
 
       // get the MessageListenerSharedViewModel here so that it gets
       // instantiated
@@ -69,7 +69,7 @@ fun NavGraphBuilder.crewPilotGraph(
       flightsOverviewViewModel.refresh()
       HomeScreen(navController, flightsOverviewViewModel)
     }
-    composable(Route.CHAT) { entry ->
+    composable(Route.CREW_CHAT) { entry ->
       val messageListenerSharedViewModel =
           entry.sharedViewModel<MessageListenerSharedViewModel>(
               navController,

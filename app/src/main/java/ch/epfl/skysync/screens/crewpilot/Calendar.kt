@@ -28,7 +28,7 @@ fun CalendarScreen(
     calendarType: String,
     viewModel: CalendarViewModel
 ) {
-  val tabs = mapOf(Route.FLIGHT_CALENDAR to 0, Route.AVAILABILITY_CALENDAR to 1)
+  val tabs = mapOf(Route.CREW_FLIGHT_CALENDAR to 0, Route.CREW_AVAILABILITY_CALENDAR to 1)
   val navBackStackEntry by navController.currentBackStackEntryAsState()
   val currentDestination = navBackStackEntry?.destination
 
@@ -48,7 +48,7 @@ fun CalendarScreen(
       },
       bottomBar = { BottomBar(navController) }) { padding ->
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        if (calendarType == Route.AVAILABILITY_CALENDAR) {
+        if (calendarType == Route.CREW_AVAILABILITY_CALENDAR) {
           val availabilityCalendar = uiState.availabilityCalendar
           AvailabilityCalendar(
               padding = padding,
@@ -60,7 +60,7 @@ fun CalendarScreen(
               },
               onSave = { viewModel.saveAvailabilities() },
               onCancel = { viewModel.cancelAvailabilities() })
-        } else if (calendarType == Route.FLIGHT_CALENDAR) {
+        } else if (calendarType == Route.CREW_FLIGHT_CALENDAR) {
           val flightCalendar = uiState.flightGroupCalendar
           FlightCalendar(
               padding = padding,
@@ -68,7 +68,7 @@ fun CalendarScreen(
                 flightCalendar.getFirstFlightByDate(date, time)
               },
               onFlightClick = { selectedFlight ->
-                navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
+                navController.navigate(Route.CREW_FLIGHT_DETAILS + "/${selectedFlight}")
               })
         }
       }

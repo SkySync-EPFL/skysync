@@ -15,17 +15,19 @@ import ch.epfl.skysync.R
 
 sealed class BottomBarScreen(val route: String, val title: String, @DrawableRes val icon: Int) {
   data object Home :
-      BottomBarScreen(route = Route.HOME, title = "Home", icon = R.drawable.baseline_home_24)
+      BottomBarScreen(route = Route.CREW_HOME, title = "Home", icon = R.drawable.baseline_home_24)
 
   data object Flight :
       BottomBarScreen(route = Route.FLIGHT, title = "Flight", icon = R.drawable.baseline_flight_24)
 
   data object Chat :
-      BottomBarScreen(route = Route.CHAT, title = "Chat", icon = R.drawable.baseline_chat_24)
+      BottomBarScreen(route = Route.CREW_CHAT, title = "Chat", icon = R.drawable.baseline_chat_24)
 
   data object Calendar :
       BottomBarScreen(
-          route = Route.CALENDAR, title = "Calendar", icon = R.drawable.baseline_calendar_month_24)
+          route = Route.CREW_CALENDAR,
+          title = "Calendar",
+          icon = R.drawable.baseline_calendar_month_24)
 
   data object User :
       BottomBarScreen(route = Route.USER, title = "User", icon = R.drawable.baseline_person_24)

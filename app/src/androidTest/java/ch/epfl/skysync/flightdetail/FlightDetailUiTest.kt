@@ -46,7 +46,7 @@ class FlightDetailUiTest {
     composeTestRule.setContent {
       FlightDetailUi(
           backClick = { navController.popBackStack() },
-          deleteClick = { navController.navigate(Route.HOME) },
+          deleteClick = { navController.navigate(Route.CREW_HOME) },
           editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${dbs.flight1.id}") },
           confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${dbs.flight1.id}") },
           padding = PaddingValues(0.dp),
@@ -84,7 +84,7 @@ class FlightDetailUiTest {
     composeTestRule.onNodeWithTag("AlertDialog").assertIsDisplayed()
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
 
-    verify { navController.navigate(Route.HOME) }
+    verify { navController.navigate(Route.CREW_HOME) }
     confirmVerified(navController)
   }
 

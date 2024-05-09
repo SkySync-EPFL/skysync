@@ -55,11 +55,11 @@ class FlightCalendarTest {
     composeTestRule.onNodeWithText("Calendar").performClick()
 
     var route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
+    Assert.assertEquals(route, Route.CREW_AVAILABILITY_CALENDAR)
 
-    composeTestRule.onNodeWithTag(Route.FLIGHT_CALENDAR).performClick()
+    composeTestRule.onNodeWithTag(Route.CREW_FLIGHT_CALENDAR).performClick()
     route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.FLIGHT_CALENDAR)
+    Assert.assertEquals(route, Route.CREW_FLIGHT_CALENDAR)
 
     var date = LocalDate.now()
     date = getStartOfWeek(date).minusWeeks(1)

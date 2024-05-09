@@ -70,7 +70,7 @@ class AvailabiltyCalendarTest {
     val today = LocalDate.now().toString() + TimeSlot.AM.toString()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
+    Assert.assertEquals(route, Route.CREW_AVAILABILITY_CALENDAR)
 
     composeTestRule.onNodeWithTag(today).performClick()
 

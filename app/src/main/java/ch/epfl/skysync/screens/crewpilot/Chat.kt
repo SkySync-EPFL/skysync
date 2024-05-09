@@ -23,7 +23,9 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel) {
     println("GroupDetails $groupDetails")
     GroupChat(
         groupList = groupDetails,
-        onClick = { selectedGroup -> navController.navigate(Route.TEXT + "/${selectedGroup.id}") },
+        onClick = { selectedGroup ->
+          navController.navigate(Route.CREW_TEXT + "/${selectedGroup.id}")
+        },
         paddingValues = padding)
   }
 }

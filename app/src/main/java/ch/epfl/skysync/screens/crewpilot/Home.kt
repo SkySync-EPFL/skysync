@@ -1,6 +1,5 @@
 package ch.epfl.skysync.screens.crewpilot
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.FabPosition
@@ -17,7 +16,6 @@ import ch.epfl.skysync.ui.theme.Purple40
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
 // Scaffold wrapper for the Home Screen
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
   val currentFlights by viewModel.currentFlights.collectAsStateWithLifecycle()
@@ -29,7 +27,7 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
   ) { padding ->
     FlightsList(currentFlights, Purple40, padding, "Upcoming flights") { selectedFlight ->
       Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
-      navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
+      navController.navigate(Route.CREW_FLIGHT_DETAILS + "/${selectedFlight}")
     }
   }
 }
