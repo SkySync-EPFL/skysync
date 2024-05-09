@@ -66,7 +66,6 @@ class E2EPilotDuringFlight {
 
   @Test
   fun useMapAndChatAsPilot() {
-    // TODO: fix
     runTest {
       // Refreshes chat and user data asynchronously
       chatViewModel.refresh().join()

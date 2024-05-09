@@ -27,6 +27,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the location tracking of the user during a flight and the timer.
+ *
+ *
+ */
+
 class LocationViewModel(uid: String? = null, val repository: Repository) : ViewModel() {
 
   companion object {
@@ -44,6 +50,9 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
 
   var userId = uid
 
+  /**
+   * updates the current user and its personal flights
+   */
   fun refreshPersonalFlights() =
       viewModelScope.launch {
         _currentUser.value = repository.userTable.get(userId!!, onError = { onError(it) })
@@ -57,6 +66,7 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
   private var lastTimestamp = 0L
   private val _counter = MutableStateFlow(0L)
 
+  /** The current counter value in milliseconds.**/
   val rawCounter = _counter.asStateFlow()
 
   /** The current value of the counter formatted as a string in the format "HH:MM:SS". */
@@ -72,6 +82,7 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
 
   private var pilotId: String? = null
   private val _inFlight = MutableStateFlow<Boolean>(false)
+  /** true if flight is ongoing, else false**/
   val inFlight: StateFlow<Boolean> = _inFlight.asStateFlow()
 
   private val _currentLocations = MutableStateFlow<Map<String, Pair<User, Location>>>(emptyMap())
@@ -80,14 +91,17 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
 
   private val _flightLocations = MutableStateFlow<List<Location>>(emptyList())
   val flightLocations: StateFlow<List<Location>> = _flightLocations.asStateFlow()
-
+  //todo: show only confirmed flights (of today?)
   private val _personalFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
+  /**assigned flights of this user **/
   val personalFlights = _personalFlights.asStateFlow()
   private val _flightId = MutableStateFlow<String?>(null)
+  /** the id of the ongoing flight**/
   val flightId = _flightId.asStateFlow()
 
   private val _currentUser = MutableStateFlow<User?>(null)
 
+  /**set the flight id **/
   fun setFlightId(flightId: String) {
     // uses setter function to prevent setting to null
     _flightId.value = flightId
@@ -116,7 +130,9 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
         }
   }
 
-  /** starts the timer, position tracking and flightTrace */
+  /** starts the timer, position tracking and flightTrace
+   * The flightId must be set before calling this function and the personalFlights in synch. with DB
+   * */
   fun startFlight() {
     if (flightId.value == null || _personalFlights.value == null || _inFlight.value) return
     _inFlight.value = true
