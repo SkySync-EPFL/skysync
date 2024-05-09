@@ -76,13 +76,13 @@ class MainActivity : ComponentActivity() {
       SkySyncTheme {
         val navController = rememberNavController()
         Scaffold(snackbarHost = { GlobalSnackbarHost() }) {
-          //val inFlightViewModel = LocationViewModel.createViewModel(repository=repository) // is shared between all screens
+          val inFlightViewModel = LocationViewModel.createViewModel(repository=repository) // is shared between all screens
           MainGraph(
               repository = repository,
               navHostController = navController,
               signInLauncher = signInLauncher,
               uid = userId.value,
-              //inFlightsViewModel= inFlightViewModel
+              inFlightsViewModel= inFlightViewModel
 
           )
         }
