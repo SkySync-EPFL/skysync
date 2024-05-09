@@ -77,7 +77,7 @@ fun ShowFlightToStart(
 ) {
   Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
     // Renders the Google Map or a permission request message based on the permission status.
-    Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+    Column(modifier = Modifier.fillMaxSize().padding(padding).testTag("FlightLaunch")) {
       Text(
           text = "Flight to be launched",
           style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),

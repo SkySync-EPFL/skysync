@@ -76,8 +76,14 @@ class E2EPilotDuringFlight {
       composeTestRule.onNodeWithText("Flight").performClick()
       var route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT, route)
-
-      composeTestRule.onNodeWithTag("flightCard${dbs.flight1.id}").performClick()
+      var usedFlightId = ""
+      for (f in listOf(dbs.flight1, dbs.flight2, dbs.flight3, dbs.flight4)) {
+        if (composeTestRule.onNodeWithTag("flightCard${f.id}").isDisplayed()) {
+          usedFlightId = f.id
+          break
+        }
+      }
+      composeTestRule.onNodeWithTag("flightCard${usedFlightId}").performClick()
 
       // Asserts the presence of the timer
       composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
