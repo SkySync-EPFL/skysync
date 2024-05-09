@@ -1,6 +1,7 @@
 package ch.epfl.skysync
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -65,6 +66,9 @@ class ConfirmFlightScreenTest {
         assignedFlight.filterIsInstance<PlannedFlight>().filter { it.readyToBeConfirmed() }
 
     for (flight in canBeConfirmedFlights) {
+      composeTestRule
+          .onNodeWithTag("HomeLazyList")
+          .performScrollToNode(hasTestTag("flightCard${flight.id}"))
       composeTestRule.onNodeWithTag("flightCard${flight.id}").performClick()
       var route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
