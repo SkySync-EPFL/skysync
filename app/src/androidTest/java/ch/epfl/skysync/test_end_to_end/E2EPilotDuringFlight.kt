@@ -87,7 +87,8 @@ class E2EPilotDuringFlight {
       // Opens flight information and asserts the display of navigation information
       composeTestRule.onNodeWithContentDescription("Flight infos").performClick()
       composeTestRule
-          .onNodeWithText("X Speed: 0.0 m/s\nY Speed: 0.0 m/s\nAltitude: 0.0 m\nBearing: 0.0 °")
+          .onNodeWithText(
+              "Horizontal Speed: 0.00 m/s\nVertical Speed: 0.00 m/s\nAltitude: 0 m\nBearing: 0.00 °")
           .assertIsDisplayed()
 
       // Navigates to the chat screen

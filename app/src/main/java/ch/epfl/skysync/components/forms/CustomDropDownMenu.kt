@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.Dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> CustomDropDownMenu(
+    modifier: Modifier = Modifier,
     defaultPadding: Dp,
     title: String,
     value: T,
@@ -34,7 +35,7 @@ fun <T> CustomDropDownMenu(
 ) {
 
   var expanded by remember { mutableStateOf(false) }
-  Column {
+  Column(modifier = modifier) {
     ExposedDropdownMenuBox(
         modifier =
             Modifier.fillMaxWidth()

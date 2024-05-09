@@ -16,12 +16,12 @@ fun ModifyFlightScreen(
     viewModel: FlightsViewModel,
     flightId: String
 ) {
+  val flightToModify by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
   val allFlightTypes by viewModel.currentFlightTypes.collectAsStateWithLifecycle()
   val allBalloons by viewModel.currentBalloons.collectAsStateWithLifecycle()
   val allBaskets by viewModel.currentBaskets.collectAsStateWithLifecycle()
   val allVehicles by viewModel.currentVehicles.collectAsStateWithLifecycle()
   val availableUsers by viewModel.availableUsers.collectAsStateWithLifecycle()
-  val flightToModify by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
   val allRoleTypes = RoleType.entries
   FlightForm(
       currentFlight = flightToModify,
@@ -37,5 +37,7 @@ fun ModifyFlightScreen(
       onSaveFlight = { flight: PlannedFlight ->
         viewModel.modifyFlight(flight)
         navController.navigate(Route.HOME)
-      })
+      },
+      refreshDate = { date, timeSlot -> viewModel.setDateAndTimeSlot(date, timeSlot) },
+  )
 }

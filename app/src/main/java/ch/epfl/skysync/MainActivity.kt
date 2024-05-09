@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
   private val repository: Repository = Repository(db)
 
   private fun onError(e: Exception) {
-    // TODO
+    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
   }
 
   private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
