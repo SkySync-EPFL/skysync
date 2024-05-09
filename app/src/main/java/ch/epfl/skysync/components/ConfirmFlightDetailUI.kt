@@ -142,7 +142,7 @@ fun HyperLinkText(title: String, value: String, padding: Dp) {
     pop()
   }
   Text(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = padding),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = padding).testTag(title + value),
       text = title,
       style = MaterialTheme.typography.headlineSmall,
       color = Color.Black)
