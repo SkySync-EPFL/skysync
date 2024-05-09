@@ -12,6 +12,7 @@ import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
+import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -191,6 +192,12 @@ class FlightsViewModel(
   ) =
       viewModelScope.launch {
         val flightId = repository.flightTable.add(flight, onError = { onError(it) })
+      }
+
+  /** updates the planned flight to a confirmed flight */
+  fun addConfirmedFlight(flight: ConfirmedFlight) =
+      viewModelScope.launch {
+        repository.flightTable.update(flight.id, flight, onError = { onError(it) })
       }
 
   fun getFlight(flightId: String): StateFlow<Flight?> {

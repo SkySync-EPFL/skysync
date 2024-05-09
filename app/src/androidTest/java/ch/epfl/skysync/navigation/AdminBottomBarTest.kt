@@ -45,7 +45,7 @@ class AdminBottomBarTest {
   @Test
   fun verifyHomeIsStartDestination() {
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.HOME)
+    Assert.assertEquals(route, Route.ADMIN_HOME)
   }
 
   @Test
@@ -53,7 +53,7 @@ class AdminBottomBarTest {
     composeTestRule.onNodeWithText("Calendar").performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
+    Assert.assertEquals(route, Route.ADMIN_AVAILABILITY_CALENDAR)
   }
 
   @Test
@@ -76,6 +76,6 @@ class AdminBottomBarTest {
     composeTestRule.onNodeWithText("Chat").performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CHAT)
+    Assert.assertEquals(route, Route.ADMIN_CHAT)
   }
 }

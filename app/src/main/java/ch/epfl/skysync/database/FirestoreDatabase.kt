@@ -9,7 +9,6 @@ import com.google.firebase.firestore.MemoryCacheSettings
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.firestoreSettings
-import com.google.firebase.firestore.toObject
 import java.lang.UnsupportedOperationException
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineScope

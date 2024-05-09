@@ -12,7 +12,7 @@ import androidx.test.rule.GrantPermissionRule
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.screens.FlightScreen
+import ch.epfl.skysync.screens.crewpilot.FlightScreen
 import ch.epfl.skysync.viewmodel.LocationViewModel
 import ch.epfl.skysync.viewmodel.TimerViewModel
 import org.junit.Before
@@ -32,7 +32,7 @@ class FlightScreenPermissionTest {
     val db = FirestoreDatabase(useEmulator = true)
     val repository = Repository(db)
     composeTestRule.setContent {
-      val locationViewModel = LocationViewModel.createViewModel(repository)
+      val locationViewModel = LocationViewModel.createViewModel(dbs.pilot1.id, repository)
       val navController = rememberNavController()
       val uid = dbs.pilot1.id
       FlightScreen(
@@ -52,7 +52,8 @@ class FlightScreenPermissionTest {
     composeTestRule.onNodeWithContentDescription("Locate Me").assertIsDisplayed()
     composeTestRule.onNodeWithContentDescription("Flight infos").performClick()
     composeTestRule
-        .onNodeWithText("X Speed: 0.0 m/s\nY Speed: 0.0 m/s\nAltitude: 0.0 m\nBearing: 0.0 °")
+        .onNodeWithText(
+            "Horizontal Speed: 0.00 m/s\nVertical Speed: 0.00 m/s\nAltitude: 0 m\nBearing: 0.00 °")
         .assertIsDisplayed()
   }
 }

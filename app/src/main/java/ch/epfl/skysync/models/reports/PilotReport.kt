@@ -2,8 +2,8 @@ package ch.epfl.skysync.models.reports
 
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.flight.Vehicle
-import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.user.Pilot
+import com.google.android.gms.maps.model.LatLng
 import java.util.Date
 
 data class PilotReport(
@@ -11,8 +11,8 @@ data class PilotReport(
     override val author: Pilot,
     val effectivePax: Int,
     val takeOffTime: Date,
-    val takeOffLocation: Location,
-    val landingLocation: Location,
+    val takeOffLocation: LatLng,
+    val landingLocation: LatLng,
     val landingTime: Date,
     override val begin: Date,
     override val end: Date,

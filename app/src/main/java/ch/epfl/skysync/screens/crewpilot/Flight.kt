@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.crewpilot
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -35,6 +35,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.Timer
 import ch.epfl.skysync.models.location.Location
+import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.models.location.UserMetrics
+import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.LocationViewModel
@@ -48,11 +51,16 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+
+@Composable
+fun UserLocationMarker(location: Location, user: User) {
+  return Marker(
+      state = rememberMarkerState(position = location.point.latlng()), title = user.name())
+}
 
 /**
  * This composable function renders a screen with a map that shows the user's current location. It
@@ -69,75 +77,50 @@ fun FlightScreen(
     locationViewModel: LocationViewModel,
     uid: String
 ) {
-  // Access to the application context.
-  val context = LocalContext.current
-
+  val rawTime by timer.rawCounter.collectAsStateWithLifecycle()
   val currentTime by timer.counter.collectAsStateWithLifecycle()
   val flightIsStarted by timer.isRunning.collectAsStateWithLifecycle()
 
-  // Manages the state of location permissions.
-  val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
-  // Provides access to the Fused Location Provider API.
-  val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-  // List of the locations of the other Team members
-  val locations = locationViewModel.locations.collectAsState().value
-  // State holding the current location initialized to Lausanne as default value.
-  val defaultLocation = LatLng(46.516, 6.63282)
-  var userLocation by remember { mutableStateOf(defaultLocation) }
-  // Remembers and controls the camera position state for the map.
-  val cameraPositionState = rememberCameraPositionState {
-    position = CameraPosition.fromLatLngZoom(userLocation, 13f)
-  }
-  // Manages the state of the map marker.
-  val markerState = rememberMarkerState(position = userLocation)
-  // User's informations
-  var speed by remember { mutableStateOf(0f) } // Speed in meters/second
-  var altitude by remember { mutableStateOf(0.0) } // Altitude in meters
-  var bearing by remember { mutableStateOf(0f) } // Direction in degrees
-  var verticalSpeed by remember { mutableStateOf(0.0) } // Vertical speed in meters/second
-  var previousAltitude by remember { mutableStateOf<Double?>(null) }
-  var previousTime by remember { mutableStateOf<Long?>(null) }
+  val currentLocations = locationViewModel.currentLocations.collectAsState().value
 
-  // Callback to receive location updates
+  val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
+  val fusedLocationClient = LocationServices.getFusedLocationProviderClient(LocalContext.current)
+
+  // State holding the current location initialized to Lausanne as default value.
+  val defaultLocation = LocationPoint(0, 46.516, 6.63282)
+
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(defaultLocation.latlng(), 13f)
+  }
+  val markerState = rememberMarkerState(position = defaultLocation.latlng())
+
+  var metrics by remember { mutableStateOf(UserMetrics(0.0f, 0.0, 0.0f, 0.0, defaultLocation)) }
+
   val locationCallback =
       object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
           locationResult.lastLocation?.let {
-            val newLocation = LatLng(it.latitude, it.longitude)
+            val newLocation =
+                LocationPoint(
+                    time = (rawTime / 1000).toInt(),
+                    latitude = it.latitude,
+                    longitude = it.longitude,
+                )
 
-            // Update local location
-            userLocation = newLocation
+            locationViewModel.addLocation(Location(userId = uid, point = newLocation))
 
-            // Update location for other users
-            locationViewModel.updateLocation(Location(uid, newLocation))
-            // Update marker position
-            markerState.position = newLocation
-            // Update user's informations
-            speed = it.speed // Update speed
-            bearing = it.bearing // Update Bearing
-            val currentTime = System.currentTimeMillis()
-            previousAltitude?.let { prevAlt ->
-              verticalSpeed =
-                  if (previousTime != null) {
-                    (it.altitude - prevAlt) / ((currentTime - previousTime!!) / 1000.0)
-                  } else {
-                    0.0
-                  }
-            }
-            altitude = it.altitude
-            previousAltitude = it.altitude
-            previousTime = currentTime
+            markerState.position = newLocation.latlng()
+            metrics = metrics.withUpdate(it.speed, it.altitude, it.bearing, newLocation)
           }
         }
       }
 
-  // DisposableEffect to handle location updates and permissions.
   DisposableEffect(locationPermission) {
     // Defines the location request parameters.
     val locationRequest =
         LocationRequest.create().apply {
-          interval = 2000 // Interval for location updates.
-          fastestInterval = 2000 // Fastest interval for location updates.
+          interval = 2000
+          fastestInterval = 2000
         }
 
     // Requests location updates if permission is granted.
@@ -145,7 +128,6 @@ fun FlightScreen(
       try {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
       } catch (e: SecurityException) {
-        // Exception handling if the permission was rejected.
         Log.e("FlightScreen", "Failed to request location updates", e)
       }
     } else {
@@ -159,7 +141,6 @@ fun FlightScreen(
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       floatingActionButton = {
-        // Floating action button to center the map on the current location.
         if (locationPermission.status.isGranted) {
           Box(
               modifier =
@@ -179,8 +160,10 @@ fun FlightScreen(
                       FloatingActionButton(
                           onClick = {
                             // Moves the camera to the current location when clicked.
-                            userLocation
-                                .let { CameraUpdateFactory.newLatLngZoom(it, 13f) }
+                            metrics
+                                .let {
+                                  CameraUpdateFactory.newLatLngZoom(it.location.latlng(), 13f)
+                                }
                                 .let { cameraPositionState.move(it) }
                           },
                           containerColor = lightOrange) {
@@ -206,9 +189,6 @@ fun FlightScreen(
         }
       },
       bottomBar = { BottomBar(navController) }) { padding ->
-        /*if (locationPermission.status.isGranted && userLocation == defaultLocation) {
-          LoadingComponent(isLoading = true, onRefresh = {}, content = {})
-        }*/
         // Renders the Google Map or a permission request message based on the permission status.
         if (locationPermission.status.isGranted) {
           GoogleMap(
@@ -216,17 +196,12 @@ fun FlightScreen(
               cameraPositionState = cameraPositionState) {
                 Marker(state = markerState, title = "Your Location", snippet = "You are here")
 
-                // Markers for the locations of other users
-                locations.forEach { location ->
-                  val otherUserLocation = location.value
-                  Marker(
-                      state = rememberMarkerState(position = otherUserLocation),
-                      title = "Location of user ${location.id}")
+                currentLocations.values.forEach { (user, location) ->
+                  UserLocationMarker(location, user)
                 }
               }
           Text(
-              text =
-                  "X Speed: $speed m/s\nY Speed: $verticalSpeed m/s\nAltitude: $altitude m\nBearing: $bearing °",
+              text = "$metrics",
               style = MaterialTheme.typography.bodyLarge,
               modifier =
                   Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
@@ -234,7 +209,6 @@ fun FlightScreen(
                       .padding(6.dp))
         }
         if (!locationPermission.status.isGranted) {
-          // Displays a message if location permission is denied.
           Box(
               modifier = Modifier.fillMaxSize().padding(16.dp),
               contentAlignment = Alignment.Center) {
@@ -246,15 +220,3 @@ fun FlightScreen(
         }
       }
 }
-/*
-@Composable
-@Preview
-fun FlightScreenPreview() {
-  val navController = rememberNavController()
-    val db: FirestoreDatabase = FirestoreDatabase()
-    val repository: Repository = Repository(db)
-    val locationViewModel =
-        LocationViewModel.createViewModel(repository)
-  FlightScreen(navController = navController, timer = TimerViewModel(), locationViewModel = locationViewModel, uid)
-}
-*/

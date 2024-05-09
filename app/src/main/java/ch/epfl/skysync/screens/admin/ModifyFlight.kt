@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.admin
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,12 +16,12 @@ fun ModifyFlightScreen(
     viewModel: FlightsViewModel,
     flightId: String
 ) {
+  val flightToModify by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
   val allFlightTypes by viewModel.currentFlightTypes.collectAsStateWithLifecycle()
   val allBalloons by viewModel.currentBalloons.collectAsStateWithLifecycle()
   val allBaskets by viewModel.currentBaskets.collectAsStateWithLifecycle()
   val allVehicles by viewModel.currentVehicles.collectAsStateWithLifecycle()
   val availableUsers by viewModel.availableUsers.collectAsStateWithLifecycle()
-  val flightToModify by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
   val allRoleTypes = RoleType.entries
   FlightForm(
       currentFlight = flightToModify,
@@ -36,6 +36,8 @@ fun ModifyFlightScreen(
       availableUsers = availableUsers,
       onSaveFlight = { flight: PlannedFlight ->
         viewModel.modifyFlight(flight)
-        navController.navigate(Route.HOME)
-      })
+        navController.navigate(Route.ADMIN_HOME)
+      },
+      refreshDate = { date, timeSlot -> viewModel.setDateAndTimeSlot(date, timeSlot) },
+  )
 }
