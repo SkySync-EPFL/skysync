@@ -155,6 +155,9 @@ class CalendarViewModel(
         refreshUser()
       }
 
-  /** Cancels the modification made in the current availability calendar */
-  fun cancelAvailabilities() = viewModelScope.launch { refreshUser() }
+    /** Cancels the modification made in the current availability calendar */
+    fun cancelAvailabilities() =
+        viewModelScope.launch {
+            refreshUser()
+        }
 }

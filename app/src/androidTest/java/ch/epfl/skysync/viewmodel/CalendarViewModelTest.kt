@@ -71,7 +71,6 @@ class CalendarViewModelTest {
     calendarViewModel.saveAvailabilities().join()
 
     val user = userTable.get(dbs.admin1.id, onError = { assertNull(it) })
-
     assertNotNull(user)
 
     user!!
@@ -114,24 +113,25 @@ class CalendarViewModelTest {
 
     assertEquals(AvailabilityStatus.UNDEFINED, status)
 
-    calendarViewModel.cancelAvailabilities()
+    calendarViewModel.cancelAvailabilities().join()
 
     val user = userTable.get(dbs.admin1.id, onError = { assertNull(it) })
-
     assertNotNull(user)
+
+    user!!
+        .availabilities
+        .addCells(userTable.retrieveAvailabilities(dbs.admin1.id, onError = { assertNull(it) }))
 
     assertEquals(
         AvailabilityStatus.NO,
-        user!!
-            .availabilities
-            .getAvailabilityStatus(dbs.availability1Admin1.date, dbs.availability1Admin1.timeSlot))
+        user.availabilities.getAvailabilityStatus(
+            dbs.availability1Admin1.date, dbs.availability1Admin1.timeSlot))
     assertEquals(
         AvailabilityStatus.OK,
-        user!!
-            .availabilities
-            .getAvailabilityStatus(dbs.availability2Admin1.date, dbs.availability2Admin1.timeSlot))
+        user.availabilities.getAvailabilityStatus(
+            dbs.availability2Admin1.date, dbs.availability2Admin1.timeSlot))
     assertEquals(
         AvailabilityStatus.UNDEFINED,
-        user!!.availabilities.getAvailabilityStatus(newDate, TimeSlot.AM))
+        user.availabilities.getAvailabilityStatus(newDate, TimeSlot.AM))
   }
 }
