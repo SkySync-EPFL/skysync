@@ -1,10 +1,13 @@
 package ch.epfl.skysync
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -23,10 +26,6 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.runBlocking
-import android.Manifest
-import android.app.AlertDialog
-import android.util.Log
-import android.widget.Toast
 
 class MainActivity : ComponentActivity() {
   private lateinit var signInLauncher: ActivityResultLauncher<Intent>
@@ -36,34 +35,42 @@ class MainActivity : ComponentActivity() {
 
   // [START ask_post_notifications]
   // Declare the launcher at the top of your Activity/Fragment:
-  private val requestPermissionLauncher = registerForActivityResult(
-    ActivityResultContracts.RequestPermission(),
-  ) { isGranted: Boolean ->
-    if(!isGranted) {
-      Toast.makeText(this, "Notifications are disabled for this app. You won't receive alerts about assigned flight be careful", Toast.LENGTH_LONG).show();
-    }
-  }
+  private val requestPermissionLauncher =
+      registerForActivityResult(
+          ActivityResultContracts.RequestPermission(),
+      ) { isGranted: Boolean ->
+        if (!isGranted) {
+          Toast.makeText(
+                  this,
+                  "Notifications are disabled for this app. You won't receive alerts about assigned flight be careful",
+                  Toast.LENGTH_LONG)
+              .show()
+        }
+      }
 
   private fun askNotificationPermission() {
     // This is only necessary for API level >= 33 (TIRAMISU)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+      if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+          PackageManager.PERMISSION_GRANTED) {
         // FCM SDK (and your app) can post notifications.
       } else {
         // Display an educational UI explaining to the user the features that will be enabled
         // by them granting the POST_NOTIFICATION permission.
         val dialogBuilder = AlertDialog.Builder(this)
-        dialogBuilder.setTitle("Notification Permission")
-          .setMessage("Granting notification permission will allow you to receive important alerts about assigned flights")
-          .setPositiveButton("OK") { _, _ ->
-            // If the user selects "OK," directly request the permission.
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-          }
-          .setNegativeButton("No thanks") { _, _ ->
-            // If the user selects "No thanks," allow the user to continue without notifications.
-            // You can handle this case accordingly.
-          }
-          .show()
+        dialogBuilder
+            .setTitle("Notification Permission")
+            .setMessage(
+                "Granting notification permission will allow you to receive important alerts about assigned flights")
+            .setPositiveButton("OK") { _, _ ->
+              // If the user selects "OK," directly request the permission.
+              requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+            .setNegativeButton("No thanks") { _, _ ->
+              // If the user selects "No thanks," allow the user to continue without notifications.
+              // You can handle this case accordingly.
+            }
+            .show()
       }
     }
   }
