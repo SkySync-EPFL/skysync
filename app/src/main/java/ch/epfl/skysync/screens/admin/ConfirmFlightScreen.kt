@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.admin
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController

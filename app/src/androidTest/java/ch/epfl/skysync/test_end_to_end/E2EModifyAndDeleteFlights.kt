@@ -67,7 +67,7 @@ class E2EModifyAndDeleteFlights {
     }
     composeTestRule.onNodeWithTag("flightCard${dbs.flight1.id}").performClick()
     var route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
+    Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
     composeTestRule.onNodeWithTag("EditButton").performClick()
     route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.MODIFY_FLIGHT + "/{Flight ID}", route)
@@ -111,7 +111,7 @@ class E2EModifyAndDeleteFlights {
     }
     composeTestRule.onNodeWithTag("flightCard${dbs.flight1.id}").performClick()
     route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
+    Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
     composeTestRule.onNodeWithTag("DeleteButton").performClick()
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
     composeTestRule.waitUntil(2500) {

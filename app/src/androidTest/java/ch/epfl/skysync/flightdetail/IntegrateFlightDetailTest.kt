@@ -35,7 +35,7 @@ class IntegrateFlightDetailTest {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.admin1.id)
+        homeGraph(repository, navController, dbs.crew1.id)
       }
     }
     composeTestRule.waitUntil {
@@ -81,10 +81,10 @@ class IntegrateFlightDetailTest {
     for (i in 0 until nodes.fetchSemanticsNodes().size) {
       nodes[i].performClick()
       var route = navController.currentBackStackEntry?.destination?.route
-      assertEquals(route, Route.FLIGHT_DETAILS + "/{Flight ID}")
+      assertEquals(route, Route.CREW_FLIGHT_DETAILS + "/{Flight ID}")
       composeTestRule.onNodeWithText("Back").performClick()
       route = navController.currentBackStackEntry?.destination?.route
-      assertEquals(route, Route.HOME)
+      assertEquals(route, Route.CREW_HOME)
     }
   }
 }

@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens.flightDetail
+package ch.epfl.skysync.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,9 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ch.epfl.skysync.components.ConfirmAlertDialog
-import ch.epfl.skysync.components.Header
-import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
@@ -57,6 +54,7 @@ fun FlightDetailUi(
     confirmClick: () -> Unit,
     padding: PaddingValues,
     flight: Flight?,
+    bottom: @Composable (() -> Unit, () -> Unit, () -> Unit) -> Unit
 ) {
   var showDialog by remember { mutableStateOf(false) }
 
@@ -82,8 +80,7 @@ fun FlightDetailUi(
       } else {
         FlightDetailBody(flight, padding)
       }
-      FlightDetailBottom(
-          editClick = editClick, confirmClick = confirmClick, deleteClick = { showDialog = true })
+      bottom(editClick, confirmClick) { showDialog = true }
     }
   }
 }
@@ -156,9 +153,9 @@ fun FlightDetailBody(flight: Flight, padding: PaddingValues) {
  */
 @Composable
 fun FlightDetailBottom(
-    deleteClick: () -> Unit,
     editClick: () -> Unit,
     confirmClick: () -> Unit,
+    deleteClick: () -> Unit,
 ) {
   Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
     Row(
