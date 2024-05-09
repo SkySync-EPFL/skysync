@@ -34,7 +34,6 @@ import ch.epfl.skysync.components.forms.PauseField
 import ch.epfl.skysync.components.forms.TimePickerField
 import ch.epfl.skysync.components.forms.TitledInputTextField
 import ch.epfl.skysync.components.forms.VehicleProblemField
-import ch.epfl.skysync.components.forms.nbPassengerInputValidation
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
@@ -55,6 +54,7 @@ import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.util.inputValidation
+import ch.epfl.skysync.util.nbPassengerInputValidation
 import java.time.Instant
 import java.time.LocalDate
 import java.util.Date
@@ -171,7 +171,7 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
           modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("Submit Button"),
           colors = ButtonDefaults.buttonColors(containerColor = lightOrange),
           onClick = {
-            errorPax = nbPassengerInputValidation(pax)
+            errorPax = !nbPassengerInputValidation(pax)
             if (!inputValidation(errorPax)) {
               val vehicleProblems = vehicleProblem.toMap()
               PilotReport(
