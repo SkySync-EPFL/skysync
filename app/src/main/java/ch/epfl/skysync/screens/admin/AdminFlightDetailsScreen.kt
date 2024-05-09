@@ -11,8 +11,8 @@ import ch.epfl.skysync.components.ConfirmFlightDetailUi
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.screens.flightDetail.FlightDetailBottom
-import ch.epfl.skysync.screens.flightDetail.FlightDetailUi
+import ch.epfl.skysync.components.FlightDetailBottom
+import ch.epfl.skysync.components.FlightDetailUi
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
 @Composable

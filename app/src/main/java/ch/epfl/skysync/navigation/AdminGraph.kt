@@ -13,7 +13,7 @@ import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.Pilot
-import ch.epfl.skysync.screens.admin.AddFlightScreen
+import ch.epfl.skysync.screens.AddFlightScreen
 import ch.epfl.skysync.screens.admin.AddUserScreen
 import ch.epfl.skysync.screens.admin.AdminChatScreen
 import ch.epfl.skysync.screens.admin.AdminFlightDetailScreen
