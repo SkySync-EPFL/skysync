@@ -134,7 +134,9 @@ class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
                 if (update.adds.isEmpty()) {
                   return@listenForLocationUpdates
                 }
-                val user = users[userId]!!
+                // the return is useless but needed to make sonar cloud happy
+                val user = users[userId] ?: return@listenForLocationUpdates
+
                 val lastLocation = update.adds.last()
                 _currentLocations.value =
                     _currentLocations.value.plus(Pair(userId, Pair(user, lastLocation)))

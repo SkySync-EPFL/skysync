@@ -71,4 +71,28 @@ class TestTeam {
     assertEquals(expandedTeam.roles.size, 3)
     assertTrue(expandedTeam.roles.all { it.roleType == role1.roleType })
   }
+
+  @Test
+  fun `getUsers() returns empty list if no users assigned`() {
+    val role1 = Role(RoleType.OXYGEN_MASTER)
+    val role2 = Role(RoleType.CREW)
+    val team = Team(listOf(role1, role2))
+    assertEquals(team.getUsers().size, 0)
+  }
+
+  @Test
+  fun `getUsers() returns all assigned users`() {
+    val role1 = Role(RoleType.OXYGEN_MASTER).assign(testUser2)
+    val role2 = Role(RoleType.CREW).assign(testUser1)
+    val team = Team(listOf(role1, role2))
+    assertEquals(team.getUsers().size, 2)
+    assertTrue(team.getUsers().contains(testUser1))
+    assertTrue(team.getUsers().contains(testUser2))
+  }
+
+  @Test
+  fun `getUsers() returns empty list if team has no roles`() {
+    val team = Team(listOf())
+    assertEquals(team.getUsers().size, 0)
+  }
 }
