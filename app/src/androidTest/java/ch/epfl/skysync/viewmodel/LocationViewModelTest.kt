@@ -46,7 +46,7 @@ class LocationViewModelTest {
   fun testLocationUpdate() = runTest {
     val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) }) as ConfirmedFlight
 
-    locationViewModel.startFlight(flight)
+    locationViewModel.startLocationTracking(flight)
 
     // having the program working with out of order location updates is not a strict requirement
     // but it's still nice to have
@@ -92,7 +92,7 @@ class LocationViewModelTest {
   fun testSaveFlightTrace() = runTest {
     val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) }) as ConfirmedFlight
 
-    locationViewModel.startFlight(flight)
+    locationViewModel.startLocationTracking(flight)
 
     // here we need to have the update in order to have all the locations in the flight trace
     // as the locations that are out of order are discarded (which is a feature not a bug...)

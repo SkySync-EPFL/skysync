@@ -1,5 +1,6 @@
 package ch.epfl.skysync.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -9,7 +10,9 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.RoleType
+import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.user.User
@@ -25,27 +28,51 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
+class LocationViewModel(val userId: String, val repository: Repository) : ViewModel() {
 
   companion object {
     @Composable
     fun createViewModel(uid: String, repository: Repository): LocationViewModel {
       return viewModel<LocationViewModel>(
-          factory =
-              object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return LocationViewModel(uid, repository) as T
-                }
-              })
+        factory =
+        object : ViewModelProvider.Factory {
+          override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return LocationViewModel(uid, repository) as T
+          }
+        })
     }
   }
+
+  fun refreshPersonalFlights() =
+    viewModelScope.launch {
+      _currentUser.value = repository.userTable.get(userId, onError = { onError(it) })
+      _personalFlights.value = repository
+        .userTable
+        .retrieveAssignedFlights(
+          repository.flightTable,
+          userId,
+          onError = { onError(it) })
+    Log.d("InFlightViewModel", "Personal Flights are loaded")
+  }
+
+  suspend fun refreshPersonalFlights2(){
+    _currentUser.value = repository.userTable.get(userId, onError = { onError(it) })
+    _personalFlights.value = repository
+      .userTable
+      .retrieveAssignedFlights(
+        repository.flightTable,
+        userId,
+        onError = { onError(it) })
+    Log.d("InFlightViewModel", "Personal Flights are loaded")
+  }
+
 
   private val _isRunning = MutableStateFlow(false)
 
   /** The current state of the timer. */
   val isRunning = _isRunning.asStateFlow()
 
-  private var job: Job? = null
+  private var timerJob: Job? = null
   private var lastTimestamp = 0L
   private val _counter = MutableStateFlow(0L)
 
@@ -74,17 +101,30 @@ class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
   private val _flightLocations = MutableStateFlow<List<Location>>(emptyList())
   val flightLocations: StateFlow<List<Location>> = _flightLocations.asStateFlow()
 
+  private val _personalFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
+  private val currentFlight: Flight? = null
+  private val _currentUser = MutableStateFlow<User?>(null)
+
+
+  fun getCurrentFlight(flights: List<Flight>?){
+    if(flights == null) return
+    currentFlight = flights.fi { f -> f.id == (flightId ?: "") }
+
+  }
+
+
+
+
   /**
    * Starts the timer on a reset counter in a new coroutine and sets isRunning to true. Uses
    * timestamp to update the counter every approx. 100ms.
    */
-  fun start() {
+  fun startTimer() {
     if (_isRunning.value) return
     _counter.value = 0L
     _isRunning.value = true
     var newTimeStamp = 0L
-    job =
-      viewModelScope.launch {
+    timerJob = viewModelScope.launch {
         lastTimestamp = System.currentTimeMillis()
         while (_isRunning.value) {
           delay(100)
@@ -93,6 +133,17 @@ class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
           lastTimestamp = newTimeStamp
         }
       }
+  }
+
+  fun startFlight(){
+    viewModelScope.launch {
+      refreshPersonalFlights2()
+
+      startLocationTracking(fligh)
+
+    }
+
+    startTimer()
   }
 
   /** Formats the given time in milliseconds to a string in the format "HH:MM:SS". */
@@ -110,8 +161,8 @@ class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
    */
   fun stopTimer() {
     _isRunning.value = false
-    job?.cancel()
-    job = null
+    timerJob?.cancel()
+    timerJob = null
     lastTimestamp = 0L
   }
 
@@ -208,15 +259,13 @@ class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
    * Setup the view model to be in "flight-mode", setup listeners on flight members' to track their
    * current location and start to construct flight trace.
    */
-  fun startFlight(flight: ConfirmedFlight) {
+  fun startLocationTracking(team: Team) {
     reset()
-    flightId = flight.id
-
-    val users = flight.team.roles.map { it.assignedUser!! }
+    val users = team.roles.map { it.assignedUser!! }
     users.forEach { this.users[it.id] = it }
 
     val userIds = users.map { it.id }
-    pilotId = flight.team.roles.find { it.roleType == RoleType.PILOT }?.assignedUser?.id
+    pilotId = team.roles.find { it.roleType == RoleType.PILOT }?.assignedUser?.id
     if (pilotId == null) {
       onError(Exception("Missing a pilot on flight."))
       return
@@ -231,7 +280,7 @@ class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
       viewModelScope.launch {
         reset()
 
-        locationTable.queryDelete(Filter.equalTo("userId", uid), onError = { onError(it) })
+        locationTable.queryDelete(Filter.equalTo("userId", userId), onError = { onError(it) })
 
         flightId = null
         _inFlight.value = false
