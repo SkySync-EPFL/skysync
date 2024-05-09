@@ -20,6 +20,7 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.viewmodel.ChatViewModel
+import ch.epfl.skysync.viewmodel.LocationViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
 import ch.epfl.skysync.viewmodel.TimerViewModel
 import kotlinx.coroutines.test.runTest
@@ -51,9 +52,9 @@ class E2EPilotDuringFlight {
           ChatViewModel.createViewModel(dbs.pilot1.id, messageListenerSharedViewModel, repository)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      val t = TimerViewModel.createViewModel()
+      val inFlightViewModel = LocationViewModel.createViewModel(dbs.pilot1.id, repository)
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.pilot1.id, t)
+        homeGraph(repository, navController, dbs.pilot1.id, inFlightViewModel)
       }
     }
     composeTestRule.waitUntil {

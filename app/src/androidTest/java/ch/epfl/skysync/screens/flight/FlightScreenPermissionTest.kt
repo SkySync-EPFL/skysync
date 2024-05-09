@@ -37,7 +37,6 @@ class FlightScreenPermissionTest {
       val uid = dbs.pilot1.id
       FlightScreen(
           navController,
-          TimerViewModel.createViewModel(),
           inFlightViewModel = locationViewModel,
           uid)
     }
