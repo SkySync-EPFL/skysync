@@ -1,6 +1,5 @@
 package ch.epfl.skysync.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -60,7 +59,7 @@ fun CalendarScreen(
                 availabilityCalendar.nextAvailabilityStatus(date, time)
               },
               onSave = { viewModel.saveAvailabilities() },
-              onCancel = { Log.d("TO BE IMPLEMENTED", "Cancel in Availabilities") })
+              onCancel = { viewModel.cancelAvailabilities() })
         } else if (calendarType == Route.FLIGHT_CALENDAR) {
           val flightCalendar = uiState.flightGroupCalendar
           FlightCalendar(
