@@ -150,7 +150,7 @@ fun HyperLinkText(title: String, value: String, padding: Dp) {
 
   ClickableText(
       text = string,
-      modifier = Modifier.padding(horizontal = padding.plus(4.dp)),
+      modifier = Modifier.padding(horizontal = padding.plus(4.dp)).testTag(title),
       style = MaterialTheme.typography.bodyLarge,
       onClick = { offset ->
         string.getStringAnnotations(tag = "URL", start = offset, end = offset).firstOrNull()?.let {
