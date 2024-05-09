@@ -200,7 +200,7 @@ class ConfirmFlightUITest {
   }
 
   @Test
-  fun confirmButtonWorksWhenDismiss() = runTest {
+  fun confirmButtonWorksWhenDismissAndConfirm() = runTest {
     composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
 
     composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Enter Remark"))
@@ -218,24 +218,11 @@ class ConfirmFlightUITest {
     composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
 
     verify(exactly = 0) { navController.navigate(Route.HOME) }
-  }
 
-  @Test
-  fun confirmButtonWorksWhenConfirm() = runTest {
-    composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
-
-    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Enter Remark"))
-    composeTestRule.onNodeWithText("Confirm").assertDoesNotExist()
-
-    val setTime = composeTestRule.onAllNodesWithText("Set Time")
-    for (i in 0 until setTime.fetchSemanticsNodes().size) {
-      setTime[i].performClick()
-    }
-
-    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
     composeTestRule.onNodeWithText("Confirm").performClick()
     composeTestRule.onNodeWithTag("AlertDialog").assertIsDisplayed()
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
+
 
     verify { navController.navigate(Route.HOME) }
     confirmVerified(navController)
