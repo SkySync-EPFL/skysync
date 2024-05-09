@@ -19,7 +19,5 @@ interface User {
     return roleTypes.contains(roleType)
   }
 
-  fun displayString(): String {
-    return "$firstname $lastname"
-  }
+  fun name(): String = "$firstname $lastname"
 }

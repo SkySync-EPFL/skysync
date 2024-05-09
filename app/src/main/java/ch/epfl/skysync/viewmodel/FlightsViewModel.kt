@@ -187,11 +187,14 @@ class FlightsViewModel(
       viewModelScope.launch { repository.flightTable.delete(flightId, onError = { onError(it) }) }
 
   /** adds the given flight to the db and the viewmodel */
-  fun addFlight(flight: PlannedFlight) =
+  fun addFlight(
+      flight: PlannedFlight,
+  ) =
       viewModelScope.launch {
         val flightId = repository.flightTable.add(flight, onError = { onError(it) })
       }
 
+  /** updates the planned flight to a confirmed flight */
   fun addConfirmedFlight(flight: ConfirmedFlight) =
       viewModelScope.launch {
         repository.flightTable.update(flight.id, flight, onError = { onError(it) })
