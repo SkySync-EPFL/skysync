@@ -79,7 +79,7 @@ fun NavGraphBuilder.crewPilotGraph(
       ChatScreen(navController, chatViewModel)
     }
     composable(Route.FLIGHT) {
-      val locationViewModel = LocationViewModel.createViewModel(uid!!,repository)
+      val locationViewModel = LocationViewModel.createViewModel(uid!!, repository)
       FlightScreen(navController, timer!!, locationViewModel, uid!!)
     }
   }
