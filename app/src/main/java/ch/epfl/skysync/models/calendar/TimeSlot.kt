@@ -8,8 +8,18 @@ enum class TimeSlot {
   PM
 }
 
-fun getCurrentTimeSlot() {
-  val currentTime = LocalTime.now()
-}
+
+/**
+ *  Get the time slot of a given time
+ *  @param localTime the time to get the time slot from
+ *  @return AM if the time is between midnight and noon, PM otherwise
+ **/
+fun getTimeSlot(localTime: LocalTime): TimeSlot =
+  if (localTime.isBefore(LocalTime.NOON) && localTime.isAfter(LocalTime.MIDNIGHT)) {
+    TimeSlot.AM
+  } else {
+    TimeSlot.PM
+  }
+
 
 

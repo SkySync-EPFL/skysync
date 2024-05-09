@@ -79,7 +79,7 @@ class LocationViewModelTest {
     assertEquals(2, locations[dbs.crew1.id]!!.second.point.time)
     assertEquals(2, locations[dbs.crew2.id]!!.second.point.time)
 
-    locationViewModel.endFlight().join()
+    locationViewModel.stopLocaationTracking().join()
 
     val pilotLocations =
         locationTable.query(Filter.equalTo("userId", dbs.pilot1.id), onError = { assertNull(it) })

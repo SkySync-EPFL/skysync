@@ -9,7 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.ListenerUpdate
-import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.calendar.getTimeSlot
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
@@ -27,6 +27,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalTime
 
 class LocationViewModel(val userId: String, val repository: Repository) : ViewModel() {
 
@@ -45,14 +47,7 @@ class LocationViewModel(val userId: String, val repository: Repository) : ViewMo
 
   fun refreshPersonalFlights() =
     viewModelScope.launch {
-      _currentUser.value = repository.userTable.get(userId, onError = { onError(it) })
-      _personalFlights.value = repository
-        .userTable
-        .retrieveAssignedFlights(
-          repository.flightTable,
-          userId,
-          onError = { onError(it) })
-    Log.d("InFlightViewModel", "Personal Flights are loaded")
+      refreshPersonalFlights2()
   }
 
   suspend fun refreshPersonalFlights2(){
@@ -66,11 +61,6 @@ class LocationViewModel(val userId: String, val repository: Repository) : ViewMo
     Log.d("InFlightViewModel", "Personal Flights are loaded")
   }
 
-
-  private val _isRunning = MutableStateFlow(false)
-
-  /** The current state of the timer. */
-  val isRunning = _isRunning.asStateFlow()
 
   private var timerJob: Job? = null
   private var lastTimestamp = 0L
@@ -89,7 +79,6 @@ class LocationViewModel(val userId: String, val repository: Repository) : ViewMo
   private val listeners = mutableListOf<ListenerRegistration>()
   private val users = mutableMapOf<String, User>()
 
-  private var flightId: String? = null
   private var pilotId: String? = null
   private val _inFlight = MutableStateFlow<Boolean>(false)
   val inFlight: StateFlow<Boolean> = _inFlight.asStateFlow()
@@ -102,31 +91,30 @@ class LocationViewModel(val userId: String, val repository: Repository) : ViewMo
   val flightLocations: StateFlow<List<Location>> = _flightLocations.asStateFlow()
 
   private val _personalFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
-  private val currentFlight: Flight? = null
+  private var currentFlight: Flight? = null
   private val _currentUser = MutableStateFlow<User?>(null)
 
 
-  fun getCurrentFlight(flights: List<Flight>?){
-    if(flights == null) return
-    currentFlight = flights.fi { f -> f.id == (flightId ?: "") }
-
+  private fun getCurrentFlight(flights: List<Flight>?): Flight?{
+    if(flights == null) return null
+    val currentTimeSlot = getTimeSlot(LocalTime.now())
+    val currentDate = LocalDate.now()
+    return flights.find {
+      f -> f.date == currentDate && f.timeSlot == currentTimeSlot
+    }
   }
-
-
-
 
   /**
    * Starts the timer on a reset counter in a new coroutine and sets isRunning to true. Uses
    * timestamp to update the counter every approx. 100ms.
    */
   fun startTimer() {
-    if (_isRunning.value) return
+    if (_inFlight.value) return
     _counter.value = 0L
-    _isRunning.value = true
     var newTimeStamp = 0L
     timerJob = viewModelScope.launch {
         lastTimestamp = System.currentTimeMillis()
-        while (_isRunning.value) {
+        while (_inFlight.value) {
           delay(100)
           newTimeStamp = System.currentTimeMillis()
           _counter.value += newTimeStamp - lastTimestamp
@@ -135,16 +123,39 @@ class LocationViewModel(val userId: String, val repository: Repository) : ViewMo
       }
   }
 
+  /**
+   * starts the timer, position tracking and flightTrace
+   */
   fun startFlight(){
     viewModelScope.launch {
       refreshPersonalFlights2()
-
-      startLocationTracking(fligh)
-
+      currentFlight = getCurrentFlight(_personalFlights.value)
+        if(currentFlight != null){
+          _inFlight.value = true
+          startLocationTracking(currentFlight!!.team)
+          startTimer()
+        }
     }
-
-    startTimer()
   }
+
+  /**
+   * stops the timer and flight tracking
+   */
+  fun stopFlight(){
+    _inFlight.value = false
+    stopTimer()
+    stopLocationTracking()
+    saveFinishedFlight()
+  }
+
+
+  /**
+   * saved the finished flight to the database
+   */
+  fun saveFinishedFlight(){
+    //TODO: save the finished flight to the database
+    Log.d("LocationViewModel", "Saving finished flight")
+    }
 
   /** Formats the given time in milliseconds to a string in the format "HH:MM:SS". */
   private fun formatTime(milliseconds: Long): String {
@@ -160,7 +171,6 @@ class LocationViewModel(val userId: String, val repository: Repository) : ViewMo
    * counter. The time is not reset.
    */
   fun stopTimer() {
-    _isRunning.value = false
     timerJob?.cancel()
     timerJob = null
     lastTimestamp = 0L
@@ -239,7 +249,7 @@ class LocationViewModel(val userId: String, val repository: Repository) : ViewMo
    */
   fun saveFlightTrace() =
       viewModelScope.launch {
-        if (!_inFlight.value || flightId == null || pilotId == null) {
+        if (!_inFlight.value || currentFlight?.id == null || pilotId == null) {
           onError(Exception("Can not save the flight trace while not in flight."))
           return@launch
         }
@@ -252,7 +262,7 @@ class LocationViewModel(val userId: String, val repository: Repository) : ViewMo
           return@launch
         }
         val flightTrace = FlightTrace(trace = _flightLocations.value.map { it.point })
-        flightTraceTable.set(flightId!!, flightTrace, onError = { onError(it) })
+        flightTraceTable.set(currentFlight!!.id, flightTrace, onError = { onError(it) })
       }
 
   /**
@@ -270,21 +280,18 @@ class LocationViewModel(val userId: String, val repository: Repository) : ViewMo
       onError(Exception("Missing a pilot on flight."))
       return
     }
-    _inFlight.value = true
-
     addLocationListeners(userIds, pilotId!!)
   }
 
-  /** Stop the flight Clean listeners and delete all locations of the user */
-  fun endFlight() =
+  /** Stop the flight tracking,  clean listeners and delete all locations of the user */
+  fun stopLocationTracking() =
       viewModelScope.launch {
         reset()
-
         locationTable.queryDelete(Filter.equalTo("userId", userId), onError = { onError(it) })
-
-        flightId = null
-        _inFlight.value = false
       }
+
+
+
 
   override fun onCleared() {
     reset()
