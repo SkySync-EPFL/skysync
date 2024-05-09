@@ -44,7 +44,7 @@ fun NavGraphBuilder.homeGraph(
     repository: Repository,
     navController: NavHostController,
     uid: String?,
-    timer: TimerViewModel? = null
+    inFlightViewModel: LocationViewModel? = null
 ) {
   navigation(startDestination = Route.HOME, route = Route.MAIN) {
     personalCalendar(repository, navController, uid)
@@ -58,8 +58,8 @@ fun NavGraphBuilder.homeGraph(
       ChatScreen(navController, chatViewModel)
     }
     composable(Route.FLIGHT) {
-      val locationViewModel = LocationViewModel.createViewModel(uid!!, repository)
-      FlightScreen(navController, timer!!, locationViewModel, uid!!)
+        inFlightViewModel!!.userId = uid!!
+      FlightScreen(navController, inFlightViewModel, uid)
     }
     composable(Route.HOME) { entry ->
 
@@ -172,6 +172,7 @@ fun onMessageUpdate(group: MessageGroup, update: ListenerUpdate<Message>) {
 @Composable
 inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(
     navController: NavHostController,
+
 ): T {
   val navGraphRoute = destination.parent?.route ?: return viewModel()
   val parentEntry = remember(this) { navController.getBackStackEntry(navGraphRoute) }

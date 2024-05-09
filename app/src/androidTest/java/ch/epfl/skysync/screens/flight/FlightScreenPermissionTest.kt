@@ -38,7 +38,7 @@ class FlightScreenPermissionTest {
       FlightScreen(
           navController,
           TimerViewModel.createViewModel(),
-          locationViewModel = locationViewModel,
+          inFlightViewModel = locationViewModel,
           uid)
     }
   }

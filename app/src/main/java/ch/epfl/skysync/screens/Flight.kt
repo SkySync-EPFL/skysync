@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,6 +34,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.components.FlightCard
+import ch.epfl.skysync.components.FlightsList
+import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.components.Timer
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.location.LocationPoint
@@ -41,7 +45,6 @@ import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.LocationViewModel
-import ch.epfl.skysync.viewmodel.TimerViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -73,15 +76,17 @@ fun UserLocationMarker(location: Location, user: User) {
 @Composable
 fun FlightScreen(
     navController: NavHostController,
-    timer: TimerViewModel,
-    locationViewModel: LocationViewModel,
+    inFlightViewModel: LocationViewModel,
     uid: String
 ) {
-  val rawTime by timer.rawCounter.collectAsStateWithLifecycle()
-  val currentTime by timer.counter.collectAsStateWithLifecycle()
-  val flightIsStarted by timer.isRunning.collectAsStateWithLifecycle()
+  val rawTime by inFlightViewModel.rawCounter.collectAsStateWithLifecycle()
+  val currentTime by inFlightViewModel.counter.collectAsStateWithLifecycle()
+  val flightIsStarted by inFlightViewModel.inFlight.collectAsStateWithLifecycle()
+    val personalFlights by inFlightViewModel.personalFlights.collectAsStateWithLifecycle()
 
-  val currentLocations = locationViewModel.currentLocations.collectAsState().value
+    var currentFlightId by remember { mutableStateOf(inFlightViewModel.flightId)}
+
+  val currentLocations = inFlightViewModel.currentLocations.collectAsState().value
 
   val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
   val fusedLocationClient = LocationServices.getFusedLocationProviderClient(LocalContext.current)
@@ -107,7 +112,7 @@ fun FlightScreen(
                     longitude = it.longitude,
                 )
 
-            locationViewModel.addLocation(Location(userId = uid, point = newLocation))
+            inFlightViewModel.addLocation(Location(userId = uid, point = newLocation))
 
             markerState.position = newLocation.latlng()
             metrics = metrics.withUpdate(it.speed, it.altitude, it.bearing, newLocation)
@@ -141,58 +146,85 @@ fun FlightScreen(
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       floatingActionButton = {
-        if (locationPermission.status.isGranted) {
-          Box(
-              modifier =
-                  Modifier.fillMaxSize().padding(start = 32.dp, bottom = 88.dp, top = 100.dp),
-              contentAlignment = Alignment.BottomStart) {
-                Timer(
-                    Modifier.align(Alignment.TopEnd).testTag("Timer"),
-                    currentTimer = currentTime,
-                    isRunning = flightIsStarted,
-                    onStart = { timer.start() },
-                    onStop = { timer.stop() },
-                )
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()) {
-                      FloatingActionButton(
-                          onClick = {
-                            // Moves the camera to the current location when clicked.
-                            metrics
-                                .let {
-                                  CameraUpdateFactory.newLatLngZoom(it.location.latlng(), 13f)
-                                }
-                                .let { cameraPositionState.move(it) }
-                          },
-                          containerColor = lightOrange) {
-                            Icon(Icons.Default.LocationOn, contentDescription = "Locate Me")
-                          }
-                      FloatingActionButton(
-                          onClick = {
-                            // Here is where you'd navigate to a new screen. For now, just log a
-                            // message.
-                            Log.d(
-                                "FlightScreen",
-                                "FloatingActionButton clicked. Implement navigation here.")
-                            // Example navigation call: navController.navigate("FlightInfos")
-                          },
-                          containerColor = lightOrange) {
-                            Icon(
-                                imageVector = Icons.Default.Info,
-                                contentDescription = "Flight infos",
-                                tint = Color.White)
-                          }
-                    }
+          if (personalFlights == null) {
+              LoadingComponent(isLoading = true, onRefresh = {}) {
               }
-        }
+          } else if (personalFlights!!.isEmpty()) {
+              Text("no upcoming flights")
+          } else if (currentFlightId == null) {
+              FlightCard(flight = personalFlights!!.first()) {
+                  inFlightViewModel.setFlightId(it)
+                  currentFlightId = it
+              }
+
+          } else {
+            if (locationPermission.status.isGranted) {
+              Box(
+                  modifier =
+                  Modifier
+                      .fillMaxSize()
+                      .padding(start = 32.dp, bottom = 88.dp, top = 100.dp),
+                  contentAlignment = Alignment.BottomStart
+              ) {
+                  Timer(
+                      Modifier
+                          .align(Alignment.TopEnd)
+                          .testTag("Timer"),
+                      currentTimer = currentTime,
+                      isRunning = flightIsStarted,
+                      onStart = { inFlightViewModel.startFlight() },
+                      onStop = { inFlightViewModel.stopFlight() },
+                  )
+
+                  Row(
+                      horizontalArrangement = Arrangement.SpaceBetween,
+                      modifier = Modifier.fillMaxWidth()
+                  ) {
+                      FloatingActionButton(
+                          onClick = {
+                              // Moves the camera to the current location when clicked.
+                              metrics
+                                  .let {
+                                      CameraUpdateFactory.newLatLngZoom(it.location.latlng(), 13f)
+                                  }
+                                  .let { cameraPositionState.move(it) }
+                          },
+                          containerColor = lightOrange
+                      ) {
+                          Icon(Icons.Default.LocationOn, contentDescription = "Locate Me")
+                      }
+                      FloatingActionButton(
+                          onClick = {
+                              // Here is where you'd navigate to a new screen. For now, just log a
+                              // message.
+                              Log.d(
+                                  "FlightScreen",
+                                  "FloatingActionButton clicked. Implement navigation here."
+                              )
+                              // Example navigation call: navController.navigate("FlightInfos")
+                          },
+                          containerColor = lightOrange
+                      ) {
+                          Icon(
+                              imageVector = Icons.Default.Info,
+                              contentDescription = "Flight infos",
+                              tint = Color.White
+                          )
+                      }
+                  }
+              }
+          }
+
+          }
       },
       bottomBar = { BottomBar(navController) }) { padding ->
         // Renders the Google Map or a permission request message based on the permission status.
         if (locationPermission.status.isGranted) {
           GoogleMap(
-              modifier = Modifier.fillMaxSize().padding(padding).testTag("Map"),
+              modifier = Modifier
+                  .fillMaxSize()
+                  .padding(padding)
+                  .testTag("Map"),
               cameraPositionState = cameraPositionState) {
                 Marker(state = markerState, title = "Your Location", snippet = "You are here")
 
@@ -204,13 +236,16 @@ fun FlightScreen(
               text = "$metrics",
               style = MaterialTheme.typography.bodyLarge,
               modifier =
-                  Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
-                      .background(color = Color.White, shape = RoundedCornerShape(8.dp))
-                      .padding(6.dp))
+              Modifier
+                  .padding(top = 16.dp, start = 12.dp, end = 12.dp)
+                  .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                  .padding(6.dp))
         }
         if (!locationPermission.status.isGranted) {
           Box(
-              modifier = Modifier.fillMaxSize().padding(16.dp),
+              modifier = Modifier
+                  .fillMaxSize()
+                  .padding(16.dp),
               contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                   Text("Access to location is required to use this feature.")
