@@ -75,7 +75,7 @@ class E2ECrewFlightDetail {
     for (flight in assignedFlight) {
       composeTestRule.onNodeWithTag("flightCard${flight.id}").performClick()
       var route = navController.currentBackStackEntry?.destination?.route
-      assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
+      assertEquals(Route.CREW_FLIGHT_DETAILS + "/{Flight ID}", route)
 
       composeTestRule.waitUntil(2500) {
         composeTestRule.onAllNodesWithText("Balloon").fetchSemanticsNodes().isNotEmpty()
@@ -135,7 +135,7 @@ class E2ECrewFlightDetail {
       }
       composeTestRule.onNodeWithText("Back").performClick()
       route = navController.currentBackStackEntry?.destination?.route
-      assertEquals(Route.HOME, route)
+      assertEquals(Route.CREW_HOME, route)
     }
   }
 

@@ -46,7 +46,7 @@ class ConfirmFlightUITest {
   @Before
   fun setUpNavHost() {
     composeTestRule.setContent {
-      Confirmation(plannedFlight.value) { navController.navigate(Route.HOME) }
+      Confirmation(plannedFlight.value) { navController.navigate(Route.ADMIN_HOME) }
     }
   }
   // test of info to verify by a user
@@ -217,14 +217,13 @@ class ConfirmFlightUITest {
     composeTestRule.onNodeWithTag("AlertDialogDismiss").performClick()
     composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
 
-    verify(exactly = 0) { navController.navigate(Route.HOME) }
+    verify(exactly = 0) { navController.navigate(Route.ADMIN_HOME) }
 
     composeTestRule.onNodeWithText("Confirm").performClick()
     composeTestRule.onNodeWithTag("AlertDialog").assertIsDisplayed()
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
 
-
-    verify { navController.navigate(Route.HOME) }
+    verify { navController.navigate(Route.ADMIN_HOME) }
     confirmVerified(navController)
   }
 }

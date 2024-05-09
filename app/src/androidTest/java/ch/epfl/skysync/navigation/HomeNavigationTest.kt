@@ -45,7 +45,7 @@ class HomeNavigationTest {
   @Test
   fun verifyHomeIsStartDestination() {
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.HOME)
+    Assert.assertEquals(route, Route.CREW_HOME)
   }
 
   @Test
@@ -53,7 +53,7 @@ class HomeNavigationTest {
     composeTestRule.onNodeWithText("Calendar").performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
+    Assert.assertEquals(route, Route.CREW_AVAILABILITY_CALENDAR)
   }
 
   @Test
@@ -69,6 +69,6 @@ class HomeNavigationTest {
     composeTestRule.onNodeWithText("Chat").performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.CHAT)
+    Assert.assertEquals(route, Route.CREW_CHAT)
   }
 }

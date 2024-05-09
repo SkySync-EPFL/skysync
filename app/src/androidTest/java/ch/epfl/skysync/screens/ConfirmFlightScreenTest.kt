@@ -60,7 +60,9 @@ class ConfirmFlightScreenTest {
           ->
           flight.id
         }
+
     Assert.assertEquals(assignedFlight, retrievedFlights)
+
     composeTestRule.onNodeWithText("Home").performClick()
 
     val canBeConfirmedFlights =
@@ -72,7 +74,7 @@ class ConfirmFlightScreenTest {
           .performScrollToNode(hasTestTag("flightCard${flight.id}"))
       composeTestRule.onNodeWithTag("flightCard${flight.id}").performClick()
       var route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
+      Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
 
       composeTestRule.onNodeWithText("Confirm").performClick()
 
@@ -91,7 +93,7 @@ class ConfirmFlightScreenTest {
       composeTestRule.onNodeWithText("Confirm").performClick()
       composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
       route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.HOME, route)
+      Assert.assertEquals(Route.ADMIN_HOME, route)
     }
   }
 }

@@ -41,7 +41,7 @@ class FlightCalendarTest {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.admin1.id)
+        homeGraph(repository, navController, dbs.crew1.id)
       }
     }
     composeTestRule.waitUntil {
@@ -55,11 +55,11 @@ class FlightCalendarTest {
     composeTestRule.onNodeWithText("Calendar").performClick()
 
     var route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
+    Assert.assertEquals(route, Route.CREW_AVAILABILITY_CALENDAR)
 
-    composeTestRule.onNodeWithTag(Route.FLIGHT_CALENDAR).performClick()
+    composeTestRule.onNodeWithTag(Route.CREW_FLIGHT_CALENDAR).performClick()
     route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.FLIGHT_CALENDAR)
+    Assert.assertEquals(route, Route.CREW_FLIGHT_CALENDAR)
 
     var date = LocalDate.now()
     date = getStartOfWeek(date).minusWeeks(1)

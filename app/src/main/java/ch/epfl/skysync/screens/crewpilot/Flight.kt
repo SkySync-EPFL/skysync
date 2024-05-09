@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.crewpilot
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -220,15 +220,3 @@ fun FlightScreen(
         }
       }
 }
-/*
-@Composable
-@Preview
-fun FlightScreenPreview() {
-  val navController = rememberNavController()
-    val db: FirestoreDatabase = FirestoreDatabase()
-    val repository: Repository = Repository(db)
-    val locationViewModel =
-        LocationViewModel.createViewModel(repository)
-  FlightScreen(navController = navController, timer = TimerViewModel(), locationViewModel = locationViewModel, uid)
-}
-*/

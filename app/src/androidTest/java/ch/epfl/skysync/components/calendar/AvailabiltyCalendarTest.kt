@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens.calendar
+package ch.epfl.skysync.components.calendar
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
@@ -44,7 +44,7 @@ class AvailabiltyCalendarTest {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.admin1.id)
+        homeGraph(repository, navController, dbs.crew1.id)
       }
     }
     composeTestRule.waitUntil {
@@ -70,7 +70,7 @@ class AvailabiltyCalendarTest {
     val today = LocalDate.now().toString() + TimeSlot.AM.toString()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
+    Assert.assertEquals(route, Route.CREW_AVAILABILITY_CALENDAR)
 
     composeTestRule.onNodeWithTag(today).performClick()
 

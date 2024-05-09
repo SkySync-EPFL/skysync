@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.admin
 
 import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
@@ -23,19 +23,19 @@ fun ConfirmationScreen(
     LoadingComponent(isLoading = true, onRefresh = {}) {}
   } else {
     if (flight !is PlannedFlight) {
-      navController.navigate(Route.HOME)
+      navController.navigate(Route.ADMIN_HOME)
       SnackbarManager.showMessage("This action is not possible on this type of flight")
       return
     }
     val plannedFlight = flight as PlannedFlight
     if (!plannedFlight.readyToBeConfirmed()) {
-      navController.navigate(Route.HOME)
+      navController.navigate(Route.ADMIN_HOME)
       SnackbarManager.showMessage("Flight cannot be confirmed")
       return
     }
     Confirmation(plannedFlight = plannedFlight) {
       viewModel.addConfirmedFlight(it)
-      navController.navigate(Route.HOME)
+      navController.navigate(Route.ADMIN_HOME)
     }
   }
 }
