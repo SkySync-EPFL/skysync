@@ -61,7 +61,7 @@ class FlightTableUnitTest {
 
     val flights = flightTable.getAll(onError = { assertNull(it) })
 
-    assertEquals(6, flightMembers.size)
+    assertEquals(7, flightMembers.size)
     assertEquals(
         listOf(dbs.flight2, dbs.flight3, dbs.flight4).sortedBy { f -> f.id },
         flights.sortedBy { f -> f.id })

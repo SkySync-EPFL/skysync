@@ -10,6 +10,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.screens.admin.AddUserScreen
 import io.mockk.mockk
 import org.junit.Before
 import org.junit.Rule

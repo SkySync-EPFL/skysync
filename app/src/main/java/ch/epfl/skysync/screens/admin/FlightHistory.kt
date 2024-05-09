@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.admin
 
 import android.location.Location
 import androidx.compose.foundation.BorderStroke

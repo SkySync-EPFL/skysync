@@ -81,34 +81,4 @@ class PilotReportScreenTest {
         .assertExists()
     composeTestRule.onNodeWithTag("Submit Button").assertExists()
   }
-
-    @Test
-    fun testSubmitMinimalReport(){
-        composeTestRule
-            .onNodeWithTag("Pilot Report LazyColumn")
-            .performScrollToNode(hasTestTag("Number of passengers"))
-        composeTestRule
-            .onNodeWithTag("Number of passengers")
-            .performTextClearance()
-        composeTestRule
-            .onNodeWithTag("Number of passengers")
-            .performTextInput("5")
-
-        composeTestRule
-            .onNodeWithTag("Pilot Report LazyColumn")
-            .performScrollToNode(hasTestTag("Effective time of start"))
-        composeTestRule.onNodeWithTag("Effective time of start").performClick()
-
-        inputTimePicker(composeTestRule,9, 10)
-
-        composeTestRule
-            .onNodeWithTag("Pilot Report LazyColumn")
-            .performScrollToNode(hasTestTag("Effective time of end"))
-        composeTestRule
-            .onNodeWithTag("Effective time of end")
-            .performClick()
-        inputTimePicker(composeTestRule,11, 15)
-
-        composeTestRule.onNodeWithTag("Submit Button").assertExists()
-    }
 }

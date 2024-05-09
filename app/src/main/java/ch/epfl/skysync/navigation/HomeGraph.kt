@@ -7,47 +7,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.ListenerUpdate
-import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
-import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.flight.BASE_ROLES
-import ch.epfl.skysync.models.flight.Balloon
-import ch.epfl.skysync.models.flight.BalloonQualification
-import ch.epfl.skysync.models.flight.Basket
-import ch.epfl.skysync.models.flight.FinishedFlight
-import ch.epfl.skysync.models.flight.FlightType
-import ch.epfl.skysync.models.flight.Role
-import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.message.Message
 import ch.epfl.skysync.models.message.MessageGroup
-import ch.epfl.skysync.models.user.Pilot
-import ch.epfl.skysync.screens.AddFlightScreen
-import ch.epfl.skysync.screens.AddUserScreen
-import ch.epfl.skysync.screens.ChatScreen
-import ch.epfl.skysync.screens.FlightHistoryScreen
-import ch.epfl.skysync.screens.FlightScreen
-import ch.epfl.skysync.screens.HomeScreen
-import ch.epfl.skysync.screens.ModifyFlightScreen
-import ch.epfl.skysync.screens.TextScreen
-import ch.epfl.skysync.screens.UserManagementScreen
-import ch.epfl.skysync.screens.confirmationScreen
-import ch.epfl.skysync.screens.flightDetail.FlightDetailScreen
-import ch.epfl.skysync.screens.reports.PilotReportScreen
-import ch.epfl.skysync.viewmodel.ChatViewModel
+import ch.epfl.skysync.screens.LoadingScreen
 import ch.epfl.skysync.viewmodel.FlightsViewModel
-import ch.epfl.skysync.viewmodel.LocationViewModel
-import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
 import ch.epfl.skysync.viewmodel.TimerViewModel
-import java.time.LocalDate
 
 /** Graph of the main screens of the app */
 fun NavGraphBuilder.homeGraph(
@@ -56,134 +25,14 @@ fun NavGraphBuilder.homeGraph(
     uid: String?,
     timer: TimerViewModel? = null
 ) {
-  navigation(startDestination = Route.HOME, route = Route.MAIN) {
-    personalCalendar(repository, navController, uid)
-    composable(Route.CHAT) { entry ->
-      val messageListenerSharedViewModel =
-          entry.sharedViewModel<MessageListenerSharedViewModel>(
-              navController,
-          )
-      val chatViewModel =
-          ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
-      ChatScreen(navController, chatViewModel)
-    }
-    composable(Route.FLIGHT) {
-      val locationViewModel = LocationViewModel.createViewModel(repository)
-      FlightScreen(navController, timer!!, locationViewModel, uid!!)
-    }
-    composable(Route.HOME) { entry ->
-
-      // get the MessageListenerSharedViewModel here so that it gets
-      // instantiated
-      val messageListenerSharedViewModel =
-          entry.sharedViewModel<MessageListenerSharedViewModel>(
-              navController,
-          )
-      messageListenerSharedViewModel.init(uid!!, repository) { group, update ->
-        onMessageUpdate(group, update)
-      }
-
+  navigation(startDestination = Route.LOADING, route = Route.MAIN) {
+    adminGraph(repository, navController, uid, timer)
+    crewPilotGraph(repository, navController, uid, timer)
+    composable(Route.LOADING) {
       val flightsOverviewViewModel = FlightsViewModel.createViewModel(repository, uid)
       flightsOverviewViewModel.refresh()
-      HomeScreen(navController, flightsOverviewViewModel)
+      LoadingScreen(navController = navController, viewModel = flightsOverviewViewModel)
     }
-    composable(
-        route = Route.FLIGHT_DETAILS + "/{Flight ID}",
-        arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
-          ->
-          val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
-          FlightDetailScreen(
-              navController = navController, flightId = flightId, viewModel = flightsViewModel)
-        }
-    composable(Route.ADD_FLIGHT) {
-      val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
-      AddFlightScreen(navController, flightsViewModel)
-    }
-      composable(
-          Route.PILOT_REPORT + "/{Flight ID}",
-          arguments = listOf(navArgument("Flight ID"){type = NavType.StringType})) { backStackEntry ->
-          //TODO remove when done with viewModel
-          val pilot = Pilot(
-                "testID",
-                "John",
-                "Doe",
-                "",
-                AvailabilityCalendar(),
-                FlightGroupCalendar(),
-                setOf(RoleType.PILOT),
-                BalloonQualification.MEDIUM
-            )
-          //val finishedFlightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          val finishedFlight = FinishedFlight(
-                UNSET_ID,
-                0,
-                Team(Role.initRoles(BASE_ROLES)),
-                FlightType.DISCOVERY,
-                Balloon("Balloon 1", BalloonQualification.MEDIUM),
-                Basket("Basket 1", true),
-                LocalDate.now(),
-                TimeSlot.AM,
-                listOf(),
-                takeOffTime = java.util.Date(),
-                takeOffLocation = android.location.Location(""),
-                landingTime = java.util.Date(),
-                landingLocation = android.location.Location(""),
-                flightTime = 0
-
-          )
-            PilotReportScreen(finishedFlight, navController, pilot)
-      }
-    composable(
-        Route.CONFIRM_FLIGHT + "/{Flight ID}",
-        arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
-          ->
-          val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
-          confirmationScreen(navController, flightId, flightsViewModel)
-        }
-
-    composable(
-        route = Route.MODIFY_FLIGHT + "/{Flight ID}",
-        arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
-          ->
-          val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
-          ModifyFlightScreen(navController, flightsViewModel, flightId)
-        }
-    composable(Route.ADD_USER) { AddUserScreen(navController = navController) }
-    composable(Route.USER) {
-      val users =
-          listOf(
-              Pilot(
-                  "testID",
-                  "John",
-                  "Doe",
-                  "john.doe@gmail.com",
-                  AvailabilityCalendar(mutableListOf()),
-                  FlightGroupCalendar(),
-                  setOf(RoleType.PILOT),
-                  BalloonQualification.MEDIUM))
-      UserManagementScreen(navController = navController, users = users)
-    }
-    composable(Route.STATS) { FlightHistoryScreen(navController = navController) }
-    composable(
-        Route.TEXT + "/{Group ID}",
-        arguments = listOf(navArgument("Group ID") { type = NavType.StringType })) { entry ->
-          val messageListenerSharedViewModel =
-              entry.sharedViewModel<MessageListenerSharedViewModel>(
-                  navController,
-              )
-
-          val chatViewModel =
-              ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
-          val groupId = entry.arguments?.getString("Group ID")
-          if (groupId == null) {
-            navController.navigate(Route.HOME)
-            return@composable
-          }
-          TextScreen(navController, groupId, chatViewModel)
-        }
   }
 }
 

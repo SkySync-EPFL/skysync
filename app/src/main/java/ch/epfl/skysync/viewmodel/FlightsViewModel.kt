@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
@@ -55,6 +56,8 @@ class FlightsViewModel(
   var timeSlot: TimeSlot? = null
     private set
 
+  // private var currentFlightId: MutableStateFlow<String?> = MutableStateFlow(null)
+
   private val _currentFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
   private val _availableBalloons: MutableStateFlow<List<Balloon>> = MutableStateFlow(emptyList())
   private val _availableBaskets: MutableStateFlow<List<Basket>> = MutableStateFlow(emptyList())
@@ -71,6 +74,14 @@ class FlightsViewModel(
   val currentVehicles = _availableVehicles.asStateFlow()
   val currentUser = _currentUser.asStateFlow()
   val availableUsers = _availableUsers.asStateFlow()
+
+  //    private var currentFlight: StateFlow<Flight?> =
+  //        combine(currentFlightId, _currentFlights) { fid, flights ->
+  //            flights?.find { it.id == (fid ?: "") }
+  //        }.stateIn(
+  //                scope = viewModelScope,
+  //                started = WhileUiSubscribed,
+  //                initialValue = null)
 
   fun refresh() {
     refreshUserAndFlights()
@@ -192,15 +203,18 @@ class FlightsViewModel(
         val flightId = repository.flightTable.add(flight, onError = { onError(it) })
       }
 
-  fun getFlight(flightId: String): StateFlow<Flight?> {
-    return _currentFlights
-        .map { flights -> flights?.find { it.id == flightId } }
-        .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
-  }
+  //  fun getFlight(flightId: String): StateFlow<Flight?> {
+  //      currentFlightId.value = flightId
+  //      return currentFlight
+  //  }
+  fun getFlight(flightId: String): StateFlow<Flight?> =
+      _currentFlights
+          .map { flights -> flights?.find { it.id == (flightId) } }
+          .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    // TODO: display error message
+    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
   }
 
   init {

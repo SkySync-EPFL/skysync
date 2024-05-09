@@ -31,6 +31,8 @@ fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewMode
       availableUsers = availableUsers,
       onSaveFlight = { flight: PlannedFlight ->
         viewModel.addFlight(flight)
-        navController.navigate(Route.HOME)
-      })
+        navController.navigate(Route.ADMIN_HOME)
+      },
+      refreshDate = { date, timeSlot -> viewModel.setDateAndTimeSlot(date, timeSlot) },
+  )
 }

@@ -31,7 +31,6 @@ import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Vehicle
-import ch.epfl.skysync.screens.flightDetail.ClickButton
 import ch.epfl.skysync.ui.theme.lightOrange
 import java.time.LocalDate
 import java.time.LocalTime
@@ -62,7 +61,19 @@ fun confirmation(plannedFlight: PlannedFlight, confirmClick: () -> Unit) {
   var meetupLocationPassenger = "Nancy"
 
   val fontSize = 17.sp
+  var showDialog by remember { mutableStateOf(false) }
 
+  if (showDialog) {
+    ConfirmAlertDialog(
+        onDismissRequest = { showDialog = false },
+        onConfirmation = {
+          showDialog = false
+          confirmClick()
+        },
+        dialogTitle = "Confirm Flight",
+        dialogText = "Are you sure you want to confirm this flight ?",
+    )
+  }
   LazyColumn(Modifier.testTag("LazyList")) {
     item {
       Text(
@@ -214,7 +225,7 @@ fun confirmation(plannedFlight: PlannedFlight, confirmClick: () -> Unit) {
       Box(modifier = Modifier.fillMaxWidth().padding(2.dp), contentAlignment = Alignment.Center) {
         ClickButton(
             text = "Confirm",
-            onClick = { confirmClick() },
+            onClick = { showDialog = true },
             modifier = Modifier.fillMaxWidth(0.7f).testTag("ConfirmThisFlightButton"),
             color = Color.Green)
       }

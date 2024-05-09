@@ -12,10 +12,10 @@ import androidx.navigation.compose.rememberNavController
 fun AdminBottomBar(navController: NavHostController) {
   val screens =
       listOf(
-          BottomBarScreen.Home,
+          BottomBarScreen.AdminHome,
           BottomBarScreen.User,
-          BottomBarScreen.Chat,
-          BottomBarScreen.Calendar,
+          BottomBarScreen.AdminChat,
+          BottomBarScreen.AdminCalendar,
           BottomBarScreen.Stats)
   val navBackStackEntry by navController.currentBackStackEntryAsState()
   val currentDestination = navBackStackEntry?.destination
