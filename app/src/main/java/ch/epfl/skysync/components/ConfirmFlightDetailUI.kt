@@ -34,6 +34,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.ui.theme.Pink40
 import ch.epfl.skysync.ui.theme.lightOrange
+import java.net.URLEncoder
 
 /**
  * Composable function for displaying a UI to confirm flight details.
@@ -105,7 +106,7 @@ fun ConfirmFlightDetailBody(confirmedFlight: ConfirmedFlight) {
         HyperLinkText(
             padding = 16.dp,
             title = "Meetup Location Passenger",
-            value = confirmedFlight.meetupLocationPassenger)
+            location = confirmedFlight.meetupLocationPassenger)
       }
 }
 /**
@@ -127,9 +128,10 @@ fun ListElementText(text: String, padding: Dp, testTag: String) {
 }
 
 @Composable
-fun HyperLinkText(title: String, value: String, padding: Dp) {
+fun HyperLinkText(title: String, location: String, padding: Dp) {
   val uriHandler = LocalUriHandler.current
-  val googleMapsLink = "https://www.google.com/maps/search/?api=1&query=${value.replace(" ", "+")}"
+  val encodedValue = URLEncoder.encode(location, "UTF-8")
+  val googleMapsLink = "https://www.google.com/maps/search/?api=1&query=$encodedValue"
   val string = buildAnnotatedString {
     pushStringAnnotation(tag = "URL", annotation = googleMapsLink)
     withStyle(
@@ -137,12 +139,12 @@ fun HyperLinkText(title: String, value: String, padding: Dp) {
             SpanStyle(
                 color = MaterialTheme.colorScheme.primary,
                 textDecoration = TextDecoration.Underline)) {
-          append(value)
+          append(location)
         }
     pop()
   }
   Text(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = padding).testTag(title + value),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = padding).testTag(title + location),
       text = title,
       style = MaterialTheme.typography.headlineSmall,
       color = Color.Black)
