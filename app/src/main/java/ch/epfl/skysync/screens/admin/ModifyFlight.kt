@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.admin
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,7 +36,7 @@ fun ModifyFlightScreen(
       availableUsers = availableUsers,
       onSaveFlight = { flight: PlannedFlight ->
         viewModel.modifyFlight(flight)
-        navController.navigate(Route.HOME)
+        navController.navigate(Route.ADMIN_HOME)
       },
       refreshDate = { date, timeSlot -> viewModel.setDateAndTimeSlot(date, timeSlot) },
   )

@@ -94,7 +94,7 @@ class E2EPilotDuringFlight {
       // Navigates to the chat screen
       composeTestRule.onNodeWithText("Chat").performClick()
       route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.CHAT, route)
+      Assert.assertEquals(Route.CREW_CHAT, route)
 
       // Refreshes chat data asynchronously
       val index = 0

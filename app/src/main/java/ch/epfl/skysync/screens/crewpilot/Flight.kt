@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.crewpilot
 
 import android.util.Log
 import androidx.compose.foundation.background

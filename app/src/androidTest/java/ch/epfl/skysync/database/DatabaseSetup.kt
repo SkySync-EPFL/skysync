@@ -209,13 +209,7 @@ class DatabaseSetup {
       ConfirmedFlight(
           id = UNSET_ID,
           nPassengers = 2,
-          team =
-              Team(
-                  roles =
-                      listOf(
-                          Role(RoleType.PILOT, pilot1),
-                          Role(RoleType.CREW, crew1),
-                          Role(RoleType.CREW, crew2))),
+          team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
           flightType = flightType1,
           balloon = balloon1,
           basket = basket1,

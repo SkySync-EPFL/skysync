@@ -25,13 +25,44 @@ class CalendarTopBarTest {
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var navController: TestNavHostController
   val dbs = DatabaseSetup()
+  val db = FirestoreDatabase(useEmulator = true)
+  val repository = Repository(db)
 
   @Before
   fun setUpNavHost() = runTest {
-    val db = FirestoreDatabase(useEmulator = true)
-    val repository = Repository(db)
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
+  }
+
+  @Test
+  fun switchBetweenCalendars() {
+    composeTestRule.setContent {
+      navController = TestNavHostController(LocalContext.current)
+      navController.navigatorProvider.addNavigator(ComposeNavigator())
+      NavHost(navController = navController, startDestination = Route.MAIN) {
+        homeGraph(repository, navController, dbs.crew1.id)
+      }
+    }
+    composeTestRule.waitUntil {
+      val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
+      nodes.fetchSemanticsNodes().isNotEmpty()
+    }
+    composeTestRule.onNodeWithText("Calendar").performClick()
+
+    var route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(route, Route.CREW_AVAILABILITY_CALENDAR)
+
+    composeTestRule.onNodeWithTag(Route.CREW_FLIGHT_CALENDAR).performClick()
+    route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(route, Route.CREW_FLIGHT_CALENDAR)
+
+    composeTestRule.onNodeWithTag(Route.CREW_AVAILABILITY_CALENDAR).performClick()
+    route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(route, Route.CREW_AVAILABILITY_CALENDAR)
+  }
+
+  @Test
+  fun adminSwitchBetweenCalendars() {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
@@ -43,21 +74,17 @@ class CalendarTopBarTest {
       val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
       nodes.fetchSemanticsNodes().isNotEmpty()
     }
-  }
-
-  @Test
-  fun switchBetweenCalendars() {
     composeTestRule.onNodeWithText("Calendar").performClick()
 
     var route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
+    Assert.assertEquals(route, Route.ADMIN_AVAILABILITY_CALENDAR)
 
-    composeTestRule.onNodeWithTag(Route.FLIGHT_CALENDAR).performClick()
+    composeTestRule.onNodeWithTag(Route.ADMIN_FLIGHT_CALENDAR).performClick()
     route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.FLIGHT_CALENDAR)
+    Assert.assertEquals(route, Route.ADMIN_FLIGHT_CALENDAR)
 
-    composeTestRule.onNodeWithTag(Route.AVAILABILITY_CALENDAR).performClick()
+    composeTestRule.onNodeWithTag(Route.ADMIN_AVAILABILITY_CALENDAR).performClick()
     route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.AVAILABILITY_CALENDAR)
+    Assert.assertEquals(route, Route.ADMIN_AVAILABILITY_CALENDAR)
   }
 }

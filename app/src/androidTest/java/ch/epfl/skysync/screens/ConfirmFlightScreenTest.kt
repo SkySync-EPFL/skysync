@@ -1,4 +1,4 @@
-package ch.epfl.skysync
+package ch.epfl.skysync.screens
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
+import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
@@ -38,7 +39,7 @@ class ConfirmFlightScreenTest {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.admin1.id)
+        homeGraph(repository, navController, dbs.crew1.id)
       }
     }
     composeTestRule.waitUntil {
@@ -54,7 +55,7 @@ class ConfirmFlightScreenTest {
     for (i in 0 until nodes.fetchSemanticsNodes().size) {
       nodes[i].performClick()
       var route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
+      Assert.assertEquals(Route.CREW_FLIGHT_DETAILS + "/{Flight ID}", route)
       composeTestRule.onNodeWithText("Confirm").performClick()
       composeTestRule.waitForIdle()
       route = navController.currentBackStackEntry?.destination?.route
@@ -66,7 +67,7 @@ class ConfirmFlightScreenTest {
       composeTestRule.onNodeWithText("Confirm").performClick()
       composeTestRule.waitForIdle()
       route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.HOME, route)
+      Assert.assertEquals(Route.CREW_HOME, route)
     }
   }
 }

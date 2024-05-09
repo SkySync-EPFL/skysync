@@ -1,6 +1,7 @@
 package ch.epfl.skysync.screens.home
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.navigation.compose.ComposeNavigator
@@ -8,14 +9,14 @@ import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.screens.crewpilot.HomeScreen
+import ch.epfl.skysync.screens.admin.AdminHomeScreen
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class HomeScreenTest {
+class AdminHomeScreenTest {
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var navController: TestNavHostController
   lateinit var flightsViewModel: FlightsViewModel
@@ -30,16 +31,16 @@ class HomeScreenTest {
   }
 
   @Test
-  fun crewAndPilotHasNoButton() {
+  fun adminHasButton() {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      flightsViewModel = FlightsViewModel.createViewModel(repository, dbs.crew1.id)
-      HomeScreen(navController = navController, viewModel = flightsViewModel)
+      flightsViewModel = FlightsViewModel.createViewModel(repository, dbs.admin1.id)
+      AdminHomeScreen(navController = navController, viewModel = flightsViewModel)
     }
     runTest {
       flightsViewModel.refreshUserAndFlights().join()
-      composeTestRule.onNodeWithTag("addFlightButton").assertDoesNotExist()
+      composeTestRule.onNodeWithTag("addFlightButton").assertIsDisplayed()
     }
   }
 }

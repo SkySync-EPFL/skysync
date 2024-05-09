@@ -8,10 +8,10 @@ import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.screens.RoleFilter
-import ch.epfl.skysync.screens.SearchBar
-import ch.epfl.skysync.screens.UserCard
-import ch.epfl.skysync.screens.UserManagementScreen
+import ch.epfl.skysync.screens.admin.RoleFilter
+import ch.epfl.skysync.screens.admin.SearchBar
+import ch.epfl.skysync.screens.admin.UserCard
+import ch.epfl.skysync.screens.admin.UserManagementScreen
 import junit.framework.TestCase.assertEquals
 import org.junit.Rule
 import org.junit.Test
