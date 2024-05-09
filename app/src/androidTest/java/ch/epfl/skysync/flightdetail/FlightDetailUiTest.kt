@@ -51,8 +51,8 @@ class FlightDetailUiTest {
           confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${dbs.flight1.id}") },
           padding = PaddingValues(0.dp),
           flight = dbs.flight1,
-          bottom = { deleteClick, editClick, confirmClick ->
-            FlightDetailBottom(deleteClick, editClick, confirmClick)
+          bottom = { editClick, confirmClick, deleteClick ->
+            FlightDetailBottom(editClick, confirmClick, deleteClick)
           })
     }
   }

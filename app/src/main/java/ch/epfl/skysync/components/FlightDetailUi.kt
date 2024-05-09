@@ -153,9 +153,9 @@ fun FlightDetailBody(flight: Flight, padding: PaddingValues) {
  */
 @Composable
 fun FlightDetailBottom(
-    deleteClick: () -> Unit,
     editClick: () -> Unit,
     confirmClick: () -> Unit,
+    deleteClick: () -> Unit,
 ) {
   Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
     Row(

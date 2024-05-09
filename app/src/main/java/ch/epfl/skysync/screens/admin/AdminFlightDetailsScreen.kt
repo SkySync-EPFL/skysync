@@ -43,8 +43,9 @@ fun AdminFlightDetailScreen(
           confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
           padding = padding,
           flight = flight,
-          bottom = { deleteClick, editClick, confirmClick ->
-            FlightDetailBottom(deleteClick, editClick, confirmClick)
+          bottom = { editClick, confirmClick, deleteClick,
+            ->
+            FlightDetailBottom(editClick, confirmClick, deleteClick)
           })
     }
   }
