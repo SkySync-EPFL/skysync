@@ -18,6 +18,6 @@ class TempUserTable(db: FirestoreDatabase) :
   }
 
   companion object {
-    const val PATH = "tempUser"
+    const val PATH = "temp-user"
   }
 }
