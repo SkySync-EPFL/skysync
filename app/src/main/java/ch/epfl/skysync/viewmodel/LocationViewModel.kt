@@ -13,11 +13,16 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.user.User
+import ch.epfl.skysync.util.WhileUiSubscribed
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
@@ -35,6 +40,23 @@ class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
     }
   }
 
+  private val _isRunning = MutableStateFlow(false)
+
+  /** The current state of the timer. */
+  val isRunning = _isRunning.asStateFlow()
+
+  private var job: Job? = null
+  private var lastTimestamp = 0L
+  private val _counter = MutableStateFlow(0L)
+
+  val rawCounter = _counter.asStateFlow()
+
+  /** The current value of the counter formatted as a string in the format "HH:MM:SS". */
+  val counter =
+    _counter
+      .map { formatTime(it) }
+      .stateIn(viewModelScope, started = WhileUiSubscribed, initialValue = formatTime(0))
+
   private val locationTable = repository.locationTable
   private val flightTraceTable = repository.flightTraceTable
   private val listeners = mutableListOf<ListenerRegistration>()
@@ -51,6 +73,48 @@ class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
 
   private val _flightLocations = MutableStateFlow<List<Location>>(emptyList())
   val flightLocations: StateFlow<List<Location>> = _flightLocations.asStateFlow()
+
+  /**
+   * Starts the timer on a reset counter in a new coroutine and sets isRunning to true. Uses
+   * timestamp to update the counter every approx. 100ms.
+   */
+  fun start() {
+    if (_isRunning.value) return
+    _counter.value = 0L
+    _isRunning.value = true
+    var newTimeStamp = 0L
+    job =
+      viewModelScope.launch {
+        lastTimestamp = System.currentTimeMillis()
+        while (_isRunning.value) {
+          delay(100)
+          newTimeStamp = System.currentTimeMillis()
+          _counter.value += newTimeStamp - lastTimestamp
+          lastTimestamp = newTimeStamp
+        }
+      }
+  }
+
+  /** Formats the given time in milliseconds to a string in the format "HH:MM:SS". */
+  private fun formatTime(milliseconds: Long): String {
+    val secondsRounded = milliseconds / 1000
+    val hours = secondsRounded / 3600
+    val minutes = (secondsRounded % 3600) / 60
+    val remainingSeconds = secondsRounded % 60
+    return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
+  }
+
+  /**
+   * Stops the timer by setting isRunning to false and cancelling the coroutine that updates the
+   * counter. The time is not reset.
+   */
+  fun stopTimer() {
+    _isRunning.value = false
+    job?.cancel()
+    job = null
+    lastTimestamp = 0L
+  }
+
 
   /**
    * Fetches the location of a list of user IDs and listens for updates.
@@ -173,6 +237,7 @@ class LocationViewModel(val uid: String, repository: Repository) : ViewModel() {
 
   override fun onCleared() {
     reset()
+    stopTimer()
     super.onCleared()
   }
 }
