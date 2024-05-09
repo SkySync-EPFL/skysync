@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -153,7 +152,7 @@ class ConfirmFlightUITest {
     val wantedHour = wantedTimeSet.hour
     val wantedMinute = wantedTimeSet.minute
     val tag = "MeetUp"
-    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
+    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("MeetUp (passengers)"))
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextClearance()
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextInput(wantedHour.toString())
     composeTestRule.onNodeWithTag(tag + "/Minutes").performTextClearance()
@@ -171,7 +170,7 @@ class ConfirmFlightUITest {
     val wantedHour = wantedTimeSet.hour
     val wantedMinute = wantedTimeSet.minute
     val tag = "Departure"
-    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasTestTag(tag + "/SetTime"))
+    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("MeetUp (passengers)"))
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextClearance()
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextInput(wantedHour.toString())
     composeTestRule.onNodeWithTag(tag + "/Minutes").performTextClearance()

@@ -216,9 +216,7 @@ fun Confirmation(plannedFlight: PlannedFlight, confirmClick: (ConfirmedFlight) -
               }
             })
       }
-      if (selectedTime != null &&
-          selectedTime1 != null &&
-          selectedTime2 != null) {
+      if (selectedTime != null && selectedTime1 != null && selectedTime2 != null) {
 
         Box(modifier = Modifier.fillMaxWidth().padding(2.dp), contentAlignment = Alignment.Center) {
           ClickButton(

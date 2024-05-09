@@ -1,10 +1,8 @@
 package ch.epfl.skysync
 
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -15,6 +13,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import kotlinx.coroutines.test.runTest
@@ -28,13 +28,13 @@ class ConfirmFlightScreenTest {
   lateinit var navController: TestNavHostController
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbs = DatabaseSetup()
+  val repository = Repository(db)
 
   @Before
   fun setUpNavHost() = runTest {
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
     composeTestRule.setContent {
-      val repository = Repository(db)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       NavHost(navController = navController, startDestination = Route.MAIN) {
@@ -48,25 +48,42 @@ class ConfirmFlightScreenTest {
   }
 
   @Test
-  fun backStackIsRightIfClickOnFlightDetailsThenFlightConfirm() {
+  fun backStackIsRightIfClickOnFlightDetailsThenFlightConfirm() = runTest {
+    val assignedFlight =
+        listOf(dbs.flight1, dbs.flight2, dbs.flight3, dbs.flight4).sortedBy { flight: Flight ->
+          flight.id
+        }
+    val retrievedFlights =
+        repository.flightTable.getAll(onError = { Assert.assertNull(it) }).sortedBy { flight: Flight
+          ->
+          flight.id
+        }
+    Assert.assertEquals(assignedFlight, retrievedFlights)
     composeTestRule.onNodeWithText("Home").performClick()
-    val nodes = composeTestRule.onAllNodesWithTag("flightCard")
-    for (i in 0 until nodes.fetchSemanticsNodes().size) {
-      nodes[i].performClick()
+
+    val canBeConfirmedFlights =
+        assignedFlight.filterIsInstance<PlannedFlight>().filter { it.readyToBeConfirmed() }
+
+    for (flight in canBeConfirmedFlights) {
+      composeTestRule.onNodeWithTag("flightCard${flight.id}").performClick()
       var route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT_DETAILS + "/{Flight ID}", route)
+
       composeTestRule.onNodeWithText("Confirm").performClick()
-      composeTestRule.waitForIdle()
-      route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.CONFIRM_FLIGHT + "/{Flight ID}", route)
-      composeTestRule
-          .onNodeWithTag("LazyList")
-          .performScrollToNode(hasText("Confirm"))
-          .assertIsDisplayed()
+
+      composeTestRule.waitUntil(2500) {
+        composeTestRule.onAllNodesWithText("Balloon").fetchSemanticsNodes().isNotEmpty()
+      }
+      composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Enter Remark"))
+
+      composeTestRule.onNodeWithText("Confirm").assertDoesNotExist()
+
+      val setTime = composeTestRule.onAllNodesWithText("Set Time")
+      for (i in 0 until setTime.fetchSemanticsNodes().size) {
+        setTime[i].performClick()
+      }
+      composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
       composeTestRule.onNodeWithText("Confirm").performClick()
-      composeTestRule.waitForIdle()
-      route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.HOME, route)
     }
   }
 }
