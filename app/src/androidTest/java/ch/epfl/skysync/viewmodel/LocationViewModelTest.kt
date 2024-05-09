@@ -39,43 +39,43 @@ class LocationViewModelTest {
     dbs.fillDatabase(db)
     composeTestRule.setContent {
       locationViewModel = LocationViewModel.createViewModel(dbs.pilot1.id, repository = repository)
-        val countString by locationViewModel.counter.collectAsStateWithLifecycle()
-        Text(countString)
+      val countString by locationViewModel.counter.collectAsStateWithLifecycle()
+      Text(countString)
     }
-      locationViewModel.refreshPersonalFlights().join()
+    locationViewModel.refreshPersonalFlights().join()
   }
 
-    @Test
-    fun timerIsZeroBeforeStart() = runTest {
-        val countString = locationViewModel.counter.value
-        assertTrue(countString == "00:00:00")
-    }
+  @Test
+  fun timerIsZeroBeforeStart() = runTest {
+    val countString = locationViewModel.counter.value
+    assertTrue(countString == "00:00:00")
+  }
 
-    @Test
-    fun testStartFunction() {
-        locationViewModel.setFlightId(dbs.flight1.id)
-        locationViewModel.startFlight()
+  @Test
+  fun testStartFunction() {
+    locationViewModel.setFlightId(dbs.flight1.id)
+    locationViewModel.startFlight()
 
-        composeTestRule.waitUntil(timeoutMillis = 1500) {
-            val countString = locationViewModel.counter.value
-            countString == "00:00:01"
-        }
-        val isRunning = locationViewModel.inFlight.value
-        assertTrue(isRunning)
+    composeTestRule.waitUntil(timeoutMillis = 1500) {
+      val countString = locationViewModel.counter.value
+      countString == "00:00:01"
     }
+    val isRunning = locationViewModel.inFlight.value
+    assertTrue(isRunning)
+  }
 
-    @Test
-    fun testStopFunction() = runTest {
-        locationViewModel.setFlightId(dbs.flight1.id)
-        locationViewModel.startFlight()
-        composeTestRule.waitUntil(timeoutMillis = 2500) {
-            val countString = locationViewModel.counter.value
-            countString == "00:00:02"
-        }
-        locationViewModel.stopFlight()
-        val isRunning = locationViewModel.inFlight.value
-        assertFalse(isRunning)
+  @Test
+  fun testStopFunction() = runTest {
+    locationViewModel.setFlightId(dbs.flight1.id)
+    locationViewModel.startFlight()
+    composeTestRule.waitUntil(timeoutMillis = 2500) {
+      val countString = locationViewModel.counter.value
+      countString == "00:00:02"
     }
+    locationViewModel.stopFlight()
+    val isRunning = locationViewModel.inFlight.value
+    assertFalse(isRunning)
+  }
 
   @Test
   fun testInitialLocationSetup() = runTest { assertNotNull(locationViewModel.currentLocations) }
@@ -84,9 +84,9 @@ class LocationViewModelTest {
   fun testLocationUpdate() = runTest {
     val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) }) as ConfirmedFlight
 
-      locationViewModel.setFlightId(flight.id)
+    locationViewModel.setFlightId(flight.id)
 
-      locationViewModel.startFlight()
+    locationViewModel.startFlight()
 
     locationViewModel.startLocationTracking(flight.team)
 
@@ -121,7 +121,7 @@ class LocationViewModelTest {
     assertEquals(2, locations[dbs.crew1.id]!!.second.point.time)
     assertEquals(2, locations[dbs.crew2.id]!!.second.point.time)
 
-      locationViewModel.stopLocationTracking().join()
+    locationViewModel.stopLocationTracking().join()
 
     val pilotLocations =
         locationTable.query(Filter.equalTo("userId", dbs.pilot1.id), onError = { assertNull(it) })
@@ -134,10 +134,8 @@ class LocationViewModelTest {
   fun testSaveFlightTrace() = runTest {
     val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) }) as ConfirmedFlight
 
-      locationViewModel.setFlightId(flight.id)
-      locationViewModel.startFlight()
-
-
+    locationViewModel.setFlightId(flight.id)
+    locationViewModel.startFlight()
 
     // here we need to have the update in order to have all the locations in the flight trace
     // as the locations that are out of order are discarded (which is a feature not a bug...)

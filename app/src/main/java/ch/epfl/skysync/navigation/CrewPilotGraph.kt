@@ -17,7 +17,6 @@ import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.LocationViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
-import ch.epfl.skysync.viewmodel.TimerViewModel
 
 fun NavGraphBuilder.crewPilotGraph(
     repository: Repository,
@@ -79,10 +78,10 @@ fun NavGraphBuilder.crewPilotGraph(
       ChatScreen(navController, chatViewModel)
     }
     composable(Route.FLIGHT) {
-        if (locationViewModel!!.userId == null) {
-            locationViewModel.userId = uid!!
-        }
-        locationViewModel.refreshPersonalFlights()
+      if (locationViewModel!!.userId == null) {
+        locationViewModel.userId = uid!!
+      }
+      locationViewModel.refreshPersonalFlights()
       FlightScreen(navController, locationViewModel, uid!!)
     }
   }
