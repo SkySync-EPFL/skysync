@@ -24,30 +24,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.forms.PauseField
 import ch.epfl.skysync.components.forms.TimePickerField
 import ch.epfl.skysync.components.forms.TitledInputTextField
 import ch.epfl.skysync.components.forms.VehicleProblemField
-import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
-import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.flight.BASE_ROLES
-import ch.epfl.skysync.models.flight.Balloon
-import ch.epfl.skysync.models.flight.BalloonQualification
-import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.FinishedFlight
-import ch.epfl.skysync.models.flight.FlightType
-import ch.epfl.skysync.models.flight.Role
-import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
-import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.reports.CrewReport
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.navigation.Route
@@ -55,7 +40,6 @@ import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.util.bottleInputValidation
 import ch.epfl.skysync.util.inputValidation
 import java.time.Instant
-import java.time.LocalDate
 import java.util.Date
 
 @Composable
@@ -195,6 +179,7 @@ fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFligh
   }
 }
 
+/*
 @Preview
 @Composable
 fun PreviewCrewReportScreen() {
@@ -227,4 +212,4 @@ fun PreviewCrewReportScreen() {
           FlightGroupCalendar(),
           setOf(RoleType.PILOT))
   CrewReportScreen(navHostController = navController, flight = flight, crew = crew)
-}
+}*/

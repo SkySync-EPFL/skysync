@@ -20,6 +20,7 @@ import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
@@ -156,7 +157,7 @@ fun NavGraphBuilder.crewPilotGraph(
               Basket("Basket 1", true),
               LocalDate.now(),
               TimeSlot.AM,
-              listOf(),
+              listOf(Vehicle("vehicle1"), Vehicle("vehicle2")),
               takeOffTime = Date(),
               takeOffLocation =
                   LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),

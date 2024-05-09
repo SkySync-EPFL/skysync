@@ -142,14 +142,14 @@ fun VehicleProblemField(
                 isError = vehicleNotChosenError,
                 messageError = "Please choose a vehicle")
             Text(
-                modifier =
-                    Modifier.fillMaxWidth()
-                        .testTag("Problem Field")
-                        .padding(horizontal = defaultPadding),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
                 text = "Problem",
                 style = MaterialTheme.typography.headlineSmall)
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .padding(horizontal = defaultPadding)
+                        .testTag("Problem Field"),
                 value = addNewProblem,
                 onValueChange = { addNewProblem = it },
                 isError = problemNotChosenError,

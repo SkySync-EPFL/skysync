@@ -113,6 +113,15 @@ class CrewReportScreenTest {
     composeTestRule.onNodeWithTag("Effective time of end").performClick()
     inputTimePicker(composeTestRule, 14, 40)
 
+    composeTestRule
+        .onNodeWithTag("Crew Report LazyColumn")
+        .performScrollToNode(hasTestTag("Comments"))
+    composeTestRule.onNodeWithTag("Add Problem Button").performClick()
+    composeTestRule.onNodeWithTag("Vehicle Menu").performClick()
+    composeTestRule.onNodeWithTag("Vehicle 1").performClick()
+    composeTestRule.onNodeWithTag("Problem Field").performTextInput("Problem 1")
+    composeTestRule.onNodeWithTag("Add Vehicle Problem Button").performClick()
+
     composeTestRule.onNodeWithTag("Submit Button").performClick()
   }
 }
