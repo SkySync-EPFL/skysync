@@ -8,6 +8,7 @@ import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -15,42 +16,66 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ch.epfl.skysync.MainActivity
 import ch.epfl.skysync.R
+import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.google.firebase.messaging.messaging
 
 class notificationReceiver : FirebaseMessagingService() {
 
     // [START receive_message]
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Log.d(TAG, "From: ${remoteMessage.from}")
+        super.onMessageReceived(remoteMessage)
 
-        // Check if message contains a data payload.
+        // Check if the message contains data payload.
         if (remoteMessage.data.isNotEmpty()) {
-            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
-
-            // Check if data needs to be processed by long running job
-            if (needsToBeScheduled()) {
-                // For long-running tasks (10 seconds or more) use WorkManager.
-                scheduleJob()
-            } else {
-                // Handle message within 10 seconds
-                handleNow()
-            }
+            // Handle data payload.
+            handleDataMessage(remoteMessage.data)
         }
 
-        // Check if message contains a notification payload.
+        // Check if the message contains notification payload.
         remoteMessage.notification?.let {
-            Log.d(TAG, "Message Notification Body: ${it.body}")
+            // Handle notification payload.
+            handleNotificationMessage(it)
         }
+    }
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
+    private fun handleDataMessage(data: Map<String, String>) {
+        // Handle data payload here.
+        // Example: Extract data from the map and take appropriate action.
+    }
+
+    private fun handleNotificationMessage(notification: RemoteMessage.Notification) {
+        val title = notification.title ?: "No Title"
+        val body = notification.body ?: "No Body"
+
+        // Here you can use the title and body to display a notification to the user,
+        // or perform any other action based on the notification payload.
+
+        // For example, showing a notification using the NotificationManager:
+        showNotification(title, body)
+    }
+    private fun showNotification(title: String, body: String) {
+        // Code to show a notification using NotificationManager goes here.
+        // This code depends on your specific notification implementation.
+        // Below is just a simple example:
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val channel = NotificationChannel("default_channel_id", "Default Channel", NotificationManager.IMPORTANCE_DEFAULT)
+            notificationManager.createNotificationChannel(channel)
+
+        val notificationBuilder = NotificationCompat.Builder(this, "default_channel_id")
+            .setContentTitle(title)
+            .setContentText(body)
+            .setSmallIcon(R.drawable.ic_stat_ic_notification)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(PendingIntent.getActivity(this, 0, Intent(), PendingIntent.FLAG_UPDATE_CURRENT))
+            .setAutoCancel(true)
+
+        notificationManager.notify(0, notificationBuilder.build())
     }
     // [END receive_message]
 
-    private fun needsToBeScheduled() = true
 
     // [START on_new_token]
     /**
@@ -68,26 +93,14 @@ class notificationReceiver : FirebaseMessagingService() {
     }
     // [END on_new_token]
 
-    private fun scheduleJob() {
-        // [START dispatch_job]
-        val work = OneTimeWorkRequest.Builder(MyWorker::class.java)
-            .build()
-        WorkManager.getInstance(this)
-            .beginWith(work)
-            .enqueue()
-        // [END dispatch_job]
-    }
 
-    private fun handleNow() {
-        Log.d(TAG, "Short lived task is done.")
-    }
 
     private fun sendRegistrationToServer(token: String?) {
         // TODO: Implement this method to send token to your app server.
         Log.d(TAG, "sendRegistrationTokenToServer($token)")
     }
 
-    private fun sendNotification(messageBody: String) {
+    private fun sendNotification(messageBody: String,channelId : String) {
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val requestCode = 0
@@ -126,12 +139,16 @@ class notificationReceiver : FirebaseMessagingService() {
 
     companion object {
         private const val TAG = "MyFirebaseMsgService"
-    }
-
-    internal class MyWorker(appContext: Context, workerParams: WorkerParameters) : Worker(appContext, workerParams) {
-        override fun doWork(): Result {
-            // TODO(developer): add long running task here.
-            return Result.success()
         }
+    fun subscribeTopics(topic: String) {
+        Firebase.messaging.subscribeToTopic(topic)
+            .addOnCompleteListener { task ->
+                var msg = "Subscribed"
+                if (!task.isSuccessful) {
+                    msg = "Subscribe failed"
+                }
+                Log.d(TAG, msg)
+                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+            }
     }
 }
