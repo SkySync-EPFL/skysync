@@ -14,12 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ch.epfl.skysync.components.ConfirmAlertDialog
 import ch.epfl.skysync.components.Header
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.Flight
@@ -62,7 +61,7 @@ fun FlightDetailUi(
   var showDialog by remember { mutableStateOf(false) }
 
   if (showDialog) {
-    ConfirmDeletionAlertDialog(
+    ConfirmAlertDialog(
         onDismissRequest = { showDialog = false },
         onConfirmation = {
           showDialog = false
@@ -307,39 +306,4 @@ fun ScrollableBoxWithButton(name: String, content: @Composable () -> Unit) {
       content()
     }
   }
-}
-
-/**
- * Composable that appears when the delete button is clicked.
- *
- * @param onDismissRequest Callback called when the user dismisses the dialog, such as by tapping
- *   outside of it.
- * @param onConfirmation Callback called when the flight has to be deleted
- * @param dialogTitle Title displayed on the Dialog screen
- * @param dialogText Text displayed on the Dialog screen
- */
-@Composable
-fun ConfirmDeletionAlertDialog(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-    dialogText: String,
-) {
-  AlertDialog(
-      modifier = Modifier.testTag("AlertDialog"),
-      title = { Text(text = dialogTitle) },
-      text = { Text(text = dialogText, fontSize = 16.sp) },
-      onDismissRequest = { onDismissRequest() },
-      confirmButton = {
-        TextButton(
-            onClick = { onConfirmation() }, modifier = Modifier.testTag("AlertDialogConfirm")) {
-              Text("Confirm", fontSize = 16.sp)
-            }
-      },
-      dismissButton = {
-        TextButton(
-            onClick = { onDismissRequest() }, modifier = Modifier.testTag("AlertDialogDismiss")) {
-              Text("Dismiss", fontSize = 16.sp)
-            }
-      })
 }

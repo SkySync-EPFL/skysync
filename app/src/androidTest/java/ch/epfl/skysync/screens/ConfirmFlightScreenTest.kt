@@ -1,4 +1,4 @@
-package ch.epfl.skysync
+package ch.epfl.skysync.screens
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.hasTestTag
@@ -12,6 +12,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
+import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.flight.Flight
@@ -78,8 +79,8 @@ class ConfirmFlightScreenTest {
       composeTestRule.waitUntil(2500) {
         composeTestRule.onAllNodesWithText("Balloon").fetchSemanticsNodes().isNotEmpty()
       }
-      composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Enter Remark"))
 
+      composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Enter Remark"))
       composeTestRule.onNodeWithText("Confirm").assertDoesNotExist()
 
       val setTime = composeTestRule.onAllNodesWithText("Set Time")
@@ -88,6 +89,9 @@ class ConfirmFlightScreenTest {
       }
       composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
       composeTestRule.onNodeWithText("Confirm").performClick()
+      composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
+      route = navController.currentBackStackEntry?.destination?.route
+      Assert.assertEquals(Route.HOME, route)
     }
   }
 }

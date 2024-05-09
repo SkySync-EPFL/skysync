@@ -54,15 +54,49 @@ fun Confirmation(plannedFlight: PlannedFlight, confirmClick: (ConfirmedFlight) -
   val date: LocalDate = plannedFlight.date
   val timeSlot = plannedFlight.timeSlot
   val vehicles: List<Vehicle> = plannedFlight.vehicles
-
+  val meetupLocationPassenger = "Nancy"
   val remarks: List<String> = emptyList()
   val meetupTimeTeam = LocalTime.now()
   val departureTimeTeam = meetupTimeTeam.plusHours(1)
   val meetupTimePassenger = departureTimeTeam.plusHours(1)
-  val meetupLocationPassenger = "Nancy"
+  var location: String = meetupLocationPassenger
+
+  var selectedTeamColor by remember { mutableStateOf(FlightColor.NO_COLOR) }
+  var selectedTeamMeetupTime by remember { mutableStateOf<LocalTime?>(null) }
+  var selectedDepartureTime by remember { mutableStateOf<LocalTime?>(null) }
+  var selectedPassengersMeetupTime by remember { mutableStateOf<LocalTime?>(null) }
+  var remarkList: List<String> = remarks
+
+  val options =
+      listOf(
+          FlightColor.RED,
+          FlightColor.BLUE,
+          FlightColor.ORANGE,
+          FlightColor.YELLOW,
+          FlightColor.PINK,
+          FlightColor.NO_COLOR)
 
   val fontSize = 17.sp
+  var showDialog by remember { mutableStateOf(false) }
 
+  if (showDialog) {
+    ConfirmAlertDialog(
+        onDismissRequest = { showDialog = false },
+        onConfirmation = {
+          showDialog = false
+          confirmClick(
+              plannedFlight.confirmFlight(
+                  meetupTimeTeam = selectedTeamMeetupTime!!,
+                  departureTimeTeam = selectedDepartureTime!!,
+                  meetupTimePassenger = selectedPassengersMeetupTime!!,
+                  meetupLocationPassenger = location,
+                  remarks = remarkList,
+                  color = selectedTeamColor))
+        },
+        dialogTitle = "Confirm Flight",
+        dialogText = "Are you sure you want to confirm this flight ?",
+    )
+  }
   LazyColumn(Modifier.testTag("LazyList")) {
     item {
       Text(
@@ -101,16 +135,7 @@ fun Confirmation(plannedFlight: PlannedFlight, confirmClick: (ConfirmedFlight) -
           fontSize = 20.sp,
           fontWeight = FontWeight.Bold,
           textAlign = TextAlign.Center)
-      // color choosing:
-      var selectedOption by remember { mutableStateOf(FlightColor.NO_COLOR) }
-      val options =
-          listOf(
-              FlightColor.RED,
-              FlightColor.BLUE,
-              FlightColor.ORANGE,
-              FlightColor.YELLOW,
-              FlightColor.PINK,
-              FlightColor.NO_COLOR)
+
       Row() {
         Column(Modifier.fillMaxWidth(0.5f)) {
           Spacer(modifier = Modifier.height(5.dp))
@@ -125,25 +150,23 @@ fun Confirmation(plannedFlight: PlannedFlight, confirmClick: (ConfirmedFlight) -
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
               OptionSelector(
-                  options = options, onOptionSelected = { option -> selectedOption = option })
+                  options = options, onOptionSelected = { option -> selectedTeamColor = option })
             }
       }
 
-      // meetup time :
       Text(
           modifier = Modifier.fillMaxWidth(),
           text = "MeetUp time",
           fontSize = fontSize,
           fontWeight = FontWeight.Bold,
           textAlign = TextAlign.Center)
-      var selectedTime by remember { mutableStateOf<LocalTime?>(null) }
 
       Column(
           modifier = Modifier.padding(2.dp),
       ) {
-        TimePicker({ time -> selectedTime = time }, LocalTime.now(), 65.dp, "MeetUp")
+        TimePicker({ time -> selectedTeamMeetupTime = time }, LocalTime.now(), 65.dp, "MeetUp")
 
-        selectedTime?.let { time ->
+        selectedTeamMeetupTime?.let { time ->
           Text(
               text = "Selected Time: ${time.format(DateTimeFormatter.ofPattern("HH:mm"))}",
               fontSize = 16.sp)
@@ -156,14 +179,14 @@ fun Confirmation(plannedFlight: PlannedFlight, confirmClick: (ConfirmedFlight) -
           fontSize = fontSize,
           fontWeight = FontWeight.Bold,
           textAlign = TextAlign.Center)
-      var selectedTime1 by remember { mutableStateOf<LocalTime?>(null) }
 
       Column(
           modifier = Modifier.padding(2.dp),
       ) {
-        TimePicker({ time -> selectedTime1 = time }, meetupTimePassenger, 65.dp, "Departure")
+        TimePicker(
+            { time -> selectedDepartureTime = time }, meetupTimePassenger, 65.dp, "Departure")
 
-        selectedTime1?.let { time ->
+        selectedDepartureTime?.let { time ->
           Text(
               text = "Selected Time: ${time.format(DateTimeFormatter.ofPattern("HH:mm"))}",
               fontSize = 16.sp)
@@ -176,21 +199,20 @@ fun Confirmation(plannedFlight: PlannedFlight, confirmClick: (ConfirmedFlight) -
           fontSize = fontSize,
           fontWeight = FontWeight.Bold,
           textAlign = TextAlign.Center)
-      var selectedTime2 by remember { mutableStateOf<LocalTime?>(null) }
 
       Column(
           modifier = Modifier.padding(2.dp),
       ) {
-        TimePicker({ time -> selectedTime2 = time }, meetupTimeTeam, 65.dp, "MeetUp pass.")
+        TimePicker(
+            { time -> selectedPassengersMeetupTime = time }, meetupTimeTeam, 65.dp, "MeetUp pass.")
 
-        selectedTime2?.let { time ->
+        selectedPassengersMeetupTime?.let { time ->
           Text(
               text = "Selected Time: ${time.format(DateTimeFormatter.ofPattern("HH:mm"))}",
               fontSize = 16.sp)
         }
       }
       // meetUp location:
-      var location: String = meetupLocationPassenger
       val keyboardController = LocalSoftwareKeyboardController.current
       Column(
           modifier = Modifier.padding(2.dp),
@@ -203,8 +225,7 @@ fun Confirmation(plannedFlight: PlannedFlight, confirmClick: (ConfirmedFlight) -
               (keyboardController)?.hide()
             })
       }
-      // remark adding
-      var remarkList: List<String> = remarks
+
       Column(
           modifier = Modifier.padding(2.dp),
       ) {
@@ -216,21 +237,13 @@ fun Confirmation(plannedFlight: PlannedFlight, confirmClick: (ConfirmedFlight) -
               }
             })
       }
-      if (selectedTime != null && selectedTime1 != null && selectedTime2 != null) {
-
+      if (selectedTeamMeetupTime != null &&
+          selectedDepartureTime != null &&
+          selectedPassengersMeetupTime != null) {
         Box(modifier = Modifier.fillMaxWidth().padding(2.dp), contentAlignment = Alignment.Center) {
           ClickButton(
               text = "Confirm",
-              onClick = {
-                confirmClick(
-                    plannedFlight.confirmFlight(
-                        meetupTimeTeam = selectedTime!!,
-                        departureTimeTeam = selectedTime1!!,
-                        meetupTimePassenger = selectedTime2!!,
-                        meetupLocationPassenger = location,
-                        remarks = remarkList,
-                        color = selectedOption))
-              },
+              onClick = { showDialog = true },
               modifier = Modifier.fillMaxWidth(0.7f).testTag("ConfirmThisFlightButton"),
               color = Color.Green)
         }
