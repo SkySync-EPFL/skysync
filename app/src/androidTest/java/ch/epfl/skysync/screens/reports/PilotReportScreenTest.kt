@@ -32,7 +32,7 @@ class PilotReportScreenTest {
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(repository, navController, dbs.pilot1.id)
       }
-      navController.navigate(Route.PILOT_REPORT + "/testID")
+      navController.navigate(Route.PILOT_REPORT)
     }
   }
 
@@ -41,39 +41,48 @@ class PilotReportScreenTest {
     composeTestRule
         .onNodeWithTag("Pilot Report LazyColumn")
         .performScrollToNode(hasTestTag("Number of passengers"))
-        .assertExists()
+    composeTestRule.onNodeWithTag("Number of passengers").assertExists()
+
     composeTestRule
         .onNodeWithTag("Pilot Report LazyColumn")
         .performScrollToNode(hasTestTag("Takeoff time"))
-        .assertExists()
+    composeTestRule.onNodeWithTag("Takeoff time").assertExists()
+
     composeTestRule
         .onNodeWithTag("Pilot Report LazyColumn")
         .performScrollToNode(hasTestTag("Takeoff location Search Bar Input"))
-        .assertExists()
+    composeTestRule.onNodeWithTag("Takeoff location Search Bar Input").assertExists()
+
     composeTestRule
         .onNodeWithTag("Pilot Report LazyColumn")
         .performScrollToNode(hasTestTag("Landing time"))
-        .assertExists()
+    composeTestRule.onNodeWithTag("Landing time").assertExists()
+
     composeTestRule
         .onNodeWithTag("Pilot Report LazyColumn")
         .performScrollToNode(hasTestTag("Landing location Search Bar Input"))
-        .assertExists()
+    composeTestRule.onNodeWithTag("Landing location Search Bar Input").assertExists()
+
     composeTestRule
         .onNodeWithTag("Pilot Report LazyColumn")
         .performScrollToNode(hasTestTag("Effective time of start"))
-        .assertExists()
+    composeTestRule.onNodeWithTag("Effective time of start").assertExists()
+
     composeTestRule
         .onNodeWithTag("Pilot Report LazyColumn")
         .performScrollToNode(hasTestTag("Effective time of end"))
-        .assertExists()
+    composeTestRule.onNodeWithTag("Effective time of end").assertExists()
+
     composeTestRule
         .onNodeWithTag("Pilot Report LazyColumn")
         .performScrollToNode(hasTestTag("Pause duration"))
-        .assertExists()
+    composeTestRule.onNodeWithTag("Pause duration").assertExists()
+
     composeTestRule
         .onNodeWithTag("Pilot Report LazyColumn")
         .performScrollToNode(hasTestTag("Comments"))
-        .assertExists()
+    composeTestRule.onNodeWithTag("Comments").assertExists()
+
     composeTestRule.onNodeWithTag("Submit Button").assertExists()
   }
 }

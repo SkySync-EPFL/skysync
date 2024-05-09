@@ -129,7 +129,7 @@ fun VehicleProblemField(
         title = { Text("Add New Member") },
         text = {
           Column {
-            CustomDropDownMenu(
+            TitledDropDownMenu(
                 defaultPadding = defaultPadding,
                 title = "Vehicle",
                 value = selectVehicle,
@@ -142,7 +142,10 @@ fun VehicleProblemField(
                 isError = vehicleNotChosenError,
                 messageError = "Please choose a vehicle")
             Text(
-                modifier = Modifier.fillMaxWidth().testTag("Problem Field"),
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .testTag("Problem Field")
+                        .padding(horizontal = defaultPadding),
                 text = "Problem",
                 style = MaterialTheme.typography.headlineSmall)
             OutlinedTextField(
@@ -190,7 +193,7 @@ fun PauseField(defaultPadding: Dp, pauseDuration: Long, setPauseDuration: (Long)
   val title = "Pause duration"
   // TODO time range picker
   Text(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding).testTag(title),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
       text = title,
       style = MaterialTheme.typography.headlineSmall)
   OutlinedTextField(

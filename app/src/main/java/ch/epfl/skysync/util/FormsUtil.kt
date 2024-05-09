@@ -11,6 +11,14 @@ fun inputValidation(vararg errors: Boolean): Boolean {
   return errors.any { it }
 }
 
+fun nbPassengerInputValidation(nbPassenger: String): Boolean {
+  return nbPassenger.toIntOrNull() != null && nbPassenger.toInt() > 0
+}
+
+fun bottleInputValidation(bottle: String): Boolean {
+  return bottle.toIntOrNull() != null && bottle.toInt() >= 0
+}
+
 /** Useful formatting methods for dates and times */
 fun dateToLocalDate(date: Long): LocalDate {
   return Instant.ofEpochMilli(date).atZone(ZoneId.of("GMT")).toLocalDate()
