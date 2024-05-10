@@ -16,15 +16,23 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ch.epfl.skysync.components.LoadingComponent
+import ch.epfl.skysync.viewmodel.UserGlobalViewModel
 import com.firebase.ui.auth.AuthUI
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(signInLauncher: ActivityResultLauncher<Intent>) {
+fun LoginScreen(
+    userGlobalViewModel: UserGlobalViewModel,
+    signInLauncher: ActivityResultLauncher<Intent>
+) {
+  val isLoading by userGlobalViewModel.isLoading.collectAsStateWithLifecycle()
 
   val providers =
       listOf(
@@ -34,19 +42,23 @@ fun LoginScreen(signInLauncher: ActivityResultLauncher<Intent>) {
   val signInIntent =
       AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers).build()
 
-  Surface(modifier = Modifier.fillMaxSize()) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp).testTag("LoginScreen"),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) {
-          Button(
-              modifier = Modifier.testTag("LoginButton"),
-              onClick = { signInLauncher.launch(signInIntent) }) {
-                Icon(imageVector = Icons.Default.Check, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Sign in with Google")
-              }
-          Text(text = "You need to log in")
-        }
+  if (isLoading) {
+    LoadingComponent(isLoading = true, onRefresh = {}) {}
+  } else {
+    Surface(modifier = Modifier.fillMaxSize()) {
+      Column(
+          modifier = Modifier.fillMaxSize().padding(16.dp).testTag("LoginScreen"),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.Center) {
+            Button(
+                modifier = Modifier.testTag("LoginButton"),
+                onClick = { signInLauncher.launch(signInIntent) }) {
+                  Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                  Spacer(modifier = Modifier.width(8.dp))
+                  Text("Sign in with Google")
+                }
+            Text(text = "You need to log in")
+          }
+    }
   }
 }
