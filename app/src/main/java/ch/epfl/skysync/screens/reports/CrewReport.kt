@@ -31,6 +31,7 @@ import ch.epfl.skysync.components.forms.PauseField
 import ch.epfl.skysync.components.forms.TimePickerField
 import ch.epfl.skysync.components.forms.TitledInputTextField
 import ch.epfl.skysync.components.forms.VehicleProblemField
+import ch.epfl.skysync.components.forms.baseReportFields
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.reports.CrewReport
@@ -146,6 +147,23 @@ fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFligh
               onValueChange = { comments = it },
               padding = defaultPadding)
         }
+        baseReportFields(
+            defaultPadding = defaultPadding,
+            beginTime = beginTime,
+            endTime = endTime,
+            pauseDuration = pauseDuration,
+            flight = flight,
+            onConfirm = { vehicle, problem ->
+              newVehicle = vehicle
+              newProblem = problem
+              addProblem = true
+            },
+            vehicleProblem = vehicleProblem,
+            comments = comments,
+            onBeginTimeChange = { beginTime = it },
+            onEndTimeChange = { endTime = it },
+            onPauseDurationChange = { pauseDuration = it },
+            onComentsChange = { comments = it })
       }
       Divider()
       Button(

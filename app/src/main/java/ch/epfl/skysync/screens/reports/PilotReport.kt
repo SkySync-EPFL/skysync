@@ -5,13 +5,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,10 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.forms.LocationPickerField
-import ch.epfl.skysync.components.forms.PauseField
 import ch.epfl.skysync.components.forms.TimePickerField
 import ch.epfl.skysync.components.forms.TitledInputTextField
-import ch.epfl.skysync.components.forms.VehicleProblemField
+import ch.epfl.skysync.components.forms.baseReportFields
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.reports.PilotReport
@@ -108,47 +104,23 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
           }
         }
 
-        item {
-          val beginTimeTitle = "Effective time of start"
-          TimePickerField(defaultPadding, beginTimeTitle, beginTime) { beginTime = it }
-        }
-
-        item {
-          val endTimeTitle = "Effective time of end"
-          TimePickerField(defaultPadding, endTimeTitle, endTime) { endTime = it }
-        }
-
-        item { PauseField(defaultPadding, pauseDuration) { pauseDuration = it } }
-
-        item {
-          VehicleProblemField(
-              defaultPadding,
-              flight.vehicles,
-              onConfirm = { vehicle, problem ->
-                newVehicle = vehicle
-                newProblem = problem
-                addProblem = true
-              })
-        }
-        items(vehicleProblem.keys.toList()) { vehicle ->
-          Text(
-              modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
-              text = vehicle.name,
-              style = MaterialTheme.typography.headlineSmall)
-          OutlinedTextField(
-              value = vehicleProblem[vehicle] ?: "",
-              onValueChange = { vehicleProblem[vehicle] = it },
-              modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
-          )
-        }
-
-        item {
-          TitledInputTextField(
-              title = "Comments",
-              value = comments,
-              onValueChange = { comments = it },
-              padding = defaultPadding)
-        }
+        baseReportFields(
+            defaultPadding = defaultPadding,
+            beginTime = beginTime,
+            endTime = endTime,
+            pauseDuration = pauseDuration,
+            flight = flight,
+            onConfirm = { vehicle, problem ->
+              newVehicle = vehicle
+              newProblem = problem
+              addProblem = true
+            },
+            vehicleProblem = vehicleProblem,
+            comments = comments,
+            onBeginTimeChange = { beginTime = it },
+            onEndTimeChange = { endTime = it },
+            onPauseDurationChange = { pauseDuration = it },
+            onComentsChange = { comments = it })
       }
       Divider()
       Button(
