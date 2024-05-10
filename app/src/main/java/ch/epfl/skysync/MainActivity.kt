@@ -12,9 +12,8 @@ import ch.epfl.skysync.components.GlobalSnackbarHost
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.MainGraph
 import ch.epfl.skysync.ui.theme.SkySyncTheme
-import ch.epfl.skysync.viewmodel.TimerViewModel
-import ch.epfl.skysync.viewmodel.UserGlobalViewModel
 import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.UserGlobalViewModel
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
@@ -58,7 +57,6 @@ class MainActivity : ComponentActivity() {
               navHostController = navController,
               signInLauncher = signInLauncher,
               userGlobalViewModel = userGlobalViewModel!!,
-              uid = userId.value,
               inFlightsViewModel = inFlightViewModel)
         }
       }
