@@ -1,35 +1,30 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.admin
 
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import ch.epfl.skysync.components.AvailabilityCalendar
 import ch.epfl.skysync.components.FlightCalendar
-import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.ui.theme.lightGray
+import ch.epfl.skysync.screens.crewpilot.CalendarTopBar
 import ch.epfl.skysync.viewmodel.CalendarViewModel
 
 @Composable
-fun CalendarScreen(
+fun AdminCalendarScreen(
     navController: NavHostController,
     calendarType: String,
     viewModel: CalendarViewModel
 ) {
-  val tabs = mapOf(Route.FLIGHT_CALENDAR to 0, Route.AVAILABILITY_CALENDAR to 1)
+  val tabs = mapOf(Route.ADMIN_FLIGHT_CALENDAR to 0, Route.ADMIN_AVAILABILITY_CALENDAR to 1)
   val navBackStackEntry by navController.currentBackStackEntryAsState()
   val currentDestination = navBackStackEntry?.destination
 
@@ -47,9 +42,9 @@ fun CalendarScreen(
           }
         }
       },
-      bottomBar = { BottomBar(navController) }) { padding ->
+      bottomBar = { AdminBottomBar(navController) }) { padding ->
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        if (calendarType == Route.AVAILABILITY_CALENDAR) {
+        if (calendarType == Route.ADMIN_AVAILABILITY_CALENDAR) {
           val availabilityCalendar = uiState.availabilityCalendar
           AvailabilityCalendar(
               padding = padding,
@@ -61,7 +56,7 @@ fun CalendarScreen(
               },
               onSave = { viewModel.saveAvailabilities() },
               onCancel = { Log.d("TO BE IMPLEMENTED", "Cancel in Availabilities") })
-        } else if (calendarType == Route.FLIGHT_CALENDAR) {
+        } else if (calendarType == Route.ADMIN_FLIGHT_CALENDAR) {
           val flightCalendar = uiState.flightGroupCalendar
           FlightCalendar(
               padding = padding,
@@ -69,24 +64,8 @@ fun CalendarScreen(
                 flightCalendar.getFirstFlightByDate(date, time)
               },
               onFlightClick = { selectedFlight ->
-                navController.navigate(Route.FLIGHT_DETAILS + "/${selectedFlight}")
+                navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/${selectedFlight}")
               })
         }
       }
-}
-
-@Composable
-fun CalendarTopBar(tab: String, tabs: Map<String, Int>, onclick: (String) -> Unit) {
-  val tabIndex = tabs[tab]
-  if (tabIndex != null) {
-    TabRow(selectedTabIndex = tabIndex, containerColor = lightGray) {
-      tabs.forEach { (route, index) ->
-        Tab(
-            modifier = Modifier.padding(8.dp).testTag(route),
-            text = { Text(text = route) },
-            selected = tabIndex == index,
-            onClick = { onclick(route) })
-      }
-    }
-  }
 }

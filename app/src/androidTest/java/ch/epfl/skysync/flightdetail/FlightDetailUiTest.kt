@@ -12,11 +12,12 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.components.FlightDetailBottom
+import ch.epfl.skysync.components.FlightDetailUi
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.screens.flightDetail.FlightDetailUi
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
@@ -45,12 +46,14 @@ class FlightDetailUiTest {
     composeTestRule.setContent {
       FlightDetailUi(
           backClick = { navController.popBackStack() },
-          deleteClick = { navController.navigate(Route.HOME) },
+          deleteClick = { navController.navigate(Route.CREW_HOME) },
           editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${dbs.flight1.id}") },
           confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${dbs.flight1.id}") },
           padding = PaddingValues(0.dp),
           flight = dbs.flight1,
-      )
+          bottom = { editClick, confirmClick, deleteClick ->
+            FlightDetailBottom(editClick, confirmClick, deleteClick)
+          })
     }
   }
 
@@ -81,7 +84,7 @@ class FlightDetailUiTest {
     composeTestRule.onNodeWithTag("AlertDialog").assertIsDisplayed()
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
 
-    verify { navController.navigate(Route.HOME) }
+    verify { navController.navigate(Route.CREW_HOME) }
     confirmVerified(navController)
   }
 

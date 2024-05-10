@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -18,8 +19,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ch.epfl.skysync.models.flight.ConfirmedFlight
@@ -28,6 +34,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.ui.theme.Pink40
 import ch.epfl.skysync.ui.theme.lightOrange
+import java.net.URLEncoder
 
 /**
  * Composable function for displaying a UI to confirm flight details.
@@ -96,10 +103,10 @@ fun ConfirmFlightDetailBody(confirmedFlight: ConfirmedFlight) {
             padding = 16.dp,
             title = "Meetup Time Passenger",
             value = confirmedFlight.meetupTimePassenger.toString())
-        TitledText(
+        HyperLinkText(
             padding = 16.dp,
             title = "Meetup Location Passenger",
-            value = confirmedFlight.meetupLocationPassenger)
+            location = confirmedFlight.meetupLocationPassenger)
       }
 }
 /**
@@ -118,6 +125,42 @@ fun ListElementText(text: String, padding: Dp, testTag: String) {
       style = MaterialTheme.typography.bodyLarge,
   )
   Spacer(modifier = Modifier.padding(4.dp))
+}
+
+@Composable
+fun HyperLinkText(title: String, location: String, padding: Dp) {
+  val uriHandler = LocalUriHandler.current
+  val encodedValue = URLEncoder.encode(location, "UTF-8")
+  val googleMapsLink = "https://www.google.com/maps/search/?api=1&query=$encodedValue"
+  val string = buildAnnotatedString {
+    pushStringAnnotation(tag = "URL", annotation = googleMapsLink)
+    withStyle(
+        style =
+            SpanStyle(
+                color = MaterialTheme.colorScheme.primary,
+                textDecoration = TextDecoration.Underline)) {
+          append(location)
+        }
+    pop()
+  }
+  Text(
+      modifier = Modifier.fillMaxWidth().padding(horizontal = padding).testTag(title + location),
+      text = title,
+      style = MaterialTheme.typography.headlineSmall,
+      color = Color.Black)
+  Spacer(modifier = Modifier.padding(4.dp))
+
+  ClickableText(
+      text = string,
+      modifier = Modifier.padding(horizontal = padding.plus(4.dp)).testTag(title),
+      style = MaterialTheme.typography.bodyLarge,
+      onClick = { offset ->
+        string.getStringAnnotations(tag = "URL", start = offset, end = offset).firstOrNull()?.let {
+            stringAnnotation ->
+          uriHandler.openUri(stringAnnotation.item)
+        }
+      })
+  Spacer(modifier = Modifier.padding(12.dp))
 }
 /**
  * Composable function for displaying team details.
