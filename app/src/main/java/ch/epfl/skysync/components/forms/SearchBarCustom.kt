@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun <T> SearchBarCustom(
+    title: String = "",
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
@@ -48,39 +49,44 @@ fun <T> SearchBarCustom(
   val animatedHeight by animateDpAsState(targetValue = height, label = "")
   val keyboardController = LocalSoftwareKeyboardController.current
   LaunchedEffect(active) { height = if (active) 300.dp else 90.dp }
-  Column(modifier = Modifier.fillMaxWidth().height(animatedHeight).padding(16.dp)) {
-    OutlinedTextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier =
-            Modifier.fillMaxWidth()
-                .focusRequester(focusRequester)
-                .onFocusChanged { focusState -> onActiveChange(focusState.isFocused) }
-                .testTag("Search Bar Input"),
-        singleLine = true,
-        placeholder = { Text(text = placeholder) },
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-        keyboardActions =
-            KeyboardActions(
-                onSearch = {
-                  onSearch(query)
-                  keyboardController?.hide()
-                  focusRequester.freeFocus()
-                }))
-    Spacer(modifier = Modifier.height(16.dp))
-    if (active) {
-      LazyColumn(modifier = Modifier.fillMaxSize().weight(1f).testTag("Search Propositions")) {
-        items(propositions) { proposition ->
-          Box(modifier = Modifier.fillMaxWidth().clickable { onElementClick(proposition) }) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = showProposition(proposition),
-                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 16.dp))
+  Column(
+      modifier =
+          Modifier.fillMaxWidth()
+              .height(animatedHeight)
+              .padding(bottom = 16.dp, start = 16.dp, end = 16.dp)) {
+        OutlinedTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            modifier =
+                Modifier.fillMaxWidth()
+                    .focusRequester(focusRequester)
+                    .onFocusChanged { focusState -> onActiveChange(focusState.isFocused) }
+                    .testTag("$title Search Bar Input"),
+            singleLine = true,
+            placeholder = { Text(text = placeholder) },
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+            keyboardActions =
+                KeyboardActions(
+                    onSearch = {
+                      onSearch(query)
+                      keyboardController?.hide()
+                      focusRequester.freeFocus()
+                    }))
+        Spacer(modifier = Modifier.height(16.dp))
+        if (active) {
+          LazyColumn(modifier = Modifier.fillMaxSize().weight(1f).testTag("Search Propositions")) {
+            items(propositions) { proposition ->
+              Box(modifier = Modifier.fillMaxWidth().clickable { onElementClick(proposition) }) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = showProposition(proposition),
+                    modifier =
+                        Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 16.dp))
+              }
+            }
           }
         }
       }
-    }
-  }
 }
 
 @Preview

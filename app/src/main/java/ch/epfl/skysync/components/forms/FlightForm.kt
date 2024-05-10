@@ -58,6 +58,9 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.User
+import ch.epfl.skysync.util.hasNoError
+import ch.epfl.skysync.util.inputNonNullValidation
+import ch.epfl.skysync.util.nbPassengerInputValidation
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -307,9 +310,9 @@ fun FlightForm(
         Button(
             modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("$title Button"),
             onClick = {
-              nbPassengersValueError = nbPassengerInputValidation(nbPassengersValue.value)
-              flightTypeValueError = flightTypeInputValidation(flightTypeValue)
-              isError = inputValidation(nbPassengersValueError, flightTypeValueError)
+              nbPassengersValueError = !nbPassengerInputValidation(nbPassengersValue.value)
+              flightTypeValueError = !inputNonNullValidation(flightTypeValue)
+              isError = hasNoError(nbPassengersValueError, flightTypeValueError)
               if (!isError) {
                 val allRoles = teamMembers.toList() + specialRoles
                 val team = Team(allRoles)
@@ -379,18 +382,6 @@ fun DatePickerField(
           String.format(
               "%02d/%02d/%04d", dateValue.dayOfMonth, dateValue.monthValue, dateValue.year),
       onValueChange = {})
-}
-
-fun nbPassengerInputValidation(nbPassengersValue: String): Boolean {
-  return nbPassengersValue.isEmpty() || nbPassengersValue.toInt() <= 0
-}
-
-fun flightTypeInputValidation(flightTypeValue: FlightType?): Boolean {
-  return flightTypeValue == null
-}
-
-fun inputValidation(nbPassengersValueError: Boolean, flightTypeValueError: Boolean): Boolean {
-  return nbPassengersValueError || flightTypeValueError
 }
 
 @Composable

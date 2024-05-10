@@ -1,6 +1,5 @@
 package ch.epfl.skysync.screens
 
-import android.location.Location
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
@@ -20,9 +19,11 @@ import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.screens.admin.FlightHistoryScreen
+import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalTime
+import java.util.Date
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -43,10 +44,12 @@ class FlightHistoryScreenTest {
               timeSlot = TimeSlot.AM,
               vehicles = emptyList(),
               flightTime = 0L,
-              takeOffTime = LocalTime.now(),
-              landingTime = LocalTime.now(),
-              takeOffLocation = Location("Lausanne 1"),
-              landingLocation = Location("Lausanne")),
+              takeOffTime = Date.from(Instant.now()),
+              landingTime = Date.from(Instant.now()),
+              takeOffLocation =
+                  LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),
+              landingLocation =
+                  LocationPoint(time = 0, latitude = 1.0, longitude = 1.0, name = "test1_value2")),
           FinishedFlight(
               id = UNSET_ID,
               nPassengers = 0,
@@ -58,10 +61,12 @@ class FlightHistoryScreenTest {
               timeSlot = TimeSlot.AM,
               vehicles = emptyList(),
               flightTime = 0L,
-              takeOffTime = LocalTime.now(),
-              landingTime = LocalTime.now(),
-              takeOffLocation = Location("Lausanne"),
-              landingLocation = Location("Lausanne")))
+              takeOffTime = Date.from(Instant.now()),
+              landingTime = Date.from(Instant.now()),
+              takeOffLocation =
+                  LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test2"),
+              landingLocation =
+                  LocationPoint(time = 0, latitude = 1.0, longitude = 1.0, name = "test2_value2")))
 
   @Before fun setupHistory() {}
 

@@ -1,6 +1,5 @@
 package ch.epfl.skysync.screens.admin
 
-import android.location.Location
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -71,17 +70,19 @@ import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.ui.theme.veryLightBlue
 import ch.epfl.skysync.ui.theme.veryLightJasmine
 import ch.epfl.skysync.ui.theme.veryLightRed
 import ch.epfl.skysync.ui.theme.veryLightSatin
 import ch.epfl.skysync.ui.theme.veryLightYellow
+import ch.epfl.skysync.util.dateToLocalDate
+import ch.epfl.skysync.util.getFormattedDate
+import ch.epfl.skysync.util.getFormattedTime
 import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import java.util.Date
 
 @Composable
 fun FlightHistoryScreen(
@@ -99,8 +100,8 @@ fun FlightHistoryScreen(
           } else {
             var beginDate: LocalDate? by remember { mutableStateOf(null) }
             var endDate: LocalDate? by remember { mutableStateOf(null) }
-            var beginFlightTime: LocalTime? by remember { mutableStateOf(null) }
-            var endFlightTime: LocalTime? by remember { mutableStateOf(null) }
+            var beginFlightTime: Date? by remember { mutableStateOf(null) }
+            var endFlightTime: Date? by remember { mutableStateOf(null) }
             var flightType: FlightType? by remember { mutableStateOf(null) }
             var showFilters by remember { mutableStateOf(false) }
             if (showFilters) {
@@ -191,10 +192,13 @@ fun HistoryCard(flight: FinishedFlight, modifier: Modifier) {
               Row() {
                 Text(
                     modifier = Modifier.padding(horizontal = 10.dp),
-                    text = flight.takeOffTime.format(DateTimeFormatter.ofPattern("HH:mm")))
+                    text = getFormattedTime(flight.takeOffTime))
                 Text(
                     modifier = Modifier.padding(horizontal = 10.dp),
-                    text = flight.takeOffLocation.provider.toString())
+                    text =
+                        flight.takeOffLocation.name.ifEmpty {
+                          flight.takeOffLocation.latlng().toString()
+                        })
               }
             }
             Divider(Modifier.fillMaxHeight().width(1.dp), color = Color.DarkGray)
@@ -206,10 +210,13 @@ fun HistoryCard(flight: FinishedFlight, modifier: Modifier) {
               Row {
                 Text(
                     modifier = Modifier.padding(horizontal = 10.dp),
-                    text = flight.landingTime.format(DateTimeFormatter.ofPattern("HH:mm")))
+                    text = getFormattedTime(flight.landingTime))
                 Text(
                     modifier = Modifier.padding(horizontal = 10.dp),
-                    text = flight.landingLocation.provider.toString())
+                    text =
+                        flight.landingLocation.name.ifEmpty {
+                          flight.landingLocation.latlng().toString()
+                        })
               }
             }
           }
@@ -221,13 +228,13 @@ fun HistoryCard(flight: FinishedFlight, modifier: Modifier) {
 @Composable
 fun FiltersMenu(
     onDismissRequest: () -> Unit,
-    onConfirmRequest: (LocalDate?, LocalDate?, LocalTime?, LocalTime?, FlightType?) -> Unit,
+    onConfirmRequest: (LocalDate?, LocalDate?, Date?, Date?, FlightType?) -> Unit,
 ) {
   var showRangeDatePicker by remember { mutableStateOf(false) }
   var beginDate: LocalDate? by remember { mutableStateOf(null) }
   var endDate: LocalDate? by remember { mutableStateOf(null) }
-  var beginFlightTime: LocalTime? by remember { mutableStateOf(null) }
-  var endFlightTime: LocalTime? by remember { mutableStateOf(null) }
+  var beginFlightTime: Date? by remember { mutableStateOf(null) }
+  var endFlightTime: Date? by remember { mutableStateOf(null) }
   var flightType: FlightType? by remember { mutableStateOf(null) }
   AlertDialog(
       modifier = Modifier.fillMaxWidth().testTag("Filter Menu"),
@@ -360,18 +367,6 @@ fun dateValidator(): (Long) -> Boolean {
   }
 }
 
-fun dateToLocalDate(date: Long): LocalDate {
-  return Instant.ofEpochMilli(date).atZone(ZoneId.of("GMT")).toLocalDate()
-}
-
-fun getFormattedDate(date: LocalDate?): String {
-  return date?.format(DateTimeFormatter.ofPattern("dd/MM/yy")) ?: "--/--/--"
-}
-
-fun getFormattedTime(time: LocalTime?): String {
-  return time?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "--:--"
-}
-
 /** Search bar for flights with the location of the flight as filter */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -404,8 +399,10 @@ fun FlightSearchBar(modifier: Modifier, onSearch: (String) -> Unit, results: Lis
           items(results) { flight ->
             ListItem(
                 headlineContent = {
-                  Text("take off : ${flight.takeOffLocation.provider.toString()}")
-                  Text("landing : ${flight.landingLocation.provider.toString()}")
+                  Text(
+                      "take off : ${flight.takeOffLocation.name.ifEmpty { flight.takeOffLocation.latlng().toString()}}")
+                  Text(
+                      "landing : ${flight.landingLocation.name.ifEmpty { flight.landingLocation.latlng().toString()}}")
                 })
           }
         }
@@ -469,10 +466,12 @@ fun FlightHistoryScreenPreview() {
             timeSlot = TimeSlot.AM,
             vehicles = emptyList(),
             flightTime = 0L,
-            takeOffTime = LocalTime.now(),
-            landingTime = LocalTime.now(),
-            takeOffLocation = Location("Lausanne"),
-            landingLocation = Location("Lausanne")),
+            takeOffTime = Date.from(Instant.now()),
+            landingTime = Date.from(Instant.now()),
+            takeOffLocation =
+                LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),
+            landingLocation =
+                LocationPoint(time = 50, latitude = 1.0, longitude = 1.0, name = "test1_value2")),
         FinishedFlight(
             id = UNSET_ID,
             nPassengers = 0,
@@ -484,10 +483,12 @@ fun FlightHistoryScreenPreview() {
             timeSlot = TimeSlot.AM,
             vehicles = emptyList(),
             flightTime = 0L,
-            takeOffTime = LocalTime.now(),
-            landingTime = LocalTime.now(),
-            takeOffLocation = Location("Lausanne"),
-            landingLocation = Location("Lausanne")))
+            takeOffTime = Date.from(Instant.now()),
+            landingTime = Date.from(Instant.now()),
+            takeOffLocation =
+                LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test2"),
+            landingLocation =
+                LocationPoint(time = 50, latitude = 1.0, longitude = 1.0, name = "test2_value2")))
   }
   FlightHistoryScreen(navController = rememberNavController(), allFlights = allFlights)
 }
