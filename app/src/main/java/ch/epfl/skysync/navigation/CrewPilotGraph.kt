@@ -43,7 +43,7 @@ fun NavGraphBuilder.crewPilotGraph(
     repository: Repository,
     navController: NavHostController,
     uid: String?,
-    timer: TimerViewModel? = null
+    locationViewModel: LocationViewModel? = null
 ) {
   navigation(startDestination = Route.CREW_HOME, route = Route.CREW_PILOT) {
     personalCalendar(repository, navController, uid)
@@ -99,8 +99,11 @@ fun NavGraphBuilder.crewPilotGraph(
       ChatScreen(navController, chatViewModel)
     }
     composable(Route.FLIGHT) {
-      val locationViewModel = LocationViewModel.createViewModel(uid!!, repository)
-      FlightScreen(navController, timer!!, locationViewModel, uid)
+        if (locationViewModel!!.userId == null) {
+            locationViewModel.userId = uid!!
+        }
+        locationViewModel.refreshPersonalFlights()
+        FlightScreen(navController, locationViewModel, uid!!)
     }
     composable(Route.PILOT_REPORT) {
       // TODO remove when done with viewModel

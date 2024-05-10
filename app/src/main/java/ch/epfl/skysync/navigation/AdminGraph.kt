@@ -24,14 +24,14 @@ import ch.epfl.skysync.screens.admin.ModifyFlightScreen
 import ch.epfl.skysync.screens.admin.UserManagementScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
+import ch.epfl.skysync.viewmodel.LocationViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
-import ch.epfl.skysync.viewmodel.TimerViewModel
 
 fun NavGraphBuilder.adminGraph(
     repository: Repository,
     navController: NavHostController,
     uid: String?,
-    timer: TimerViewModel? = null
+    locationViewModel: LocationViewModel? = null
 ) {
   navigation(startDestination = Route.ADMIN_HOME, route = Route.ADMIN) {
     adminpersonalCalendar(repository, navController, uid)
