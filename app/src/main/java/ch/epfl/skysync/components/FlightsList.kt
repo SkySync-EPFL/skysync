@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,7 +63,9 @@ fun FlightsList(
           }
     } else {
       // Display the flights in a LazyColumn if the list is not empty
-      LazyColumn { items(flights) { flight -> FlightCard(flight, onFlightClick) } }
+      LazyColumn(modifier = Modifier.testTag("HomeLazyList")) {
+        items(flights) { flight -> FlightCard(flight, onFlightClick) }
+      }
     }
   }
 }
