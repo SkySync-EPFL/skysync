@@ -109,7 +109,7 @@ private fun DisplayModeToggleButton(
         ) {
           Icon(
               painter = painterResource(id = R.drawable.baseline_keyboard_24),
-              contentDescription = "",
+              contentDescription = "Switch keyboard input",
           )
         }
     DisplayMode.Input ->
@@ -119,7 +119,7 @@ private fun DisplayModeToggleButton(
         ) {
           Icon(
               painter = painterResource(id = R.drawable.baseline_schedule_24),
-              contentDescription = "",
+              contentDescription = "Switch time picker",
           )
         }
   }

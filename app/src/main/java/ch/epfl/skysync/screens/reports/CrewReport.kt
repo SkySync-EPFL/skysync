@@ -22,9 +22,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.CustomTopAppBar
+import ch.epfl.skysync.components.forms.ModifyVehicleProblem
 import ch.epfl.skysync.components.forms.TitledInputTextField
-import ch.epfl.skysync.components.forms.reports.ModifyVehicleProblem
-import ch.epfl.skysync.components.forms.reports.baseReportFields
+import ch.epfl.skysync.components.forms.baseReportFields
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.reports.CrewReport
@@ -32,7 +32,7 @@ import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.util.bottleInputValidation
-import ch.epfl.skysync.util.inputValidation
+import ch.epfl.skysync.util.hasNoError
 
 @Composable
 fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFlight, crew: Crew) {
@@ -121,7 +121,7 @@ fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFligh
             errorLittleChampagne = !bottleInputValidation(littleChampagne)
             errorBigChampagne = !bottleInputValidation(bigChampagne)
             errorPrestigeChampagne = !bottleInputValidation(prestigeChampagne)
-            if (!inputValidation(errorLittleChampagne, errorBigChampagne, errorPrestigeChampagne)) {
+            if (!hasNoError(errorLittleChampagne, errorBigChampagne, errorPrestigeChampagne)) {
               val vehicleProblems = vehicleProblem.toMap()
               CrewReport(
                   author = crew,

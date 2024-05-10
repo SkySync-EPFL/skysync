@@ -58,8 +58,8 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.User
+import ch.epfl.skysync.util.hasNoError
 import ch.epfl.skysync.util.inputNonNullValidation
-import ch.epfl.skysync.util.inputValidation
 import ch.epfl.skysync.util.nbPassengerInputValidation
 import java.time.Instant
 import java.time.LocalDate
@@ -312,7 +312,7 @@ fun FlightForm(
             onClick = {
               nbPassengersValueError = !nbPassengerInputValidation(nbPassengersValue.value)
               flightTypeValueError = !inputNonNullValidation(flightTypeValue)
-              isError = inputValidation(nbPassengersValueError, flightTypeValueError)
+              isError = hasNoError(nbPassengersValueError, flightTypeValueError)
               if (!isError) {
                 val allRoles = teamMembers.toList() + specialRoles
                 val team = Team(allRoles)

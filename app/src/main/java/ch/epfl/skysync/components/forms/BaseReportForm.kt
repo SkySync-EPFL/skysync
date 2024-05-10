@@ -1,4 +1,4 @@
-package ch.epfl.skysync.components.forms.reports
+package ch.epfl.skysync.components.forms
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,10 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import ch.epfl.skysync.components.forms.PauseField
-import ch.epfl.skysync.components.forms.TimePickerField
-import ch.epfl.skysync.components.forms.TitledInputTextField
-import ch.epfl.skysync.components.forms.VehicleProblemField
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Vehicle
 import java.util.Date

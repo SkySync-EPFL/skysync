@@ -24,17 +24,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.forms.LocationPickerField
+import ch.epfl.skysync.components.forms.ModifyVehicleProblem
 import ch.epfl.skysync.components.forms.TimePickerField
 import ch.epfl.skysync.components.forms.TitledInputTextField
-import ch.epfl.skysync.components.forms.reports.ModifyVehicleProblem
-import ch.epfl.skysync.components.forms.reports.baseReportFields
+import ch.epfl.skysync.components.forms.baseReportFields
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.reports.PilotReport
 import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
-import ch.epfl.skysync.util.inputValidation
+import ch.epfl.skysync.util.hasNoError
 import ch.epfl.skysync.util.nbPassengerInputValidation
 import java.time.Instant
 import java.util.Date
@@ -128,7 +128,7 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
           colors = ButtonDefaults.buttonColors(containerColor = lightOrange),
           onClick = {
             errorPax = !nbPassengerInputValidation(pax)
-            if (!inputValidation(errorPax)) {
+            if (!hasNoError(errorPax)) {
               val vehicleProblems = vehicleProblem.toMap()
               PilotReport(
                   author = pilot,
