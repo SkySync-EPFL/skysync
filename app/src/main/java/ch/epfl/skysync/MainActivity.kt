@@ -50,7 +50,6 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
         Scaffold(snackbarHost = { GlobalSnackbarHost() }) {
           userGlobalViewModel = UserGlobalViewModel.createViewModel(repository)
-          val timerVm = TimerViewModel.createViewModel() // is shared between all screens
           val inFlightViewModel =
               LocationViewModel.createViewModel(
                   repository = repository) // is shared between all screens
