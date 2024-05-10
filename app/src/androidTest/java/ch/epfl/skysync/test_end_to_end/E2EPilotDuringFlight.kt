@@ -2,6 +2,7 @@ package ch.epfl.skysync.test_end_to_end
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
@@ -20,8 +21,8 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.viewmodel.ChatViewModel
+import ch.epfl.skysync.viewmodel.LocationViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
-import ch.epfl.skysync.viewmodel.TimerViewModel
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
@@ -40,6 +41,7 @@ class E2EPilotDuringFlight {
   private val repository = Repository(db)
   private lateinit var messageListenerSharedViewModel: MessageListenerSharedViewModel
   private lateinit var chatViewModel: ChatViewModel
+  private lateinit var inFlightViewModel: LocationViewModel
 
   @Before
   fun setUpNavHost() = runTest {
@@ -51,9 +53,9 @@ class E2EPilotDuringFlight {
           ChatViewModel.createViewModel(dbs.pilot1.id, messageListenerSharedViewModel, repository)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      val t = TimerViewModel.createViewModel()
+      inFlightViewModel = LocationViewModel.createViewModel(dbs.pilot1.id, repository)
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.pilot1.id, t)
+        homeGraph(repository, navController, dbs.pilot1.id, inFlightViewModel)
       }
     }
     composeTestRule.waitUntil {
@@ -68,14 +70,23 @@ class E2EPilotDuringFlight {
       // Refreshes chat and user data asynchronously
       chatViewModel.refresh().join()
       chatViewModel.refreshUser().join()
+      inFlightViewModel.refreshPersonalFlights().join()
 
       // Clicks on the "Flight" button to navigate to the flight screen
       composeTestRule.onNodeWithText("Flight").performClick()
       var route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT, route)
+      var usedFlightId = ""
+      for (f in listOf(dbs.flight1, dbs.flight2, dbs.flight3, dbs.flight4)) {
+        if (composeTestRule.onNodeWithTag("flightCard${f.id}").isDisplayed()) {
+          usedFlightId = f.id
+          break
+        }
+      }
+      composeTestRule.onNodeWithTag("flightCard${usedFlightId}").performClick()
 
       // Asserts the presence of the timer
-      composeTestRule.onNodeWithTag("Timer").assertExists()
+      composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
 
       // Starts the timer by clicking on the "Start Button"
       composeTestRule.onNodeWithTag("Start Button").performClick()
