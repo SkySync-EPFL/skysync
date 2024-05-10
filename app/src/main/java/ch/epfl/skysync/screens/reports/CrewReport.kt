@@ -106,47 +106,6 @@ fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFligh
               messageError = if (errorPrestigeChampagne) "Please enter a number" else "")
         }
 
-        item {
-          val startTimeTitle = "Effective time of start"
-          TimePickerField(defaultPadding, startTimeTitle, takeoffTime) { takeoffTime = it }
-        }
-
-        item {
-          val endTimeTitle = "Effective time of end"
-          TimePickerField(defaultPadding, endTimeTitle, landingTime) { landingTime = it }
-        }
-
-        item { PauseField(defaultPadding, pauseDuration) { pauseDuration = it } }
-
-        item {
-          VehicleProblemField(
-              defaultPadding,
-              flight.vehicles,
-              onConfirm = { vehicle, problem ->
-                newVehicle = vehicle
-                newProblem = problem
-                addProblem = true
-              })
-        }
-        items(vehicleProblem.keys.toList()) { vehicle ->
-          Text(
-              modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
-              text = vehicle.name,
-              style = MaterialTheme.typography.headlineSmall)
-          OutlinedTextField(
-              value = vehicleProblem[vehicle] ?: "",
-              onValueChange = { vehicleProblem[vehicle] = it },
-              modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
-          )
-        }
-
-        item {
-          TitledInputTextField(
-              title = "Comments",
-              value = comments,
-              onValueChange = { comments = it },
-              padding = defaultPadding)
-        }
         baseReportFields(
             defaultPadding = defaultPadding,
             beginTime = beginTime,
