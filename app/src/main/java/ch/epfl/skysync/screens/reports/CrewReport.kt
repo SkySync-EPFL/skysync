@@ -8,11 +8,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.forms.TitledInputTextField
-import ch.epfl.skysync.components.forms.baseReportFields
+import ch.epfl.skysync.components.forms.reports.ModifyVehicleProblem
+import ch.epfl.skysync.components.forms.reports.baseReportFields
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.reports.CrewReport
@@ -34,8 +33,6 @@ import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.util.bottleInputValidation
 import ch.epfl.skysync.util.inputValidation
-import java.time.Instant
-import java.util.Date
 
 @Composable
 fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFlight, crew: Crew) {
@@ -54,18 +51,16 @@ fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFligh
       var newProblem by remember { mutableStateOf("") }
       var newVehicle: Vehicle? by remember { mutableStateOf(null) }
       val vehicleProblem = remember { mutableMapOf<Vehicle, String>() }
-      var takeoffTime by remember { mutableStateOf(Date.from(Instant.now())) }
-      var landingTime by remember { mutableStateOf(Date.from(Instant.now())) }
       var beginTime by remember { mutableStateOf(flight.takeOffTime) }
       var endTime by remember { mutableStateOf(flight.takeOffTime) }
       var pauseDuration by remember { mutableLongStateOf(0L) }
       var comments by remember { mutableStateOf("") }
 
-      LaunchedEffect(addProblem) {
-        if (addProblem) {
-          vehicleProblem[newVehicle!!] = newProblem
-          addProblem = false
-        }
+      ModifyVehicleProblem(addProblem = addProblem, vehicle = newVehicle, problem = newProblem) {
+          vehicle,
+          problem ->
+        vehicleProblem[vehicle] = problem
+        addProblem = false
       }
 
       LazyColumn(modifier = Modifier.fillMaxSize().weight(1f).testTag("Crew Report LazyColumn")) {
@@ -116,9 +111,9 @@ fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFligh
             onBeginTimeChange = { beginTime = it },
             onEndTimeChange = { endTime = it },
             onPauseDurationChange = { pauseDuration = it },
-            onComentsChange = { comments = it })
+            onCommentsChange = { comments = it })
       }
-      Divider()
+
       Button(
           modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("Submit Button"),
           colors = ButtonDefaults.buttonColors(containerColor = lightOrange),
@@ -149,38 +144,3 @@ fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFligh
     }
   }
 }
-
-/*
-@Preview
-@Composable
-fun PreviewCrewReportScreen() {
-  val navController = rememberNavController()
-  val flight =
-      FinishedFlight(
-          id = UNSET_ID,
-          nPassengers = 1,
-          team = Team(Role.initRoles(BASE_ROLES)),
-          flightType = FlightType.HIGH_ALTITUDE,
-          balloon = Balloon("name", BalloonQualification.MEDIUM),
-          basket = Basket("name", true),
-          date = LocalDate.now(),
-          timeSlot = TimeSlot.AM,
-          vehicles = listOf(Vehicle("vehicle1"), Vehicle("vehicle2")),
-          takeOffTime = Date.from(Instant.now()),
-          takeOffLocation =
-              LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),
-          landingTime = Date.from(Instant.now()),
-          landingLocation =
-              LocationPoint(time = 0, latitude = 1.0, longitude = 1.0, name = "test2"),
-          flightTime = 10L)
-  val crew =
-      Crew(
-          "id",
-          "firstname",
-          "lastname",
-          "email",
-          AvailabilityCalendar(),
-          FlightGroupCalendar(),
-          setOf(RoleType.PILOT))
-  CrewReportScreen(navHostController = navController, flight = flight, crew = crew)
-}*/

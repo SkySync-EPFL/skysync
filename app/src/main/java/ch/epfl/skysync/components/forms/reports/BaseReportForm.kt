@@ -1,4 +1,4 @@
-package ch.epfl.skysync.components.forms
+package ch.epfl.skysync.components.forms.reports
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -7,8 +7,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import ch.epfl.skysync.components.forms.PauseField
+import ch.epfl.skysync.components.forms.TimePickerField
+import ch.epfl.skysync.components.forms.TitledInputTextField
+import ch.epfl.skysync.components.forms.VehicleProblemField
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Vehicle
 import java.util.Date
@@ -25,7 +31,7 @@ fun LazyListScope.baseReportFields(
     onBeginTimeChange: (Date) -> Unit,
     onEndTimeChange: (Date) -> Unit,
     onPauseDurationChange: (Long) -> Unit,
-    onComentsChange: (String) -> Unit
+    onCommentsChange: (String) -> Unit
 ) {
   item {
     val beginTimeTitle = "Effective time of start"
@@ -56,7 +62,21 @@ fun LazyListScope.baseReportFields(
     TitledInputTextField(
         title = "Comments",
         value = comments,
-        onValueChange = { onComentsChange(it) },
+        onValueChange = { onCommentsChange(it) },
         padding = defaultPadding)
+  }
+}
+
+@Composable
+fun ModifyVehicleProblem(
+    addProblem: Boolean,
+    vehicle: Vehicle?,
+    problem: String,
+    modify: (Vehicle, String) -> Unit
+) {
+  LaunchedEffect(addProblem) {
+    if (addProblem) {
+      modify(vehicle!!, problem)
+    }
   }
 }

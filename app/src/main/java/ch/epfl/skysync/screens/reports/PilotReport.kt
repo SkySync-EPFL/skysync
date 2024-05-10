@@ -12,7 +12,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +26,8 @@ import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.forms.LocationPickerField
 import ch.epfl.skysync.components.forms.TimePickerField
 import ch.epfl.skysync.components.forms.TitledInputTextField
-import ch.epfl.skysync.components.forms.baseReportFields
+import ch.epfl.skysync.components.forms.reports.ModifyVehicleProblem
+import ch.epfl.skysync.components.forms.reports.baseReportFields
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.reports.PilotReport
@@ -61,11 +61,11 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
       var pauseDuration by remember { mutableLongStateOf(0L) }
       var comments by remember { mutableStateOf("") }
 
-      LaunchedEffect(addProblem) {
-        if (addProblem) {
-          vehicleProblem[newVehicle!!] = newProblem
-          addProblem = false
-        }
+      ModifyVehicleProblem(addProblem = addProblem, vehicle = newVehicle, problem = newProblem) {
+          vehicle,
+          problem ->
+        vehicleProblem[vehicle] = problem
+        addProblem = false
       }
 
       LazyColumn(modifier = Modifier.fillMaxSize().weight(1f).testTag("Pilot Report LazyColumn")) {
@@ -120,7 +120,7 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
             onBeginTimeChange = { beginTime = it },
             onEndTimeChange = { endTime = it },
             onPauseDurationChange = { pauseDuration = it },
-            onComentsChange = { comments = it })
+            onCommentsChange = { comments = it })
       }
       Divider()
       Button(
@@ -153,39 +153,3 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
     }
   }
 }
-
-/*
-@Preview
-@Composable
-fun PilotReportScreenPreview() {
-  val navController = rememberNavController()
-  val flight =
-      FinishedFlight(
-          id = UNSET_ID,
-          nPassengers = 1,
-          team = Team(Role.initRoles(BASE_ROLES)),
-          flightType = FlightType.HIGH_ALTITUDE,
-          balloon = Balloon("name", BalloonQualification.MEDIUM),
-          basket = Basket("name", true),
-          date = LocalDate.now(),
-          timeSlot = TimeSlot.AM,
-          vehicles = listOf(Vehicle("vehicle1"), Vehicle("vehicle2")),
-          takeOffTime = Date.from(Instant.now()),
-          takeOffLocation =
-              LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),
-          landingTime = Date.from(Instant.now()),
-          landingLocation =
-              LocationPoint(time = 0, latitude = 1.0, longitude = 1.0, name = "test2"),
-          flightTime = 10L)
-  val pilot =
-      Pilot(
-          "id",
-          "firstname",
-          "lastname",
-          "email",
-          AvailabilityCalendar(),
-          FlightGroupCalendar(),
-          setOf(RoleType.PILOT),
-          BalloonQualification.MEDIUM)
-  PilotReportScreen(flight, navHostController = navController, pilot)
-}*/
