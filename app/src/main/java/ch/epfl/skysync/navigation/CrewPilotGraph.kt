@@ -35,7 +35,6 @@ import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.LocationViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
-import ch.epfl.skysync.viewmodel.TimerViewModel
 import java.time.LocalDate
 import java.util.Date
 
@@ -99,11 +98,11 @@ fun NavGraphBuilder.crewPilotGraph(
       ChatScreen(navController, chatViewModel)
     }
     composable(Route.FLIGHT) {
-        if (locationViewModel!!.userId == null) {
-            locationViewModel.userId = uid!!
-        }
-        locationViewModel.refreshPersonalFlights()
-        FlightScreen(navController, locationViewModel, uid!!)
+      if (locationViewModel!!.userId == null) {
+        locationViewModel.userId = uid!!
+      }
+      locationViewModel.refreshPersonalFlights()
+      FlightScreen(navController, locationViewModel, uid!!)
     }
     composable(Route.PILOT_REPORT) {
       // TODO remove when done with viewModel
