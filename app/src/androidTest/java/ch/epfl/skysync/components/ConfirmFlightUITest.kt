@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -45,7 +46,7 @@ class ConfirmFlightUITest {
   @Before
   fun setUpNavHost() {
     composeTestRule.setContent {
-      confirmation(plannedFlight.value) { navController.navigate(Route.MAIN) }
+      Confirmation(plannedFlight.value) { navController.navigate(Route.ADMIN_HOME) }
     }
   }
   // test of info to verify by a user
@@ -124,14 +125,14 @@ class ConfirmFlightUITest {
   // test of info to enter by user
   @Test
   fun canColorsBeChoosen() {
-    composeTestRule.onNodeWithText("Select Option").performClick()
+    composeTestRule.onNodeWithText("Select Color").performClick()
     composeTestRule.onNodeWithText("RED").performClick()
     composeTestRule.onNodeWithText("RED").assertIsDisplayed()
   }
 
   @Test
   fun verifyGoodColorChoosing() {
-    composeTestRule.onNodeWithText("Select Option").performClick()
+    composeTestRule.onNodeWithText("Select Color").performClick()
     composeTestRule.onNodeWithText("RED").performClick()
     composeTestRule.onNodeWithText("BLUE").assertIsNotDisplayed()
   }
@@ -142,7 +143,7 @@ class ConfirmFlightUITest {
     val wantedHour = wantedTimeSet.hour
     val wantedMinute = wantedTimeSet.minute
     val tag = "MeetUp"
-    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
+    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("MeetUp (passengers)"))
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextClearance()
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextInput(wantedHour.toString())
     composeTestRule.onNodeWithTag(tag + "/Minutes").performTextClearance()
@@ -160,7 +161,7 @@ class ConfirmFlightUITest {
     val wantedHour = wantedTimeSet.hour
     val wantedMinute = wantedTimeSet.minute
     val tag = "Departure"
-    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
+    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("MeetUp (passengers)"))
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextClearance()
     composeTestRule.onNodeWithTag(tag + "/Hours").performTextInput(wantedHour.toString())
     composeTestRule.onNodeWithTag(tag + "/Minutes").performTextClearance()
@@ -199,27 +200,30 @@ class ConfirmFlightUITest {
   }
 
   @Test
-  fun confirmButtonWorksWhenDismiss() = runTest {
+  fun confirmButtonWorksWhenDismissAndConfirm() = runTest {
     composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
+
+    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Enter Remark"))
+    composeTestRule.onNodeWithText("Confirm").assertDoesNotExist()
+
+    val setTime = composeTestRule.onAllNodesWithText("Set Time")
+    for (i in 0 until setTime.fetchSemanticsNodes().size) {
+      setTime[i].performClick()
+    }
+
     composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
     composeTestRule.onNodeWithText("Confirm").performClick()
     composeTestRule.onNodeWithTag("AlertDialog").assertIsDisplayed()
     composeTestRule.onNodeWithTag("AlertDialogDismiss").performClick()
     composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
 
-    // Test that navigate was not called (the route is not meaningful)
-    verify(exactly = 0) { navController.navigate(Route.MAIN) }
-  }
+    verify(exactly = 0) { navController.navigate(Route.ADMIN_HOME) }
 
-  @Test
-  fun confirmButtonWorksWhenConfirm() = runTest {
-    composeTestRule.onNodeWithTag("AlertDialog").assertIsNotDisplayed()
-    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
     composeTestRule.onNodeWithText("Confirm").performClick()
     composeTestRule.onNodeWithTag("AlertDialog").assertIsDisplayed()
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
 
-    verify { navController.navigate(Route.MAIN) }
+    verify { navController.navigate(Route.ADMIN_HOME) }
     confirmVerified(navController)
   }
 }
