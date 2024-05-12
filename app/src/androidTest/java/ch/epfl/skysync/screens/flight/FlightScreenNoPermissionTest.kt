@@ -11,7 +11,7 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.screens.crewpilot.FlightScreen
-import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -25,10 +25,10 @@ class FlightScreenNoPermissionTest {
     val db = FirestoreDatabase(useEmulator = true)
     val repository = Repository(db)
     composeTestRule.setContent {
-      val locationViewModel = LocationViewModel.createViewModel(dbs.pilot1.id, repository)
+      val inFlightViewModel = InFlightViewModel.createViewModel(dbs.pilot1.id, repository)
       val navController = rememberNavController()
       val uid = dbs.pilot1.id
-      FlightScreen(navController = navController, inFlightViewModel = locationViewModel, uid)
+      FlightScreen(navController = navController, inFlightViewModel = inFlightViewModel, uid)
     }
   }
 

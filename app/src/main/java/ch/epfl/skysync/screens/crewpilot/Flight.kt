@@ -48,7 +48,7 @@ import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.ui.theme.lightViolet
-import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -116,13 +116,13 @@ fun ShowFlightToStart(
 @Composable
 fun FlightScreen(
     navController: NavHostController,
-    inFlightViewModel: LocationViewModel,
+    inFlightViewModel: InFlightViewModel,
     uid: String
 ) {
   val rawTime by inFlightViewModel.rawCounter.collectAsStateWithLifecycle()
   val currentTime by inFlightViewModel.counter.collectAsStateWithLifecycle()
   val flightIsStarted by inFlightViewModel.inFlight.collectAsStateWithLifecycle()
-  val personalFlights by inFlightViewModel.personalFlights.collectAsStateWithLifecycle()
+  val personalFlights by inFlightViewModel.confirmedFlights.collectAsStateWithLifecycle()
   val currentFlightId by inFlightViewModel.flightId.collectAsStateWithLifecycle()
 
   val currentLocations = inFlightViewModel.currentLocations.collectAsState().value

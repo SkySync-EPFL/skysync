@@ -20,6 +20,8 @@ data class ConfirmedFlight(
     val departureTimeTeam: LocalTime,
     val meetupTimePassenger: LocalTime,
     val meetupLocationPassenger: String,
+    val isOngoing: Boolean = false,
+    val startTime: LocalTime? = null,
 ) : Flight {
   override fun getFlightStatus(): FlightStatus {
     return FlightStatus.CONFIRMED

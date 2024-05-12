@@ -21,7 +21,7 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.viewmodel.ChatViewModel
-import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
@@ -41,7 +41,7 @@ class E2EPilotDuringFlight {
   private val repository = Repository(db)
   private lateinit var messageListenerSharedViewModel: MessageListenerSharedViewModel
   private lateinit var chatViewModel: ChatViewModel
-  private lateinit var inFlightViewModel: LocationViewModel
+  private lateinit var inFlightViewModel: InFlightViewModel
 
   @Before
   fun setUpNavHost() = runTest {
@@ -53,7 +53,7 @@ class E2EPilotDuringFlight {
           ChatViewModel.createViewModel(dbs.pilot1.id, messageListenerSharedViewModel, repository)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      inFlightViewModel = LocationViewModel.createViewModel(dbs.pilot1.id, repository)
+      inFlightViewModel = InFlightViewModel.createViewModel(dbs.pilot1.id, repository)
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(repository, navController, dbs.pilot1.id, inFlightViewModel)
       }
@@ -70,7 +70,7 @@ class E2EPilotDuringFlight {
       // Refreshes chat and user data asynchronously
       chatViewModel.refresh().join()
       chatViewModel.refreshUser().join()
-      inFlightViewModel.refreshPersonalFlights().join()
+      inFlightViewModel.refreshFlights().join()
 
       // Clicks on the "Flight" button to navigate to the flight screen
       composeTestRule.onNodeWithText("Flight").performClick()

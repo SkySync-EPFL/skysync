@@ -14,7 +14,7 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.screens.crewpilot.FlightScreen
-import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -23,7 +23,7 @@ import org.junit.Test
 class FlightScreenPermissionTest {
   @get:Rule val composeTestRule = createComposeRule()
 
-  lateinit var locationViewModel: LocationViewModel
+  lateinit var inFlightViewModel: InFlightViewModel
   lateinit var dbs: DatabaseSetup
 
   @get:Rule
@@ -39,12 +39,12 @@ class FlightScreenPermissionTest {
     val repository = Repository(db)
     val uid = dbs.pilot1.id
     composeTestRule.setContent {
-      locationViewModel = LocationViewModel.createViewModel(uid, repository)
+      inFlightViewModel = InFlightViewModel.createViewModel(uid, repository)
       val navController = rememberNavController()
-      FlightScreen(navController, inFlightViewModel = locationViewModel, uid)
+      FlightScreen(navController, inFlightViewModel = inFlightViewModel, uid)
     }
-    locationViewModel.refreshPersonalFlights().join()
-    locationViewModel.setFlightId(dbs.flight1.id)
+    inFlightViewModel.refreshFlights().join()
+    inFlightViewModel.setFlightId(dbs.flight1.id)
   }
 
   @Test

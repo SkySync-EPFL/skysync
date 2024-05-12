@@ -41,6 +41,10 @@ data class FlightSchema(
     val meetupTimePassenger: String? = null,
     /** In: Confirmed flight */
     val meetupLocationPassenger: String? = null,
+    /** In: Confirmed flight */
+    val isOngoing: Boolean? = null,
+    /** In: Confirmed flight */
+    val startTime: String? = null,
 ) : Schema<Flight> {
   override fun toModel(): Flight {
     throw NotImplementedError()
@@ -49,39 +53,49 @@ data class FlightSchema(
   companion object {
     fun fromModel(model: Flight): FlightSchema {
       return when (model) {
-        is PlannedFlight ->
-            FlightSchema(
-                id = model.id,
-                flightTypeId = model.flightType.id,
-                balloonId = model.balloon?.id,
-                basketId = model.basket?.id,
-                vehicleIds = model.vehicles.map { it.id },
-                status = FlightStatus.PLANNED,
-                numPassengers = model.nPassengers,
-                timeSlot = model.timeSlot,
-                date = DateUtility.localDateToDate(model.date),
-            )
-        is ConfirmedFlight ->
-            FlightSchema(
-                id = model.id,
-                flightTypeId = model.flightType.id,
-                balloonId = model.balloon?.id,
-                basketId = model.basket?.id,
-                vehicleIds = model.vehicles.map { it.id },
-                status = FlightStatus.CONFIRMED,
-                numPassengers = model.nPassengers,
-                timeSlot = model.timeSlot,
-                date = DateUtility.localDateToDate(model.date),
-                remarks = model.remarks,
-                color = model.color,
-                meetupTimeTeam = DateUtility.localTimeToString(model.meetupTimeTeam),
-                departureTimeTeam = DateUtility.localTimeToString(model.departureTimeTeam),
-                meetupTimePassenger = DateUtility.localTimeToString(model.meetupTimePassenger),
-                meetupLocationPassenger = model.meetupLocationPassenger,
-            )
+        is PlannedFlight -> fromPlannedFlight(model)
+        is ConfirmedFlight -> fromConfirmedFlight(model)
         else ->
             throw UnsupportedOperationException("Unexpected class ${model.javaClass.simpleName}")
       }
+    }
+
+    private fun fromPlannedFlight(flight: PlannedFlight): FlightSchema {
+      return FlightSchema(
+          id = flight.id,
+          flightTypeId = flight.flightType.id,
+          balloonId = flight.balloon?.id,
+          basketId = flight.basket?.id,
+          vehicleIds = flight.vehicles.map { it.id },
+          status = FlightStatus.PLANNED,
+          numPassengers = flight.nPassengers,
+          timeSlot = flight.timeSlot,
+          date = DateUtility.localDateToDate(flight.date),
+      )
+    }
+
+    private fun fromConfirmedFlight(flight: ConfirmedFlight): FlightSchema {
+      return FlightSchema(
+          id = flight.id,
+          flightTypeId = flight.flightType.id,
+          balloonId = flight.balloon.id,
+          basketId = flight.basket.id,
+          vehicleIds = flight.vehicles.map { it.id },
+          status = FlightStatus.CONFIRMED,
+          numPassengers = flight.nPassengers,
+          timeSlot = flight.timeSlot,
+          date = DateUtility.localDateToDate(flight.date),
+          remarks = flight.remarks,
+          color = flight.color,
+          meetupTimeTeam = DateUtility.localTimeToString(flight.meetupTimeTeam),
+          departureTimeTeam = DateUtility.localTimeToString(flight.departureTimeTeam),
+          meetupTimePassenger = DateUtility.localTimeToString(flight.meetupTimePassenger),
+          meetupLocationPassenger = flight.meetupLocationPassenger,
+          isOngoing = flight.isOngoing,
+          startTime =
+              if (flight.startTime != null) DateUtility.localTimeToString(flight.startTime)
+              else null,
+      )
     }
   }
 }
