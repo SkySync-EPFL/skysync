@@ -52,7 +52,7 @@ fun LaunchFlightUi(pilotBoolean:Boolean,flight: Flight?, paddingValues: PaddingV
                     text = "No flight ready to be launched",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(16.dp),
-                    color = Color.Black
+                    color = Color.Black,
                 )
             } else {
                 FlightCard(flight = flight) {
