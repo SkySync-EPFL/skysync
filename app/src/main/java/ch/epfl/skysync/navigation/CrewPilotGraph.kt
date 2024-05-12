@@ -170,14 +170,17 @@ fun NavGraphBuilder.crewPilotGraph(
               flightTime = 0)
       CrewReportScreen(navController, finishedFlight, crew)
     }
-      composable(Route.LAUNCH_FLIGHT){
-          if (locationViewModel!!.userId == null) {
-              locationViewModel.userId = uid!!
-          }
-          locationViewModel.refreshPersonalFlights()
-          val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
-          flightsViewModel.refresh()
-          LaunchFlight(navController = navController, flightsViewModel =flightsViewModel, inFlightViewModel = locationViewModel)
+    composable(Route.LAUNCH_FLIGHT) {
+      if (locationViewModel!!.userId == null) {
+        locationViewModel.userId = uid!!
       }
+      locationViewModel.refreshPersonalFlights()
+      val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
+      flightsViewModel.refresh()
+      LaunchFlight(
+          navController = navController,
+          flightsViewModel = flightsViewModel,
+          inFlightViewModel = locationViewModel)
+    }
   }
 }

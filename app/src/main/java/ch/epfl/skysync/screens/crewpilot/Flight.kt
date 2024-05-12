@@ -6,10 +6,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -32,22 +30,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import ch.epfl.skysync.components.FlightCard
-import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.components.Timer
-import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.location.UserMetrics
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
-import ch.epfl.skysync.ui.theme.lightViolet
 import ch.epfl.skysync.viewmodel.LocationViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -153,78 +145,76 @@ fun FlightScreen(
       }
     }
   }
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        floatingActionButton = {
-          if (locationPermission.status.isGranted) {
-            Box(
-                modifier =
-                    Modifier.fillMaxSize().padding(start = 32.dp, bottom = 88.dp, top = 100.dp),
-                contentAlignment = Alignment.BottomStart) {
-                  Timer(
-                      Modifier.align(Alignment.TopEnd).testTag("Timer"),
-                      currentTimer = currentTime,
-                      isRunning = flightIsStarted,
-                      onStart = { inFlightViewModel.startFlight() },
-                      onStop = { inFlightViewModel.stopFlight() },
-                  )
+  Scaffold(
+      modifier = Modifier.fillMaxSize(),
+      floatingActionButton = {
+        if (locationPermission.status.isGranted) {
+          Box(
+              modifier =
+                  Modifier.fillMaxSize().padding(start = 32.dp, bottom = 88.dp, top = 100.dp),
+              contentAlignment = Alignment.BottomStart) {
+                Timer(
+                    Modifier.align(Alignment.TopEnd).testTag("Timer"),
+                    currentTimer = currentTime,
+                    isRunning = flightIsStarted,
+                    onStart = { inFlightViewModel.startFlight() },
+                    onStop = { inFlightViewModel.stopFlight() },
+                )
 
-                  Row(
-                      horizontalArrangement = Arrangement.SpaceBetween,
-                      modifier = Modifier.fillMaxWidth()) {
-                        FloatingActionButton(
-                            onClick = {
-                              // Moves the camera to the current location when clicked.
-                              metrics
-                                  .let {
-                                    CameraUpdateFactory.newLatLngZoom(it.location.latlng(), 13f)
-                                  }
-                                  .let { cameraPositionState.move(it) }
-                            },
-                            containerColor = lightOrange) {
-                              Icon(Icons.Default.LocationOn, contentDescription = "Locate Me")
-                            }
-                        FloatingActionButton(
-                            onClick = {
-                              // Here is where you'd navigate to a new screen. For now, just log a
-                              // message.
-                              Log.d(
-                                  "FlightScreen",
-                                  "FloatingActionButton clicked. Implement navigation here.")
-                              // Example navigation call: navController.navigate("FlightInfos")
-                            },
-                            containerColor = lightOrange) {
-                              Icon(
-                                  imageVector = Icons.Default.Info,
-                                  contentDescription = "Flight infos",
-                                  tint = Color.White)
-                            }
-                      }
-                }
-          }
-        },
-        bottomBar = { BottomBar(navController) }) { padding ->
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()) {
+                      FloatingActionButton(
+                          onClick = {
+                            // Moves the camera to the current location when clicked.
+                            metrics
+                                .let {
+                                  CameraUpdateFactory.newLatLngZoom(it.location.latlng(), 13f)
+                                }
+                                .let { cameraPositionState.move(it) }
+                          },
+                          containerColor = lightOrange) {
+                            Icon(Icons.Default.LocationOn, contentDescription = "Locate Me")
+                          }
+                      FloatingActionButton(
+                          onClick = {
+                            // Here is where you'd navigate to a new screen. For now, just log a
+                            // message.
+                            Log.d(
+                                "FlightScreen",
+                                "FloatingActionButton clicked. Implement navigation here.")
+                            // Example navigation call: navController.navigate("FlightInfos")
+                          },
+                          containerColor = lightOrange) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = "Flight infos",
+                                tint = Color.White)
+                          }
+                    }
+              }
+        }
+      },
+      bottomBar = { BottomBar(navController) }) { padding ->
         // Renders the Google Map or a permission request message based on the permission status.
 
         if (locationPermission.status.isGranted) {
-            GoogleMap(
-                modifier = Modifier.fillMaxSize().padding(padding).testTag("Map"),
-                cameraPositionState = cameraPositionState
-            ) {
+          GoogleMap(
+              modifier = Modifier.fillMaxSize().padding(padding).testTag("Map"),
+              cameraPositionState = cameraPositionState) {
                 Marker(state = markerState, title = "Your Location", snippet = "You are here")
 
                 currentLocations.values.forEach { (user, location) ->
-                    UserLocationMarker(location, user)
+                  UserLocationMarker(location, user)
                 }
-            }
-            Text(
-                text = "$metrics",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier =
-                Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
-                    .background(color = Color.White, shape = RoundedCornerShape(8.dp))
-                    .padding(6.dp)
-            )
+              }
+          Text(
+              text = "$metrics",
+              style = MaterialTheme.typography.bodyLarge,
+              modifier =
+                  Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
+                      .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                      .padding(6.dp))
         }
-    }
+      }
 }

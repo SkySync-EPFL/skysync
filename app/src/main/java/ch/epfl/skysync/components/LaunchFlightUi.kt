@@ -21,52 +21,48 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.ui.theme.Purple40
 
 @Composable
-fun LaunchFlightUi(pilotBoolean:Boolean,flight: Flight?, paddingValues: PaddingValues, flightClick: (String)->Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+fun LaunchFlightUi(
+    pilotBoolean: Boolean,
+    flight: Flight?,
+    paddingValues: PaddingValues,
+    flightClick: (String) -> Unit
+) {
+  Column(
+      modifier = Modifier.fillMaxWidth().padding(16.dp),
+      horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = "Launch Flight",
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             modifier =
-            Modifier
-                .background(
-                    color = Purple40, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                )
-                .fillMaxWidth()
-                .padding(
-                    top = paddingValues.calculateTopPadding() + 16.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp),
+                Modifier.background(
+                        color = Purple40,
+                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                    .fillMaxWidth()
+                    .padding(
+                        top = paddingValues.calculateTopPadding() + 16.dp,
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom = 16.dp),
             color = Color.White,
-            textAlign = TextAlign.Center
-        )
+            textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(16.dp))
-        if(pilotBoolean) {
-            if (flight == null) {
-                Text(
-                    text = "No flight ready to be launched",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(16.dp),
-                    color = Color.Black,
-                )
-            } else {
-                FlightCard(flight = flight) {
-                    flightClick(it)
-                }
-            }
-        }
-        else{
+        if (pilotBoolean) {
+          if (flight == null) {
             Text(
-                text = "No flight started",
+                text = "No flight ready to be launched",
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(16.dp),
-                color = Color.Black
+                color = Color.Black,
             )
+          } else {
+            FlightCard(flight = flight) { flightClick(it) }
+          }
+        } else {
+          Text(
+              text = "No flight started",
+              style = MaterialTheme.typography.titleMedium,
+              modifier = Modifier.padding(16.dp),
+              color = Color.Black)
         }
-    }
+      }
 }
