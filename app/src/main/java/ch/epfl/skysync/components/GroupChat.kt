@@ -1,7 +1,5 @@
 package ch.epfl.skysync.components
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,7 +54,7 @@ fun GroupChat(
     paddingValues: PaddingValues
 ) {
   var searchQuery by remember { mutableStateOf("") }
-  Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+  Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
     GroupChatTopBar()
     Spacer(modifier = Modifier.fillMaxHeight(0.02f))
 
@@ -117,17 +115,6 @@ fun GroupCard(groupDetails: GroupDetails, onClick: (GroupDetails) -> Unit, testT
               containerColor = lightGray,
           )) {
         Row {
-          if (groupDetails.image != null) {
-            Box(modifier = Modifier.fillMaxWidth(0.125f).size(50.dp)) {
-              Image(imageVector = groupDetails.image, contentDescription = "Group Image")
-            }
-          } else {
-            Box(
-                modifier =
-                    Modifier.fillMaxWidth(0.125f)
-                        .size(50.dp)
-                        .background(color = Color.LightGray)) {}
-          }
           Spacer(modifier = Modifier.size(10.dp))
           Column(
               modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.SpaceBetween) {
