@@ -10,11 +10,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.LaunchFlightUi
 import ch.epfl.skysync.components.LoadingComponent
+import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.LocationViewModel
+import java.time.LocalDate
+import java.time.LocalTime
 
 @Composable
 fun LaunchFlight(
@@ -31,22 +34,15 @@ fun LaunchFlight(
             LoadingComponent(isLoading = true, onRefresh = {}) {}
         }
         else if (personalFlights!!.isEmpty()) {
-            if (user is Pilot) {
-                LaunchFlightUi(
-                    pilotBoolean = true,
-                    flight = null,
-                    paddingValues = padding,
-                ){}
-            } else {
-                LaunchFlightUi(
-                    pilotBoolean = false,
-                    flight = null,
-                    paddingValues = padding,
-                ){}
-            }
+            LaunchFlightUi(
+                pilotBoolean = user is Pilot,
+                flight = null,
+                paddingValues = padding,
+            ) {}
         }
         else if (currentFlightId == null) {
-            if (user is Pilot) {
+            val time = if (LocalTime.now().isAfter(LocalTime.of(12, 0))) TimeSlot.PM else TimeSlot.AM
+            if (user is Pilot && personalFlights!!.first().date == LocalDate.now() && personalFlights!!.first().timeSlot == time) {
                 LaunchFlightUi(
                     pilotBoolean = true,
                     flight = personalFlights!!.first(),
@@ -55,12 +51,13 @@ fun LaunchFlight(
                 {
                     inFlightViewModel.setFlightId(it)
                 }
-            } else {
+            }
+            else {
                 LaunchFlightUi(
-                    pilotBoolean = false,
+                    pilotBoolean = user is Pilot,
                     flight = null,
                     paddingValues = padding,
-                ){}
+                ) {}
             }
         }
         else{
