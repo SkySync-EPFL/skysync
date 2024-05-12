@@ -5,11 +5,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,18 +26,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
-import ch.epfl.skysync.components.TimePickerDialog
+import androidx.compose.ui.unit.dp
+import ch.epfl.skysync.components.GenericTimePicker
+import ch.epfl.skysync.components.SmallTitle
+import ch.epfl.skysync.database.DateUtility.dateToHourMinuteString
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.location.LocationPoint
-import ch.epfl.skysync.util.getFormattedTime
 import ch.epfl.skysync.util.hasNoError
 import java.util.Date
 
 @Composable
 fun TimePickerField(defaultPadding: Dp, title: String, time: Date, setTime: (Date) -> Unit) {
   var showTimePicker by remember { mutableStateOf(false) }
+  GenericTimePicker(
+      padding = defaultPadding,
+      showTimePicker = showTimePicker,
+      onDismiss = { showTimePicker = false },
+      onConfirm = {
+        showTimePicker = false
+        setTime(it)
+      }) {}
   Text(
       modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
       text = title,
@@ -45,7 +59,7 @@ fun TimePickerField(defaultPadding: Dp, title: String, time: Date, setTime: (Dat
               .clickable { showTimePicker = true }
               .padding(start = defaultPadding, end = defaultPadding, bottom = defaultPadding)
               .testTag(title),
-      value = getFormattedTime(time),
+      value = dateToHourMinuteString(time),
       onValueChange = {},
       enabled = false,
       colors =
@@ -54,15 +68,47 @@ fun TimePickerField(defaultPadding: Dp, title: String, time: Date, setTime: (Dat
               disabledTextColor = MaterialTheme.colorScheme.onSurface,
               disabledBorderColor = MaterialTheme.colorScheme.onPrimaryContainer,
               disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface))
-  if (showTimePicker) {
-    TimePickerDialog(
-        onCancel = { showTimePicker = false },
-        onConfirm = {
-          showTimePicker = false
-          setTime(it.time)
-        },
-        modifier = Modifier.padding(defaultPadding))
-  }
+}
+
+/**
+ * A composable that displays a button for selecting a time using a time picker dialog.
+ *
+ * @param title The title displayed next to the button.
+ * @param buttonColor The color of the button.
+ * @param padding The padding applied around the button.
+ * @param setTime Callback invoked when a time is selected. It provides a [Date] object containing
+ *   the selected time.
+ */
+@Composable
+fun TimePickerButton(title: String, buttonColor: Color, padding: Dp, setTime: (Date) -> Unit) {
+  var showTimePicker by remember { mutableStateOf(false) }
+  var time by remember { mutableStateOf<Date?>(null) }
+  GenericTimePicker(
+      padding = padding,
+      showTimePicker = showTimePicker,
+      onConfirm = {
+        time = it
+        showTimePicker = false
+        setTime(it)
+      },
+      onDismiss = { showTimePicker = false }) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween) {
+              SmallTitle(title = title, padding, color = Color.Black)
+              Button(
+                  modifier =
+                      Modifier.padding(horizontal = 8.dp)
+                          .heightIn(max = 35.dp)
+                          .testTag("TimePickerButton"),
+                  onClick = { showTimePicker = true },
+                  colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
+                  shape = RoundedCornerShape(10.dp)) {
+                    Text(text = time?.let { dateToHourMinuteString(it) } ?: "Select Time")
+                  }
+            }
+      }
 }
 
 @Composable

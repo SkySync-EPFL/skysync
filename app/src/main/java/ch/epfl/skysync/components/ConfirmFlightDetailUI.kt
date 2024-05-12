@@ -26,15 +26,24 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ch.epfl.skysync.database.DateUtility
+import ch.epfl.skysync.models.UNSET_ID
+import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.flight.Balloon
+import ch.epfl.skysync.models.flight.BalloonQualification
+import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FlightColor
+import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
-import ch.epfl.skysync.ui.theme.Pink40
 import ch.epfl.skysync.ui.theme.lightOrange
 import java.net.URLEncoder
+import java.time.LocalTime
+import java.util.Date
 
 /**
  * Composable function for displaying a UI to confirm flight details.
@@ -74,7 +83,6 @@ fun ConfirmFlightDetailBody(confirmedFlight: ConfirmedFlight) {
               .verticalScroll(enabled = true, state = rememberScrollState())
               .testTag("body")
               .fillMaxHeight(0.8f)) {
-        TitledText(padding = 16.dp, title = "ID", value = confirmedFlight.id)
         TitledText(
             padding = 16.dp, title = "Number Of Pax", value = "${confirmedFlight.nPassengers}")
         TitledText(padding = 16.dp, title = "Flight Type", value = confirmedFlight.flightType.name)
@@ -272,10 +280,10 @@ fun ShowColor(title: String, flightColor: FlightColor, padding: Dp) {
       when (flightColor) {
         FlightColor.RED -> Color.Red
         FlightColor.BLUE -> Color.Blue
-        FlightColor.YELLOW -> Color.Yellow
         FlightColor.ORANGE -> lightOrange
-        FlightColor.PINK -> Pink40
         FlightColor.NO_COLOR -> Color.White
+        FlightColor.GREEN -> TODO()
+        FlightColor.PINK -> TODO()
       }
   Spacer(modifier = Modifier.padding(4.dp))
   Box(
@@ -306,4 +314,29 @@ fun ConfirmedFlightDetailBottom(okClick: () -> Unit) {
           Text(text = "OK", color = Color.White, overflow = TextOverflow.Clip)
         }
   }
+}
+
+@Preview
+@Composable
+fun ConfirmedFlightDetailUI() {
+  val confirmedFlight =
+      ConfirmedFlight(
+          id = UNSET_ID,
+          nPassengers = 2,
+          team = Team(roles = listOf()),
+          flightType = FlightType.DISCOVERY,
+          balloon = Balloon("balloon", BalloonQualification.SMALL),
+          basket = Basket("basket", false),
+          date = DateUtility.dateToLocalDate(Date()),
+          timeSlot = TimeSlot.PM,
+          vehicles = listOf(Vehicle("vehicle")),
+          remarks = listOf("remark 1", "remark 2"),
+          color = FlightColor.BLUE,
+          meetupTimeTeam = LocalTime.of(13, 30, 0),
+          departureTimeTeam = LocalTime.of(13, 45, 0),
+          meetupTimePassenger = LocalTime.of(14, 0, 0),
+          meetupLocationPassenger = "location",
+      )
+  ConfirmFlightDetailUi(
+      confirmedFlight = confirmedFlight, backClick = {}, PaddingValues(0.dp), okClick = {})
 }

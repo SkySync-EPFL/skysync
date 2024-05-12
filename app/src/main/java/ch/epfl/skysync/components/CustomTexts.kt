@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -38,4 +40,36 @@ fun TitledText(
       style = MaterialTheme.typography.bodyLarge,
   )
   Spacer(modifier = Modifier.padding(12.dp))
+}
+
+@Composable
+fun Title(title: String, padding: Dp, style: TextStyle, color: Color) {
+  Text(modifier = Modifier.padding(padding), text = title, style = style, color = color)
+}
+
+@Composable
+fun HeaderTitle(title: String, padding: Dp, color: Color) {
+  Title(
+      title,
+      padding,
+      MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+      color = color)
+}
+
+@Composable
+fun LargeTitle(title: String, padding: Dp, color: Color) {
+  Title(
+      title = title,
+      padding = padding,
+      style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+      color = color)
+}
+
+@Composable
+fun SmallTitle(title: String, padding: Dp, color: Color) {
+  Title(
+      title = title,
+      padding = padding,
+      style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+      color = color)
 }

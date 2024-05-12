@@ -64,12 +64,6 @@ class ConfirmFlightDetailUiTest {
   }
 
   @Test
-  fun idIsDisplayed() {
-    composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("ID"))
-    composeTestRule.onNodeWithTag("ID").assertIsDisplayed()
-  }
-
-  @Test
   fun nbOfPaxIsDisplayed() {
     composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Number Of Pax"))
     composeTestRule.onNodeWithTag("Number Of Pax").assertIsDisplayed()

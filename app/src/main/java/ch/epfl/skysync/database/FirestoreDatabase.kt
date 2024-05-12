@@ -91,6 +91,7 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
   ): T? {
     val documentSnapshot = db.collection(path).document(id).get().await()
 
+    println(clazz.java)
     Log.d(TAG, "Got $path/${documentSnapshot.id}")
     return documentSnapshot.toObject(clazz.java)
   }

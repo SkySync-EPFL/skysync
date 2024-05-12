@@ -60,6 +60,9 @@ import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.R
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.forms.TitledDropDownMenu
+import ch.epfl.skysync.database.DateUtility.dateToHourMinuteString
+import ch.epfl.skysync.database.DateUtility.dateToLocalDate
+import ch.epfl.skysync.database.DateUtility.localDateToString
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.BASE_ROLES
@@ -77,9 +80,6 @@ import ch.epfl.skysync.ui.theme.veryLightJasmine
 import ch.epfl.skysync.ui.theme.veryLightRed
 import ch.epfl.skysync.ui.theme.veryLightSatin
 import ch.epfl.skysync.ui.theme.veryLightYellow
-import ch.epfl.skysync.util.dateToLocalDate
-import ch.epfl.skysync.util.getFormattedDate
-import ch.epfl.skysync.util.getFormattedTime
 import java.time.Instant
 import java.time.LocalDate
 import java.util.Date
@@ -168,7 +168,7 @@ fun HistoryCard(flight: FinishedFlight, modifier: Modifier) {
       Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
         Text(
             modifier = Modifier.fillMaxWidth().weight(1f),
-            text = getFormattedDate(flight.date),
+            text = localDateToString(flight.date),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelLarge)
 
@@ -192,7 +192,7 @@ fun HistoryCard(flight: FinishedFlight, modifier: Modifier) {
               Row() {
                 Text(
                     modifier = Modifier.padding(horizontal = 10.dp),
-                    text = getFormattedTime(flight.takeOffTime))
+                    text = dateToHourMinuteString(flight.takeOffTime))
                 Text(
                     modifier = Modifier.padding(horizontal = 10.dp),
                     text =
@@ -210,7 +210,7 @@ fun HistoryCard(flight: FinishedFlight, modifier: Modifier) {
               Row {
                 Text(
                     modifier = Modifier.padding(horizontal = 10.dp),
-                    text = getFormattedTime(flight.landingTime))
+                    text = dateToHourMinuteString(flight.landingTime))
                 Text(
                     modifier = Modifier.padding(horizontal = 10.dp),
                     text =
@@ -262,13 +262,13 @@ fun FiltersMenu(
                 minValue = beginDate,
                 maxValue = endDate,
                 onClick = { showRangeDatePicker = true },
-                showString = { getFormattedDate(it) })
+                showString = { localDateToString(it) })
             TitledRangedFilterField(
                 title = "Flight Time",
                 minValue = beginFlightTime,
                 maxValue = endFlightTime,
                 onClick = { /* TODO time picker */},
-                showString = { getFormattedTime(it) })
+                showString = { dateToHourMinuteString(it) })
             TitledDropDownMenu(
                 defaultPadding = 16.dp,
                 title = "Flight type",
@@ -320,7 +320,7 @@ fun DateRangeSelector(onDone: (LocalDate, LocalDate) -> Unit) {
             (if (state.selectedStartDateMillis != null)
                     state.selectedStartDateMillis?.let {
                       beginDate = dateToLocalDate(it)
-                      getFormattedDate(beginDate!!)
+                      localDateToString(beginDate!!)
                     }
                 else "Start Date")
                 ?.let { Text(text = it, style = MaterialTheme.typography.headlineSmall) }
@@ -329,7 +329,7 @@ fun DateRangeSelector(onDone: (LocalDate, LocalDate) -> Unit) {
             (if (state.selectedEndDateMillis != null)
                     state.selectedEndDateMillis?.let {
                       endDate = dateToLocalDate(it)
-                      getFormattedDate(dateToLocalDate(it))
+                      localDateToString(dateToLocalDate(it))
                     }
                 else "End Date")
                 ?.let { Text(text = it, style = MaterialTheme.typography.headlineSmall) }

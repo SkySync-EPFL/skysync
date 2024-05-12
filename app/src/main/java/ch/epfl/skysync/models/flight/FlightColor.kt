@@ -4,7 +4,7 @@ enum class FlightColor {
   RED,
   BLUE,
   ORANGE,
-  YELLOW,
+  GREEN,
   PINK,
   NO_COLOR
 }
