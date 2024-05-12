@@ -28,6 +28,7 @@ import ch.epfl.skysync.screens.crewpilot.ChatScreen
 import ch.epfl.skysync.screens.crewpilot.FlightDetailScreen
 import ch.epfl.skysync.screens.crewpilot.FlightScreen
 import ch.epfl.skysync.screens.crewpilot.HomeScreen
+import ch.epfl.skysync.screens.crewpilot.LaunchFlight
 import ch.epfl.skysync.screens.crewpilot.TextScreen
 import ch.epfl.skysync.screens.reports.CrewReportScreen
 import ch.epfl.skysync.screens.reports.PilotReportScreen
@@ -169,5 +170,14 @@ fun NavGraphBuilder.crewPilotGraph(
               flightTime = 0)
       CrewReportScreen(navController, finishedFlight, crew)
     }
+      composable(Route.LAUNCH_FLIGHT){
+          if (locationViewModel!!.userId == null) {
+              locationViewModel.userId = uid!!
+          }
+          locationViewModel.refreshPersonalFlights()
+          val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
+          flightsViewModel.refresh()
+          LaunchFlight(navController = navController, flightsViewModel =flightsViewModel, inFlightViewModel = locationViewModel)
+      }
   }
 }

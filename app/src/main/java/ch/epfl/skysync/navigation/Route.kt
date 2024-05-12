@@ -38,4 +38,5 @@ object Route {
   const val CREW_FLIGHT_CALENDAR = "Flight Calendar"
   const val CREW_HOME = "Home"
   const val CREW_TEXT = "Text"
+  const val LAUNCH_FLIGHT = "Launch Flight"
 }

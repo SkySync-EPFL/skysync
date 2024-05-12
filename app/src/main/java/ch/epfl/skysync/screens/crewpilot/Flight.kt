@@ -69,42 +69,6 @@ fun UserLocationMarker(location: Location, user: User) {
       state = rememberMarkerState(position = location.point.latlng()), title = user.name())
 }
 
-@Composable
-fun ShowFlightToStart(
-    navController: NavHostController,
-    flight: Flight?,
-    onClick: (String) -> Unit
-) {
-  Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
-    // Renders the Google Map or a permission request message based on the permission status.
-    Column(modifier = Modifier.fillMaxSize().padding(padding).testTag("FlightLaunch")) {
-      Text(
-          text = "Flight to be launched",
-          style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-          modifier =
-              Modifier.background(
-                      color = lightViolet,
-                      shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                  .fillMaxWidth()
-                  .padding(
-                      top = padding.calculateTopPadding() + 16.dp,
-                      start = 16.dp,
-                      end = 16.dp,
-                      bottom = 16.dp),
-          color = Color.White,
-          textAlign = TextAlign.Center)
-
-      Spacer(modifier = Modifier.height(16.dp))
-
-      if (flight == null) {
-        Text("no flight to be launched for the moment")
-      } else {
-        FlightCard(flight = flight) { onClick(it) }
-      }
-    }
-  }
-}
-
 /**
  * This composable function renders a screen with a map that shows the user's current location. It
  * requests and checks location permissions, updates location in real-time, and handles permissions
@@ -188,15 +152,7 @@ fun FlightScreen(
         Text("Please enable location permissions in settings.")
       }
     }
-  } else if (personalFlights == null) {
-    LoadingComponent(isLoading = true, onRefresh = {}) {}
-  } else if (personalFlights!!.isEmpty()) {
-    ShowFlightToStart(navController = navController, flight = null) {}
-  } else if (currentFlightId == null) {
-    ShowFlightToStart(navController, personalFlights!!.first()) {
-      inFlightViewModel.setFlightId(it)
-    }
-  } else {
+  }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
@@ -248,26 +204,27 @@ fun FlightScreen(
           }
         },
         bottomBar = { BottomBar(navController) }) { padding ->
-          // Renders the Google Map or a permission request message based on the permission status.
+        // Renders the Google Map or a permission request message based on the permission status.
 
-          if (locationPermission.status.isGranted) {
+        if (locationPermission.status.isGranted) {
             GoogleMap(
                 modifier = Modifier.fillMaxSize().padding(padding).testTag("Map"),
-                cameraPositionState = cameraPositionState) {
-                  Marker(state = markerState, title = "Your Location", snippet = "You are here")
+                cameraPositionState = cameraPositionState
+            ) {
+                Marker(state = markerState, title = "Your Location", snippet = "You are here")
 
-                  currentLocations.values.forEach { (user, location) ->
+                currentLocations.values.forEach { (user, location) ->
                     UserLocationMarker(location, user)
-                  }
                 }
+            }
             Text(
                 text = "$metrics",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier =
-                    Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
-                        .background(color = Color.White, shape = RoundedCornerShape(8.dp))
-                        .padding(6.dp))
-          }
+                Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
+                    .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                    .padding(6.dp)
+            )
         }
-  }
+    }
 }
