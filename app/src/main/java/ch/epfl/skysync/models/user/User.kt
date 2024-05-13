@@ -20,4 +20,14 @@ interface User {
   }
 
   fun name(): String = "$firstname $lastname"
+
+  fun doesMatchSearchQuery(query: String): Boolean {
+    val matchingCombinations =
+        listOf(
+            "$firstname$lastname",
+            "$firstname $lastname",
+            "${firstname.first()} ${lastname.first()}",
+            email)
+    return matchingCombinations.any { it.contains(query, ignoreCase = true) }
+  }
 }
