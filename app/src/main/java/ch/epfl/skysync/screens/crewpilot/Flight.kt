@@ -40,7 +40,7 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.FlightCard
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.components.Timer
-import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.location.UserMetrics
@@ -72,7 +72,7 @@ fun UserLocationMarker(location: Location, user: User) {
 @Composable
 fun ShowFlightToStart(
     navController: NavHostController,
-    flight: Flight?,
+    flight: ConfirmedFlight?,
     onClick: (String) -> Unit
 ) {
   Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
@@ -119,11 +119,12 @@ fun FlightScreen(
     inFlightViewModel: InFlightViewModel,
     uid: String
 ) {
+  val loading by inFlightViewModel.loading.collectAsStateWithLifecycle()
   val rawTime by inFlightViewModel.rawCounter.collectAsStateWithLifecycle()
   val currentTime by inFlightViewModel.counter.collectAsStateWithLifecycle()
-  val flightIsStarted by inFlightViewModel.inFlight.collectAsStateWithLifecycle()
-  val personalFlights by inFlightViewModel.confirmedFlights.collectAsStateWithLifecycle()
-  val currentFlightId by inFlightViewModel.flightId.collectAsStateWithLifecycle()
+  val flightStage by inFlightViewModel.flightStage.collectAsStateWithLifecycle()
+  val confirmedFlights by inFlightViewModel.confirmedFlights.collectAsStateWithLifecycle()
+  val currentFlight by inFlightViewModel.currentFlight.collectAsStateWithLifecycle()
 
   val currentLocations = inFlightViewModel.currentLocations.collectAsState().value
 
@@ -188,13 +189,15 @@ fun FlightScreen(
         Text("Please enable location permissions in settings.")
       }
     }
-  } else if (personalFlights == null) {
+  } else if (loading) {
     LoadingComponent(isLoading = true, onRefresh = {}) {}
-  } else if (personalFlights!!.isEmpty()) {
+  } else if (!inFlightViewModel.isPilot()) {
+    // TODO: Show screen for crew
+  } else if (confirmedFlights.isEmpty()) {
     ShowFlightToStart(navController = navController, flight = null) {}
-  } else if (currentFlightId == null) {
-    ShowFlightToStart(navController, personalFlights!!.first()) {
-      inFlightViewModel.setFlightId(it)
+  } else if (currentFlight == null) {
+    ShowFlightToStart(navController, confirmedFlights.first()) {
+      inFlightViewModel.setCurrentFlight(it)
     }
   } else {
     Scaffold(
@@ -208,9 +211,11 @@ fun FlightScreen(
                   Timer(
                       Modifier.align(Alignment.TopEnd).testTag("Timer"),
                       currentTimer = currentTime,
-                      isRunning = flightIsStarted,
+                      flightStage = flightStage,
+                      isPilot = inFlightViewModel.isPilot(),
                       onStart = { inFlightViewModel.startFlight() },
                       onStop = { inFlightViewModel.stopFlight() },
+                      onClear = { inFlightViewModel.clearFlight() },
                   )
 
                   Row(

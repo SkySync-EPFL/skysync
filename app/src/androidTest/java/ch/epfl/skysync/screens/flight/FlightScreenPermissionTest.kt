@@ -39,12 +39,12 @@ class FlightScreenPermissionTest {
     val repository = Repository(db)
     val uid = dbs.pilot1.id
     composeTestRule.setContent {
-      inFlightViewModel = InFlightViewModel.createViewModel(uid, repository)
+      inFlightViewModel = InFlightViewModel.createViewModel(repository)
       val navController = rememberNavController()
       FlightScreen(navController, inFlightViewModel = inFlightViewModel, uid)
     }
-    inFlightViewModel.refreshFlights().join()
-    inFlightViewModel.setFlightId(dbs.flight1.id)
+    inFlightViewModel.init(dbs.pilot1.id).join()
+    inFlightViewModel.setCurrentFlight(uid)
   }
 
   @Test

@@ -43,8 +43,8 @@ data class FlightSchema(
     val meetupLocationPassenger: String? = null,
     /** In: Confirmed flight */
     val isOngoing: Boolean? = null,
-    /** In: Confirmed flight */
-    val startTime: String? = null,
+    /** In: Confirmed flight Nullable */
+    val startTimestamp: Long? = null,
 ) : Schema<Flight> {
   override fun toModel(): Flight {
     throw NotImplementedError()
@@ -92,9 +92,7 @@ data class FlightSchema(
           meetupTimePassenger = DateUtility.localTimeToString(flight.meetupTimePassenger),
           meetupLocationPassenger = flight.meetupLocationPassenger,
           isOngoing = flight.isOngoing,
-          startTime =
-              if (flight.startTime != null) DateUtility.localTimeToString(flight.startTime)
-              else null,
+          startTimestamp = flight.startTimestamp,
       )
     }
   }

@@ -38,11 +38,11 @@ class InFlightViewModelTest {
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
     composeTestRule.setContent {
-      inFlightViewModel = InFlightViewModel.createViewModel(dbs.pilot1.id, repository = repository)
+      inFlightViewModel = InFlightViewModel.createViewModel(repository)
       val countString by inFlightViewModel.counter.collectAsStateWithLifecycle()
       Text(countString)
     }
-    inFlightViewModel.refreshFlights().join()
+    inFlightViewModel.init(dbs.pilot1.id).join()
   }
 
   @Test
@@ -53,27 +53,27 @@ class InFlightViewModelTest {
 
   @Test
   fun testStartFunction() {
-    inFlightViewModel.setFlightId(dbs.flight1.id)
+    inFlightViewModel.setCurrentFlight(dbs.flight1.id)
     inFlightViewModel.startFlight()
 
     composeTestRule.waitUntil(timeoutMillis = 1500) {
       val countString = inFlightViewModel.counter.value
       countString == "00:00:01"
     }
-    val isRunning = inFlightViewModel.inFlight.value
+    val isRunning = inFlightViewModel.isFlightOngoing.value
     assertTrue(isRunning)
   }
 
   @Test
   fun testStopFunction() = runTest {
-    inFlightViewModel.setFlightId(dbs.flight1.id)
+    inFlightViewModel.setCurrentFlight(dbs.flight1.id)
     inFlightViewModel.startFlight()
     composeTestRule.waitUntil(timeoutMillis = 2500) {
       val countString = inFlightViewModel.counter.value
       countString == "00:00:02"
     }
     inFlightViewModel.stopFlight()
-    val isRunning = inFlightViewModel.inFlight.value
+    val isRunning = inFlightViewModel.isFlightOngoing.value
     assertFalse(isRunning)
   }
 
@@ -84,7 +84,7 @@ class InFlightViewModelTest {
   fun testLocationUpdate() = runTest {
     val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) }) as ConfirmedFlight
 
-    inFlightViewModel.setFlightId(flight.id)
+    inFlightViewModel.setCurrentFlight(flight.id)
 
     inFlightViewModel.startFlight()
 
@@ -134,7 +134,7 @@ class InFlightViewModelTest {
   fun testSaveFlightTrace() = runTest {
     val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) }) as ConfirmedFlight
 
-    inFlightViewModel.setFlightId(flight.id)
+    inFlightViewModel.setCurrentFlight(flight.id)
     inFlightViewModel.startFlight()
 
     // here we need to have the update in order to have all the locations in the flight trace

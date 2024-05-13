@@ -53,7 +53,7 @@ class E2EPilotDuringFlight {
           ChatViewModel.createViewModel(dbs.pilot1.id, messageListenerSharedViewModel, repository)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      inFlightViewModel = InFlightViewModel.createViewModel(dbs.pilot1.id, repository)
+      inFlightViewModel = InFlightViewModel.createViewModel(repository)
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(repository, navController, dbs.pilot1.id, inFlightViewModel)
       }

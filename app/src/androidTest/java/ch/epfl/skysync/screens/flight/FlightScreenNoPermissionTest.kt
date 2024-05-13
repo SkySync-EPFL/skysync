@@ -25,7 +25,7 @@ class FlightScreenNoPermissionTest {
     val db = FirestoreDatabase(useEmulator = true)
     val repository = Repository(db)
     composeTestRule.setContent {
-      val inFlightViewModel = InFlightViewModel.createViewModel(dbs.pilot1.id, repository)
+      val inFlightViewModel = InFlightViewModel.createViewModel(repository)
       val navController = rememberNavController()
       val uid = dbs.pilot1.id
       FlightScreen(navController = navController, inFlightViewModel = inFlightViewModel, uid)
