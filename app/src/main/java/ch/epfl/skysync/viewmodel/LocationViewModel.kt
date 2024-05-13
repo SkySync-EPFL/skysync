@@ -82,6 +82,9 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
   val currentLocations: StateFlow<Map<String, Pair<User, Location>>> =
       _currentLocations.asStateFlow()
 
+  private val _flightTrace = MutableStateFlow<FlightTrace?>(null)
+  val flightTrace: StateFlow<FlightTrace?> = _flightTrace.asStateFlow()
+
   private val _flightLocations = MutableStateFlow<List<Location>>(emptyList())
   val flightLocations: StateFlow<List<Location>> = _flightLocations.asStateFlow()
   // todo: show only confirmed flights (of today?)
@@ -205,10 +208,10 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
     // do not take deletions into account, as it is just deletions from the query results
     // that is: it is not the location with the highest time anymore
     val updatedLocations = update.adds + update.updates
-    locations =
-        locations.filter { location -> updatedLocations.find { it.id == location.id } == null }
-    // add new locations
-    _flightLocations.value = (locations + update.adds + update.updates).sortedBy { it.point.time }
+    locations = locations.filter { location -> updatedLocations.none { it.id == location.id } }
+    locations = (locations + updatedLocations).sortedBy { it.point.time }
+    _flightLocations.value = locations
+    _flightTrace.value = FlightTrace(trace = locations.map { it.point })
   }
 
   /**
@@ -246,15 +249,11 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
           onError(Exception("Can not save the flight trace while not in flight."))
           return@launch
         }
-        // first verify that the number of locations in local and in the database match
-        // as the pilot could already have deleted his locations
-        val locations =
-            locationTable.query(Filter.equalTo("userId", pilotId!!), onError = { onError(it) })
-        if (_flightLocations.value.size != locations.size) {
-          onError(Exception("Can not save the flight trace (consistency issue)."))
+        val flightTrace = _flightTrace.value
+        if (flightTrace == null || flightTrace.trace.size != _flightLocations.value.size) {
+          onError(Exception("Cannot save the flight trace (consistency issue)."))
           return@launch
         }
-        val flightTrace = FlightTrace(trace = _flightLocations.value.map { it.point })
         flightTraceTable.set(flightId.value!!, flightTrace, onError = { onError(it) })
       }
 
