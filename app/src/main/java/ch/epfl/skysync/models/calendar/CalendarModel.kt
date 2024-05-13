@@ -12,29 +12,36 @@ import java.util.SortedSet
  * (mutable class)
  */
 abstract class CalendarModel<T : CalendarViewable>(
-    protected val cells: MutableList<T> = mutableListOf()
+  val cells: List<T> = emptyList(),
 ) {
+
+
+  /**
+   * returns a new CalendarModel with the given cells
+   */
+  abstract fun constructor(cells: List<T>): CalendarModel<T>
 
   /** @return number of entries in calendar */
   fun getSize(): Int {
     return cells.size
   }
 
+
+  protected fun add(t: T, ): CalendarModel<T> {
+    return constructor(cells + t)
+  }
+
   /**
    * adds the given slots by checking that there are not duplicate slots
    *
-   * @param toAdd the slots to add
-   * @exception IllegalArgumentException: if multiple slots have the same coordinate (date,
-   *   timeSlot)
+   * @param elementsToAdd the slots to add
    */
-  fun addCells(toAdd: List<T>) {
-    for (t in toAdd) {
-      if (cells.any { it.date == t.date && it.timeSlot == t.timeSlot }) {
-        throw IllegalArgumentException("Cannot add cells for the same date and time slot twice")
-      }
-      cells.add(t)
-    }
+  protected fun addCells(elementsToAdd: List<T>): CalendarModel<T> {
+    val combinedCells = cells + elementsToAdd
+    return constructor(combinedCells)
   }
+
+
 
   /**
    * updates the slot (if present) or creates new slot by the given coordinates with the output of
@@ -45,13 +52,19 @@ abstract class CalendarModel<T : CalendarViewable>(
    * @param produceNewValue computes a new value as function of the coordinates and the old value
    */
   protected fun setByDate(
-      date: LocalDate,
-      timeSlot: TimeSlot,
-      produceNewValue: (LocalDate, TimeSlot, oldValue: T?) -> T
-  ) {
-    val oldValue = removeByDate(date, timeSlot)
+    date: LocalDate,
+    timeSlot: TimeSlot,
+    produceNewValue: (LocalDate, TimeSlot, oldValue: T?) -> T
+  ) : CalendarModel<T> {
+    val oldValue = getByDate(date, timeSlot)
     val newValue = produceNewValue(date, timeSlot, oldValue)
-    cells.add(newValue)
+    val newCells = if (oldValue != null) {
+      cells - oldValue + newValue
+    }
+    else{
+      cells + newValue
+    }
+    return constructor(newCells)
   }
 
   /**
@@ -59,13 +72,15 @@ abstract class CalendarModel<T : CalendarViewable>(
    * @param timeSlot the timeSlot of the cell to remove
    * @return the removed value if it was found, null otherwise
    */
-  protected fun removeByDate(date: LocalDate, timeSlot: TimeSlot): T? {
+  protected fun removeByDate(date: LocalDate, timeSlot: TimeSlot): CalendarModel<T> {
 
     val oldValue = getByDate(date, timeSlot)
-    if (oldValue != null) {
-      cells.remove(oldValue)
+    return if (oldValue != null) {
+      constructor(cells - oldValue)
     }
-    return oldValue
+    else {
+      this
+    }
   }
 
   /**

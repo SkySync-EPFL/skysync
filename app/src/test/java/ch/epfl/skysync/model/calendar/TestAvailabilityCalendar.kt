@@ -29,6 +29,17 @@ class TestAvailabilityCalendar {
     calendar = AvailabilityCalendar()
   }
 
+
+  @Test
+  fun `add element`() {
+    val calendar = AvailabilityCalendar()
+    assertEquals(calendar.cells, emptyList<Availability>())
+    val availability = Availability("1", AvailabilityStatus.OK, TimeSlot.AM, someDate)
+    val newList = calendar.add2(availability)
+    assertEquals(newList, listOf(availability))
+    assertEquals(calendar.cells, emptyList<Availability>())
+  }
+
   @Test
   fun `finds an availability status by date and time slot`() {
     val calendar = AvailabilityCalendar()

@@ -11,7 +11,7 @@ enum class CalendarDifferenceType {
 }
 
 /** represents a calendar for availabilities */
-class AvailabilityCalendar(cells: MutableList<Availability> = mutableListOf()) :
+class AvailabilityCalendar(cells: List<Availability> = listOf()) :
     CalendarModel<Availability>(cells = cells) {
 
   /**
@@ -21,8 +21,8 @@ class AvailabilityCalendar(cells: MutableList<Availability> = mutableListOf()) :
    * @param timeSlot: the timeSlot of the availability to change
    * @param status: the new status
    */
-  fun setAvailabilityByDate(date: LocalDate, timeSlot: TimeSlot, status: AvailabilityStatus) {
-    setByDate(date, timeSlot) { d, t, old ->
+  fun setAvailabilityByDate(date: LocalDate, timeSlot: TimeSlot, status: AvailabilityStatus):CalendarModel<Availability> {
+    return setByDate(date, timeSlot) { d, t, old ->
       old?.copy(status = status) ?: Availability(UNSET_ID, status, t, d)
     }
   }
@@ -40,17 +40,16 @@ class AvailabilityCalendar(cells: MutableList<Availability> = mutableListOf()) :
    * @param timeSlot: timeSlot of the Availability of which to change the status
    * @return the new AvailabilityStatus if successfully modified, else null
    */
-  fun nextAvailabilityStatus(date: LocalDate, timeSlot: TimeSlot): AvailabilityStatus {
+  fun setToNextAvailabilityStatus(date: LocalDate, timeSlot: TimeSlot): CalendarModel<Availability> {
     val currentAvailability = getByDate(date, timeSlot)
     val nextAvailabilityStatus: AvailabilityStatus =
         currentAvailability?.status?.next()
             ?: AvailabilityStatus.OK // non-existing entries get init by OK
-    if (nextAvailabilityStatus == AvailabilityStatus.UNDEFINED) {
+    return if (nextAvailabilityStatus == AvailabilityStatus.UNDEFINED) {
       removeByDate(date, timeSlot)
     } else {
       setAvailabilityByDate(date, timeSlot, nextAvailabilityStatus)
     }
-    return nextAvailabilityStatus
   }
 
   /**
@@ -92,5 +91,9 @@ class AvailabilityCalendar(cells: MutableList<Availability> = mutableListOf()) :
 
   fun copy(): AvailabilityCalendar {
     return AvailabilityCalendar(cells.toMutableList())
+  }
+
+  override fun constructor(cells: List<Availability>): CalendarModel<Availability> {
+    return AvailabilityCalendar(cells)
   }
 }
