@@ -59,7 +59,8 @@ abstract class CalendarModel<T : CalendarViewable>(
     val oldValue = getByDate(date, timeSlot)
     val newValue = produceNewValue(date, timeSlot, oldValue)
     val newCells = if (oldValue != null) {
-      cells - oldValue + newValue
+      val withoutOld = cells.filter { it != oldValue}
+        withoutOld + newValue
     }
     else{
       cells + newValue
@@ -100,13 +101,5 @@ abstract class CalendarModel<T : CalendarViewable>(
 
   override fun hashCode(): Int {
     return getSortedSetOfCells().hashCode()
-  }
-
-  override fun equals(other: Any?): Boolean {
-    if (other == null) return false
-    if (other::class != this::class) return false
-    // we do not take into account the order in which the cells have been added
-    // when performing equality check
-    return (other as CalendarModel<*>).getSortedSetOfCells() == this.getSortedSetOfCells()
   }
 }
