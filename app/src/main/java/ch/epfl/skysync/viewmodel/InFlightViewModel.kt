@@ -495,6 +495,8 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
   }
 
   override fun onCleared() {
+    flightListeners.forEach { it.remove() }
+    flightListeners.clear()
     stopLocationTracking()
     stopTimer()
     viewModelScope.launch { clearLocationTracking() }
