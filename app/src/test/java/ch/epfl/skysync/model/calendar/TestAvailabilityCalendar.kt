@@ -35,7 +35,7 @@ class TestAvailabilityCalendar {
     val calendar = AvailabilityCalendar()
     assertEquals(calendar.cells, emptyList<Availability>())
     val availability = Availability("1", AvailabilityStatus.OK, TimeSlot.AM, someDate)
-    val newList = calendar.add2(availability)
+    val newList = calendar.add(availability)
     assertEquals(newList, listOf(availability))
     assertEquals(calendar.cells, emptyList<Availability>())
   }

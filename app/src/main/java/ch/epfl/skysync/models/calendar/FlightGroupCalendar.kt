@@ -4,10 +4,32 @@ import ch.epfl.skysync.models.flight.Flight
 import java.time.LocalDate
 
 /** calendar for a group of flights per slot (admin view) */
-class FlightGroupCalendar : CalendarModel<FlightGroup>() {
+class FlightGroupCalendar(cells: List<FlightGroup> = listOf()) : CalendarModel<FlightGroup>(cells) {
+
+  companion object {
+    /**
+     * transforms the list of flights into a list of FlightGroups and returns a calendar
+     * with the FlightGroup
+     */
+    fun fromFlightList(flightList: List<Flight>): FlightGroupCalendar {
+      val map = mutableMapOf<Pair<LocalDate, TimeSlot>, FlightGroup>()
+      for (flight in flightList) {
+        val key = Pair(flight.date, flight.timeSlot)
+        if (map.containsKey(key)) {
+          map[key] = map[key]!!.addFlight(flight)
+        } else {
+          map[key] = FlightGroup(flight.date, flight.timeSlot, listOf(flight))
+        }
+      }
+      return FlightGroupCalendar(map.values.toList())
+    }
+  }
+
   private fun setFlightGroupByDate(date: LocalDate, timeSlot: TimeSlot, flightGroup: FlightGroup) {
     setByDate(date, timeSlot) { d, t, old -> flightGroup }
   }
+
+
 
   /**
    * adds the given flight to the existing FlightGroup at slot for (date, timeSlot) or adds a new
@@ -26,6 +48,10 @@ class FlightGroupCalendar : CalendarModel<FlightGroup>() {
     }
   }
 
+
+
+
+
   /**
    * @param date date calendar slot coordinate
    * @param timeSlot timeSlot calendar slot coordinate
@@ -43,5 +69,9 @@ class FlightGroupCalendar : CalendarModel<FlightGroup>() {
    */
   fun getFlightGroupByDate(date: LocalDate, timeSlot: TimeSlot): FlightGroup? {
     return getByDate(date, timeSlot)
+  }
+
+  override fun constructor(cells: List<FlightGroup>): CalendarModel<FlightGroup> {
+    return FlightGroupCalendar(cells)
   }
 }
