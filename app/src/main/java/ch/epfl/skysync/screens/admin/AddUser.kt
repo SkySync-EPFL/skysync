@@ -29,6 +29,8 @@ import ch.epfl.skysync.models.user.TempUser
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.util.hasError
 import ch.epfl.skysync.util.inputNonNullValidation
+import ch.epfl.skysync.util.textInputValidation
+import ch.epfl.skysync.util.validateEmail
 import ch.epfl.skysync.viewmodel.UserManagementViewModel
 
 @Composable
@@ -119,7 +121,7 @@ fun AddUserScreen(navController: NavController, viewModel: UserManagementViewMod
                 roleError = !inputNonNullValidation(roleValue)
                 balloonQualificationError =
                     if (roleValue === UserRole.PILOT)
-                        dropDownInputValidation(balloonQualificationValue)
+                        !inputNonNullValidation(balloonQualificationValue)
                     else false
                 isError =
                     hasError(
@@ -137,7 +139,7 @@ fun AddUserScreen(navController: NavController, viewModel: UserManagementViewMod
                           userRole = roleValue!!,
                           balloonQualification = balloonQualificationValue)
 
-                  viewModel.addUser(tmpUser)
+                  viewModel.createUser(tmpUser)
                   navController.popBackStack()
                 }
               },
@@ -147,16 +149,4 @@ fun AddUserScreen(navController: NavController, viewModel: UserManagementViewMod
               }
         }
       }
-}
-
-fun validateEmail(email: String): Boolean {
-  return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-}
-
-fun textInputValidation(name: String): Boolean {
-  return name.isEmpty()
-}
-
-fun <T> dropDownInputValidation(value: T): Boolean {
-  return value === null
 }

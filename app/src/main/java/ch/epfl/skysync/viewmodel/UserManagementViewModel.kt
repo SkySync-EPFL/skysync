@@ -1,6 +1,5 @@
 package ch.epfl.skysync.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -51,7 +50,6 @@ class UserManagementViewModel(
   private fun refreshAllUsers() {
     viewModelScope.launch {
       _allUsers.value = repository.userTable.getAll(onError = { onError(it) })
-      Log.d("UserManagementViewModel", "All users loaded")
     }
   }
 
@@ -59,16 +57,18 @@ class UserManagementViewModel(
   private fun refreshSelectedUser() {
     viewModelScope.launch {
       _selectedUser.value = repository.userTable.get(userId!!, onError = { onError(it) })
-      Log.d("UserManagementViewModel", "Selected user loaded")
     }
   }
 
-  /** Adds a user to the database */
-  fun addUser(tmpUser: TempUser) {
+  /**
+   * Creates a user in the temporary user table that will add a user when the user connects for the
+   * first time
+   */
+  fun createUser(tmpUser: TempUser) {
     viewModelScope.launch {
       repository.tempUserTable.set(tmpUser.email, tmpUser, onError = { onError(it) })
+      SnackbarManager.showMessage("User created successfully")
       refreshAllUsers()
-      Log.d("UserManagementViewModel", "User added")
     }
   }
 
@@ -77,7 +77,6 @@ class UserManagementViewModel(
     viewModelScope.launch {
       repository.userTable.delete(user.id, onError = { onError(it) })
       refreshAllUsers()
-      Log.d("UserManagementViewModel", "User deleted")
     }
   }
 
