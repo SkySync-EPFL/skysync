@@ -37,4 +37,13 @@ class UserManagementViewModelTest {
     composeTestRule.waitUntil { userManagementViewModel.allUsers.value.isNotEmpty() }
     assert(userManagementViewModel.allUsers.value.size == 7)
   }
+
+  @Test
+  fun deleteCorrectUser() = runTest {
+    composeTestRule.waitUntil { userManagementViewModel.allUsers.value.isNotEmpty() }
+    val userToDelete = userManagementViewModel.allUsers.value[0]
+    userManagementViewModel.deleteUser(userToDelete)
+    composeTestRule.waitUntil { userManagementViewModel.allUsers.value.size == 6 }
+    assert(userManagementViewModel.allUsers.value[0] != userToDelete)
+  }
 }
