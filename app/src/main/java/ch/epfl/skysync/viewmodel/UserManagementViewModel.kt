@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+/** viewmodel for the user management */
 class UserManagementViewModel(
     val repository: Repository,
     val userId: String?,
@@ -40,11 +41,13 @@ class UserManagementViewModel(
   val allUsers = _allUsers.asStateFlow()
   val selectedUser = _selectedUser.asStateFlow()
 
+  /** Refreshes the data of the viewmodel */
   fun refresh() {
     refreshAllUsers()
     refreshSelectedUser()
   }
 
+  /** Refreshes the data of all users */
   private fun refreshAllUsers() {
     viewModelScope.launch {
       _allUsers.value = repository.userTable.getAll(onError = { onError(it) })
@@ -52,6 +55,7 @@ class UserManagementViewModel(
     }
   }
 
+  /** Refreshes the data of the selected user */
   private fun refreshSelectedUser() {
     viewModelScope.launch {
       _selectedUser.value = repository.userTable.get(userId!!, onError = { onError(it) })
@@ -59,6 +63,7 @@ class UserManagementViewModel(
     }
   }
 
+  /** Adds a user to the database */
   fun addUser(tmpUser: TempUser) {
     viewModelScope.launch {
       repository.tempUserTable.set(tmpUser.email, tmpUser, onError = { onError(it) })
@@ -67,6 +72,7 @@ class UserManagementViewModel(
     }
   }
 
+  /** Deletes a user from the database */
   fun deleteUser(user: User) {
     viewModelScope.launch {
       repository.userTable.delete(user.id, onError = { onError(it) })
