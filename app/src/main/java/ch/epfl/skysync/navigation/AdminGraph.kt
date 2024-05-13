@@ -14,6 +14,7 @@ import ch.epfl.skysync.screens.admin.AddUserScreen
 import ch.epfl.skysync.screens.admin.AdminChatScreen
 import ch.epfl.skysync.screens.admin.AdminFlightDetailScreen
 import ch.epfl.skysync.screens.admin.AdminHomeScreen
+import ch.epfl.skysync.screens.admin.AdminStatsScreen
 import ch.epfl.skysync.screens.admin.AdminTextScreen
 import ch.epfl.skysync.screens.admin.ConfirmationScreen
 import ch.epfl.skysync.screens.admin.ModifyFlightScreen
@@ -41,9 +42,7 @@ fun NavGraphBuilder.adminGraph(
       val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
       AddFlightScreen(navController, flightsViewModel)
     }
-    composable(Route.STATS) {
-      // TODO
-    }
+    composable(Route.STATS) { AdminStatsScreen(navController) }
     composable(Route.ADD_USER) {
       val userManagementViewModel = UserManagementViewModel.createViewModel(repository, uid)
       AddUserScreen(navController, userManagementViewModel)
