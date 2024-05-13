@@ -38,25 +38,16 @@ class UserManagementViewModel(
   private val _selectedUser: MutableStateFlow<User?> = MutableStateFlow(null)
 
   val allUsers = _allUsers.asStateFlow()
-  val selectedUser = _selectedUser.asStateFlow()
 
   /** Refreshes the data of the viewmodel */
   fun refresh() {
     refreshAllUsers()
-    refreshSelectedUser()
   }
 
   /** Refreshes the data of all users */
   private fun refreshAllUsers() {
     viewModelScope.launch {
       _allUsers.value = repository.userTable.getAll(onError = { onError(it) })
-    }
-  }
-
-  /** Refreshes the data of the selected user */
-  private fun refreshSelectedUser() {
-    viewModelScope.launch {
-      _selectedUser.value = repository.userTable.get(userId!!, onError = { onError(it) })
     }
   }
 
