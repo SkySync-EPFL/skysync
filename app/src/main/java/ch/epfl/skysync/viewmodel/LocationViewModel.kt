@@ -34,12 +34,12 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
     @Composable
     fun createViewModel(uid: String? = null, repository: Repository): LocationViewModel {
       return viewModel<LocationViewModel>(
-        factory =
-        object : ViewModelProvider.Factory {
-          override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return LocationViewModel(uid, repository) as T
-          }
-        })
+          factory =
+              object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                  return LocationViewModel(uid, repository) as T
+                }
+              })
     }
   }
 
@@ -47,13 +47,13 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
 
   /** updates the current user and its personal flights */
   fun refreshPersonalFlights() =
-    viewModelScope.launch {
-      _currentUser.value = repository.userTable.get(userId!!, onError = { onError(it) })
-      _personalFlights.value =
-        repository.userTable.retrieveAssignedFlights(
-          repository.flightTable, userId!!, onError = { onError(it) })
-      Log.d("InFlightViewModel", "Personal Flights are loaded")
-    }
+      viewModelScope.launch {
+        _currentUser.value = repository.userTable.get(userId!!, onError = { onError(it) })
+        _personalFlights.value =
+            repository.userTable.retrieveAssignedFlights(
+                repository.flightTable, userId!!, onError = { onError(it) })
+        Log.d("InFlightViewModel", "Personal Flights are loaded")
+      }
 
   private var timerJob: Job? = null
   private var lastTimestamp = 0L
@@ -64,9 +64,9 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
 
   /** The current value of the counter formatted as a string in the format "HH:MM:SS". */
   val counter =
-    _counter
-      .map { formatTime(it) }
-      .stateIn(viewModelScope, started = WhileUiSubscribed, initialValue = formatTime(0))
+      _counter
+          .map { formatTime(it) }
+          .stateIn(viewModelScope, started = WhileUiSubscribed, initialValue = formatTime(0))
 
   private val locationTable = repository.locationTable
   private val flightTraceTable = repository.flightTraceTable
@@ -80,7 +80,7 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
 
   private val _currentLocations = MutableStateFlow<Map<String, Pair<User, Location>>>(emptyMap())
   val currentLocations: StateFlow<Map<String, Pair<User, Location>>> =
-    _currentLocations.asStateFlow()
+      _currentLocations.asStateFlow()
 
   private val _flightLocations = MutableStateFlow<List<Location>>(emptyList())
   val flightLocations: StateFlow<List<Location>> = _flightLocations.asStateFlow()
@@ -102,7 +102,7 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
 
   /** gets the current flight with the given flightId among the given flights */
   fun getCurrentFlight(flightList: List<Flight>, flightId: String): Flight =
-    flightList.first { f -> f.id == flightId }
+      flightList.first { f -> f.id == flightId }
 
   /**
    * Starts the timer on a reset counter in a new coroutine and sets isRunning to true. Uses
@@ -112,15 +112,15 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
     _counter.value = 0L
     var newTimeStamp = 0L
     timerJob =
-      viewModelScope.launch {
-        lastTimestamp = System.currentTimeMillis()
-        while (_inFlight.value) {
-          delay(100)
-          newTimeStamp = System.currentTimeMillis()
-          _counter.value += newTimeStamp - lastTimestamp
-          lastTimestamp = newTimeStamp
+        viewModelScope.launch {
+          lastTimestamp = System.currentTimeMillis()
+          while (_inFlight.value) {
+            delay(100)
+            newTimeStamp = System.currentTimeMillis()
+            _counter.value += newTimeStamp - lastTimestamp
+            lastTimestamp = newTimeStamp
+          }
         }
-      }
   }
 
   /**
@@ -178,25 +178,25 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
    */
   private fun addLocationListeners(userIds: List<String>, pilotId: String) {
     listeners +=
-      userIds.map { userId ->
-        locationTable.listenForLocationUpdates(
-          userId,
-          { update ->
-            if (userId == pilotId) {
-              updateFlightLocations(update)
-            }
-            if (update.adds.isEmpty()) {
-              return@listenForLocationUpdates
-            }
-            // the return is useless but needed to make sonar cloud happy
-            val user = users[userId] ?: return@listenForLocationUpdates
+        userIds.map { userId ->
+          locationTable.listenForLocationUpdates(
+              userId,
+              { update ->
+                if (userId == pilotId) {
+                  updateFlightLocations(update)
+                }
+                if (update.adds.isEmpty()) {
+                  return@listenForLocationUpdates
+                }
+                // the return is useless but needed to make sonar cloud happy
+                val user = users[userId] ?: return@listenForLocationUpdates
 
-            val lastLocation = update.adds.last()
-            _currentLocations.value =
-              _currentLocations.value.plus(Pair(userId, Pair(user, lastLocation)))
-          },
-          viewModelScope)
-      }
+                val lastLocation = update.adds.last()
+                _currentLocations.value =
+                    _currentLocations.value.plus(Pair(userId, Pair(user, lastLocation)))
+              },
+              viewModelScope)
+        }
   }
 
   /** Update the flight trace locations according to the received update */
@@ -206,7 +206,7 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
     // that is: it is not the location with the highest time anymore
     val updatedLocations = update.adds + update.updates
     locations =
-      locations.filter { location -> updatedLocations.find { it.id == location.id } == null }
+        locations.filter { location -> updatedLocations.find { it.id == location.id } == null }
     // add new locations
     _flightLocations.value = (locations + update.adds + update.updates).sortedBy { it.point.time }
   }
@@ -217,7 +217,7 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
    * @param location The new location to update in the database.
    */
   fun addLocation(location: Location) =
-    viewModelScope.launch { locationTable.addLocation(location, onError = { onError(it) }) }
+      viewModelScope.launch { locationTable.addLocation(location, onError = { onError(it) }) }
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
@@ -241,22 +241,22 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
    * be clearly defined.
    */
   fun saveFlightTrace() =
-    viewModelScope.launch {
-      if (!_inFlight.value || pilotId == null) {
-        onError(Exception("Can not save the flight trace while not in flight."))
-        return@launch
+      viewModelScope.launch {
+        if (!_inFlight.value || pilotId == null) {
+          onError(Exception("Can not save the flight trace while not in flight."))
+          return@launch
+        }
+        // first verify that the number of locations in local and in the database match
+        // as the pilot could already have deleted his locations
+        val locations =
+            locationTable.query(Filter.equalTo("userId", pilotId!!), onError = { onError(it) })
+        if (_flightLocations.value.size != locations.size) {
+          onError(Exception("Can not save the flight trace (consistency issue)."))
+          return@launch
+        }
+        val flightTrace = FlightTrace(trace = _flightLocations.value.map { it.point })
+        flightTraceTable.set(flightId.value!!, flightTrace, onError = { onError(it) })
       }
-      // first verify that the number of locations in local and in the database match
-      // as the pilot could already have deleted his locations
-      val locations =
-        locationTable.query(Filter.equalTo("userId", pilotId!!), onError = { onError(it) })
-      if (_flightLocations.value.size != locations.size) {
-        onError(Exception("Can not save the flight trace (consistency issue)."))
-        return@launch
-      }
-      val flightTrace = FlightTrace(trace = _flightLocations.value.map { it.point })
-      flightTraceTable.set(flightId.value!!, flightTrace, onError = { onError(it) })
-    }
 
   /**
    * Setup the view model to be in "flight-mode", setup listeners on flight members' to track their
@@ -278,10 +278,10 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
 
   /** Stop the flight tracking, clean listeners and delete all locations of the user */
   fun stopLocationTracking() =
-    viewModelScope.launch {
-      reset()
-      locationTable.queryDelete(Filter.equalTo("userId", userId!!), onError = { onError(it) })
-    }
+      viewModelScope.launch {
+        reset()
+        locationTable.queryDelete(Filter.equalTo("userId", userId!!), onError = { onError(it) })
+      }
 
   override fun onCleared() {
     reset()
