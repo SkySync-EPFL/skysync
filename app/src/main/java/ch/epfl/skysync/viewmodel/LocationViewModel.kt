@@ -253,7 +253,7 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
           return@launch
         }
         val flightTrace = FlightTrace(trace = _flightLocations.value.map { it.point })
-        flightTraceTable.set(flightId!!, flightTrace, onError = { onError(it) })
+        flightTraceTable.set(flightId.value!!, flightTrace, onError = { onError(it) })
       }
 
   /**
