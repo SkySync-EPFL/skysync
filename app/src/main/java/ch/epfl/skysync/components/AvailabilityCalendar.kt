@@ -139,7 +139,7 @@ fun SaveCancelButton(
 fun AvailabilityCalendar(
     padding: PaddingValues,
     getAvailabilityStatus: (LocalDate, TimeSlot) -> AvailabilityStatus,
-    nextAvailabilityStatus: (LocalDate, TimeSlot) -> AvailabilityStatus,
+    nextAvailabilityStatus: (LocalDate, TimeSlot) -> Unit,
     onSave: () -> Unit,
     onCancel: () -> Unit
 ) {
@@ -154,12 +154,13 @@ fun AvailabilityCalendar(
       // it each time the result of getAvailabilityStatus change
       // which is a bit hacky and should be a temporary solution
       val availabilityStatus = getAvailabilityStatus(date, time)
-      var status by remember { mutableStateOf(availabilityStatus) }
-      if (status != availabilityStatus) {
-        status = availabilityStatus
-      }
-      AvailabilityTile(date = date, time = time, availabilityStatus = status) {
-        status = nextAvailabilityStatus(date, time)
+      //var status by remember { mutableStateOf(availabilityStatus) }
+//      if (status != availabilityStatus) {
+//        status = availabilityStatus
+//      }
+      AvailabilityTile(date = date, time = time, availabilityStatus = availabilityStatus) {
+          nextAvailabilityStatus(date, time)
+        //status = availabilityStatus
         isDraft = true
       }
     }

@@ -9,13 +9,16 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.CalendarDifferenceType
+import ch.epfl.skysync.models.calendar.CalendarModel
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
+import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.user.User
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 /**
  * ViewModel for the Calendar screen
@@ -86,6 +89,11 @@ class CalendarViewModel(
   private fun onError(e: Exception) {
     SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
   }
+
+    fun setToNextAvailabilityStatus(date: LocalDate, time: TimeSlot) {
+        _currentAvailabilityCalendar.value = _currentAvailabilityCalendar.value.setToNextAvailabilityStatus(date, time) as AvailabilityCalendar
+    }
+
 
   /**
    * Save the current availability calendar to the database by adding, updating, deleting

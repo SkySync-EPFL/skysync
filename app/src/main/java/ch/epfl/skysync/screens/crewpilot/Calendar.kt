@@ -47,25 +47,24 @@ fun CalendarScreen(
         }
       },
       bottomBar = { BottomBar(navController) }) { padding ->
-        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+        val availabilityCalendar by viewModel.currentAvailabilityCalendar.collectAsStateWithLifecycle()
+        val flightGroupCalendar by viewModel.currentFlightGroupCalendar.collectAsStateWithLifecycle()
         if (calendarType == Route.CREW_AVAILABILITY_CALENDAR) {
-          val availabilityCalendar = uiState.availabilityCalendar
           AvailabilityCalendar(
               padding = padding,
               getAvailabilityStatus = { date, time ->
                 availabilityCalendar.getAvailabilityStatus(date, time)
               },
               nextAvailabilityStatus = { date, time ->
-                availabilityCalendar.nextAvailabilityStatus(date, time)
+                viewModel.setToNextAvailabilityStatus(date, time)
               },
               onSave = { viewModel.saveAvailabilities() },
               onCancel = { viewModel.cancelAvailabilities() })
         } else if (calendarType == Route.CREW_FLIGHT_CALENDAR) {
-          val flightCalendar = uiState.flightGroupCalendar
           FlightCalendar(
               padding = padding,
               getFirstFlightByDate = { date, time ->
-                flightCalendar.getFirstFlightByDate(date, time)
+                flightGroupCalendar.getFirstFlightByDate(date, time)
               },
               onFlightClick = { selectedFlight ->
                 navController.navigate(Route.CREW_FLIGHT_DETAILS + "/${selectedFlight}")
@@ -81,7 +80,9 @@ fun CalendarTopBar(tab: String, tabs: Map<String, Int>, onclick: (String) -> Uni
     TabRow(selectedTabIndex = tabIndex, containerColor = lightGray) {
       tabs.forEach { (route, index) ->
         Tab(
-            modifier = Modifier.padding(8.dp).testTag(route),
+            modifier = Modifier
+                .padding(8.dp)
+                .testTag(route),
             text = { Text(text = route) },
             selected = tabIndex == index,
             onClick = { onclick(route) })

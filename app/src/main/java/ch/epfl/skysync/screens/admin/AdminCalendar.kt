@@ -43,21 +43,20 @@ fun AdminCalendarScreen(
         }
       },
       bottomBar = { AdminBottomBar(navController) }) { padding ->
-        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         if (calendarType == Route.ADMIN_AVAILABILITY_CALENDAR) {
-          val availabilityCalendar = uiState.availabilityCalendar
+          val availabilityCalendar by viewModel.currentAvailabilityCalendar.collectAsStateWithLifecycle()
           AvailabilityCalendar(
               padding = padding,
               getAvailabilityStatus = { date, time ->
                 availabilityCalendar.getAvailabilityStatus(date, time)
               },
               nextAvailabilityStatus = { date, time ->
-                availabilityCalendar.nextAvailabilityStatus(date, time)
+                viewModel.setToNextAvailabilityStatus(date, time)
               },
               onSave = { viewModel.saveAvailabilities() },
               onCancel = { Log.d("TO BE IMPLEMENTED", "Cancel in Availabilities") })
         } else if (calendarType == Route.ADMIN_FLIGHT_CALENDAR) {
-          val flightCalendar = uiState.flightGroupCalendar
+          val flightCalendar by viewModel.currentFlightGroupCalendar.collectAsStateWithLifecycle()
           FlightCalendar(
               padding = padding,
               getFirstFlightByDate = { date, time ->
