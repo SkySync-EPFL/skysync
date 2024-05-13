@@ -152,7 +152,6 @@ fun FlightScreen(
                 )
 
             inFlightViewModel.addLocation(Location(userId = uid, point = newLocation))
-            inFlightViewModel.saveFlightTrace()
             markerState.position = newLocation.latlng()
             metrics = metrics.withUpdate(it.speed, it.altitude, it.bearing, newLocation)
           }
