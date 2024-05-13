@@ -38,6 +38,14 @@ import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.util.hasNoError
 import java.util.Date
 
+/**
+ * Displays a field for picking a time.
+ *
+ * @param defaultPadding The default padding value to be applied to the field.
+ * @param title The title or label for the time picker field.
+ * @param time The current selected time.
+ * @param setTime Callback function triggered when a new time is selected.
+ */
 @Composable
 fun TimePickerField(defaultPadding: Dp, title: String, time: Date, setTime: (Date) -> Unit) {
   var showTimePicker by remember { mutableStateOf(false) }

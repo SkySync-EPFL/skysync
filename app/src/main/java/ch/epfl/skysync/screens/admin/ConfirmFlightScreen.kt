@@ -22,7 +22,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -42,8 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -53,7 +50,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.components.ConfirmAlertDialog
 import ch.epfl.skysync.components.CustomTopAppBar
-import ch.epfl.skysync.components.HeaderTitle
+import ch.epfl.skysync.components.FlightTeamMembersDetails
+import ch.epfl.skysync.components.GlobalFlightMetricsDetails
 import ch.epfl.skysync.components.LargeTitle
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.components.SmallTitle
@@ -73,12 +71,22 @@ import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.flight.flightColorOptions
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.*
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import java.time.LocalDate
 import java.util.Date
 
+/**
+ * Represents a screen for confirming a flight.
+ *
+ * @param navController The navigation controller responsible for managing navigation within the
+ *   app.
+ * @param flightId The unique identifier of the flight to be confirmed.
+ * @param viewModel The view model responsible for providing flight data and handling confirmation
+ *   logic.
+ */
 @Composable
 fun ConfirmationScreen(
     navController: NavHostController,
@@ -110,9 +118,12 @@ fun ConfirmationScreen(
 }
 
 /**
- * Composable function to display a confirmation screen for a planned flight.
+ * Represents a screen to provide the latest information to confirm a planned flight.
  *
- * @param plannedFlight The planned flight for which the confirmation screen is displayed.
+ * @param navController The navigation controller responsible for managing navigation within the
+ *   app.
+ * @param plannedFlight The planned flight to be confirmed.
+ * @param onConfirm Callback function triggered when the flight confirmation is confirmed.
  */
 @Composable
 fun Confirmation(
@@ -120,7 +131,6 @@ fun Confirmation(
     plannedFlight: PlannedFlight,
     onConfirm: (ConfirmedFlight) -> Unit
 ) {
-  val teamRoles = plannedFlight.team.roles
   val defaultPadding = 16.dp
 
   var selectedTeamColor by remember { mutableStateOf(FlightColor.NO_COLOR) }
@@ -145,28 +155,11 @@ fun Confirmation(
           "Team departure time" to teamDepartureTime,
           "Passengers meet up time" to passengerMeetupTime)
 
-  val metrics =
-      mapOf(
-          "Day of flight" to DateUtility.localDateToString(plannedFlight.date),
-          "Time slot" to plannedFlight.timeSlot.toString(),
-          "Number of Passengers" to "${plannedFlight.nPassengers}",
-          "Flight type" to plannedFlight.flightType.name,
-          "Balloon" to (plannedFlight.balloon?.name ?: "Unset"),
-          "Basket" to (plannedFlight.basket?.name ?: "Unset"))
-
-  val flightColorOptions =
-      mapOf(
-          FlightColor.RED to lightRed,
-          FlightColor.BLUE to blue,
-          FlightColor.GREEN to lightGreen,
-          FlightColor.PINK to lightPink,
-          FlightColor.ORANGE to lightOrange,
-          FlightColor.NO_COLOR to Color.Gray)
-
+  val cardColor = Color.White
   Scaffold(
       topBar = { CustomTopAppBar(navController = navController, title = "Flight Confirmation") },
-      bottomBar = { ConfirmButton(showConfirmDialog, canConfirm) },
-      containerColor = Color.LightGray,
+      bottomBar = { BottomBarConfirmButton(showConfirmDialog, canConfirm) },
+      containerColor = lightGray,
   ) { padding ->
     Column(modifier = Modifier.padding(padding)) {
       if (showConfirmDialog.value) {
@@ -195,34 +188,23 @@ fun Confirmation(
           verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
         item {
-          Card(colors = CardDefaults.cardColors(Color.White)) {
-            metrics.forEach { (metric, value) -> SingleMetric(metric = metric, value = value) }
-            ListMetric(
-                metric = "Vehicles",
-                values = plannedFlight.vehicles.map { vehicle -> vehicle.name })
+          Card(colors = CardDefaults.cardColors(cardColor)) {
+            GlobalFlightMetricsDetails(flight = plannedFlight, cardColor = cardColor)
           }
         }
         item {
-          Card(colors = CardDefaults.cardColors(Color.White)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-              HeaderTitle(title = "Team", defaultPadding, color = Color.Black)
-              OptionSelector(
-                  defaultColor = flightColorOptions[FlightColor.NO_COLOR] as Color,
-                  options = flightColorOptions,
-                  onOptionSelected = { option -> selectedTeamColor = option })
-            }
-            teamRoles.forEach { role ->
-              var values = listOf("Unset")
-              if (role.assignedUser != null) {
-                values = listOf(role.assignedUser!!.firstname, role.assignedUser!!.lastname)
-              }
-              ListMetric(metric = role.roleType.description, values = values)
-            }
+          Card(colors = CardDefaults.cardColors(cardColor)) {
+            FlightTeamMembersDetails(
+                flight = plannedFlight, padding = defaultPadding, cardColor = cardColor) {
+                  ColorOptionSelector(
+                      defaultColor = flightColorOptions[FlightColor.NO_COLOR] as Color,
+                      options = flightColorOptions,
+                      onOptionSelected = { option -> selectedTeamColor = option })
+                }
           }
         }
-
         items(items = times.keys.toList()) { title ->
-          Card(colors = CardDefaults.cardColors(Color.White)) {
+          Card(colors = CardDefaults.cardColors(cardColor)) {
             TimePickerButton(
                 title = title,
                 padding = defaultPadding,
@@ -233,7 +215,7 @@ fun Confirmation(
 
         item {
           val keyboardController = LocalSoftwareKeyboardController.current
-          Card(colors = CardDefaults.cardColors(Color.White)) {
+          Card(colors = CardDefaults.cardColors(cardColor)) {
             TitledInputTextField(
                 padding = defaultPadding,
                 title = "Meet up Location",
@@ -246,9 +228,9 @@ fun Confirmation(
           }
         }
         item {
-          Card(colors = CardDefaults.cardColors(Color.White)) {
+          Card(colors = CardDefaults.cardColors(cardColor)) {
             AddRemark(padding = defaultPadding, remarks = remarks)
-            DisplayRemarks(remarks = remarks, defaultPadding)
+            DisplayEditableRemarks(remarks = remarks, defaultPadding)
           }
         }
       }
@@ -256,8 +238,14 @@ fun Confirmation(
   }
 }
 
+/**
+ * Displays a list of remarks along with delete buttons for each remark.
+ *
+ * @param remarks The list of remarks to be displayed.
+ * @param padding The padding value to be applied to each remark row.
+ */
 @Composable
-fun DisplayRemarks(remarks: MutableList<String>, padding: Dp) {
+fun DisplayEditableRemarks(remarks: MutableList<String>, padding: Dp) {
   remarks.forEachIndexed { i, r ->
     Row(
         modifier = Modifier.fillMaxSize(),
@@ -274,8 +262,14 @@ fun DisplayRemarks(remarks: MutableList<String>, padding: Dp) {
   }
 }
 
+/**
+ * Displays a confirm button in the bottom app bar.
+ *
+ * @param showDialog A mutable state indicating whether to show the confirmation dialog.
+ * @param canConfirm A boolean value indicating whether the confirmation button can be enabled.
+ */
 @Composable
-fun ConfirmButton(showDialog: MutableState<Boolean>, canConfirm: Boolean) {
+fun BottomBarConfirmButton(showDialog: MutableState<Boolean>, canConfirm: Boolean) {
   BottomAppBar(modifier = Modifier.heightIn(max = 60.dp), containerColor = Color.LightGray) {
     Button(
         modifier = Modifier.fillMaxSize(),
@@ -288,29 +282,12 @@ fun ConfirmButton(showDialog: MutableState<Boolean>, canConfirm: Boolean) {
   }
 }
 
-@Composable
-fun ListMetric(metric: String, values: List<String>) {
-  Row(modifier = Modifier.padding(8.dp)) {
-    Text(
-        text = metric,
-        modifier = Modifier.fillMaxWidth().weight(1f),
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Left)
-    Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
-      values.forEach { value ->
-        Text(
-            text = value,
-            modifier = Modifier.fillMaxWidth().padding(1.dp),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center)
-      }
-    }
-  }
-  Divider(modifier = Modifier.padding(start = 20.dp), color = Color.LightGray, thickness = 1.dp)
-}
-
+/**
+ * Displays a section for adding remarks.
+ *
+ * @param padding The padding value to be applied to the section.
+ * @param remarks The list of remarks to which new remarks will be added.
+ */
 @Composable
 fun AddRemark(padding: Dp, remarks: MutableList<String>) {
   var showAddMemberDialog by remember { mutableStateOf(false) }
@@ -367,13 +344,15 @@ fun AddRemarkAlertDialog(
       })
 }
 
+/**
+ * Displays a dropdown menu for selecting a color option.
+ *
+ * @param defaultColor The default color option.
+ * @param options A map containing the available color options.
+ * @param onOptionSelected Callback function triggered when a color option is selected.
+ */
 @Composable
-fun SingleMetric(metric: String, value: String) {
-  ListMetric(metric, listOf(value))
-}
-
-@Composable
-fun OptionSelector(
+fun ColorOptionSelector(
     defaultColor: Color,
     options: Map<FlightColor, Color>,
     onOptionSelected: (FlightColor) -> Unit
