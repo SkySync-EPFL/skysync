@@ -27,7 +27,7 @@ import ch.epfl.skysync.database.UserRole
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.user.TempUser
 import ch.epfl.skysync.ui.theme.lightOrange
-import ch.epfl.skysync.util.hasNoError
+import ch.epfl.skysync.util.hasError
 import ch.epfl.skysync.util.inputNonNullValidation
 import ch.epfl.skysync.viewmodel.UserManagementViewModel
 
@@ -65,7 +65,7 @@ fun AddUserScreen(navController: NavController, viewModel: UserManagementViewMod
                   value = roleValue,
                   onclickMenu = { roleValue = it },
                   items = UserRole.entries,
-                  showString = { it?.name ?: "" },
+                  showString = { it?.name?.lowercase() ?: "" },
                   isError = roleError,
                   messageError = if (roleError) "Select a role" else "")
             }
@@ -116,13 +116,13 @@ fun AddUserScreen(navController: NavController, viewModel: UserManagementViewMod
                 emailError = !validateEmail(emailValue)
                 firstNameError = textInputValidation(firstNameValue)
                 lastNameError = textInputValidation(lastNameValue)
-                roleError = inputNonNullValidation(roleValue)
+                roleError = !inputNonNullValidation(roleValue)
                 balloonQualificationError =
                     if (roleValue === UserRole.PILOT)
                         dropDownInputValidation(balloonQualificationValue)
                     else false
                 isError =
-                    hasNoError(
+                    hasError(
                         roleError,
                         firstNameError,
                         lastNameError,

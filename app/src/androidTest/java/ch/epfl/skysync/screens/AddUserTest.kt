@@ -33,7 +33,8 @@ class AddUserTest {
   fun setUp() = runTest {
     dbSetup.fillDatabase(db)
     composeTestRule.setContent {
-      userManagementViewModel = UserManagementViewModel.createViewModel(repository, "id-admin-1")
+      userManagementViewModel =
+          UserManagementViewModel.createViewModel(repository, dbSetup.admin1.id)
       AddUserScreen(navController, userManagementViewModel)
     }
   }
@@ -75,7 +76,7 @@ class AddUserTest {
         .onNodeWithTag("Add User Lazy Column")
         .performScrollToNode(hasTestTag("Role Menu"))
     composeTestRule.onNodeWithTag("Role Menu").performClick()
-    composeTestRule.onNodeWithText("Pilot", true).performClick()
+    composeTestRule.onNodeWithText("Pilot", substring = true, ignoreCase = true).performClick()
     composeTestRule
         .onNodeWithTag("Add User Lazy Column")
         .performScrollToNode(hasTestTag("Balloon Qualification Menu"))
@@ -96,7 +97,7 @@ class AddUserTest {
         .performScrollToNode(hasTestTag("Role Menu"))
     composeTestRule.onNodeWithText("Select a role", true).assertIsDisplayed()
     composeTestRule.onNodeWithTag("Role Menu").performClick()
-    composeTestRule.onNodeWithText("Pilot", true).performClick()
+    composeTestRule.onNodeWithText("Pilot", substring = true, ignoreCase = true).performClick()
 
     composeTestRule
         .onNodeWithTag("Add User Lazy Column")

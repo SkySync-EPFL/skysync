@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 
 /** Useful methods for input validation */
-fun hasNoError(vararg errors: Boolean): Boolean {
+fun hasError(vararg errors: Boolean): Boolean {
   return errors.any { it }
 }
 
