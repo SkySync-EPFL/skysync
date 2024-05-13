@@ -36,6 +36,10 @@ jobs:
         env:
           DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo $DATA | base64 -di > app/google-services.json
+      - name: Load Secrets
+        env:
+          DATA: ${{ secrets.SECRET_PROPERTIES }}
+        run: echo $DATA | base64 -di > app/secrets.properties
       - name: Set execution flag for gradlew
         run: chmod +x gradlew
       - name: Build APK
