@@ -46,39 +46,39 @@ class InFlightViewModelTest {
   }
 
   @Test
-  fun timerIsZeroBeforeStart() = runTest {
+  fun timerIsZeroBeforeStart() {
     val countString = inFlightViewModel.counter.value
     assertTrue(countString == "00:00:00")
   }
 
   @Test
-  fun testStartFunction() {
-    inFlightViewModel.setCurrentFlight(dbs.flight1.id)
-    inFlightViewModel.startFlight()
+  fun testStartFunction() = runTest {
+    inFlightViewModel.setCurrentFlight(dbs.flight4.id)
+    inFlightViewModel.startFlight().join()
 
     composeTestRule.waitUntil(timeoutMillis = 1500) {
       val countString = inFlightViewModel.counter.value
       countString == "00:00:01"
     }
-    val isRunning = inFlightViewModel.isFlightOngoing.value
-    assertTrue(isRunning)
+    assertEquals(InFlightViewModel.FlightStage.ONGOING, inFlightViewModel.flightStage.value)
   }
 
   @Test
   fun testStopFunction() = runTest {
-    inFlightViewModel.setCurrentFlight(dbs.flight1.id)
-    inFlightViewModel.startFlight()
+    inFlightViewModel.setCurrentFlight(dbs.flight4.id)
+    inFlightViewModel.startFlight().join()
     composeTestRule.waitUntil(timeoutMillis = 2500) {
       val countString = inFlightViewModel.counter.value
       countString == "00:00:02"
     }
-    inFlightViewModel.stopFlight()
-    val isRunning = inFlightViewModel.isFlightOngoing.value
-    assertFalse(isRunning)
+    inFlightViewModel.stopFlight().join()
+    assertEquals(InFlightViewModel.FlightStage.POST, inFlightViewModel.flightStage.value)
   }
 
   @Test
-  fun testInitialLocationSetup() = runTest { assertNotNull(inFlightViewModel.currentLocations) }
+  fun testInitialLocationSetup() {
+    assertNotNull(inFlightViewModel.currentLocations)
+  }
 
   @Test
   fun testLocationUpdate() = runTest {
@@ -86,9 +86,7 @@ class InFlightViewModelTest {
 
     inFlightViewModel.setCurrentFlight(flight.id)
 
-    inFlightViewModel.startFlight()
-
-    inFlightViewModel.startLocationTracking(flight.team)
+    inFlightViewModel.startFlight().join()
 
     // having the program working with out of order location updates is not a strict requirement
     // but it's still nice to have
@@ -121,7 +119,8 @@ class InFlightViewModelTest {
     assertEquals(2, locations[dbs.crew1.id]!!.second.point.time)
     assertEquals(2, locations[dbs.crew2.id]!!.second.point.time)
 
-    inFlightViewModel.stopLocationTracking().join()
+    inFlightViewModel.stopFlight().join()
+    inFlightViewModel.clearFlight().join()
 
     val pilotLocations =
         locationTable.query(Filter.equalTo("userId", dbs.pilot1.id), onError = { assertNull(it) })
@@ -135,7 +134,7 @@ class InFlightViewModelTest {
     val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) }) as ConfirmedFlight
 
     inFlightViewModel.setCurrentFlight(flight.id)
-    inFlightViewModel.startFlight()
+    inFlightViewModel.startFlight().join()
 
     // here we need to have the update in order to have all the locations in the flight trace
     // as the locations that are out of order are discarded (which is a feature not a bug...)
@@ -155,7 +154,7 @@ class InFlightViewModelTest {
         .addLocation(Location(userId = dbs.pilot1.id, point = LocationPoint(3, 1.0, 0.0)))
         .join()
 
-    inFlightViewModel.saveFlightTrace().join()
+    inFlightViewModel.stopFlight().join()
 
     val flightTrace = flightTraceTable.get(dbs.flight4.id, onError = { assertNull(it) })
 

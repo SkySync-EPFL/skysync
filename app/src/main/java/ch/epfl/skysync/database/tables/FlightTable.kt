@@ -51,7 +51,7 @@ class FlightTable(db: FirestoreDatabase) :
       FlightStatus.PLANNED ->
           PlannedFlight(
               id = schema.id!!,
-              nPassengers = schema.numPassengers!!,
+              nPassengers = schema.nPassengers!!,
               team = team,
               flightType = flightType,
               balloon = balloon,
@@ -66,7 +66,7 @@ class FlightTable(db: FirestoreDatabase) :
         }
         ConfirmedFlight(
             id = schema.id!!,
-            nPassengers = schema.numPassengers!!,
+            nPassengers = schema.nPassengers!!,
             team = team,
             flightType = flightType,
             balloon = balloon,

@@ -9,8 +9,12 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.models.flight.PlannedFlight
 import com.google.firebase.firestore.DocumentId
+import com.google.firebase.firestore.PropertyName
 import java.lang.UnsupportedOperationException
 import java.util.Date
+
+// @get:PropertyName("...") is a fix for when a field name gets changed during serialization
+// see: https://stackoverflow.com/questions/38681260/firebase-propertyname-doesnt-work
 
 data class FlightSchema(
     @DocumentId val id: String? = null,
@@ -21,11 +25,7 @@ data class FlightSchema(
     val basketId: String? = null,
     val vehicleIds: List<String>? = null,
     val status: FlightStatus? = null,
-    // Note: this is called numPassengers and not nPassengers because
-    // nPassengers is wrongly mapped to "npassengers" by the firestore class mapper
-    // whereas numPassenger is correctly mapped as "numPassengers"
-    // (which makes no sense but at least it works)
-    val numPassengers: Int? = null,
+    @get:PropertyName("nPassengers") val nPassengers: Int? = null,
     val timeSlot: TimeSlot? = null,
     /** We use the Date class instead of the LocalDate for Firestore see [DateUtility] */
     val date: Date? = null,
@@ -42,7 +42,7 @@ data class FlightSchema(
     /** In: Confirmed flight */
     val meetupLocationPassenger: String? = null,
     /** In: Confirmed flight */
-    val isOngoing: Boolean? = null,
+    @get:PropertyName("isOngoing") val isOngoing: Boolean? = null,
     /** In: Confirmed flight Nullable */
     val startTimestamp: Long? = null,
 ) : Schema<Flight> {
@@ -68,7 +68,7 @@ data class FlightSchema(
           basketId = flight.basket?.id,
           vehicleIds = flight.vehicles.map { it.id },
           status = FlightStatus.PLANNED,
-          numPassengers = flight.nPassengers,
+          nPassengers = flight.nPassengers,
           timeSlot = flight.timeSlot,
           date = DateUtility.localDateToDate(flight.date),
       )
@@ -82,7 +82,7 @@ data class FlightSchema(
           basketId = flight.basket.id,
           vehicleIds = flight.vehicles.map { it.id },
           status = FlightStatus.CONFIRMED,
-          numPassengers = flight.nPassengers,
+          nPassengers = flight.nPassengers,
           timeSlot = flight.timeSlot,
           date = DateUtility.localDateToDate(flight.date),
           remarks = flight.remarks,

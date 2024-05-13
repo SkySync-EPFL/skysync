@@ -75,6 +75,7 @@ fun ShowFlightToStart(
     flight: ConfirmedFlight?,
     onClick: (String) -> Unit
 ) {
+  println("FLIGHT CARD ${flight?.id}")
   Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
     // Renders the Google Map or a permission request message based on the permission status.
     Column(modifier = Modifier.fillMaxSize().padding(padding).testTag("FlightLaunch")) {
@@ -123,7 +124,7 @@ fun FlightScreen(
   val rawTime by inFlightViewModel.rawCounter.collectAsStateWithLifecycle()
   val currentTime by inFlightViewModel.counter.collectAsStateWithLifecycle()
   val flightStage by inFlightViewModel.flightStage.collectAsStateWithLifecycle()
-  val confirmedFlights by inFlightViewModel.confirmedFlights.collectAsStateWithLifecycle()
+  val startableFlights by inFlightViewModel.startableFlights.collectAsStateWithLifecycle()
   val currentFlight by inFlightViewModel.currentFlight.collectAsStateWithLifecycle()
 
   val currentLocations = inFlightViewModel.currentLocations.collectAsState().value
@@ -182,6 +183,9 @@ fun FlightScreen(
     // Cleanup function to stop receiving location updates when the composable is disposed.
     onDispose { fusedLocationClient.removeLocationUpdates(locationCallback) }
   }
+  println(
+      "Loading: $loading isPilot: ${inFlightViewModel.isPilot()} currentFlight: ${currentFlight?.id} startableFlights: ${startableFlights.size}")
+  println("Permission: ${locationPermission.status.isGranted}")
   if (!locationPermission.status.isGranted) {
     Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
       Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -191,12 +195,8 @@ fun FlightScreen(
     }
   } else if (loading) {
     LoadingComponent(isLoading = true, onRefresh = {}) {}
-  } else if (!inFlightViewModel.isPilot()) {
-    // TODO: Show screen for crew
-  } else if (confirmedFlights.isEmpty()) {
-    ShowFlightToStart(navController = navController, flight = null) {}
   } else if (currentFlight == null) {
-    ShowFlightToStart(navController, confirmedFlights.first()) {
+    ShowFlightToStart(navController, startableFlights.firstOrNull()) {
       inFlightViewModel.setCurrentFlight(it)
     }
   } else {

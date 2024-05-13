@@ -44,7 +44,7 @@ class FlightScreenPermissionTest {
       FlightScreen(navController, inFlightViewModel = inFlightViewModel, uid)
     }
     inFlightViewModel.init(dbs.pilot1.id).join()
-    inFlightViewModel.setCurrentFlight(uid)
+    inFlightViewModel.setCurrentFlight(dbs.flight4.id)
   }
 
   @Test

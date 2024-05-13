@@ -70,12 +70,13 @@ class E2EPilotDuringFlight {
       // Refreshes chat and user data asynchronously
       chatViewModel.refresh().join()
       chatViewModel.refreshUser().join()
-      inFlightViewModel.refreshFlights().join()
+      inFlightViewModel.init(dbs.pilot1.id).join()
 
       // Clicks on the "Flight" button to navigate to the flight screen
       composeTestRule.onNodeWithText("Flight").performClick()
       var route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(Route.FLIGHT, route)
+      println("FLIGHTS ${listOf(dbs.flight1.id, dbs.flight2.id, dbs.flight3.id, dbs.flight4.id)}")
       var usedFlightId = ""
       for (f in listOf(dbs.flight1, dbs.flight2, dbs.flight3, dbs.flight4)) {
         if (composeTestRule.onNodeWithTag("flightCard${f.id}").isDisplayed()) {

@@ -113,8 +113,10 @@ class DatabaseSetup {
           assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.SMALL)
 
-  var date1 = LocalDate.of(2024, 8, 12)
-  var date2 = LocalDate.of(2024, 8, 14)
+  var date1 = LocalDate.of(2024, 8, 14)
+
+  // this the date of flight4, it needs to be today for the InFlightViewModel tests
+  var date2 = LocalDate.now()
   var dateNoFlight = LocalDate.of(2024, 8, 16)
 
   var availability1Crew1 =
