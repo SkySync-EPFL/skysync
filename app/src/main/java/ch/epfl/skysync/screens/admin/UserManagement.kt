@@ -1,12 +1,16 @@
 package ch.epfl.skysync.screens.admin
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -43,6 +47,7 @@ import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
+import ch.epfl.skysync.ui.theme.lightTurquoise
 import ch.epfl.skysync.viewmodel.UserManagementViewModel
 
 // Composable function to display a card for a User object.
@@ -51,12 +56,20 @@ fun UserCard(user: User, onUserClick: (String) -> Unit) {
   Card(
       modifier =
           Modifier.fillMaxWidth()
-              .padding(vertical = 8.dp)
+              .padding(vertical = 1.dp)
               .clickable { onUserClick(user.id) }
               .testTag("userCard"),
       elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
   ) {
-    Surface(modifier = Modifier.fillMaxWidth(), color = lightGray) {
+    Surface(modifier = Modifier.fillMaxWidth().border(
+        border = BorderStroke(1.dp, Color.Black),
+        shape = RoundedCornerShape(
+            topStart = 12.dp,
+            topEnd = 12.dp,
+            bottomEnd = 12.dp,
+            bottomStart = 12.dp
+        )
+    ), color = lightGray) {
       Row(
           modifier = Modifier.fillMaxWidth().padding(16.dp),
           verticalAlignment = Alignment.CenterVertically,
@@ -81,7 +94,7 @@ fun TopBarTitle(userCount: Int) {
         modifier = Modifier.padding(end = 8.dp))
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.background(color = lightOrange, shape = CircleShape).padding(8.dp)) {
+        modifier = Modifier.background(color = lightTurquoise, shape = CircleShape).padding(8.dp)) {
           Text(
               text = userCount.toString(),
               style = MaterialTheme.typography.titleLarge,
@@ -184,10 +197,20 @@ fun UserManagementScreen(
       },
       bottomBar = { AdminBottomBar(navController) },
       floatingActionButton = {
-        FloatingActionButton(
-            onClick = { navController.navigate(Route.ADD_USER) }, containerColor = lightOrange) {
-              Icon(imageVector = Icons.Filled.Add, contentDescription = "Add User")
-            }
+          Surface(
+              modifier = Modifier.size(56.dp),
+              shape = CircleShape,
+              color = Color.Transparent,
+              border = BorderStroke(2.dp, Color.Black)
+          ) {
+              FloatingActionButton(
+                  modifier = Modifier.fillMaxSize(1f),
+                          onClick = { navController.navigate(Route.ADD_USER) },
+                  containerColor = Color.White
+              ) {
+                  Icon(imageVector = Icons.Filled.Add, contentDescription = "Add User")
+              }
+          }
       },
       floatingActionButtonPosition = FabPosition.Center) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
