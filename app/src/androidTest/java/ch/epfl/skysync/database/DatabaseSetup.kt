@@ -19,6 +19,7 @@ import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.calendar.getTimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
@@ -123,8 +124,12 @@ class DatabaseSetup {
           assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.SMALL)
 
-  var date1 = LocalDate.of(2024, 8, 12)
-  var date2 = LocalDate.of(2024, 8, 14)
+  var date1 = LocalDate.of(2024, 8, 14)
+
+  // this the date of flight4, it needs to be today for the InFlightViewModel tests
+  var date2 = LocalDate.now()
+  var date2TimeSlot = getTimeSlot(LocalTime.now())
+
   var dateNoFlight = LocalDate.of(2024, 8, 16)
 
   var availability1Crew1 =
@@ -132,21 +137,21 @@ class DatabaseSetup {
   var availability2Crew1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Crew1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
 
   var availability1Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
   var availability2Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Crew2 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
 
   var availability1Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
   var availability2Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Pilot1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
 
   var availability1Pilot2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -224,7 +229,7 @@ class DatabaseSetup {
           balloon = balloon1,
           basket = basket1,
           date = date2,
-          timeSlot = TimeSlot.PM,
+          timeSlot = date2TimeSlot,
           vehicles = listOf(vehicle2),
           remarks = listOf("remark 1", "remark 2"),
           color = FlightColor.BLUE,
