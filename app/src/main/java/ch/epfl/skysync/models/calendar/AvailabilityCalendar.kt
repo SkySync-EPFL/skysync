@@ -44,18 +44,15 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
    * @param timeSlot: timeSlot of the Availability of which to change the status
    * @return the new AvailabilityStatus if successfully modified, else null
    */
-  fun setToNextAvailabilityStatus(
-      date: LocalDate,
-      timeSlot: TimeSlot
-  ): CalendarModel<Availability> {
+  fun setToNextAvailabilityStatus(date: LocalDate, timeSlot: TimeSlot): AvailabilityCalendar {
     val currentAvailability = getByDate(date, timeSlot)
     val nextAvailabilityStatus: AvailabilityStatus =
         currentAvailability?.status?.next()
             ?: AvailabilityStatus.OK // non-existing entries get init by OK
     return if (nextAvailabilityStatus == AvailabilityStatus.UNDEFINED) {
-      removeByDate(date, timeSlot)
+      removeByDate(date, timeSlot) as AvailabilityCalendar
     } else {
-      setAvailabilityByDate(date, timeSlot, nextAvailabilityStatus)
+      setAvailabilityByDate(date, timeSlot, nextAvailabilityStatus) as AvailabilityCalendar
     }
   }
 
@@ -104,5 +101,9 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
 
   override fun constructor(cells: List<Availability>): CalendarModel<Availability> {
     return AvailabilityCalendar(cells)
+  }
+
+  override fun addCells(elementsToAdd: List<Availability>): AvailabilityCalendar {
+    return super.addCells(elementsToAdd) as AvailabilityCalendar
   }
 }
