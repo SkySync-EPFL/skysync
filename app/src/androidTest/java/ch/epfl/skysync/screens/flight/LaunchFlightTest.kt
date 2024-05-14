@@ -31,25 +31,24 @@ class LaunchFlightTest {
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbSetup = DatabaseSetup()
   private val repository = Repository(db)
-    val confirmedFlight =
-        ConfirmedFlight(
-            id = "confirmedFlightTest",
-            nPassengers = 1,
-            team = Team(listOf()),
-            flightType = FlightType.FONDUE,
-            balloon = Balloon("test", BalloonQualification.MEDIUM),
-            basket = Basket("test", true),
-            date = LocalDate.now(),
-            timeSlot = if (LocalTime.now().hour < 12) TimeSlot.AM else TimeSlot.PM,
-            vehicles = listOf(),
-            remarks = listOf(),
-            meetupTimeTeam = LocalTime.now(),
-            departureTimeTeam = LocalTime.now(),
-            meetupTimePassenger = LocalTime.now(),
-            meetupLocationPassenger = "test")
+  val confirmedFlight =
+      ConfirmedFlight(
+          id = "confirmedFlightTest",
+          nPassengers = 1,
+          team = Team(listOf()),
+          flightType = FlightType.FONDUE,
+          balloon = Balloon("test", BalloonQualification.MEDIUM),
+          basket = Basket("test", true),
+          date = LocalDate.now(),
+          timeSlot = if (LocalTime.now().hour < 12) TimeSlot.AM else TimeSlot.PM,
+          vehicles = listOf(),
+          remarks = listOf(),
+          meetupTimeTeam = LocalTime.now(),
+          departureTimeTeam = LocalTime.now(),
+          meetupTimePassenger = LocalTime.now(),
+          meetupLocationPassenger = "test")
 
-  @get:Rule
-  val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
   lateinit var viewModel: FlightsViewModel
   lateinit var inViewModel: LocationViewModel
   lateinit var navController: TestNavHostController
