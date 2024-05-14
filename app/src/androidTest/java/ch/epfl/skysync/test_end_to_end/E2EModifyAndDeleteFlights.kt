@@ -22,6 +22,7 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
@@ -43,8 +44,9 @@ class E2EModifyAndDeleteFlights {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
+      val inFlightViewModel = InFlightViewModel.createViewModel(repository)
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.admin1.id)
+        homeGraph(repository, navController, dbs.admin1.id, inFlightViewModel)
       }
     }
     composeTestRule.waitUntil(2500) {

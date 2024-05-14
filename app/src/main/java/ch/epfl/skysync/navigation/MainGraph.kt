@@ -10,7 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.screens.LoginScreen
-import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.UserGlobalViewModel
 
 /** Graph of the whole navigation of the app */
@@ -19,7 +19,7 @@ fun MainGraph(
     repository: Repository,
     navHostController: NavHostController,
     signInLauncher: ActivityResultLauncher<Intent>,
-    inFlightsViewModel: LocationViewModel? = null,
+    inFlightsViewModel: InFlightViewModel? = null,
     userGlobalViewModel: UserGlobalViewModel,
 ) {
   val user by userGlobalViewModel.user.collectAsStateWithLifecycle()

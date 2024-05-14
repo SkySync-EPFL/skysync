@@ -12,7 +12,7 @@ import ch.epfl.skysync.components.GlobalSnackbarHost
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.MainGraph
 import ch.epfl.skysync.ui.theme.SkySyncTheme
-import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.UserGlobalViewModel
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
         Scaffold(snackbarHost = { GlobalSnackbarHost() }) {
           userGlobalViewModel = UserGlobalViewModel.createViewModel(repository)
           val inFlightViewModel =
-              LocationViewModel.createViewModel(
+              InFlightViewModel.createViewModel(
                   repository = repository) // is shared between all screens
           MainGraph(
               repository = repository,

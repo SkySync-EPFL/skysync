@@ -104,4 +104,13 @@ object DateUtility {
     }
     return "--:--"
   }
+
+  /** Formats the given time in milliseconds to a string in the format "HH:MM:SS". */
+  fun formatTime(milliseconds: Long): String {
+    val secondsRounded = milliseconds / 1000
+    val hours = secondsRounded / 3600
+    val minutes = (secondsRounded % 3600) / 60
+    val remainingSeconds = secondsRounded % 60
+    return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
+  }
 }

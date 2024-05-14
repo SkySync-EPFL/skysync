@@ -40,7 +40,7 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.FlightCard
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.components.Timer
-import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.location.UserMetrics
@@ -48,7 +48,7 @@ import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.ui.theme.lightViolet
-import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -73,9 +73,10 @@ fun UserLocationMarker(location: Location, user: User) {
 @Composable
 fun ShowFlightToStart(
     navController: NavHostController,
-    flight: Flight?,
+    flight: ConfirmedFlight?,
     onClick: (String) -> Unit
 ) {
+  println("FLIGHT CARD ${flight?.id}")
   Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
     // Renders the Google Map or a permission request message based on the permission status.
     Column(modifier = Modifier.fillMaxSize().padding(padding).testTag("FlightLaunch")) {
@@ -117,14 +118,16 @@ fun ShowFlightToStart(
 @Composable
 fun FlightScreen(
     navController: NavHostController,
-    inFlightViewModel: LocationViewModel,
+    inFlightViewModel: InFlightViewModel,
     uid: String
 ) {
+  val loading by inFlightViewModel.loading.collectAsStateWithLifecycle()
   val rawTime by inFlightViewModel.rawCounter.collectAsStateWithLifecycle()
   val currentTime by inFlightViewModel.counter.collectAsStateWithLifecycle()
-  val flightIsStarted by inFlightViewModel.inFlight.collectAsStateWithLifecycle()
-  val personalFlights by inFlightViewModel.personalFlights.collectAsStateWithLifecycle()
-  val currentFlightId by inFlightViewModel.flightId.collectAsStateWithLifecycle()
+  val flightStage by inFlightViewModel.flightStage.collectAsStateWithLifecycle()
+  val startableFlight by inFlightViewModel.startableFlight.collectAsStateWithLifecycle()
+  val currentFlight by inFlightViewModel.currentFlight.collectAsStateWithLifecycle()
+
   val currentLocations = inFlightViewModel.currentLocations.collectAsState().value
   val flightLocations by inFlightViewModel.flightLocations.collectAsStateWithLifecycle()
   val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -180,6 +183,7 @@ fun FlightScreen(
     // Cleanup function to stop receiving location updates when the composable is disposed.
     onDispose { fusedLocationClient.removeLocationUpdates(locationCallback) }
   }
+
   if (!locationPermission.status.isGranted) {
     Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
       Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -187,14 +191,10 @@ fun FlightScreen(
         Text("Please enable location permissions in settings.")
       }
     }
-  } else if (personalFlights == null) {
+  } else if (loading) {
     LoadingComponent(isLoading = true, onRefresh = {}) {}
-  } else if (personalFlights!!.isEmpty()) {
-    ShowFlightToStart(navController = navController, flight = null) {}
-  } else if (currentFlightId == null) {
-    ShowFlightToStart(navController, personalFlights!!.first()) {
-      inFlightViewModel.setFlightId(it)
-    }
+  } else if (currentFlight == null) {
+    ShowFlightToStart(navController, startableFlight) { inFlightViewModel.setCurrentFlight(it) }
   } else {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -207,9 +207,11 @@ fun FlightScreen(
                   Timer(
                       Modifier.align(Alignment.TopEnd).testTag("Timer"),
                       currentTimer = currentTime,
-                      isRunning = flightIsStarted,
+                      flightStage = flightStage,
+                      isPilot = inFlightViewModel.isPilot(),
                       onStart = { inFlightViewModel.startFlight() },
                       onStop = { inFlightViewModel.stopFlight() },
+                      onClear = { inFlightViewModel.clearFlight() },
                   )
 
                   Row(
