@@ -128,6 +128,8 @@ class DatabaseSetup {
 
   // this the date of flight4, it needs to be today for the InFlightViewModel tests
   var date2 = LocalDate.now()
+  var date2TimeSlot = getTimeSlot(LocalTime.now())
+
   var dateNoFlight = LocalDate.of(2024, 8, 16)
 
   var availability1Crew1 =
@@ -135,21 +137,21 @@ class DatabaseSetup {
   var availability2Crew1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Crew1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
 
   var availability1Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
   var availability2Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Crew2 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
 
   var availability1Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
   var availability2Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Pilot1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
 
   var availability1Pilot2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -227,7 +229,7 @@ class DatabaseSetup {
           balloon = balloon1,
           basket = basket1,
           date = date2,
-          timeSlot = getTimeSlot(LocalTime.now()),
+          timeSlot = date2TimeSlot,
           vehicles = listOf(vehicle2),
           remarks = listOf("remark 1", "remark 2"),
           color = FlightColor.BLUE,
