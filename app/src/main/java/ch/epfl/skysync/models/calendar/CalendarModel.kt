@@ -98,8 +98,4 @@ abstract class CalendarModel<T : CalendarViewable>(
     return cells.toSortedSet(
         Comparator<T> { a, b -> a.date.compareTo(b.date) }.thenBy { it.timeSlot })
   }
-
-  override fun hashCode(): Int {
-    return getSortedSetOfCells().hashCode()
-  }
 }
