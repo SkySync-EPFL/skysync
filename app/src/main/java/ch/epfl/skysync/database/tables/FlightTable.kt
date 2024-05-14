@@ -3,6 +3,7 @@ package ch.epfl.skysync.database.tables
 import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.FlightStatus
+import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.FlightMemberSchema
 import ch.epfl.skysync.database.schemas.FlightSchema
@@ -21,8 +22,11 @@ import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.reports.CrewReport
 import ch.epfl.skysync.models.user.User
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -54,7 +58,7 @@ class FlightTable(db: FirestoreDatabase) :
       FlightStatus.PLANNED ->
           PlannedFlight(
               id = schema.id!!,
-              nPassengers = schema.numPassengers!!,
+              nPassengers = schema.nPassengers!!,
               team = team,
               flightType = flightType,
               balloon = balloon,
@@ -69,7 +73,7 @@ class FlightTable(db: FirestoreDatabase) :
         }
         ConfirmedFlight(
             id = schema.id!!,
-            nPassengers = schema.numPassengers!!,
+            nPassengers = schema.nPassengers!!,
             team = team,
             flightType = flightType,
             balloon = balloon,
@@ -82,7 +86,10 @@ class FlightTable(db: FirestoreDatabase) :
             meetupTimeTeam = DateUtility.stringToLocalTime(schema.meetupTimeTeam!!),
             departureTimeTeam = DateUtility.stringToLocalTime(schema.departureTimeTeam!!),
             meetupTimePassenger = DateUtility.stringToLocalTime(schema.meetupTimePassenger!!),
-            meetupLocationPassenger = schema.meetupLocationPassenger!!)
+            meetupLocationPassenger = schema.meetupLocationPassenger!!,
+            isOngoing = schema.isOngoing!!,
+            startTimestamp = schema.startTimestamp,
+        )
       }
       FlightStatus.FINISHED -> {
         FinishedFlight(
@@ -110,6 +117,43 @@ class FlightTable(db: FirestoreDatabase) :
       else -> throw Exception("Internal error: Invalid flight status.")
       }
     }
+
+  /**
+   * Add a listener on a flight
+   *
+   * The listener will be triggered each time the flight is updated.
+   *
+   * @param flightId The ID of the flight
+   * @param onChange Callback called each time the listener is triggered, passed the adds, updates,
+   *   deletes that happened since the last listener trigger.
+   */
+  fun addFlightListener(
+      flightId: String,
+      onChange: suspend (ListenerUpdate<Flight>) -> Unit,
+      coroutineScope: CoroutineScope,
+      onError: ((Exception) -> Unit)? = null
+  ): ListenerRegistration {
+    return queryListener(
+        Filter.equalTo(FieldPath.documentId(), flightId),
+        onChange = { update ->
+          coroutineScope {
+            withErrorCallback(onError) {
+              val adds = update.adds.map { async { retrieveFlight(it) } }
+              val updates = update.updates.map { async { retrieveFlight(it) } }
+              val deletes = update.deletes.map { async { retrieveFlight(it) } }
+              onChange(
+                  ListenerUpdate(
+                      isFirstUpdate = update.isFirstUpdate,
+                      isLocalUpdate = update.isLocalUpdate,
+                      adds = adds.awaitAll().filterNotNull(),
+                      updates = updates.awaitAll().filterNotNull(),
+                      deletes = deletes.awaitAll().filterNotNull(),
+                  ))
+            }
+          }
+        },
+        coroutineScope = coroutineScope)
+  }
 
   /**
    * Add items to the flight-member relation for each role defined in the team, whether or not it

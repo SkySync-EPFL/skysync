@@ -29,7 +29,7 @@ import ch.epfl.skysync.components.TimePickerDialog
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.util.getFormattedTime
-import ch.epfl.skysync.util.hasNoError
+import ch.epfl.skysync.util.hasError
 import java.util.Date
 
 @Composable
@@ -166,7 +166,7 @@ fun VehicleProblemField(
                 showAddProblemDialog = false
                 problemNotChosenError = addNewProblem == ""
                 vehicleNotChosenError = selectVehicle == null
-                if (!hasNoError(problemNotChosenError, vehicleNotChosenError)) {
+                if (!hasError(problemNotChosenError, vehicleNotChosenError)) {
                   onConfirm(selectVehicle!!, addNewProblem)
                   selectVehicle = null
                   addNewProblem = ""

@@ -10,8 +10,12 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.models.flight.PlannedFlight
 import com.google.firebase.firestore.DocumentId
+import com.google.firebase.firestore.PropertyName
 import java.lang.UnsupportedOperationException
 import java.util.Date
+
+// @get:PropertyName("...") is a fix for when a field name gets changed during serialization
+// see: https://stackoverflow.com/questions/38681260/firebase-propertyname-doesnt-work
 
 data class FlightSchema(
     @DocumentId val id: String? = null,
@@ -22,11 +26,7 @@ data class FlightSchema(
     val basketId: String? = null,
     val vehicleIds: List<String>? = null,
     val status: FlightStatus? = null,
-    // Note: this is called numPassengers and not nPassengers because
-    // nPassengers is wrongly mapped to "npassengers" by the firestore class mapper
-    // whereas numPassenger is correctly mapped as "numPassengers"
-    // (which makes no sense but at least it works)
-    val numPassengers: Int? = null,
+    @get:PropertyName("nPassengers") val nPassengers: Int? = null,
     val timeSlot: TimeSlot? = null,
     /** We use the Date class instead of the LocalDate for Firestore see [DateUtility] */
     val date: Date? = null,
@@ -42,6 +42,10 @@ data class FlightSchema(
     val meetupTimePassenger: String? = null,
     /** In: Confirmed flight */
     val meetupLocationPassenger: String? = null,
+    /** In: Confirmed flight */
+    @get:PropertyName("isOngoing") val isOngoing: Boolean? = null,
+    /** In: Confirmed flight Nullable */
+    val startTimestamp: Long? = null,
     /** In: Finished flight */
     val takeOffTime: String? = null,
     /** In: Finished flight */
@@ -70,60 +74,72 @@ data class FlightSchema(
        */
     fun fromModel(model: Flight): FlightSchema {
       return when (model) {
-        is PlannedFlight ->
-            FlightSchema(
-                id = model.id,
-                flightTypeId = model.flightType.id,
-                balloonId = model.balloon?.id,
-                basketId = model.basket?.id,
-                vehicleIds = model.vehicles.map { it.id },
-                status = FlightStatus.PLANNED,
-                numPassengers = model.nPassengers,
-                timeSlot = model.timeSlot,
-                date = DateUtility.localDateToDate(model.date),
-            )
-        is ConfirmedFlight ->
-            FlightSchema(
-                id = model.id,
-                flightTypeId = model.flightType.id,
-                balloonId = model.balloon?.id,
-                basketId = model.basket?.id,
-                vehicleIds = model.vehicles.map { it.id },
-                status = FlightStatus.CONFIRMED,
-                numPassengers = model.nPassengers,
-                timeSlot = model.timeSlot,
-                date = DateUtility.localDateToDate(model.date),
-                remarks = model.remarks,
-                color = model.color,
-                meetupTimeTeam = DateUtility.localTimeToString(model.meetupTimeTeam),
-                departureTimeTeam = DateUtility.localTimeToString(model.departureTimeTeam),
-                meetupTimePassenger = DateUtility.localTimeToString(model.meetupTimePassenger),
-                meetupLocationPassenger = model.meetupLocationPassenger,
-            )
-          is FinishedFlight ->
-              FlightSchema(
-                  id = model.id,
-                  flightTypeId = model.flightType.id,
-                  balloonId = model.balloon.id,
-                  basketId = model.basket.id,
-                  vehicleIds = model.vehicles.map { it.id },
-                  status = FlightStatus.FINISHED,
-                  numPassengers = model.nPassengers,
-                  timeSlot = model.timeSlot,
-                  date = DateUtility.localDateToDate(model.date),
-                  color = FlightColor.NO_COLOR,
-                    takeOffTime = DateUtility.localTimeToString(model.takeOffTime) ,
-                    takeOffLocationLat = model.takeOffLocation.latitude,
-                    takeOffLocationLong = model.takeOffLocation.latitude,
-                    landingTime = DateUtility.localTimeToString(model.landingTime),
-                    landingLocationLat = model.landingLocation.latitude,
-                    landingLocationLong = model.landingLocation.longitude,
-                    flightTime = model.flightTime,
-                    reportId = model.reportId.map { it.id },
-              )
+        is PlannedFlight -> fromPlannedFlight(model)
+        is ConfirmedFlight -> fromConfirmedFlight(model)
+          is FinishedFlight -> fromFinishedFlight(model)
         else ->
             throw UnsupportedOperationException("Unexpected class ${model.javaClass.simpleName}")
       }
     }
+
+    private fun fromPlannedFlight(flight: PlannedFlight): FlightSchema {
+      return FlightSchema(
+          id = flight.id,
+          flightTypeId = flight.flightType.id,
+          balloonId = flight.balloon?.id,
+          basketId = flight.basket?.id,
+          vehicleIds = flight.vehicles.map { it.id },
+          status = FlightStatus.PLANNED,
+          nPassengers = flight.nPassengers,
+          timeSlot = flight.timeSlot,
+          date = DateUtility.localDateToDate(flight.date),
+      )
+    }
+
+    private fun fromConfirmedFlight(flight: ConfirmedFlight): FlightSchema {
+      return FlightSchema(
+          id = flight.id,
+          flightTypeId = flight.flightType.id,
+          balloonId = flight.balloon.id,
+          basketId = flight.basket.id,
+          vehicleIds = flight.vehicles.map { it.id },
+          status = FlightStatus.CONFIRMED,
+          nPassengers = flight.nPassengers,
+          timeSlot = flight.timeSlot,
+          date = DateUtility.localDateToDate(flight.date),
+          remarks = flight.remarks,
+          color = flight.color,
+          meetupTimeTeam = DateUtility.localTimeToString(flight.meetupTimeTeam),
+          departureTimeTeam = DateUtility.localTimeToString(flight.departureTimeTeam),
+          meetupTimePassenger = DateUtility.localTimeToString(flight.meetupTimePassenger),
+          meetupLocationPassenger = flight.meetupLocationPassenger,
+          isOngoing = flight.isOngoing,
+          startTimestamp = flight.startTimestamp,
+      )
+    }
+
+      private fun fromFinishedFlight(flight: FinishedFlight): FlightSchema{
+          FlightSchema(
+              id = flight.id,
+              flightTypeId = flight.flightType.id,
+              balloonId = flight.balloon.id,
+              basketId = flight.basket.id,
+              vehicleIds = flight.vehicles.map { it.id },
+              status = FlightStatus.FINISHED,
+              nPassengers = flight.nPassengers,
+              timeSlot = flight.timeSlot,
+              date = DateUtility.localDateToDate(flight.date),
+              color = FlightColor.NO_COLOR,
+              takeOffTime = DateUtility.localTimeToString(flight.takeOffTime) ,
+              takeOffLocationLat = flight.takeOffLocation.latitude,
+              takeOffLocationLong = flight.takeOffLocation.latitude,
+              landingTime = DateUtility.localTimeToString(flight.landingTime),
+              landingLocationLat = flight.landingLocation.latitude,
+              landingLocationLong = flight.landingLocation.longitude,
+              flightTime = flight.flightTime,
+              reportId = flight.reportId.map { it.id },
+          )
+
+      }
   }
 }
