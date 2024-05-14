@@ -24,6 +24,7 @@ import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -192,13 +193,19 @@ class FlightsViewModel(
       flight: PlannedFlight,
   ) = viewModelScope.launch { repository.flightTable.add(flight, onError = { onError(it) }) }
 
+  private fun groupName(date: LocalDate, timeSlot: TimeSlot): String {
+    return "Flight: ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} $timeSlot"
+  }
+
   /** updates the planned flight to a confirmed flight */
   fun addConfirmedFlight(flight: ConfirmedFlight) =
       viewModelScope.launch {
         repository.flightTable.update(flight.id, flight, onError = { onError(it) })
         val flightChatGroup =
             MessageGroup(
-                UNSET_ID, flight.date.toString(), flight.team.getUsers().map { it.id }.toSet())
+                UNSET_ID,
+                groupName(flight.date, flight.timeSlot),
+                flight.team.getUsers().map { it.id }.toSet())
         repository.messageGroupTable.add(flightChatGroup, onError = { onError(it) })
       }
 
