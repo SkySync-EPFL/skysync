@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 /** ViewModel for the location tracking of the user during a flight and the timer. */
 class LocationViewModel(uid: String? = null, val repository: Repository) : ViewModel() {
@@ -221,7 +222,9 @@ class LocationViewModel(uid: String? = null, val repository: Repository) : ViewM
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    if(e !is CancellationException){
+      SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    }
   }
 
   /** Reset the internal flight specific attributes */

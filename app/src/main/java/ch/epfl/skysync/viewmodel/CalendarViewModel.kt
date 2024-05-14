@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 data class CalendarUiState(
     val user: User? = null,
@@ -105,7 +106,9 @@ class CalendarViewModel(
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+      if(e !is CancellationException){
+          SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+      }
   }
 
   /**

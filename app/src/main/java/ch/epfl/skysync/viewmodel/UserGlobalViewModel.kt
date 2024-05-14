@@ -11,6 +11,7 @@ import ch.epfl.skysync.models.user.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 class UserGlobalViewModel(
     repository: Repository,
@@ -83,6 +84,8 @@ class UserGlobalViewModel(
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    if(e !is CancellationException){
+      SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    }
   }
 }
