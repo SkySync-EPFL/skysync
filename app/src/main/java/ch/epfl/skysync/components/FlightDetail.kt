@@ -35,11 +35,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.database.DateUtility
+import ch.epfl.skysync.database.FlightStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.models.flight.FlightType
@@ -102,8 +104,18 @@ fun FlightDetails(flight: Flight?, padding: PaddingValues) {
  */
 @Composable
 fun GlobalFlightMetricsDetails(flight: Flight, cardColor: Color) {
+  var flightStatus = FlightStatus.PLANNED
+  when (flight) {
+    is ConfirmedFlight -> {
+      flightStatus = FlightStatus.CONFIRMED
+    }
+    is FinishedFlight -> {
+      flightStatus = FlightStatus.FINISHED
+    }
+  }
   val metrics =
       mapOf(
+          "Flight status" to flightStatus.toString(),
           "Day of flight" to DateUtility.localDateToString(flight.date),
           "Time slot" to flight.timeSlot.toString(),
           "Number of Passengers" to "${flight.nPassengers}",
@@ -267,7 +279,7 @@ fun DisplayListOfMetrics(metric: String, values: List<String>) {
       values.forEach { value ->
         Text(
             text = value,
-            modifier = Modifier.fillMaxWidth().padding(1.dp),
+            modifier = Modifier.fillMaxWidth().padding(1.dp).testTag("Metric$metric$value"),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center)

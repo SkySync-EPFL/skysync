@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.FlightDetails
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.DateUtility
+import ch.epfl.skysync.database.FlightStatus
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import org.junit.Before
@@ -35,6 +36,11 @@ class FlightDetailTest {
   private fun helper(field: String, value: String) {
     composeTestRule.onNodeWithText(field).assertIsDisplayed()
     composeTestRule.onNodeWithText(value).assertIsDisplayed()
+  }
+
+  @Test
+  fun statusIsDisplayed() {
+    helper("Flight status", FlightStatus.CONFIRMED.toString())
   }
 
   @Test
@@ -80,9 +86,11 @@ class FlightDetailTest {
     composeTestRule.onNodeWithTag("FlightDetailLazyColumn").performScrollToNode(hasText("Team"))
     composeTestRule.onNodeWithText("COLOR ${flight.color}").assertIsDisplayed()
     for (role in flight.team.roles) {
-      composeTestRule.onNodeWithText(role.roleType.description).assertIsDisplayed()
-      role.assignedUser?.let { composeTestRule.onNodeWithText(it.firstname).assertIsDisplayed() }
-      role.assignedUser?.let { composeTestRule.onNodeWithText(it.lastname).assertIsDisplayed() }
+      val metric = role.roleType.description
+      val firstname = role.assignedUser?.firstname
+      val lastname = role.assignedUser?.lastname
+      composeTestRule.onNodeWithTag("Metric$metric$firstname").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("Metric$metric$lastname").assertIsDisplayed()
     }
   }
 
@@ -116,8 +124,6 @@ class FlightDetailTest {
   @Test
   fun remarksAreDisplayed() {
     composeTestRule.onNodeWithTag("FlightDetailLazyColumn").performScrollToNode(hasText("Remarks"))
-    for (r in flight.remarks) {
-      composeTestRule.onNodeWithText(r).assertIsDisplayed()
-    }
+    flight.remarks.forEach { r -> composeTestRule.onNodeWithText(r).assertIsDisplayed() }
   }
 }

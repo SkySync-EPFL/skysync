@@ -10,6 +10,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.components.ConfirmAlertDialog
 import ch.epfl.skysync.components.ConfirmedFlightDetailBottom
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.FlightDetails
@@ -46,6 +49,19 @@ fun AdminFlightDetailScreen(
 ) {
 
   val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
+  val showConfirmDialog = remember { mutableStateOf(false) }
+  if (showConfirmDialog.value) {
+    ConfirmAlertDialog(
+        onDismissRequest = { showConfirmDialog.value = false },
+        onConfirmation = {
+          showConfirmDialog.value = false
+          viewModel.deleteFlight(flightId)
+          navController.navigate(Route.ADMIN_HOME)
+        },
+        dialogTitle = "Delete Flight",
+        dialogText = "Are you sure you want to delete this flight ?",
+    )
+  }
   Scaffold(
       topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
       bottomBar = {
@@ -54,10 +70,7 @@ fun AdminFlightDetailScreen(
             FlightDetailBottom(
                 editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
                 confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
-                deleteClick = {
-                  viewModel.deleteFlight(flightId)
-                  navController.navigate(Route.ADMIN_HOME)
-                })
+                deleteClick = { showConfirmDialog.value = true })
           }
           is ConfirmedFlight -> {
             ConfirmedFlightDetailBottom() { navController.popBackStack() }
