@@ -25,9 +25,12 @@ class FlightGroupCalendar(cells: List<FlightGroup> = listOf()) : CalendarModel<F
     }
   }
 
-  private fun setFlightGroupByDate(date: LocalDate, timeSlot: TimeSlot, flightGroup: FlightGroup) {
-    setByDate(date, timeSlot) { d, t, old -> flightGroup }
-  }
+  private fun setFlightGroupByDate(
+      date: LocalDate,
+      timeSlot: TimeSlot,
+      flightGroup: FlightGroup
+  ): FlightGroupCalendar =
+      setByDate(date, timeSlot) { d, t, old -> flightGroup } as FlightGroupCalendar
 
   /**
    * adds the given flight to the existing FlightGroup at slot for (date, timeSlot) or adds a new
@@ -37,9 +40,9 @@ class FlightGroupCalendar(cells: List<FlightGroup> = listOf()) : CalendarModel<F
    * @param timeSlot the timeSlot coordinate of the slot to add the flight to
    * @param flight the flight to add
    */
-  fun addFlightByDate(date: LocalDate, timeSlot: TimeSlot, flight: Flight) {
+  fun addFlightByDate(date: LocalDate, timeSlot: TimeSlot, flight: Flight): FlightGroupCalendar {
     val currentFlightGroup = getByDate(date, timeSlot)
-    if (currentFlightGroup == null) {
+    return if (currentFlightGroup == null) {
       setFlightGroupByDate(date, timeSlot, FlightGroup(date, timeSlot, listOf(flight)))
     } else {
       setFlightGroupByDate(date, timeSlot, currentFlightGroup.addFlight(flight))
@@ -67,5 +70,9 @@ class FlightGroupCalendar(cells: List<FlightGroup> = listOf()) : CalendarModel<F
 
   override fun constructor(cells: List<FlightGroup>): CalendarModel<FlightGroup> {
     return FlightGroupCalendar(cells)
+  }
+
+  override fun addCells(elementsToAdd: List<FlightGroup>): FlightGroupCalendar {
+    return super.addCells(elementsToAdd) as FlightGroupCalendar
   }
 }
