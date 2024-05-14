@@ -1,7 +1,6 @@
 package ch.epfl.skysync.screens.admin
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -35,16 +34,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
+import ch.epfl.skysync.viewmodel.UserManagementViewModel
 
 // Composable function to display a card for a User object.
 @Composable
@@ -153,14 +152,17 @@ fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>) {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun UserManagementScreen(navController: NavHostController, users: List<User>) {
+fun UserManagementScreen(
+    navController: NavHostController,
+    userManagementViewModel: UserManagementViewModel
+) {
   var searchQuery by remember { mutableStateOf("") }
   var selectedRole by remember { mutableStateOf<RoleType?>(null) }
   val roles = RoleType.entries
-
+  val users = userManagementViewModel.allUsers.collectAsStateWithLifecycle()
   // Filter users based on search query and selected role.
   val filteredUsers =
-      users.filter {
+      users.value.filter {
         (searchQuery.isEmpty() ||
             "${it.firstname} ${it.lastname}".contains(searchQuery, ignoreCase = true)) &&
             (selectedRole == null || it.roleTypes.contains(selectedRole))
@@ -171,7 +173,7 @@ fun UserManagementScreen(navController: NavHostController, users: List<User>) {
       topBar = {
         Column {
           TopAppBar(
-              title = { TopBarTitle(userCount = filteredUsers.size) },
+              title = { TopBarTitle(userCount = users.value.size) },
           )
           SearchBar(query = searchQuery, onQueryChanged = { searchQuery = it })
           RoleFilter(
@@ -195,20 +197,18 @@ fun UserManagementScreen(navController: NavHostController, users: List<User>) {
               Text("No such user exists", style = MaterialTheme.typography.titleLarge)
             }
           } else {
-            LazyColumn(modifier = Modifier.align(Alignment.TopCenter).padding(horizontal = 16.dp)) {
-              items(filteredUsers) { user ->
-                UserCard(user) { Log.d("UserManagementScreen", "Navigating to UserDetail with id") }
-              }
-            }
+            LazyColumn(
+                modifier =
+                    Modifier.align(Alignment.TopCenter)
+                        .padding(horizontal = 16.dp)
+                        .testTag("UserManagementLazyColumn")) {
+                  items(filteredUsers) { user ->
+                    UserCard(user) {
+                      navController.navigate(Route.ADMIN_USER_DETAILS + "/${user.id}")
+                    }
+                  }
+                }
           }
         }
       }
-}
-
-// Preview of UserManagementScreen
-@Preview(showBackground = true)
-@Composable
-fun UserManagementScreenPreview() {
-  val navController = rememberNavController()
-  UserManagementScreen(navController = navController, users = listOf())
 }

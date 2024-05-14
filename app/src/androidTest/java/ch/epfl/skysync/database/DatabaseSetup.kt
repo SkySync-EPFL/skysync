@@ -19,6 +19,7 @@ import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.calendar.getTimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
@@ -57,7 +58,7 @@ class DatabaseSetup {
       Admin(
           id = "id-admin-1",
           firstname = "admin-1",
-          lastname = "lastname",
+          lastname = "lastname-admin-1",
           email = "admin1.lastname@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
@@ -65,7 +66,7 @@ class DatabaseSetup {
       Admin(
           id = "id-admin-2",
           firstname = "admin-2",
-          lastname = "lastname",
+          lastname = "lastname-admin-2",
           email = "admin2.lastname@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
@@ -73,7 +74,7 @@ class DatabaseSetup {
       Crew(
           id = "id-crew-1",
           firstname = "crew-1",
-          lastname = "Bob",
+          lastname = "lastname-crew-1",
           email = "crew1.bob@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
@@ -82,7 +83,7 @@ class DatabaseSetup {
       Crew(
           id = "id-crew-2",
           firstname = "crew-2",
-          lastname = "Denis",
+          lastname = "lastname-crew-2",
           email = "crew2.denis@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
@@ -98,7 +99,7 @@ class DatabaseSetup {
       Pilot(
           id = "id-pilot-1",
           firstname = "pilot-1",
-          lastname = "Bob",
+          lastname = "lastname-pilot-1",
           email = "pilot1.bob@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar(),
@@ -107,14 +108,28 @@ class DatabaseSetup {
       Pilot(
           id = "id-pilot-2",
           firstname = "pilot-2",
-          lastname = "lastname",
+          lastname = "lastname-pilot-2",
           email = "pilot2.lastname@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.SMALL)
 
-  var date1 = LocalDate.of(2024, 8, 12)
-  var date2 = LocalDate.of(2024, 8, 14)
+  var pilot3 =
+      Pilot(
+          id = "id-pilot-3",
+          firstname = "pilot-3",
+          lastname = "pilot",
+          email = "pilot3.pilot@skysnc.ch",
+          availabilities = AvailabilityCalendar(),
+          assignedFlights = FlightGroupCalendar(),
+          qualification = BalloonQualification.SMALL)
+
+  var date1 = LocalDate.of(2024, 8, 14)
+
+  // this the date of flight4, it needs to be today for the InFlightViewModel tests
+  var date2 = LocalDate.now()
+  var date2TimeSlot = getTimeSlot(LocalTime.now())
+
   var dateNoFlight = LocalDate.of(2024, 8, 16)
 
   var availability1Crew1 =
@@ -122,21 +137,21 @@ class DatabaseSetup {
   var availability2Crew1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Crew1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
 
   var availability1Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
   var availability2Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Crew2 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
 
   var availability1Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
   var availability2Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Pilot1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
 
   var availability1Pilot2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -154,7 +169,7 @@ class DatabaseSetup {
 
   var balloon2 = Balloon(name = "balloon-2", qualification = BalloonQualification.LARGE)
 
-  var balloon3 = Balloon(name = "ballon-3", qualification = BalloonQualification.SMALL)
+  var balloon3 = Balloon(name = "balloon-3", qualification = BalloonQualification.SMALL)
 
   var basket1 = Basket(name = "basket-1", hasDoor = false)
 
@@ -214,7 +229,7 @@ class DatabaseSetup {
           balloon = balloon1,
           basket = basket1,
           date = date2,
-          timeSlot = TimeSlot.PM,
+          timeSlot = date2TimeSlot,
           vehicles = listOf(vehicle2),
           remarks = listOf("remark 1", "remark 2"),
           color = FlightColor.BLUE,
@@ -347,6 +362,7 @@ class DatabaseSetup {
                   availability3Pilot2.copy(
                       id = availabilityTable.add(pilot2.id, availability3Pilot2))
             },
+            launch { userTable.set(pilot3.id, pilot3) },
             launch { tempUserTable.set(tempUser.email, tempUser) })
         .forEach { it.join() }
 

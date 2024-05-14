@@ -1,38 +1,52 @@
 package ch.epfl.skysync.screens.userManagement
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.rememberNavController
+import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
+import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.screens.admin.RoleFilter
 import ch.epfl.skysync.screens.admin.SearchBar
 import ch.epfl.skysync.screens.admin.UserCard
 import ch.epfl.skysync.screens.admin.UserManagementScreen
+import ch.epfl.skysync.viewmodel.UserManagementViewModel
 import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class UserManagementTest {
-  @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule var composeTestRule = createComposeRule()
+  private lateinit var userManagementViewModel: UserManagementViewModel
+  private val db = FirestoreDatabase(useEmulator = true)
+  private val dbSetup = DatabaseSetup()
+  private val repository: Repository = Repository(db)
 
-  private val dbs = DatabaseSetup()
-
-  private val users = listOf(dbs.pilot1, dbs.crew1)
+  @Before
+  fun setUp() = runTest {
+    dbSetup.clearDatabase(db)
+    dbSetup.fillDatabase(db)
+  }
 
   @Test
   fun userCardDisplaysCorrectly() {
 
-    composeTestRule.setContent { UserCard(user = users[0], onUserClick = {}) }
+    composeTestRule.setContent { UserCard(user = dbSetup.pilot1, onUserClick = {}) }
 
     composeTestRule
-        .onNodeWithText("${dbs.pilot1.firstname} ${dbs.pilot1.lastname}")
+        .onNodeWithText("${dbSetup.pilot1.firstname} ${dbSetup.pilot1.lastname}")
         .assertIsDisplayed()
     composeTestRule
-        .onNodeWithText(dbs.pilot1.roleTypes.joinToString { it.name })
+        .onNodeWithText(dbSetup.pilot1.roleTypes.joinToString { it.name })
         .assertIsDisplayed()
   }
 
@@ -40,10 +54,11 @@ class UserManagementTest {
   fun userCardClickable() {
     var clickedId = ""
 
-    composeTestRule.setContent { UserCard(user = users[0], onUserClick = { clickedId = it }) }
-
-    composeTestRule.onNodeWithText("${dbs.pilot1.firstname} ${dbs.pilot1.lastname}").performClick()
-    assertEquals(dbs.pilot1.id, clickedId)
+    composeTestRule.setContent { UserCard(user = dbSetup.pilot1, onUserClick = { clickedId = it }) }
+    composeTestRule
+        .onNodeWithText("${dbSetup.pilot1.firstname} ${dbSetup.pilot1.lastname}")
+        .performClick()
+    assertEquals(dbSetup.pilot1.id, clickedId)
   }
 
   @Test
@@ -54,8 +69,8 @@ class UserManagementTest {
       SearchBar(query = currentQuery, onQueryChanged = { currentQuery = it })
     }
 
-    composeTestRule.onNodeWithText("Search users").performTextInput(dbs.pilot1.firstname)
-    assertEquals(dbs.pilot1.firstname, currentQuery)
+    composeTestRule.onNodeWithText("Search users").performTextInput(dbSetup.pilot1.firstname)
+    assertEquals(dbSetup.pilot1.firstname, currentQuery)
   }
 
   @Test
@@ -69,15 +84,25 @@ class UserManagementTest {
   @Test
   fun userManagementScreenDisplaysUsers() {
     composeTestRule.setContent {
-      UserManagementScreen(navController = rememberNavController(), users)
+      userManagementViewModel =
+          UserManagementViewModel.createViewModel(repository, dbSetup.admin1.id)
+      userManagementViewModel.refresh()
+      UserManagementScreen(rememberNavController(), userManagementViewModel)
     }
 
     // Assuming your mockUsers are visible to the test
     composeTestRule
-        .onNodeWithText("${dbs.pilot1.firstname} ${dbs.pilot1.lastname}")
+        .onNodeWithTag("UserManagementLazyColumn")
+        .performScrollToNode(hasText("${dbSetup.pilot1.firstname} ${dbSetup.pilot1.lastname}"))
+    composeTestRule
+        .onNodeWithText("${dbSetup.pilot1.firstname} ${dbSetup.pilot1.lastname}")
         .assertIsDisplayed()
     composeTestRule
-        .onNodeWithText("${dbs.crew1.firstname} ${dbs.crew1.lastname}")
+        .onNodeWithTag("UserManagementLazyColumn")
+        .performScrollToNode(hasText("${dbSetup.crew1.firstname} ${dbSetup.crew1.lastname}"))
+
+    composeTestRule
+        .onNodeWithText("${dbSetup.crew1.firstname} ${dbSetup.crew1.lastname}")
         .assertIsDisplayed()
   }
 }
