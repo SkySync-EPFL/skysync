@@ -118,7 +118,7 @@ data class FlightSchema(
       )
     }
 
-      private fun fromFinishedFlight(flight: FinishedFlight): FlightSchema{
+      private fun fromFinishedFlight(flight: FinishedFlight): FlightSchema =
           FlightSchema(
               id = flight.id,
               flightTypeId = flight.flightType.id,
@@ -140,6 +140,5 @@ data class FlightSchema(
               reportId = flight.reportId.map { it.id },
           )
 
-      }
   }
 }
