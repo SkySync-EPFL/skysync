@@ -147,20 +147,9 @@ fun AvailabilityCalendar(
 
   Column(modifier = Modifier.padding(padding)) {
     ModularCalendar(modifier = Modifier.weight(1f), isDraft = isDraft) { date, time ->
-      // at the moment the Calendar is a mutable class
-      // thus the reference of the Calendar stay the same on updates
-      // -> it does not trigger a recompose. To trigger the recompose
-      // we have to store the availability status in a state and update
-      // it each time the result of getAvailabilityStatus change
-      // which is a bit hacky and should be a temporary solution
       val availabilityStatus = getAvailabilityStatus(date, time)
-      // var status by remember { mutableStateOf(availabilityStatus) }
-      //      if (status != availabilityStatus) {
-      //        status = availabilityStatus
-      //      }
       AvailabilityTile(date = date, time = time, availabilityStatus = availabilityStatus) {
         nextAvailabilityStatus(date, time)
-        // status = availabilityStatus
         isDraft = true
       }
     }
