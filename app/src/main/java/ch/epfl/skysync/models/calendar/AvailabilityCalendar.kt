@@ -21,7 +21,11 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
    * @param timeSlot: the timeSlot of the availability to change
    * @param status: the new status
    */
-  fun setAvailabilityByDate(date: LocalDate, timeSlot: TimeSlot, status: AvailabilityStatus):CalendarModel<Availability> {
+  fun setAvailabilityByDate(
+      date: LocalDate,
+      timeSlot: TimeSlot,
+      status: AvailabilityStatus
+  ): CalendarModel<Availability> {
     return setByDate(date, timeSlot) { d, t, old ->
       old?.copy(status = status) ?: Availability(UNSET_ID, status, t, d)
     }
@@ -40,7 +44,10 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
    * @param timeSlot: timeSlot of the Availability of which to change the status
    * @return the new AvailabilityStatus if successfully modified, else null
    */
-  fun setToNextAvailabilityStatus(date: LocalDate, timeSlot: TimeSlot): CalendarModel<Availability> {
+  fun setToNextAvailabilityStatus(
+      date: LocalDate,
+      timeSlot: TimeSlot
+  ): CalendarModel<Availability> {
     val currentAvailability = getByDate(date, timeSlot)
     val nextAvailabilityStatus: AvailabilityStatus =
         currentAvailability?.status?.next()
@@ -60,7 +67,7 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
    * @param newCalendar The other calendar
    */
   fun getDifferencesWithOtherCalendar(
-    newCalendar: AvailabilityCalendar
+      newCalendar: AvailabilityCalendar
   ): List<Pair<CalendarDifferenceType, Availability>> {
     val differences = mutableListOf<Pair<CalendarDifferenceType, Availability>>()
     for (newCalendarAvailability in newCalendar.cells) {
@@ -70,10 +77,11 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
       if (newCalendarAvailability == oldCalendarAvailability) {
         continue
       }
-      if (oldCalendarAvailability == null || oldCalendarAvailability.status == AvailabilityStatus.UNDEFINED) {
+      if (oldCalendarAvailability == null ||
+          oldCalendarAvailability.status == AvailabilityStatus.UNDEFINED) {
         differences.add(Pair(CalendarDifferenceType.ADDED, newCalendarAvailability))
       } else if (newCalendarAvailability.status == AvailabilityStatus.UNDEFINED) {
-        //should not happen but checked for safety reasons
+        // should not happen but checked for safety reasons
         differences.add(Pair(CalendarDifferenceType.DELETED, oldCalendarAvailability))
       } else {
         differences.add(Pair(CalendarDifferenceType.UPDATED, newCalendarAvailability))

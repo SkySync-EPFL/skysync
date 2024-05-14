@@ -8,8 +8,8 @@ class FlightGroupCalendar(cells: List<FlightGroup> = listOf()) : CalendarModel<F
 
   companion object {
     /**
-     * transforms the list of flights into a list of FlightGroups and returns a calendar
-     * with the FlightGroup
+     * transforms the list of flights into a list of FlightGroups and returns a calendar with the
+     * FlightGroup
      */
     fun fromFlightList(flightList: List<Flight>): FlightGroupCalendar {
       val map = mutableMapOf<Pair<LocalDate, TimeSlot>, FlightGroup>()
@@ -29,8 +29,6 @@ class FlightGroupCalendar(cells: List<FlightGroup> = listOf()) : CalendarModel<F
     setByDate(date, timeSlot) { d, t, old -> flightGroup }
   }
 
-
-
   /**
    * adds the given flight to the existing FlightGroup at slot for (date, timeSlot) or adds a new
    * FlightGroup if non exists
@@ -47,10 +45,6 @@ class FlightGroupCalendar(cells: List<FlightGroup> = listOf()) : CalendarModel<F
       setFlightGroupByDate(date, timeSlot, currentFlightGroup.addFlight(flight))
     }
   }
-
-
-
-
 
   /**
    * @param date date calendar slot coordinate

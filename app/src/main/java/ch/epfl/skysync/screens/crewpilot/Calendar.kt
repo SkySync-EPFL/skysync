@@ -47,8 +47,10 @@ fun CalendarScreen(
         }
       },
       bottomBar = { BottomBar(navController) }) { padding ->
-        val availabilityCalendar by viewModel.currentAvailabilityCalendar.collectAsStateWithLifecycle()
-        val flightGroupCalendar by viewModel.currentFlightGroupCalendar.collectAsStateWithLifecycle()
+        val availabilityCalendar by
+            viewModel.currentAvailabilityCalendar.collectAsStateWithLifecycle()
+        val flightGroupCalendar by
+            viewModel.currentFlightGroupCalendar.collectAsStateWithLifecycle()
         if (calendarType == Route.CREW_AVAILABILITY_CALENDAR) {
           AvailabilityCalendar(
               padding = padding,
@@ -80,9 +82,7 @@ fun CalendarTopBar(tab: String, tabs: Map<String, Int>, onclick: (String) -> Uni
     TabRow(selectedTabIndex = tabIndex, containerColor = lightGray) {
       tabs.forEach { (route, index) ->
         Tab(
-            modifier = Modifier
-                .padding(8.dp)
-                .testTag(route),
+            modifier = Modifier.padding(8.dp).testTag(route),
             text = { Text(text = route) },
             selected = tabIndex == index,
             onClick = { onclick(route) })

@@ -7,21 +7,17 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
-import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.Availability
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.CalendarDifferenceType
-import ch.epfl.skysync.models.calendar.CalendarModel
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.user.User
+import java.time.LocalDate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 /**
  * ViewModel for the Calendar screen
@@ -54,14 +50,13 @@ class CalendarViewModel(
   private val flightTable = repository.flightTable
 
   private val _user: MutableStateFlow<User?> = MutableStateFlow(null)
-    val user: StateFlow<User?> = _user.asStateFlow()
+  val user: StateFlow<User?> = _user.asStateFlow()
   private var originalAvailabilityCalendar = AvailabilityCalendar()
-  private val _currentAvailabilityCalendar =  MutableStateFlow(value = AvailabilityCalendar())
-    val currentAvailabilityCalendar = _currentAvailabilityCalendar.asStateFlow()
+  private val _currentAvailabilityCalendar = MutableStateFlow(value = AvailabilityCalendar())
+  val currentAvailabilityCalendar = _currentAvailabilityCalendar.asStateFlow()
 
-    private var _currentFlightGroupCalendar = MutableStateFlow(FlightGroupCalendar())
-    val currentFlightGroupCalendar = _currentFlightGroupCalendar.asStateFlow()
-
+  private var _currentFlightGroupCalendar = MutableStateFlow(FlightGroupCalendar())
+  val currentFlightGroupCalendar = _currentFlightGroupCalendar.asStateFlow()
 
   init {
     refresh()
@@ -74,19 +69,21 @@ class CalendarViewModel(
    *
    * (Starts a new coroutine)
    */
-  fun refresh() = viewModelScope.launch { refreshUser() }
+  fun refresh() = viewModelScope.launch { refreshUserAndCalendars() }
 
   /**
    * Fetch the user from the database.
    *
    * Update asynchronously the [CalendarUiState.user] reference
    */
-  private suspend fun refreshUser() {
+  private suspend fun refreshUserAndCalendars() {
     _user.value = userTable.get(uid, this::onError)!!
     val currentAvCal = AvailabilityCalendar(userTable.retrieveAvailabilities(uid, this::onError))
-      _currentAvailabilityCalendar.value = currentAvCal
-          originalAvailabilityCalendar = currentAvCal
-      _currentFlightGroupCalendar.value = FlightGroupCalendar.fromFlightList(userTable.retrieveAssignedFlights(flightTable, uid, this::onError))
+    _currentAvailabilityCalendar.value = currentAvCal
+    originalAvailabilityCalendar = currentAvCal
+    _currentFlightGroupCalendar.value =
+        FlightGroupCalendar.fromFlightList(
+            userTable.retrieveAssignedFlights(flightTable, uid, this::onError))
   }
 
   /** Callback executed when an error occurs on database-related operations */
@@ -94,12 +91,11 @@ class CalendarViewModel(
     SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
   }
 
-    fun setToNextAvailabilityStatus(date: LocalDate, time: TimeSlot) {
-        val oldCalendar = _currentAvailabilityCalendar.value
-        val newCalendar = oldCalendar.setToNextAvailabilityStatus(date, time)
-        _currentAvailabilityCalendar.value = newCalendar as AvailabilityCalendar
-    }
-
+  fun setToNextAvailabilityStatus(date: LocalDate, time: TimeSlot) {
+    val oldCalendar = _currentAvailabilityCalendar.value
+    val newCalendar = oldCalendar.setToNextAvailabilityStatus(date, time)
+    _currentAvailabilityCalendar.value = newCalendar as AvailabilityCalendar
+  }
 
   /**
    * Save the current availability calendar to the database by adding, updating, deleting
@@ -110,7 +106,8 @@ class CalendarViewModel(
         val user = _user.value ?: return@launch
 
         val differences =
-            originalAvailabilityCalendar.getDifferencesWithOtherCalendar(_currentAvailabilityCalendar.value)
+            originalAvailabilityCalendar.getDifferencesWithOtherCalendar(
+                _currentAvailabilityCalendar.value)
 
         val jobs = mutableListOf<Job>()
 
@@ -141,13 +138,12 @@ class CalendarViewModel(
         // the availability calendar, by doing it that way we also have the IDs
         // of all availabilities and we reset the originalAvailabilityCalendar attribute
         // However this might be unnecessary
-        refreshUser()
+        refreshUserAndCalendars()
       }
 
   /** Cancels the modification made in the current availability calendar */
   fun cancelAvailabilities(): Unit {
-      if (_currentAvailabilityCalendar.value != originalAvailabilityCalendar)
-          _currentAvailabilityCalendar.value = originalAvailabilityCalendar
+    if (_currentAvailabilityCalendar.value != originalAvailabilityCalendar)
+        _currentAvailabilityCalendar.value = originalAvailabilityCalendar
   }
-
 }

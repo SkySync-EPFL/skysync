@@ -29,7 +29,6 @@ class TestAvailabilityCalendar {
     calendar = AvailabilityCalendar()
   }
 
-
   @Test
   fun `add element`() {
     val calendar = AvailabilityCalendar()

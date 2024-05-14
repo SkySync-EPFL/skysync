@@ -12,13 +12,10 @@ import java.util.SortedSet
  * (mutable class)
  */
 abstract class CalendarModel<T : CalendarViewable>(
-  val cells: List<T> = emptyList(),
+    val cells: List<T> = emptyList(),
 ) {
 
-
-  /**
-   * returns a new CalendarModel with the given cells
-   */
+  /** returns a new CalendarModel with the given cells */
   abstract fun constructor(cells: List<T>): CalendarModel<T>
 
   /** @return number of entries in calendar */
@@ -26,8 +23,9 @@ abstract class CalendarModel<T : CalendarViewable>(
     return cells.size
   }
 
-
-  protected fun add(t: T, ): CalendarModel<T> {
+  protected fun add(
+      t: T,
+  ): CalendarModel<T> {
     return constructor(cells + t)
   }
 
@@ -41,8 +39,6 @@ abstract class CalendarModel<T : CalendarViewable>(
     return constructor(combinedCells)
   }
 
-
-
   /**
    * updates the slot (if present) or creates new slot by the given coordinates with the output of
    * produceNewValue
@@ -52,19 +48,19 @@ abstract class CalendarModel<T : CalendarViewable>(
    * @param produceNewValue computes a new value as function of the coordinates and the old value
    */
   protected fun setByDate(
-    date: LocalDate,
-    timeSlot: TimeSlot,
-    produceNewValue: (LocalDate, TimeSlot, oldValue: T?) -> T
-  ) : CalendarModel<T> {
+      date: LocalDate,
+      timeSlot: TimeSlot,
+      produceNewValue: (LocalDate, TimeSlot, oldValue: T?) -> T
+  ): CalendarModel<T> {
     val oldValue = getByDate(date, timeSlot)
     val newValue = produceNewValue(date, timeSlot, oldValue)
-    val newCells = if (oldValue != null) {
-      val withoutOld = cells.filter { it != oldValue}
-        withoutOld + newValue
-    }
-    else{
-      cells + newValue
-    }
+    val newCells =
+        if (oldValue != null) {
+          val withoutOld = cells.filter { it != oldValue }
+          withoutOld + newValue
+        } else {
+          cells + newValue
+        }
     return constructor(newCells)
   }
 
@@ -78,8 +74,7 @@ abstract class CalendarModel<T : CalendarViewable>(
     val oldValue = getByDate(date, timeSlot)
     return if (oldValue != null) {
       constructor(cells - oldValue)
-    }
-    else {
+    } else {
       this
     }
   }

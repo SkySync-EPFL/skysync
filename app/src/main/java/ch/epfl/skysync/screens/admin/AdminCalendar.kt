@@ -44,7 +44,8 @@ fun AdminCalendarScreen(
       },
       bottomBar = { AdminBottomBar(navController) }) { padding ->
         if (calendarType == Route.ADMIN_AVAILABILITY_CALENDAR) {
-          val availabilityCalendar by viewModel.currentAvailabilityCalendar.collectAsStateWithLifecycle()
+          val availabilityCalendar by
+              viewModel.currentAvailabilityCalendar.collectAsStateWithLifecycle()
           AvailabilityCalendar(
               padding = padding,
               getAvailabilityStatus = { date, time ->
