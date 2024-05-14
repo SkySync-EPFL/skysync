@@ -113,6 +113,16 @@ class DatabaseSetup {
           assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.SMALL)
 
+  var pilot3 =
+      Pilot(
+          id = "id-pilot-3",
+          firstname = "pilot-3",
+          lastname = "pilot",
+          email = "pilot3.pilot@skysnc.ch",
+          availabilities = AvailabilityCalendar(),
+          assignedFlights = FlightGroupCalendar(),
+          qualification = BalloonQualification.SMALL)
+
   var date1 = LocalDate.of(2024, 8, 12)
   var date2 = LocalDate.of(2024, 8, 14)
   var dateNoFlight = LocalDate.of(2024, 8, 16)
@@ -154,7 +164,7 @@ class DatabaseSetup {
 
   var balloon2 = Balloon(name = "balloon-2", qualification = BalloonQualification.LARGE)
 
-  var balloon3 = Balloon(name = "ballon-3", qualification = BalloonQualification.SMALL)
+  var balloon3 = Balloon(name = "balloon-3", qualification = BalloonQualification.SMALL)
 
   var basket1 = Basket(name = "basket-1", hasDoor = false)
 
@@ -347,6 +357,7 @@ class DatabaseSetup {
                   availability3Pilot2.copy(
                       id = availabilityTable.add(pilot2.id, availability3Pilot2))
             },
+            launch { userTable.set(pilot3.id, pilot3) },
             launch { tempUserTable.set(tempUser.email, tempUser) })
         .forEach { it.join() }
 
