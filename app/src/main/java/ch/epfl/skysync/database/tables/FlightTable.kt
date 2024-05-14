@@ -94,7 +94,7 @@ class FlightTable(db: FirestoreDatabase) :
       FlightStatus.FINISHED -> {
         FinishedFlight(
             id = schema.id!!,
-            nPassengers = schema.numPassengers!!,
+            nPassengers = schema.nPassengers!!,
             team = team,
             flightType = flightType,
             balloon = balloon!!,

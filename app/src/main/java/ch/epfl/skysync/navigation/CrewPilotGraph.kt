@@ -21,6 +21,7 @@ import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
@@ -36,6 +37,7 @@ import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.Date
 
 fun NavGraphBuilder.crewPilotGraph(
@@ -125,13 +127,15 @@ fun NavGraphBuilder.crewPilotGraph(
               LocalDate.now(),
               TimeSlot.AM,
               listOf(),
-              takeOffTime = Date(),
+              takeOffTime = LocalTime.now(),
               takeOffLocation =
                   LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),
-              landingTime = Date(),
+              landingTime = LocalTime.now(),
               landingLocation =
                   LocationPoint(time = 50, latitude = 1.0, longitude = 1.0, name = "test2"),
-              flightTime = 0)
+              flightTime = 0,
+              flightTrace = FlightTrace("1", listOf()),
+              )
 
       PilotReportScreen(finishedFlight, navController, pilot)
     }
@@ -158,13 +162,15 @@ fun NavGraphBuilder.crewPilotGraph(
               LocalDate.now(),
               TimeSlot.AM,
               listOf(Vehicle("vehicle1"), Vehicle("vehicle2")),
-              takeOffTime = Date(),
+              takeOffTime = LocalTime.now(),
               takeOffLocation =
                   LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),
-              landingTime = Date(),
+              landingTime = LocalTime.now(),
               landingLocation =
                   LocationPoint(time = 50, latitude = 1.0, longitude = 1.0, name = "test2"),
-              flightTime = 0)
+              flightTime = 0,
+              flightTrace = FlightTrace("2", listOf()),
+              )
       CrewReportScreen(navController, finishedFlight, crew)
     }
   }
