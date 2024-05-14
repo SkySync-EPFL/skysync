@@ -19,6 +19,7 @@ import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.calendar.getTimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
@@ -216,7 +217,7 @@ class DatabaseSetup {
           balloon = balloon1,
           basket = basket1,
           date = date2,
-          timeSlot = TimeSlot.PM,
+          timeSlot = getTimeSlot(LocalTime.now()),
           vehicles = listOf(vehicle2),
           remarks = listOf("remark 1", "remark 2"),
           color = FlightColor.BLUE,
