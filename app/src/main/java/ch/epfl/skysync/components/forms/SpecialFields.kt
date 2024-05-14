@@ -104,7 +104,7 @@ fun TimePickerButton(title: String, buttonColor: Color, padding: Dp, setTime: (D
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
-              SmallTitle(title = title, padding, color = Color.Black)
+              SmallTitle(title = title, padding = padding, color = Color.Black)
               Button(
                   modifier =
                       Modifier.padding(horizontal = 8.dp)

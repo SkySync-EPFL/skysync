@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,12 +51,12 @@ fun AdminFlightDetailScreen(
 ) {
 
   val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
-  val showConfirmDialog = remember { mutableStateOf(false) }
-  if (showConfirmDialog.value) {
+  var showConfirmDialog by remember { mutableStateOf(false) }
+  if (showConfirmDialog) {
     ConfirmAlertDialog(
-        onDismissRequest = { showConfirmDialog.value = false },
+        onDismissRequest = { showConfirmDialog = false },
         onConfirmation = {
-          showConfirmDialog.value = false
+          showConfirmDialog = false
           viewModel.deleteFlight(flightId)
           navController.navigate(Route.ADMIN_HOME)
         },
@@ -71,7 +72,7 @@ fun AdminFlightDetailScreen(
             FlightDetailBottom(
                 editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
                 confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
-                deleteClick = { showConfirmDialog.value = true })
+                deleteClick = { showConfirmDialog = true })
           }
           is ConfirmedFlight -> {
             ConfirmedFlightDetailBottom() { navController.popBackStack() }

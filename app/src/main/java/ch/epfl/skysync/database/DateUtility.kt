@@ -91,7 +91,8 @@ object DateUtility {
   }
 
   /**
-   * Retrieves the hours and minutes from a [Date] object and returns a String. I null returns --:--
+   * Retrieves the hours and minutes from a [Date] object and returns a String. If null returns
+   * --:--
    *
    * @param date The [Date] object to be converted.
    * @return The date in "HH:mm" format or --:--

@@ -139,7 +139,7 @@ fun FlightTeamMembersDetails(
 ) {
   Card(colors = CardDefaults.cardColors(cardColor)) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-      HeaderTitle(title = "Team", padding, color = Color.Black)
+      HeaderTitle(title = "Team", padding = padding, color = Color.Black)
       flightColor()
     }
     flight.team.roles.forEach { role ->

@@ -27,7 +27,6 @@ fun TitledText(
     title: String,
     value: String,
 ) {
-
   Text(
       modifier = Modifier.fillMaxWidth().padding(horizontal = padding).testTag(title + value),
       text = title,
@@ -43,13 +42,25 @@ fun TitledText(
 }
 
 @Composable
-fun Title(title: String, padding: Dp, style: TextStyle, color: Color) {
-  Text(modifier = Modifier.padding(padding), text = title, style = style, color = color)
+fun Title(
+    modifier: Modifier = Modifier,
+    title: String,
+    padding: Dp,
+    style: TextStyle,
+    color: Color = Color.Black
+) {
+  Text(modifier = modifier.padding(padding), text = title, style = style, color = color)
 }
 
 @Composable
-fun HeaderTitle(title: String, padding: Dp, color: Color) {
+fun HeaderTitle(
+    modifier: Modifier = Modifier,
+    title: String,
+    padding: Dp,
+    color: Color = Color.Black
+) {
   Title(
+      modifier,
       title,
       padding,
       MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
@@ -57,8 +68,14 @@ fun HeaderTitle(title: String, padding: Dp, color: Color) {
 }
 
 @Composable
-fun LargeTitle(title: String, padding: Dp, color: Color) {
+fun LargeTitle(
+    modifier: Modifier = Modifier,
+    title: String,
+    padding: Dp,
+    color: Color = Color.Black
+) {
   Title(
+      modifier = modifier,
       title = title,
       padding = padding,
       style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
@@ -66,8 +83,14 @@ fun LargeTitle(title: String, padding: Dp, color: Color) {
 }
 
 @Composable
-fun SmallTitle(title: String, padding: Dp, color: Color) {
+fun SmallTitle(
+    modifier: Modifier = Modifier,
+    title: String,
+    padding: Dp,
+    color: Color = Color.Black
+) {
   Title(
+      modifier = modifier,
       title = title,
       padding = padding,
       style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
