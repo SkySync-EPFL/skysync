@@ -119,7 +119,7 @@ fun ChatBubble(message: ChatMessage, index: String) {
         Column {
           if (!isMyMessage) {
             Text(
-                text = "${message.message.user.firstname} " + message.message.user.lastname,
+                text = message.message.user.name(),
                 style = TextStyle(fontSize = 12.sp, color = Color.Gray),
                 modifier = Modifier.testTag("ChatBubbleUser$index"))
           }
