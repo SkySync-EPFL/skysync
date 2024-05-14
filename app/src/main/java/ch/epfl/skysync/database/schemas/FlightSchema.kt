@@ -64,6 +64,10 @@ data class FlightSchema(
   }
 
   companion object {
+
+      /**
+       * fills the flight information into the FlightSchema as a function of the given Flight model
+       */
     fun fromModel(model: Flight): FlightSchema {
       return when (model) {
         is PlannedFlight ->

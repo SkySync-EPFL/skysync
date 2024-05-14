@@ -17,6 +17,7 @@ import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.reports.CrewReport
 import ch.epfl.skysync.models.user.User
@@ -37,6 +38,7 @@ class FlightTable(db: FirestoreDatabase) :
   private val vehicleTable = VehicleTable(db)
   private val flightMemberTable = FlightMemberTable(db)
   private val userTable = UserTable(db)
+    private val flightTraceTable = FlightTraceTable(db)
 
   /** Create a [Flight] instance from the flight schema and the retrieved entities */
   private fun makeFlight(
@@ -45,7 +47,8 @@ class FlightTable(db: FirestoreDatabase) :
       balloon: Balloon?,
       basket: Basket?,
       vehicles: List<Vehicle>,
-      team: Team
+      team: Team,
+      flightTrace: FlightTrace?
   ): Flight {
     return when (schema.status!!) {
       FlightStatus.PLANNED ->
@@ -100,7 +103,8 @@ class FlightTable(db: FirestoreDatabase) :
             landingLocation = LocationPoint(
                 0, schema.landingLocationLat!!, schema.landingLocationLong!!, "LandingSpot"),
             flightTime = schema.flightTime!!,
-            reportId = listOf() //Todo: retrieve reports
+            reportId = listOf(), //Todo: retrieve reports
+            flightTrace = flightTrace!!
         )
       }
       else -> throw Exception("Internal error: Invalid flight status.")
@@ -190,6 +194,7 @@ class FlightTable(db: FirestoreDatabase) :
     var basket: Basket? = null
     var vehicles: List<Vehicle>? = null
     var team: Team? = null
+      var flightTrace: FlightTrace? = null
     val jobs =
         listOf(
             launch {
@@ -213,9 +218,11 @@ class FlightTable(db: FirestoreDatabase) :
               }
             },
             launch { vehicles = retrieveVehicles(flightSchema) },
-            launch { team = retrieveTeam(flightSchema) })
+            launch { team = retrieveTeam(flightSchema) },
+            launch { flightTrace = flightTraceTable.get(flightSchema.id!!) } // flightTrace has same id as flight
+        )
     jobs.forEach { it.join() }
-    makeFlight(flightSchema, flightType!!, balloon, basket, vehicles!!, team!!)
+    makeFlight(flightSchema, flightType!!, balloon, basket, vehicles!!, team!!, flightTrace)
   }
 
   override suspend fun get(id: String, onError: ((Exception) -> Unit)?): Flight? {
