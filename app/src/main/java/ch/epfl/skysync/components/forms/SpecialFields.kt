@@ -35,7 +35,7 @@ import ch.epfl.skysync.components.SmallTitle
 import ch.epfl.skysync.database.DateUtility.dateToHourMinuteString
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.location.LocationPoint
-import ch.epfl.skysync.util.hasNoError
+import ch.epfl.skysync.util.hasError
 import java.util.Date
 
 /**
@@ -220,7 +220,7 @@ fun VehicleProblemField(
                 showAddProblemDialog = false
                 problemNotChosenError = addNewProblem == ""
                 vehicleNotChosenError = selectVehicle == null
-                if (!hasNoError(problemNotChosenError, vehicleNotChosenError)) {
+                if (!hasError(problemNotChosenError, vehicleNotChosenError)) {
                   onConfirm(selectVehicle!!, addNewProblem)
                   selectVehicle = null
                   addNewProblem = ""

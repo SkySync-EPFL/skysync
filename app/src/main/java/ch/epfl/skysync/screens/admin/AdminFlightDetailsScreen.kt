@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -99,26 +100,28 @@ fun FlightDetailBottom(
     confirmClick: () -> Unit,
     deleteClick: () -> Unit,
 ) {
-  Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically) {
-        ClickButton(
-            text = "Delete",
-            onClick = { deleteClick() },
-            modifier = Modifier.fillMaxWidth(0.3f).testTag("DeleteButton"),
-            color = lightRed)
-        ClickButton(
-            text = "Edit",
-            onClick = { editClick() },
-            modifier = Modifier.fillMaxWidth(3 / 7f).testTag("EditButton"),
-            color = Color.Yellow)
-        ClickButton(
-            text = "Confirm",
-            onClick = { confirmClick() },
-            modifier = Modifier.fillMaxWidth(0.7f).testTag("ConfirmButton"),
-            color = lightGreen)
-      }
+  BottomAppBar(containerColor = lightGray) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically) {
+          ClickButton(
+              text = "Delete",
+              onClick = { deleteClick() },
+              modifier = Modifier.fillMaxWidth(0.3f).testTag("DeleteButton"),
+              color = lightRed)
+          ClickButton(
+              text = "Edit",
+              onClick = { editClick() },
+              modifier = Modifier.fillMaxWidth(3 / 7f).testTag("EditButton"),
+              color = Color.Yellow)
+          ClickButton(
+              text = "Confirm",
+              onClick = { confirmClick() },
+              modifier = Modifier.fillMaxWidth(0.7f).testTag("ConfirmButton"),
+              color = lightGreen)
+        }
+  }
 }
 
 /**

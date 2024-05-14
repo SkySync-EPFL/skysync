@@ -158,7 +158,7 @@ fun Confirmation(
   val cardColor = Color.White
   Scaffold(
       topBar = { CustomTopAppBar(navController = navController, title = "Flight Confirmation") },
-      bottomBar = { BottomBarConfirmButton(showConfirmDialog, canConfirm) },
+      bottomBar = { BottomBarConfirmButton(showConfirmDialog, canConfirm, defaultPadding) },
       containerColor = lightGray,
   ) { padding ->
     Column(modifier = Modifier.padding(padding)) {
@@ -269,15 +269,13 @@ fun DisplayEditableRemarks(remarks: MutableList<String>, padding: Dp) {
  * @param canConfirm A boolean value indicating whether the confirmation button can be enabled.
  */
 @Composable
-fun BottomBarConfirmButton(showDialog: MutableState<Boolean>, canConfirm: Boolean) {
-  BottomAppBar(modifier = Modifier.heightIn(max = 60.dp), containerColor = Color.LightGray) {
+fun BottomBarConfirmButton(showDialog: MutableState<Boolean>, canConfirm: Boolean, padding: Dp) {
+  BottomAppBar {
     Button(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(padding),
         onClick = { showDialog.value = true },
-        shape = RoundedCornerShape(0.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = lightGreen),
         enabled = canConfirm) {
-          SmallTitle(title = "Confirm", padding = 0.dp, color = Color.Black)
+          SmallTitle(title = "Confirm", padding = 0.dp, color = Color.White)
         }
   }
 }

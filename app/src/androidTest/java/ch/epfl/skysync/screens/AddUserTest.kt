@@ -10,8 +10,13 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.Repository
+import ch.epfl.skysync.database.DatabaseSetup
+import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.screens.admin.AddUserScreen
+import ch.epfl.skysync.viewmodel.UserManagementViewModel
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -19,10 +24,19 @@ import org.junit.Test
 class AddUserTest {
   @get:Rule val composeTestRule = createComposeRule()
   val navController: NavHostController = mockk("NavController", relaxed = true)
+  lateinit var userManagementViewModel: UserManagementViewModel
+  private val db = FirestoreDatabase(useEmulator = true)
+  private val dbSetup = DatabaseSetup()
+  private val repository: Repository = Repository(db)
 
   @Before
-  fun setUp() {
-    composeTestRule.setContent { AddUserScreen(navController) }
+  fun setUp() = runTest {
+    dbSetup.fillDatabase(db)
+    composeTestRule.setContent {
+      userManagementViewModel =
+          UserManagementViewModel.createViewModel(repository, dbSetup.admin1.id)
+      AddUserScreen(navController, userManagementViewModel)
+    }
   }
 
   @Test
@@ -62,7 +76,7 @@ class AddUserTest {
         .onNodeWithTag("Add User Lazy Column")
         .performScrollToNode(hasTestTag("Role Menu"))
     composeTestRule.onNodeWithTag("Role Menu").performClick()
-    composeTestRule.onNodeWithText("Pilot", true).performClick()
+    composeTestRule.onNodeWithText("Pilot", substring = true, ignoreCase = true).performClick()
     composeTestRule
         .onNodeWithTag("Add User Lazy Column")
         .performScrollToNode(hasTestTag("Balloon Qualification Menu"))
@@ -83,7 +97,7 @@ class AddUserTest {
         .performScrollToNode(hasTestTag("Role Menu"))
     composeTestRule.onNodeWithText("Select a role", true).assertIsDisplayed()
     composeTestRule.onNodeWithTag("Role Menu").performClick()
-    composeTestRule.onNodeWithText("Pilot", true).performClick()
+    composeTestRule.onNodeWithText("Pilot", substring = true, ignoreCase = true).performClick()
 
     composeTestRule
         .onNodeWithTag("Add User Lazy Column")
