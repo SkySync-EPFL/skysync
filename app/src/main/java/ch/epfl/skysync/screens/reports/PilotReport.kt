@@ -34,7 +34,7 @@ import ch.epfl.skysync.models.reports.PilotReport
 import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
-import ch.epfl.skysync.util.hasNoError
+import ch.epfl.skysync.util.hasError
 import ch.epfl.skysync.util.nbPassengerInputValidation
 import java.time.Instant
 import java.util.Date
@@ -128,7 +128,7 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
           colors = ButtonDefaults.buttonColors(containerColor = lightOrange),
           onClick = {
             errorPax = !nbPassengerInputValidation(pax)
-            if (!hasNoError(errorPax)) {
+            if (!hasError(errorPax)) {
               val vehicleProblems = vehicleProblem.toMap()
               PilotReport(
                   author = pilot,
