@@ -6,7 +6,7 @@ import ch.epfl.skysync.models.user.Crew
 import java.util.Date
 
 data class CrewReport(
-    val id: String = UNSET_ID,
+    override val id: String = UNSET_ID,
     override val author: Crew,
     val littleChampagne: Int,
     val bigChampagne: Int,
