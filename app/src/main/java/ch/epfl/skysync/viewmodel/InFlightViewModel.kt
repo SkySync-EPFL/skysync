@@ -10,6 +10,7 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.ListenerUpdate
+import ch.epfl.skysync.models.calendar.getTimeSlot
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
@@ -22,6 +23,7 @@ import ch.epfl.skysync.util.WhileUiSubscribed
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
 import java.time.LocalDate
+import java.time.LocalTime
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -132,10 +134,14 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
   private val _confirmedFlights: MutableStateFlow<List<ConfirmedFlight>> =
       MutableStateFlow(emptyList())
 
-  val startableFlights: StateFlow<List<ConfirmedFlight>> =
+  val startableFlight: StateFlow<ConfirmedFlight?> =
       _confirmedFlights
-          .map { flights -> flights.filter { flight -> isUserPilotRole(flight.team) } }
-          .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = emptyList())
+          .map { flights ->
+            flights.firstOrNull { flight ->
+              isUserPilotRole(flight.team) && flight.timeSlot == getTimeSlot(LocalTime.now())
+            }
+          }
+          .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
 
   private val _currentFlight = MutableStateFlow<ConfirmedFlight?>(null)
 
@@ -170,9 +176,7 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   /** Returns if the user is assigned a pilot role in the team */
   private fun isUserPilotRole(team: Team): Boolean {
-    return team.roles.find { role ->
-      role.roleType == RoleType.PILOT && role.assignedUser?.id == _userId
-    } != null
+    return team.hasUserRole(RoleType.PILOT, _userId!!)
   }
 
   /** Fetch the flights the user is assigned to */

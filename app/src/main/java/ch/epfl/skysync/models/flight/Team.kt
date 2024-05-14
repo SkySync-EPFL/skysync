@@ -22,6 +22,12 @@ data class Team(val roles: List<Role>) {
     return roles.mapNotNull { it.assignedUser }
   }
 
+  /** Returns if the user has the given role in the team */
+  fun hasUserRole(roleType: RoleType, userId: String): Boolean {
+    return roles.find { role -> role.roleType == roleType && role.assignedUser?.id == userId } !=
+        null
+  }
+
   /** assigns the given user to the first role with the given role type */
   fun assign(user: User, roleType: RoleType): Team {
     // Todo: to be implemented

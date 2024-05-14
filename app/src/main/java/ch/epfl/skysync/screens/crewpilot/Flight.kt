@@ -124,7 +124,7 @@ fun FlightScreen(
   val rawTime by inFlightViewModel.rawCounter.collectAsStateWithLifecycle()
   val currentTime by inFlightViewModel.counter.collectAsStateWithLifecycle()
   val flightStage by inFlightViewModel.flightStage.collectAsStateWithLifecycle()
-  val startableFlights by inFlightViewModel.startableFlights.collectAsStateWithLifecycle()
+  val startableFlight by inFlightViewModel.startableFlight.collectAsStateWithLifecycle()
   val currentFlight by inFlightViewModel.currentFlight.collectAsStateWithLifecycle()
 
   val currentLocations = inFlightViewModel.currentLocations.collectAsState().value
@@ -183,9 +183,7 @@ fun FlightScreen(
     // Cleanup function to stop receiving location updates when the composable is disposed.
     onDispose { fusedLocationClient.removeLocationUpdates(locationCallback) }
   }
-  println(
-      "Loading: $loading isPilot: ${inFlightViewModel.isPilot()} currentFlight: ${currentFlight?.id} startableFlights: ${startableFlights.size}")
-  println("Permission: ${locationPermission.status.isGranted}")
+
   if (!locationPermission.status.isGranted) {
     Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
       Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -196,9 +194,7 @@ fun FlightScreen(
   } else if (loading) {
     LoadingComponent(isLoading = true, onRefresh = {}) {}
   } else if (currentFlight == null) {
-    ShowFlightToStart(navController, startableFlights.firstOrNull()) {
-      inFlightViewModel.setCurrentFlight(it)
-    }
+    ShowFlightToStart(navController, startableFlight) { inFlightViewModel.setCurrentFlight(it) }
   } else {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
