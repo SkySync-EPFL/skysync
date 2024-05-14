@@ -1,6 +1,5 @@
 package ch.epfl.skysync.screens.admin
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -55,7 +54,7 @@ fun AdminCalendarScreen(
                 viewModel.setToNextAvailabilityStatus(date, time)
               },
               onSave = { viewModel.saveAvailabilities() },
-              onCancel = { Log.d("TO BE IMPLEMENTED", "Cancel in Availabilities") })
+              onCancel = { viewModel.cancelAvailabilities() })
         } else if (calendarType == Route.ADMIN_FLIGHT_CALENDAR) {
           val flightCalendar by viewModel.currentFlightGroupCalendar.collectAsStateWithLifecycle()
           FlightCalendar(

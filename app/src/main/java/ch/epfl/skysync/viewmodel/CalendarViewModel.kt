@@ -108,36 +108,32 @@ class CalendarViewModel(
         val differences =
             originalAvailabilityCalendar.getDifferencesWithOtherCalendar(
                 _currentAvailabilityCalendar.value)
+        if (!differences.isEmpty()) {
+          val jobs = mutableListOf<Job>()
 
-        val jobs = mutableListOf<Job>()
-
-        for ((difference, availability) in differences) {
-          when (difference) {
-            CalendarDifferenceType.ADDED -> {
-              jobs.add(
-                  launch {
-                    availabilityTable.add(user.id, availability, onError = { onError(it) })
-                  })
-            }
-            CalendarDifferenceType.UPDATED -> {
-              jobs.add(
-                  launch {
-                    availabilityTable.update(
-                        user.id, availability.id, availability, onError = { onError(it) })
-                  })
-            }
-            CalendarDifferenceType.DELETED -> {
-              jobs.add(
-                  launch { availabilityTable.delete(availability.id, onError = { onError(it) }) })
+          for ((difference, availability) in differences) {
+            when (difference) {
+              CalendarDifferenceType.ADDED -> {
+                jobs.add(
+                    launch {
+                      availabilityTable.add(user.id, availability, onError = { onError(it) })
+                    })
+              }
+              CalendarDifferenceType.UPDATED -> {
+                jobs.add(
+                    launch {
+                      availabilityTable.update(
+                          user.id, availability.id, availability, onError = { onError(it) })
+                    })
+              }
+              CalendarDifferenceType.DELETED -> {
+                jobs.add(
+                    launch { availabilityTable.delete(availability.id, onError = { onError(it) }) })
+              }
             }
           }
+          jobs.forEach { it.join() }
         }
-        jobs.forEach { it.join() }
-
-        // we refresh the user to make sure that we have the latest version of
-        // the availability calendar, by doing it that way we also have the IDs
-        // of all availabilities and we reset the originalAvailabilityCalendar attribute
-        // However this might be unnecessary
         refreshUserAndCalendars()
       }
 

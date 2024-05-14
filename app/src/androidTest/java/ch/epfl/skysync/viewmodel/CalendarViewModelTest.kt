@@ -51,6 +51,7 @@ class CalendarViewModelTest {
   @Test
   fun testSetToNextAvailabilityStatusForExisting() = runTest {
     calendarViewModel.refresh().join()
+    // init status
     var availabilityCalendar = calendarViewModel.currentAvailabilityCalendar.value
     var currentStatus =
         availabilityCalendar.getAvailabilityStatus(
@@ -58,11 +59,14 @@ class CalendarViewModelTest {
     assertEquals(AvailabilityStatus.OK, currentStatus)
     calendarViewModel.setToNextAvailabilityStatus(
         dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
+    // 1x next
     availabilityCalendar = calendarViewModel.currentAvailabilityCalendar.value
     currentStatus =
         availabilityCalendar.getAvailabilityStatus(
             dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
     assertEquals(AvailabilityStatus.MAYBE, currentStatus)
+
+    // 2x next
     calendarViewModel.setToNextAvailabilityStatus(
         dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
     calendarViewModel.setToNextAvailabilityStatus(

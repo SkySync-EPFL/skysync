@@ -71,7 +71,7 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
       val date = newCalendarAvailability.date
       val timeSlot = newCalendarAvailability.timeSlot
       val oldCalendarAvailability = getByDate(date, timeSlot)
-      if (newCalendarAvailability == oldCalendarAvailability) {
+      if (newCalendarAvailability.status == oldCalendarAvailability?.status) {
         continue
       }
       if (oldCalendarAvailability == null ||
