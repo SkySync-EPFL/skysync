@@ -1,6 +1,9 @@
 package ch.epfl.skysync.models.flight
 
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.location.FlightTrace
+import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.models.reports.Report
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -24,4 +27,36 @@ data class ConfirmedFlight(
   override fun getFlightStatus(): FlightStatus {
     return FlightStatus.CONFIRMED
   }
+
+    /**
+     * create a finished Flight from a confirmed flight
+     */
+    fun finishFlight(
+        takeOffTime: LocalTime,
+        takeOffLocation: LocationPoint,
+        landingTime: LocalTime,
+        landingLocation: LocationPoint,
+        flightTime: Long,
+        reportIds: List<Report> = listOf(),
+        flightTrace: FlightTrace
+    ): FinishedFlight  =
+        FinishedFlight(
+            id = id,
+            nPassengers = nPassengers,
+            team = team,
+            flightType = flightType,
+            balloon = balloon,
+            basket = basket,
+            date = date,
+            timeSlot = timeSlot,
+            vehicles = vehicles,
+            color = color,
+            landingTime = landingTime,
+            landingLocation = landingLocation,
+            takeOffTime = takeOffTime,
+            takeOffLocation = takeOffLocation,
+            flightTime = flightTime,
+            flightTrace = flightTrace,
+            reportId = reportIds
+        )
 }

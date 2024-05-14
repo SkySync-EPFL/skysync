@@ -1,6 +1,7 @@
 package ch.epfl.skysync.models.flight
 
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.reports.Report
 import java.time.LocalDate
@@ -25,6 +26,7 @@ data class FinishedFlight(
     val landingLocation: LocationPoint,
     val flightTime: Long, // time in milliseconds
     val reportId: List<Report> = emptyList(),
+    val flightTrace: FlightTrace,
     val flightStatus: FlightStatus = FlightStatus.MISSING_REPORT
 ) : Flight {
 
