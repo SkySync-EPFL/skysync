@@ -58,7 +58,7 @@ class DatabaseSetup {
       Admin(
           id = "id-admin-1",
           firstname = "admin-1",
-          lastname = "lastname",
+          lastname = "lastname-admin-1",
           email = "admin1.lastname@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
@@ -66,7 +66,7 @@ class DatabaseSetup {
       Admin(
           id = "id-admin-2",
           firstname = "admin-2",
-          lastname = "lastname",
+          lastname = "lastname-admin-2",
           email = "admin2.lastname@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
@@ -74,7 +74,7 @@ class DatabaseSetup {
       Crew(
           id = "id-crew-1",
           firstname = "crew-1",
-          lastname = "Bob",
+          lastname = "lastname-crew-1",
           email = "crew1.bob@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
@@ -83,7 +83,7 @@ class DatabaseSetup {
       Crew(
           id = "id-crew-2",
           firstname = "crew-2",
-          lastname = "Denis",
+          lastname = "lastname-crew-2",
           email = "crew2.denis@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar())
@@ -99,7 +99,7 @@ class DatabaseSetup {
       Pilot(
           id = "id-pilot-1",
           firstname = "pilot-1",
-          lastname = "Bob",
+          lastname = "lastname-pilot-1",
           email = "pilot1.bob@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar(),
@@ -108,7 +108,7 @@ class DatabaseSetup {
       Pilot(
           id = "id-pilot-2",
           firstname = "pilot-2",
-          lastname = "lastname",
+          lastname = "lastname-pilot-2",
           email = "pilot2.lastname@skysnc.ch",
           availabilities = AvailabilityCalendar(),
           assignedFlights = FlightGroupCalendar(),
