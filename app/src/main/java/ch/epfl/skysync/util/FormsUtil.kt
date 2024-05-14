@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 
 /** Useful methods for input validation */
-fun hasNoError(vararg errors: Boolean): Boolean {
+fun hasError(vararg errors: Boolean): Boolean {
   return errors.any { it }
 }
 
@@ -21,6 +21,14 @@ fun nbPassengerInputValidation(nbPassenger: String): Boolean {
 
 fun bottleInputValidation(bottle: String): Boolean {
   return bottle.toIntOrNull() != null && bottle.toInt() >= 0
+}
+
+fun validateEmail(email: String): Boolean {
+  return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+}
+
+fun textInputValidation(name: String): Boolean {
+  return name.isEmpty()
 }
 
 /** Useful formatting methods for dates and times */

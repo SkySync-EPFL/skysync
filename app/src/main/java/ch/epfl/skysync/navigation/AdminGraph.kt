@@ -8,16 +8,13 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
-import ch.epfl.skysync.models.flight.BalloonQualification
-import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.screens.AddFlightScreen
+import ch.epfl.skysync.screens.UserDetailsScreen
 import ch.epfl.skysync.screens.admin.AddUserScreen
 import ch.epfl.skysync.screens.admin.AdminChatScreen
 import ch.epfl.skysync.screens.admin.AdminFlightDetailScreen
 import ch.epfl.skysync.screens.admin.AdminHomeScreen
+import ch.epfl.skysync.screens.admin.AdminStatsScreen
 import ch.epfl.skysync.screens.admin.AdminTextScreen
 import ch.epfl.skysync.screens.admin.ConfirmationScreen
 import ch.epfl.skysync.screens.admin.ModifyFlightScreen
@@ -26,6 +23,7 @@ import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.LocationViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
+import ch.epfl.skysync.viewmodel.UserManagementViewModel
 
 fun NavGraphBuilder.adminGraph(
     repository: Repository,
@@ -44,10 +42,11 @@ fun NavGraphBuilder.adminGraph(
       val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
       AddFlightScreen(navController, flightsViewModel)
     }
-    composable(Route.STATS) {
-      // TODO
+    composable(Route.STATS) { AdminStatsScreen(navController) }
+    composable(Route.ADD_USER) {
+      val userManagementViewModel = UserManagementViewModel.createViewModel(repository, uid)
+      AddUserScreen(navController, userManagementViewModel)
     }
-    composable(Route.ADD_USER) { AddUserScreen(navController) }
     composable(
         Route.CONFIRM_FLIGHT + "/{Flight ID}",
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
@@ -65,19 +64,18 @@ fun NavGraphBuilder.adminGraph(
           ModifyFlightScreen(navController, flightsViewModel, flightId)
         }
     composable(Route.USER) {
-      val users =
-          listOf(
-              Pilot(
-                  "testID",
-                  "John",
-                  "Doe",
-                  "john.doe@gmail.com",
-                  AvailabilityCalendar(mutableListOf()),
-                  FlightGroupCalendar(),
-                  setOf(RoleType.PILOT),
-                  BalloonQualification.MEDIUM))
-      UserManagementScreen(navController = navController, users = users)
+      val userManagementViewModel = UserManagementViewModel.createViewModel(repository, uid)
+      userManagementViewModel.refresh()
+      UserManagementScreen(navController = navController, userManagementViewModel)
     }
+    composable(
+        Route.ADMIN_USER_DETAILS + "/{User ID}",
+        arguments = listOf(navArgument("User ID") { type = NavType.StringType })) { backStackEntry
+          ->
+          val selectedUserId = backStackEntry.arguments?.getString("User ID") ?: UNSET_ID
+          val flightsViewModel = FlightsViewModel.createViewModel(repository, selectedUserId)
+          UserDetailsScreen(navController, flightsViewModel)
+        }
     composable(Route.ADMIN_CHAT) { entry ->
       val messageListenerSharedViewModel =
           entry.sharedViewModel<MessageListenerSharedViewModel>(

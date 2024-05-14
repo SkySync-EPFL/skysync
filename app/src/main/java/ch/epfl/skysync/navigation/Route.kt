@@ -7,7 +7,7 @@ object Route {
   const val ADD_FLIGHT = "Add Flight"
   const val MODIFY_FLIGHT = "Modify Flight"
   const val CONFIRM_FLIGHT = "Confirm Flight"
-  const val USER_DETAILS = "User Details"
+  const val ADMIN_USER_DETAILS = "User Details"
 
   // The reports route will be merged when the viewModel is implemented
   const val CREW_REPORT = "Crew Report"

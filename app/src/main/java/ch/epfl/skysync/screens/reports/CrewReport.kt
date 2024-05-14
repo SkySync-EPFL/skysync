@@ -32,7 +32,7 @@ import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.util.bottleInputValidation
-import ch.epfl.skysync.util.hasNoError
+import ch.epfl.skysync.util.hasError
 
 @Composable
 fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFlight, crew: Crew) {
@@ -121,7 +121,7 @@ fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFligh
             errorLittleChampagne = !bottleInputValidation(littleChampagne)
             errorBigChampagne = !bottleInputValidation(bigChampagne)
             errorPrestigeChampagne = !bottleInputValidation(prestigeChampagne)
-            if (!hasNoError(errorLittleChampagne, errorBigChampagne, errorPrestigeChampagne)) {
+            if (!hasError(errorLittleChampagne, errorBigChampagne, errorPrestigeChampagne)) {
               val vehicleProblems = vehicleProblem.toMap()
               CrewReport(
                   author = crew,

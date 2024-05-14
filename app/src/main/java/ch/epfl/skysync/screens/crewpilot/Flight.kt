@@ -52,6 +52,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 
@@ -80,9 +81,8 @@ fun FlightScreen(
   val flightIsStarted by inFlightViewModel.inFlight.collectAsStateWithLifecycle()
   val personalFlights by inFlightViewModel.personalFlights.collectAsStateWithLifecycle()
   val currentFlightId by inFlightViewModel.flightId.collectAsStateWithLifecycle()
-
   val currentLocations = inFlightViewModel.currentLocations.collectAsState().value
-
+  val flightLocations by inFlightViewModel.flightLocations.collectAsStateWithLifecycle()
   val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
   val fusedLocationClient = LocationServices.getFusedLocationProviderClient(LocalContext.current)
 
@@ -108,7 +108,6 @@ fun FlightScreen(
                 )
 
             inFlightViewModel.addLocation(Location(userId = uid, point = newLocation))
-
             markerState.position = newLocation.latlng()
             metrics = metrics.withUpdate(it.speed, it.altitude, it.bearing, newLocation)
           }
@@ -215,6 +214,27 @@ fun FlightScreen(
                   Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
                       .background(color = Color.White, shape = RoundedCornerShape(8.dp))
                       .padding(6.dp))
+          if (locationPermission.status.isGranted) {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize().padding(padding).testTag("Map"),
+                cameraPositionState = cameraPositionState) {
+                  Marker(state = markerState, title = "Your Location", snippet = "You are here")
+                  Polyline(
+                      points = flightLocations.map { it.point.latlng() },
+                      color = Color.Red,
+                      width = 5f)
+                  currentLocations.values.forEach { (user, location) ->
+                    UserLocationMarker(location, user)
+                  }
+                }
+            Text(
+                text = "$metrics",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier =
+                    Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
+                        .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                        .padding(6.dp))
+          }
         }
       }
 }
