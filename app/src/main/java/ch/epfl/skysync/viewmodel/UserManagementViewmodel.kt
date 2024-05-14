@@ -10,6 +10,8 @@ import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.UserRole
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.user.TempUser
+import ch.epfl.skysync.models.user.User
+import com.google.firebase.firestore.Filter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -37,49 +39,34 @@ class UserManagementViewmodel(
   private val userTable = repository.userTable
   private val tempUserTable = repository.tempUserTable
 
-  private val _emails: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
-  val emails = _emails.asStateFlow()
-
-  fun refresh() {
-    refreshAvailableEmails()
-  }
-
-  fun refreshAvailableEmails() =
-      viewModelScope.launch {
-        _emails.value = emptyList()
-        tempUserTable.getAll(onError = { onError(it) }).forEach() { u -> _emails.value += u.email }
-      }
-
   fun addTempUser(
       email: String,
       userRole: UserRole,
       firstname: String,
       lastname: String,
-      balloonQualification: BalloonQualification?
-  ) =
+      balloonQualification: BalloonQualification?) =
       viewModelScope.launch {
-        val index = _emails.value.indexOf(email)
-        if (index == -1) {
-          tempUserTable.set(
-              email,
-              TempUser(email, userRole, firstname, lastname, balloonQualification),
-              onError = { onError(it) })
-        } else {
-          // tempUserTable.
+          var tempUser: TempUser? = null
+          var user : User? = null
+          tempUserTable.getAll(onError = { onError(it) }).forEach() { t ->
+              if (t.email == email) {
+                  tempUser = t
+              }
+          }
+          userTable.getAll(onError = { onError(it) }).forEach() { u ->
+              if (u.email == email) {
+                  user = u
+              }
+          }
+          if (tempUser !=null){
+              tempUserTable.queryDelete(Filter.notEqualTo("email",email),onError = { onError(it) })
+          }
+          if(user != null){
+              userTable.delete(user!!.id,onError = { onError(it) })
+          }
+          tempUser = TempUser(email, userRole, firstname, lastname, balloonQualification)
+          tempUserTable.set(email, tempUser!!,onError = { onError(it) })
         }
-      }
-
-  fun getTempUser(email: String): TempUser? {
-    var tempUser: TempUser? = null
-    viewModelScope.launch {
-      tempUserTable.getAll(onError = { onError(it) }).forEach() { u ->
-        if (u.email == email) {
-          tempUser = u
-        }
-      }
-    }
-    return tempUser
-  }
 
   private fun onError(e: Exception) {
     SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
