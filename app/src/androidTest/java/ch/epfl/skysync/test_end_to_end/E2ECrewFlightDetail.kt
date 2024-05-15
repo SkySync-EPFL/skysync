@@ -2,7 +2,6 @@ package ch.epfl.skysync.test_end_to_end
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -16,12 +15,15 @@ import androidx.navigation.testing.TestNavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
+import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.database.FlightStatus
 import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
-import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Assert.assertEquals
@@ -49,14 +51,20 @@ class E2ECrewFlightDetail {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
+      val inFlightViewModel = InFlightViewModel.createViewModel(repository)
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.crew1.id)
+        homeGraph(repository, navController, dbs.crew1.id, inFlightViewModel)
       }
     }
     composeTestRule.waitUntil {
       val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
       nodes.fetchSemanticsNodes().isNotEmpty()
     }
+  }
+
+  private fun helper(field: String, value: String) {
+    composeTestRule.onNodeWithText(field).assertIsDisplayed()
+    composeTestRule.onNodeWithText(value).assertIsDisplayed()
   }
 
   @Test
@@ -80,72 +88,74 @@ class E2ECrewFlightDetail {
       composeTestRule.waitUntil(2500) {
         composeTestRule.onAllNodesWithText("Balloon").fetchSemanticsNodes().isNotEmpty()
       }
-
-      if (flight is PlannedFlight) {
-        composeTestRule.onNodeWithText("Flight Detail").assertIsDisplayed()
-        composeTestRule.onNodeWithText(flight.nPassengers.toString() + " Pax").assertIsDisplayed()
-
-        var expected = flight.balloon?.name ?: "None"
-        plannedFlightHelper("Balloon", "Balloon$expected")
-
-        expected = flight.basket?.name ?: "None"
-        plannedFlightHelper("Basket", "Basket$expected")
-
-        composeTestRule.onNodeWithText(flight.flightType.name).assertIsDisplayed()
-        composeTestRule.onNodeWithText(flight.date.toString()).assertIsDisplayed()
-      } else if (flight is ConfirmedFlight) {
-        composeTestRule.onNodeWithText("Confirmed Flight").assertIsDisplayed()
-        composeTestRule
-            .onNodeWithTag("Number Of Pax" + flight.nPassengers.toString())
-            .assertIsDisplayed()
-        composeTestRule.onNodeWithText(flight.flightType.name).assertIsDisplayed()
-
-        flight.team.roles.forEachIndexed { i, _ ->
-          composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Team $i"))
-          composeTestRule.onNodeWithTag("Team $i").assertIsDisplayed()
+      var flightStatus = FlightStatus.PLANNED
+      when (flight) {
+        is ConfirmedFlight -> {
+          flightStatus = FlightStatus.CONFIRMED
         }
-
-        confirmedFlightHelper("Balloon", "Balloon" + flight.balloon.name)
-        confirmedFlightHelper("Basket", "Basket" + flight.basket.name)
-        confirmedFlightHelper("Date", "Date" + flight.date.toString())
-
-        flight.vehicles.forEachIndexed { i, _ ->
-          composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Vehicle $i"))
-          composeTestRule.onNodeWithTag("Vehicle $i").assertIsDisplayed()
+        is FinishedFlight -> {
+          flightStatus = FlightStatus.FINISHED
         }
-
-        flight.remarks.forEachIndexed { i, _ ->
-          composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Remark $i"))
-          composeTestRule.onNodeWithTag("Remark $i").assertIsDisplayed()
-        }
-
-        composeTestRule.onNodeWithTag("body").performScrollToNode(hasTestTag("Flight Color"))
-        composeTestRule.onNodeWithTag("Flight Color").assertIsDisplayed()
-
-        confirmedFlightHelper(
-            "Meetup Time Team", "Meetup Time Team" + flight.meetupTimeTeam.toString())
-        confirmedFlightHelper(
-            "Departure Time Team", "Departure Time Team" + flight.departureTimeTeam.toString())
-        confirmedFlightHelper(
-            "Meetup Time Passenger",
-            "Meetup Time Passenger" + flight.meetupTimePassenger.toString())
-        confirmedFlightHelper(
-            "Meetup Location Passenger",
-            "Meetup Location Passenger" + flight.meetupLocationPassenger)
       }
-      composeTestRule.onNodeWithText("Back").performClick()
+      helper("Flight status", flightStatus.toString())
+      helper("Day of flight", DateUtility.localDateToString(flight.date))
+      helper("Time slot", DateUtility.localDateToString(flight.date))
+      helper("Number of Passengers", flight.nPassengers.toString())
+      helper("Flight type", flight.flightType.name)
+      helper("Balloon", flight.balloon?.name ?: "None")
+      helper("Basket", flight.basket?.name ?: "None")
+
+      composeTestRule.onNodeWithTag("FlightDetailLazyColumn").performScrollToNode(hasText("Team"))
+      flight.vehicles.forEach {
+        composeTestRule
+            .onNodeWithTag("FlightDetailLazyColumn")
+            .performScrollToNode(hasText(it.name))
+        composeTestRule.onNodeWithText(it.name).assertIsDisplayed()
+      }
+
+      if (flight is ConfirmedFlight) {
+
+        flight.team.roles.forEach { role ->
+          composeTestRule
+              .onNodeWithTag("FlightDetailLazyColumn")
+              .performScrollToNode(hasText("Team"))
+          composeTestRule.onNodeWithText("COLOR ${flight.color}").assertIsDisplayed()
+          val metric = role.roleType.description
+          val firstname = role.assignedUser?.firstname
+          val lastname = role.assignedUser?.lastname
+          composeTestRule.onNodeWithTag("Metric$metric$firstname").assertIsDisplayed()
+          composeTestRule.onNodeWithTag("Metric$metric$lastname").assertIsDisplayed()
+        }
+        composeTestRule
+            .onNodeWithTag("FlightDetailLazyColumn")
+            .performScrollToNode(hasText("Meet up times"))
+        composeTestRule.onNodeWithText("Team meet up time").assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(DateUtility.localTimeToString(flight.meetupTimeTeam))
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText("Team departure time").assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(DateUtility.localTimeToString(flight.departureTimeTeam))
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText("Passengers meet up time").assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(DateUtility.localTimeToString(flight.meetupTimePassenger))
+            .assertIsDisplayed()
+
+        composeTestRule
+            .onNodeWithTag("FlightDetailLazyColumn")
+            .performScrollToNode(hasText("Passengers meet up location"))
+        composeTestRule.onNodeWithText(flight.meetupLocationPassenger).assertIsDisplayed()
+
+        composeTestRule
+            .onNodeWithTag("FlightDetailLazyColumn")
+            .performScrollToNode(hasText("Remarks"))
+        flight.remarks.forEach { r -> composeTestRule.onNodeWithText(r).assertIsDisplayed() }
+      }
+      composeTestRule.onNodeWithText("OK").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("BackButton").performClick()
       route = navController.currentBackStackEntry?.destination?.route
       assertEquals(Route.CREW_HOME, route)
     }
-  }
-
-  private fun confirmedFlightHelper(text: String, testTag: String) {
-    composeTestRule.onNodeWithTag("body").performScrollToNode(hasText(text))
-    composeTestRule.onNodeWithTag(testTag).assertIsDisplayed()
-  }
-
-  private fun plannedFlightHelper(text: String, testTag: String) {
-    composeTestRule.onNodeWithText(text).assertIsDisplayed()
-    composeTestRule.onNodeWithTag(testTag).assertIsDisplayed()
   }
 }

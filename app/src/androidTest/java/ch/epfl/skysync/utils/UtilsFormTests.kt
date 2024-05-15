@@ -6,7 +6,6 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onChild
 import androidx.compose.ui.test.onChildAt
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 
 /**
@@ -30,5 +29,5 @@ fun inputTimePicker(
       .onChildAt(4)
       .onChildAt(minute / 5)
       .performClick()
-  composeTestRule.onNodeWithText("Confirm").performClick()
+  composeTestRule.onNodeWithTag("TimePickerConfirm").performClick()
 }

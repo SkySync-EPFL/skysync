@@ -1,91 +1,67 @@
 package ch.epfl.skysync.screens.userDetails
 
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.testing.TestNavHostController
+import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
-import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.flight.Balloon
-import ch.epfl.skysync.models.flight.BalloonQualification
-import ch.epfl.skysync.models.flight.Basket
-import ch.epfl.skysync.models.flight.FinishedFlight
-import ch.epfl.skysync.models.flight.FlightType
-import ch.epfl.skysync.models.flight.Role
-import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.flight.Team
-import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.screens.UserDetailsScreen
-import java.time.Instant
-import java.time.LocalDate
-import java.util.Date
+import ch.epfl.skysync.viewmodel.FlightsViewModel
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class UserDetailsTest {
   @get:Rule val composeTestRule = createComposeRule()
+  private lateinit var flighsViewModel: FlightsViewModel
 
   private val dbs = DatabaseSetup()
+  private val db = FirestoreDatabase(useEmulator = true)
+  private val repository: Repository = Repository(db)
 
-  private val user = dbs.pilot1
+  private lateinit var navController: NavHostController
 
-  private val role = Role(RoleType.PILOT, user)
+  @Before fun setUp() = runTest { dbs.fillDatabase(db) }
 
-  private val team = Team(listOf(role))
-
-  lateinit var navController: TestNavHostController
-
-  private var allFlights: MutableList<FinishedFlight> =
-      mutableStateListOf(
-          FinishedFlight(
-              id = "testFlightId",
-              nPassengers = 0,
-              team = team,
-              flightType = FlightType.DISCOVERY,
-              balloon = Balloon("Balloon", BalloonQualification.MEDIUM),
-              basket = Basket("Basket", true),
-              date = LocalDate.now(),
-              timeSlot = TimeSlot.AM,
-              vehicles = emptyList(),
-              flightTime = 0L,
-              takeOffTime = Date.from(Instant.now()),
-              landingTime = Date.from(Instant.now()),
-              takeOffLocation =
-                  LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),
-              landingLocation =
-                  LocationPoint(time = 0, latitude = 1.0, longitude = 1.0, name = "test2"),
-          ))
-
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun testPersonalFlightHistoryDisplaysFlights() {
-    composeTestRule.setContent {
-      UserDetailsScreen(
-          navController = rememberNavController(), allFlights = allFlights, user = user)
-    }
     // Check for elements
+    composeTestRule.setContent {
+      flighsViewModel = FlightsViewModel.createViewModel(repository, dbs.crew1.id)
+      flighsViewModel.refresh()
+      UserDetailsScreen(navController = rememberNavController(), flighsViewModel)
+    }
     composeTestRule.onNodeWithText("Completed Flights").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("flightCard" + "testFlightId").assertExists()
+    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("flightCard${dbs.flight1.id}"), 2000)
   }
 
   @Test
   fun testEmptyMessage() {
     composeTestRule.setContent {
-      UserDetailsScreen(navController = rememberNavController(), allFlights = listOf(), user = user)
+      flighsViewModel = FlightsViewModel.createViewModel(repository, dbs.pilot3.id)
+      flighsViewModel.refresh()
+      UserDetailsScreen(navController = rememberNavController(), flighsViewModel)
     }
-    // Check for elements
+    composeTestRule.waitUntil(4000) { flighsViewModel.currentUser.value != null }
     composeTestRule.onNodeWithText("No flights").assertIsDisplayed()
   }
 
   @Test
   fun testUserNameIsDisplayed() {
     composeTestRule.setContent {
-      UserDetailsScreen(
-          navController = rememberNavController(), allFlights = allFlights, user = user)
+      flighsViewModel = FlightsViewModel.createViewModel(repository, dbs.crew1.id)
+      flighsViewModel.refresh()
+      UserDetailsScreen(navController = rememberNavController(), flighsViewModel)
     }
-    // Check for elements
-    composeTestRule.onNodeWithText("${user.firstname} ${user.lastname}").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText("${dbs.crew1.firstname} ${dbs.crew1.lastname}")
+        .assertIsDisplayed()
   }
 }
