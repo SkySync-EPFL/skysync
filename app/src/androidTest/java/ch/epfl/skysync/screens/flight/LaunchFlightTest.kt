@@ -3,14 +3,18 @@ package ch.epfl.skysync.screens.flight
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.ComposeNavigator
+import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
+import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.screens.crewpilot.LaunchFlight
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
@@ -80,7 +84,6 @@ class LaunchFlightTest {
         LaunchFlight(navController, viewModel, inFlightViewModel)
       }
       inFlightViewModel.init(dbSetup.pilot1.id).join()
-      composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
       composeTestRule.onNodeWithTag("flightCard${dbSetup.flight4.id}").assertExists()
     }
   }
@@ -93,12 +96,19 @@ class LaunchFlightTest {
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
-        LaunchFlight(navController, viewModel, inFlightViewModel)
+        NavHost(navController = navController, startDestination = Route.MAIN) {
+          homeGraph(repository, navController, dbSetup.pilot1.id, inFlightViewModel)
+        }
+      }
+      composeTestRule.waitUntil {
+        val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
+        nodes.fetchSemanticsNodes().isNotEmpty()
       }
       inFlightViewModel.init(dbSetup.pilot1.id).join()
       inFlightViewModel.startFlight().join()
-      val route = navController.currentBackStackEntry?.destination?.route
+      composeTestRule.onNodeWithText("Flight").performClick()
       composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
+      val route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(route, Route.FLIGHT)
     }
   }
@@ -111,10 +121,17 @@ class LaunchFlightTest {
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
-        LaunchFlight(navController, viewModel, inFlightViewModel)
+        NavHost(navController = navController, startDestination = Route.MAIN) {
+          homeGraph(repository, navController, dbSetup.pilot1.id, inFlightViewModel)
+        }
+      }
+      composeTestRule.waitUntil {
+        val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
+        nodes.fetchSemanticsNodes().isNotEmpty()
       }
       inFlightViewModel.init(dbSetup.crew1.id).join()
       inFlightViewModel.startFlight().join()
+      composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
       val route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(route, Route.FLIGHT)
     }
