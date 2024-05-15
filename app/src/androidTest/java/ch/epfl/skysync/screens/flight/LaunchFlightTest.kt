@@ -23,7 +23,6 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.CountDownLatch
 
 class LaunchFlightTest {
   private val db = FirestoreDatabase(useEmulator = true)
@@ -113,6 +112,7 @@ class LaunchFlightTest {
       Assert.assertEquals(route, Route.FLIGHT)
     }
   }
+
   @Test
   fun checkCrewFlightLaunched() {
     runTest {
