@@ -16,7 +16,7 @@ class FlightGroupCalendar(cells: List<FlightGroup> = listOf()) : CalendarModel<F
       for (flight in flightList) {
         val key = Pair(flight.date, flight.timeSlot)
         if (map.containsKey(key)) {
-          map[key] = map[key]!!.addFlight(flight)
+          map[key]?.let { map[key] = it.addFlight(flight) }
         } else {
           map[key] = FlightGroup(flight.date, flight.timeSlot, listOf(flight))
         }

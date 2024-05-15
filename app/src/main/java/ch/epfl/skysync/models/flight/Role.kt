@@ -57,4 +57,10 @@ data class Role(
     val otherRole = other as Role
     return (roleType == otherRole.roleType && assignedUser?.id == otherRole.assignedUser?.id)
   }
+
+  override fun hashCode(): Int {
+    var result = roleType.hashCode()
+    result = 31 * result + (assignedUser?.hashCode() ?: 0)
+    return result
+  }
 }
