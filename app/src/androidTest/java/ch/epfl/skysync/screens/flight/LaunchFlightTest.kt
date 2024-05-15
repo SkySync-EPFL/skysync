@@ -107,6 +107,7 @@ class LaunchFlightTest {
       composeTestRule.onNodeWithText("Flight").performClick()
       inFlightViewModel.init(dbSetup.pilot1.id).join()
       inFlightViewModel.setCurrentFlight(dbSetup.flight4.id)
+      composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
       val route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(route, Route.FLIGHT)
     }
@@ -128,6 +129,7 @@ class LaunchFlightTest {
         val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
         nodes.fetchSemanticsNodes().isNotEmpty()
       }
+      composeTestRule.onNodeWithText("Flight").performClick()
       inFlightViewModel.init(dbSetup.crew1.id).join()
       inFlightViewModel.setCurrentFlight(dbSetup.flight4.id)
       composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
