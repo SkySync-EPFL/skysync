@@ -16,18 +16,18 @@ import ch.epfl.skysync.models.message.Message
 import ch.epfl.skysync.models.message.MessageGroup
 import ch.epfl.skysync.screens.LoadingScreen
 import ch.epfl.skysync.viewmodel.FlightsViewModel
-import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 
 /** Graph of the main screens of the app */
 fun NavGraphBuilder.homeGraph(
     repository: Repository,
     navController: NavHostController,
     uid: String?,
-    locationViewModel: LocationViewModel? = null
+    inFlightViewModel: InFlightViewModel? = null
 ) {
   navigation(startDestination = Route.LOADING, route = Route.MAIN) {
-    adminGraph(repository, navController, uid, locationViewModel)
-    crewPilotGraph(repository, navController, uid, locationViewModel)
+    adminGraph(repository, navController, uid, inFlightViewModel)
+    crewPilotGraph(repository, navController, uid, inFlightViewModel)
     composable(Route.LOADING) {
       val flightsOverviewViewModel = FlightsViewModel.createViewModel(repository, uid)
       flightsOverviewViewModel.refresh()

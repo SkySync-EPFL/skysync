@@ -1,93 +1,151 @@
 package ch.epfl.skysync.screens
 
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
-import androidx.navigation.compose.ComposeNavigator
-import androidx.navigation.compose.NavHost
-import androidx.navigation.testing.TestNavHostController
-import ch.epfl.skysync.Repository
+import androidx.compose.ui.test.performTextInput
+import androidx.navigation.NavHostController
 import ch.epfl.skysync.database.DatabaseSetup
-import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.models.flight.Flight
-import ch.epfl.skysync.models.flight.PlannedFlight
+import ch.epfl.skysync.database.DateUtility
+import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.navigation.homeGraph
-import kotlinx.coroutines.test.runTest
-import org.junit.Assert
+import ch.epfl.skysync.screens.admin.Confirmation
+import ch.epfl.skysync.utils.inputTimePicker
+import io.mockk.confirmVerified
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit4.MockKRule
+import io.mockk.verify
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class ConfirmFlightScreenTest {
   @get:Rule val composeTestRule = createComposeRule()
-  lateinit var navController: TestNavHostController
-  private val db = FirestoreDatabase(useEmulator = true)
+  @get:Rule val mockkRule = MockKRule(this)
+  @RelaxedMockK lateinit var navController: NavHostController
+
   private val dbs = DatabaseSetup()
-  val repository = Repository(db)
+  private var plannedFlight = dbs.flight1
 
   @Before
-  fun setUpNavHost() = runTest {
-    dbs.clearDatabase(db)
-    dbs.fillDatabase(db)
+  fun setUpNavHost() {
     composeTestRule.setContent {
-      navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
-      NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.admin1.id)
+      Confirmation(navController = navController, plannedFlight) {
+        navController.navigate(Route.ADMIN_HOME)
       }
-    }
-    composeTestRule.waitUntil {
-      val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
-      nodes.fetchSemanticsNodes().isNotEmpty()
     }
   }
 
   @Test
-  fun backStackIsRightIfClickOnFlightDetailsThenFlightConfirm() = runTest {
-    val assignedFlight =
-        listOf(dbs.flight1, dbs.flight2, dbs.flight3, dbs.flight4).sortedBy { flight: Flight ->
-          flight.id
-        }
-    val retrievedFlights =
-        repository.flightTable.getAll(onError = { Assert.assertNull(it) }).sortedBy { flight: Flight
-          ->
-          flight.id
-        }
+  fun backButtonWorks() {
+    composeTestRule.onNodeWithTag("BackButton").performClick()
+    verify { navController.popBackStack() }
+    confirmVerified(navController)
+  }
 
-    Assert.assertEquals(assignedFlight, retrievedFlights)
+  @Test
+  fun plannedFlightInformationDisplayed() {
+    val metrics =
+        mapOf(
+            "Day of flight" to DateUtility.localDateToString(plannedFlight.date),
+            "Time slot" to plannedFlight.timeSlot.toString(),
+            "Number of Passengers" to "${plannedFlight.nPassengers}",
+            "Flight type" to plannedFlight.flightType.name,
+            "Balloon" to (plannedFlight.balloon?.name ?: "Unset"),
+            "Basket" to (plannedFlight.basket?.name ?: "Unset"))
+    metrics.forEach { (text, metric) ->
+      composeTestRule.onNodeWithText(text).assertIsDisplayed()
+      composeTestRule.onNodeWithText(metric).assertIsDisplayed()
+    }
+    composeTestRule.onNodeWithText("Vehicles").assertIsDisplayed()
+    plannedFlight.vehicles.forEach { v ->
+      composeTestRule.onNodeWithText(v.name).assertIsDisplayed()
+    }
+  }
 
-    composeTestRule.onNodeWithText("Home").performClick()
+  @Test
+  fun teamIsCorrectlyDisplayed() {
+    composeTestRule
+        .onNodeWithTag("ConfirmationScreenLazyColumn")
+        .performScrollToNode(hasText("Team"))
+    plannedFlight.team.roles.forEach { r ->
+      r.assignedUser?.let {
+        composeTestRule.onNodeWithText(it.firstname).assertIsDisplayed()
+        composeTestRule.onNodeWithText(it.lastname).assertIsDisplayed()
+      }
+    }
+  }
 
-    val canBeConfirmedFlight =
-        assignedFlight.filterIsInstance<PlannedFlight>().filter { it.readyToBeConfirmed() }[0]
+  @Test
+  fun canChooseTeamColor() {
+    composeTestRule
+        .onNodeWithTag("ConfirmationScreenLazyColumn")
+        .performScrollToNode(hasText("Team"))
+    composeTestRule.onNodeWithText("Select team color").performClick()
+    composeTestRule.onNodeWithText(FlightColor.RED.toString()).performClick()
+    composeTestRule.onNodeWithText(FlightColor.RED.toString()).assertIsDisplayed()
+    composeTestRule.onNodeWithText(FlightColor.RED.toString())
+  }
 
-    composeTestRule.onNodeWithTag("flightCard${canBeConfirmedFlight.id}").performClick()
-    var route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
+  private fun addRemark(remark: String) {
+    for (i in 0..1) {
+      composeTestRule
+          .onNodeWithTag("ConfirmationScreenLazyColumn")
+          .performScrollToNode(hasText("Remarks"))
+      composeTestRule.onNodeWithText("Add remark").performClick()
+      composeTestRule.onNodeWithTag("").performTextInput(remark)
 
-    composeTestRule.onNodeWithText("Confirm").performClick()
+      val tag = if (i == 0) "AlertDialogDismiss" else "AlertDialogConfirm"
+      composeTestRule.onNodeWithTag(tag).performClick()
+    }
+  }
 
-    composeTestRule.waitUntil(2500) {
-      composeTestRule.onAllNodesWithText("Balloon").fetchSemanticsNodes().isNotEmpty()
+  @Test
+  fun canAddAndDeleteRemarks() {
+    val remark1 = "This flight will be legendary"
+    val remark2 = "This flight will be written in history"
+    val remarks = listOf(remark1, remark2)
+    remarks.forEach { addRemark(it) }
+    remarks.forEach {
+      composeTestRule.onNodeWithTag("ConfirmationScreenLazyColumn").performScrollToNode(hasText(it))
+      composeTestRule.onNodeWithText(it).assertIsDisplayed()
     }
 
-    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Enter Remark"))
-    composeTestRule.onNodeWithText("Confirm").assertDoesNotExist()
+    composeTestRule
+        .onNodeWithTag("ConfirmationScreenLazyColumn")
+        .performScrollToNode(hasText(remark1))
 
-    val setTime = composeTestRule.onAllNodesWithText("Set Time")
+    composeTestRule.onNodeWithTag("DeleteRemark$remark1").performClick()
+    composeTestRule.onNodeWithText(remark1).assertIsNotDisplayed()
+    composeTestRule.onNodeWithText(remark2).assertIsDisplayed()
+  }
+
+  @Test
+  fun addTimesMeetupLocationAndConfirm() {
+    composeTestRule
+        .onNodeWithTag("ConfirmationScreenLazyColumn")
+        .performScrollToNode(hasText("Passengers meet up time"))
+    composeTestRule.onNodeWithText("Confirm").assertIsNotEnabled()
+
+    val setTime = composeTestRule.onAllNodesWithTag("TimePickerButton")
     for (i in 0 until setTime.fetchSemanticsNodes().size) {
       setTime[i].performClick()
+      inputTimePicker(composeTestRule = composeTestRule, hour = 18, minute = 34)
     }
-    composeTestRule.onNodeWithTag("LazyList").performScrollToNode(hasText("Confirm"))
+    composeTestRule
+        .onNodeWithTag("ConfirmationScreenLazyColumn")
+        .performScrollToNode(hasText("Meet up Location"))
+    composeTestRule.onNodeWithTag("Meet up Location").performTextInput("Ecublens")
     composeTestRule.onNodeWithText("Confirm").performClick()
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(Route.ADMIN_HOME, route)
+    verify { navController.navigate(Route.ADMIN_HOME) }
+    confirmVerified(navController)
   }
 }
