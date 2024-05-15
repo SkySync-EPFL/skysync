@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
+import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.CalendarDifferenceType
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.user.User
@@ -97,7 +98,11 @@ class CalendarViewModel(
     var newUser = userTable.get(uid, this::onError)!!
     newUser.availabilities.addCells(userTable.retrieveAvailabilities(uid, this::onError))
     val flights = userTable.retrieveAssignedFlights(flightTable, uid, this::onError)
-    flights.forEach { newUser.assignedFlights.addFlightByDate(it.date, it.timeSlot, it) }
+    flights.forEach {
+      newUser.assignedFlights.addFlightByDate(it.date, it.timeSlot, it)
+      newUser.availabilities.setAvailabilityByDate(
+          it.date, it.timeSlot, AvailabilityStatus.ASSIGNED)
+    }
     loadingCounter.value -= 1
     user.value = newUser
     originalAvailabilityCalendar = newUser.availabilities.copy()

@@ -33,7 +33,7 @@ import ch.epfl.skysync.screens.reports.CrewReportScreen
 import ch.epfl.skysync.screens.reports.PilotReportScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
-import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
 import java.time.LocalDate
 import java.util.Date
@@ -42,7 +42,7 @@ fun NavGraphBuilder.crewPilotGraph(
     repository: Repository,
     navController: NavHostController,
     uid: String?,
-    locationViewModel: LocationViewModel? = null
+    inFlightViewModel: InFlightViewModel? = null
 ) {
   navigation(startDestination = Route.CREW_HOME, route = Route.CREW_PILOT) {
     personalCalendar(repository, navController, uid)
@@ -74,6 +74,10 @@ fun NavGraphBuilder.crewPilotGraph(
         }
     composable(Route.CREW_HOME) { entry ->
 
+      // initiate in flight view model here, so that we can notify
+      // the user when a flight is started by someone else
+      inFlightViewModel!!.init(uid!!)
+
       // get the MessageListenerSharedViewModel here so that it gets
       // instantiated
       val messageListenerSharedViewModel =
@@ -97,13 +101,7 @@ fun NavGraphBuilder.crewPilotGraph(
           ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
       ChatScreen(navController, chatViewModel)
     }
-    composable(Route.FLIGHT) {
-      if (locationViewModel!!.userId == null) {
-        locationViewModel.userId = uid!!
-      }
-      locationViewModel.refreshPersonalFlights()
-      FlightScreen(navController, locationViewModel, uid!!)
-    }
+    composable(Route.FLIGHT) { FlightScreen(navController, inFlightViewModel!!, uid!!) }
     composable(Route.PILOT_REPORT) {
       // TODO remove when done with viewModel
       val pilot =

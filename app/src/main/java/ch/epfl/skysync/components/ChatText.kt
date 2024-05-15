@@ -1,9 +1,7 @@
 package ch.epfl.skysync.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -38,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,7 +81,7 @@ fun ChatTextBody(messages: List<ChatMessage>) {
   LazyColumn(Modifier.fillMaxHeight(0.875f).testTag("ChatTextBody"), state = lazyListState) {
     items(messages.size) { index -> ChatBubble(message = messages[index], index = "$index") }
   }
-  LaunchedEffect(Unit) {
+  LaunchedEffect(messages) {
     if (messages.isNotEmpty()) {
       lazyListState.scrollToItem(messages.size - 1)
     }
@@ -96,13 +95,9 @@ fun ChatTextBody(messages: List<ChatMessage>) {
  */
 @Composable
 fun ChatBubble(message: ChatMessage, index: String) {
-  var isMyMessage = false
-  val image = message.profilePicture
+  val isMyMessage = message.messageType == MessageType.SENT
   val messageContent = message.message.content
   val time = MessageDateFormatter.format(message.message.date)
-  if (message.messageType == MessageType.SENT) {
-    isMyMessage = true
-  }
   val backgroundColor = if (isMyMessage) Color(0xFFDCF8C6) else Color.White
   val contentColor = Color.Black
   val shape =
@@ -118,35 +113,30 @@ fun ChatBubble(message: ChatMessage, index: String) {
       modifier = Modifier.padding(8.dp).fillMaxWidth(),
       horizontalArrangement = if (isMyMessage) Arrangement.End else Arrangement.Start,
       verticalAlignment = Alignment.Bottom) {
-        if (!isMyMessage) {
-          if (image != null) {
-            Box(modifier = Modifier.fillMaxWidth(0.125f).size(30.dp)) {
-              Image(imageVector = image, contentDescription = "Image of Sender")
-            }
-          } else {
-            Box(
-                modifier =
-                    Modifier.fillMaxWidth(0.075f)
-                        .size(30.dp)
-                        .background(color = Color.LightGray, shape = CircleShape)) {}
+        Column {
+          if (!isMyMessage) {
+            Text(
+                text = message.message.user.name(),
+                style = TextStyle(fontSize = 12.sp, color = Color.Gray),
+                modifier = Modifier.testTag("ChatBubbleUser$index"))
           }
-          Spacer(modifier = Modifier.size(2.dp))
-        }
-        Column(
-            modifier = Modifier.background(color = backgroundColor, shape = shape).padding(8.dp)) {
-              Row {
-                Text(
-                    text = messageContent,
-                    color = contentColor,
-                    modifier = Modifier.padding(bottom = 2.dp).testTag("ChatBubbleMessage$index"))
-                Spacer(modifier = Modifier.size(4.dp))
-                Text(
-                    text = time,
-                    color = Color.Gray,
-                    fontSize = 9.sp,
-                    modifier = Modifier.align(Alignment.Bottom).testTag("ChatBubbleTime$index"))
+          Column(
+              modifier =
+                  Modifier.background(color = backgroundColor, shape = shape).padding(8.dp)) {
+                Row {
+                  Text(
+                      text = messageContent,
+                      color = contentColor,
+                      modifier = Modifier.padding(bottom = 2.dp).testTag("ChatBubbleMessage$index"))
+                  Spacer(modifier = Modifier.size(4.dp))
+                  Text(
+                      text = time,
+                      color = Color.Gray,
+                      fontSize = 9.sp,
+                      modifier = Modifier.align(Alignment.Bottom).testTag("ChatBubbleTime$index"))
+                }
               }
-            }
+        }
       }
 }
 /**
@@ -166,11 +156,10 @@ fun ChatInput(onSend: (String) -> Unit) {
         OutlinedTextField(
             value = text,
             onValueChange = { text = it },
-            label = { Text("Type a message") },
+            placeholder = { Text("Type a message") },
             colors =
                 OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.DarkGray, focusedLabelColor = Color.DarkGray),
-            singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
             keyboardActions =
                 KeyboardActions(
@@ -179,6 +168,7 @@ fun ChatInput(onSend: (String) -> Unit) {
                       text = ""
                       keyboardController?.hide()
                     }),
+            singleLine = true,
             modifier = Modifier.weight(1f).testTag("ChatInput"))
 
         IconButton(

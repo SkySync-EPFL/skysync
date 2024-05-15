@@ -37,12 +37,55 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import ch.epfl.skysync.R
 import java.util.Calendar
+import java.util.Date
 
-/** Source : https://stackoverflow.com/questions/75853449/timepickerdialog-in-jetpack-compose */
+/**
+ * A generic time picker composable that wraps a content composable and displays a time picker
+ * dialog when [showTimePicker] is set to true.
+ *
+ * @param padding The padding to apply around the content composable.
+ * @param showTimePicker A boolean value indicating whether to show the time picker dialog.
+ * @param onDismiss Callback invoked when the time picker dialog is dismissed.
+ * @param onConfirm Callback invoked when the user confirms the selected time. It provides a [Date]
+ *   object containing the selected time.
+ * @param f The content composable to be wrapped by the time picker. It should include the UI
+ *   elements triggering the time picker dialog.
+ */
+@Composable
+fun GenericTimePicker(
+    padding: Dp,
+    showTimePicker: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: (Date) -> Unit,
+    f: @Composable () -> Unit
+) {
+  var time by remember { mutableStateOf<Date?>(null) }
+  f()
+  if (showTimePicker) {
+    TimePickerDialog(
+        onCancel = { onDismiss() },
+        onConfirm = {
+          time = it.time
+          onConfirm(it.time)
+        },
+        modifier = Modifier.padding(padding))
+  }
+}
+
+/**
+ * Source : https://stackoverflow.com/questions/75853449/timepickerdialog-in-jetpack-compose
+ * Displays a time picker dialog allowing the user to select a time.
+ *
+ * @param onCancel Callback invoked when the dialog is cancelled.
+ * @param onConfirm Callback invoked when the user confirms the selected time. It provides a
+ *   [Calendar] object containing the selected time.
+ * @param modifier Modifier for styling and layout customization.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimePickerDialog(
@@ -82,7 +125,9 @@ fun TimePickerDialog(
         )
         Spacer(Modifier.weight(1f))
         TextButton(onClick = onCancel) { Text("Cancel") }
-        TextButton(onClick = ::onConfirmClicked) { Text("Confirm") }
+        TextButton(onClick = ::onConfirmClicked, modifier = Modifier.testTag("TimePickerConfirm")) {
+          Text(text = "Confirm")
+        }
       },
   ) {
     val contentModifier = Modifier.padding(horizontal = 24.dp)
