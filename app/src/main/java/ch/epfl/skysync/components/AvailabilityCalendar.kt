@@ -48,7 +48,8 @@ fun availabilityToColor(status: AvailabilityStatus): Color {
       mapOf(
           AvailabilityStatus.OK to customGreen,
           AvailabilityStatus.MAYBE to customBlue,
-          AvailabilityStatus.NO to customRed)
+          AvailabilityStatus.NO to customRed,
+          AvailabilityStatus.ASSIGNED to darkOrange)
   return availabilityToColorMap.getOrDefault(status, customEmpty)
 }
 
