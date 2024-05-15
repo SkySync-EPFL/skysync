@@ -28,3 +28,5 @@ val lightBrown = Color(0xFFD2B48C)
 val lightGreen = Color(0xFFAAEE7B)
 val lightViolet = Color(0xFFE6E6FA)
 val lightPink = Color(0xFFF896FA)
+
+val cream = Color(0xFFffffeb)

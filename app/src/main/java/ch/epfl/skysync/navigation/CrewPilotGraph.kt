@@ -97,6 +97,7 @@ fun NavGraphBuilder.crewPilotGraph(
           entry.sharedViewModel<MessageListenerSharedViewModel>(
               navController,
           )
+        println(messageListenerSharedViewModel.listeners.size)
       val chatViewModel =
           ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
       ChatScreen(navController, chatViewModel)

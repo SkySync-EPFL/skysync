@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,7 +20,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -44,6 +42,8 @@ import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.models.message.ChatMessage
 import ch.epfl.skysync.models.message.MessageDateFormatter
 import ch.epfl.skysync.models.message.MessageType
+import ch.epfl.skysync.ui.theme.cream
+import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
 
 /**
@@ -56,17 +56,10 @@ import ch.epfl.skysync.ui.theme.lightOrange
  * @param paddingValues Padding values to be applied to the chat screen.
  */
 @Composable
-fun ChatText(
-    groupName: String,
-    messages: List<ChatMessage>,
-    onBack: () -> Unit,
-    onSend: (String) -> Unit,
-    paddingValues: PaddingValues
-) {
+fun ChatText(messages: List<ChatMessage>, onSend: (String) -> Unit, paddingValues: PaddingValues) {
   Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-    Header(backClick = onBack, title = groupName)
     Spacer(modifier = Modifier.size(1.dp))
-    ChatTextBody(messages)
+    ChatTextBody(messages, modifier = Modifier.weight(1f))
     ChatInput(onSend)
   }
 }
@@ -77,14 +70,16 @@ fun ChatText(
  *   and timestamp.
  */
 @Composable
-fun ChatTextBody(messages: List<ChatMessage>) {
+fun ChatTextBody(messages: List<ChatMessage>, modifier: Modifier = Modifier) {
+  var scrollTo = true
   val lazyListState = rememberLazyListState()
-  LazyColumn(Modifier.fillMaxHeight(0.875f).testTag("ChatTextBody"), state = lazyListState) {
+  LazyColumn(modifier.background(cream).testTag("ChatTextBody"), state = lazyListState) {
     items(messages.size) { index -> ChatBubble(message = messages[index], index = "$index") }
   }
-  LaunchedEffect(Unit) {
-    if (messages.isNotEmpty()) {
+  LaunchedEffect(messages) {
+    if (messages.isNotEmpty() && scrollTo) {
       lazyListState.scrollToItem(messages.size - 1)
+      scrollTo = false
     }
   }
 }
@@ -159,8 +154,9 @@ fun ChatBubble(message: ChatMessage, index: String) {
 fun ChatInput(onSend: (String) -> Unit) {
   var text by remember { mutableStateOf("") }
   val keyboardController = LocalSoftwareKeyboardController.current
+
   Row(
-      modifier = Modifier.fillMaxWidth().padding(16.dp),
+      modifier = Modifier.padding(horizontal = 16.dp),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically) {
         OutlinedTextField(
@@ -180,15 +176,18 @@ fun ChatInput(onSend: (String) -> Unit) {
                       keyboardController?.hide()
                     }),
             modifier = Modifier.weight(1f).testTag("ChatInput"))
-
         IconButton(
             onClick = {
-              onSend(text)
-              text = ""
+              if (text.isNotEmpty()) {
+                onSend(text)
+                text = ""
+                keyboardController?.hide()
+              }
             },
+            enabled = text.isNotEmpty(),
             modifier =
-                Modifier.padding(start = 8.dp)
-                    .background(lightOrange, CircleShape)
+                Modifier.padding(start = 8.dp, top = 8.dp)
+                    .background(if (text.isNotEmpty()) lightOrange else lightGray, CircleShape)
                     .testTag("SendButton")) {
               Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = Color.White)
             }

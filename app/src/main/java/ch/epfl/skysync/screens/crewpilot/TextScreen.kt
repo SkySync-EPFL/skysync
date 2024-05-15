@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ChatText
+import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.viewmodel.ChatViewModel
 
@@ -20,11 +21,12 @@ fun TextScreen(navController: NavHostController, groupId: String, viewModel: Cha
 
   Scaffold(
       modifier = Modifier.fillMaxSize().testTag("ChatScreenScaffold"),
+      topBar = {
+        CustomTopAppBar(navController = navController, title = group?.name ?: "Group not found")
+      },
       bottomBar = { BottomBar(navController) }) { padding ->
         ChatText(
-            groupName = group?.name ?: "Group not found",
             messages = messages,
-            onBack = { navController.popBackStack() },
             onSend = { content -> viewModel.sendMessage(groupId, content) },
             paddingValues = padding)
       }

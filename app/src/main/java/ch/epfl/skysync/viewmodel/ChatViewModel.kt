@@ -114,6 +114,7 @@ class ChatViewModel(
 
   /** Callback called on message listener update. */
   private fun onMessageGroupChange(group: MessageGroup, update: ListenerUpdate<Message>) {
+    println("OUI")
     val group = messageGroups.value.find { it.id == group.id } ?: return
     var messages = group.messages
 

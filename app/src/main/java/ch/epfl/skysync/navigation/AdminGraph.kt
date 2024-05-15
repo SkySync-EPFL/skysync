@@ -33,11 +33,26 @@ fun NavGraphBuilder.adminGraph(
 ) {
   navigation(startDestination = Route.ADMIN_HOME, route = Route.ADMIN) {
     adminpersonalCalendar(repository, navController, uid)
-    composable(Route.ADMIN_HOME) {
+    composable(Route.ADMIN_HOME) { entry ->
+      // initiate in flight view model here, so that we can notify
+      // the user when a flight is started by someone else
+      inFlightViewModel!!.init(uid!!)
+
+      // get the MessageListenerSharedViewModel here so that it gets
+      // instantiated
+      val messageListenerSharedViewModel =
+          entry.sharedViewModel<MessageListenerSharedViewModel>(
+              navController,
+          )
+      messageListenerSharedViewModel.init(uid!!, repository) { group, update ->
+        onMessageUpdate(group, update)
+      }
+
       val flightsOverviewViewModel = FlightsViewModel.createViewModel(repository, uid)
       flightsOverviewViewModel.refresh()
       AdminHomeScreen(navController, flightsOverviewViewModel)
     }
+
     composable(Route.ADD_FLIGHT) {
       val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
       AddFlightScreen(navController, flightsViewModel)
