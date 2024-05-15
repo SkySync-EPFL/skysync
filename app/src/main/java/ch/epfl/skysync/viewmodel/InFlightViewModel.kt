@@ -24,6 +24,7 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +33,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.coroutines.cancellation.CancellationException
 
 /** ViewModel for the location tracking of the user during a flight and the timer. */
 class InFlightViewModel(val repository: Repository) : ViewModel() {
@@ -496,7 +496,7 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    if(e !is CancellationException){
+    if (e !is CancellationException) {
       SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
     }
   }

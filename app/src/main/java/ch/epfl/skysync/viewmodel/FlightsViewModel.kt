@@ -25,13 +25,13 @@ import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.coroutines.cancellation.CancellationException
 
 /** ViewModel for the user */
 class FlightsViewModel(
@@ -218,9 +218,9 @@ class FlightsViewModel(
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-      if(e !is CancellationException){
-          SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
-      }
+    if (e !is CancellationException) {
+      SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    }
   }
 
   init {
