@@ -81,7 +81,7 @@ fun ChatTextBody(messages: List<ChatMessage>) {
   LazyColumn(Modifier.fillMaxHeight(0.875f).testTag("ChatTextBody"), state = lazyListState) {
     items(messages.size) { index -> ChatBubble(message = messages[index], index = "$index") }
   }
-  LaunchedEffect(Unit) {
+  LaunchedEffect(messages) {
     if (messages.isNotEmpty()) {
       lazyListState.scrollToItem(messages.size - 1)
     }
@@ -95,12 +95,9 @@ fun ChatTextBody(messages: List<ChatMessage>) {
  */
 @Composable
 fun ChatBubble(message: ChatMessage, index: String) {
-  var isMyMessage = false
+  val isMyMessage = message.messageType == MessageType.SENT
   val messageContent = message.message.content
   val time = MessageDateFormatter.format(message.message.date)
-  if (message.messageType == MessageType.SENT) {
-    isMyMessage = true
-  }
   val backgroundColor = if (isMyMessage) Color(0xFFDCF8C6) else Color.White
   val contentColor = Color.Black
   val shape =
