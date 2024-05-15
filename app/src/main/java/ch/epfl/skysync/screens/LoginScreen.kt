@@ -78,7 +78,10 @@ fun LoginScreen(
                 modifier = Modifier.padding(16.dp)) {
                   Button(
                       onClick = onClick,
-                      modifier = Modifier.background(color = Color.White).fillMaxWidth(0.7f),
+                      modifier =
+                          Modifier.background(color = Color.White)
+                              .fillMaxWidth(0.7f)
+                              .testTag("LoginButton"),
                       colors = ButtonDefaults.buttonColors(Color.White)) {
                         Spacer(modifier = Modifier.width(3.dp))
                         Text(
