@@ -1,7 +1,5 @@
 package ch.epfl.skysync.model.flight
 
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
@@ -37,7 +35,7 @@ class TestPlannedFlight {
             firstname = "Paul",
             lastname = "Panzer",
             email = "paul.panzer@gmail.com",
-            )
+        )
 
     initFlight =
         PlannedFlight(

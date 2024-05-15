@@ -2,8 +2,6 @@ package ch.epfl.skysync.database.schemas
 
 import ch.epfl.skysync.database.Schema
 import ch.epfl.skysync.database.UserRole
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.Admin

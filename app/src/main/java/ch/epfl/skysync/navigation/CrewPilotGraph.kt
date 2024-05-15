@@ -8,8 +8,6 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.BASE_ROLES
 import ch.epfl.skysync.models.flight.Balloon
@@ -105,13 +103,7 @@ fun NavGraphBuilder.crewPilotGraph(
     composable(Route.PILOT_REPORT) {
       // TODO remove when done with viewModel
       val pilot =
-          Pilot(
-              "testID",
-              "John",
-              "Doe",
-              "",
-              setOf(RoleType.PILOT),
-              BalloonQualification.MEDIUM)
+          Pilot("testID", "John", "Doe", "", setOf(RoleType.PILOT), BalloonQualification.MEDIUM)
       val finishedFlight =
           FinishedFlight(
               UNSET_ID,

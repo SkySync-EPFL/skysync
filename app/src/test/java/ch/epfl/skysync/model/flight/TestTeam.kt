@@ -1,7 +1,5 @@
 package ch.epfl.skysync.model.flight
 
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
@@ -19,7 +17,8 @@ class TestTeam {
       Crew(
           firstname = "jo",
           lastname = "blunt",
-          email = "jo.blunt@gmail.com",)
+          email = "jo.blunt@gmail.com",
+      )
   val testUser2 =
       Crew(
           firstname = "peter",

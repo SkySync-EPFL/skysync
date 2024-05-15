@@ -1,7 +1,5 @@
 package ch.epfl.skysync.model.user
 
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.Admin
@@ -39,7 +37,7 @@ class TestUsers {
             firstname = "John",
             lastname = "Deer",
             email = "john.deer@gmail.com",
-            )
+        )
   }
 
   @Test
@@ -49,6 +47,6 @@ class TestUsers {
             firstname = "John",
             lastname = "Deer",
             email = "john.deer@gmail.com",
-            )
+        )
   }
 }

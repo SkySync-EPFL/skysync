@@ -15,9 +15,7 @@ import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.database.tables.VehicleTable
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.Availability
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.calendar.getTimeSlot
 import ch.epfl.skysync.models.flight.Balloon
@@ -59,26 +57,30 @@ class DatabaseSetup {
           id = "id-admin-1",
           firstname = "admin-1",
           lastname = "lastname-admin-1",
-          email = "admin1.lastname@skysnc.ch",)
+          email = "admin1.lastname@skysnc.ch",
+      )
   var admin2 =
       Admin(
           id = "id-admin-2",
           firstname = "admin-2",
           lastname = "lastname-admin-2",
-          email = "admin2.lastname@skysnc.ch",)
+          email = "admin2.lastname@skysnc.ch",
+      )
   var crew1 =
       Crew(
           id = "id-crew-1",
           firstname = "crew-1",
           lastname = "lastname-crew-1",
-          email = "crew1.bob@skysnc.ch",)
+          email = "crew1.bob@skysnc.ch",
+      )
 
   var crew2 =
       Crew(
           id = "id-crew-2",
           firstname = "crew-2",
           lastname = "lastname-crew-2",
-          email = "crew2.denis@skysnc.ch",)
+          email = "crew2.denis@skysnc.ch",
+      )
 
   var tempUser =
       TempUser(

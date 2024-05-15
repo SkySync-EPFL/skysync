@@ -1,7 +1,5 @@
 package ch.epfl.skysync.models.user
 
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.RoleType
 
 interface User {
@@ -18,7 +16,4 @@ interface User {
   }
 
   fun name(): String = "$firstname $lastname"
-
 }
-
-
