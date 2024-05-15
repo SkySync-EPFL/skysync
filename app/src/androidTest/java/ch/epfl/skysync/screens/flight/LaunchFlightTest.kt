@@ -2,6 +2,7 @@ package ch.epfl.skysync.screens.flight
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
@@ -18,7 +19,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.screens.crewpilot.LaunchFlight
 import ch.epfl.skysync.viewmodel.FlightsViewModel
-import ch.epfl.skysync.viewmodel.LocationViewModel
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.test.runTest
@@ -50,7 +51,7 @@ class LaunchFlightTest {
 
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var viewModel: FlightsViewModel
-  lateinit var inViewModel: LocationViewModel
+  lateinit var inFlightViewModel: InFlightViewModel
   lateinit var navController: TestNavHostController
 
   @Before
@@ -61,69 +62,79 @@ class LaunchFlightTest {
 
   @Test
   fun checkCrewNoFlightLaunched() {
-    composeTestRule.setContent {
-      navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
-      viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
-      inViewModel = LocationViewModel.createViewModel(dbSetup.crew1.id, repository)
-      LaunchFlight(navController, viewModel, inViewModel)
+    runTest {
+      inFlightViewModel.init(dbSetup.crew1.id).join()
+      composeTestRule.setContent {
+        navController = TestNavHostController(LocalContext.current)
+        navController.navigatorProvider.addNavigator(ComposeNavigator())
+        viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
+        LaunchFlight(navController, viewModel, inFlightViewModel)
+      }
+      composeTestRule.onNodeWithText("No flight started").assertExists()
     }
-    composeTestRule.onNodeWithText("No flight started").assertExists()
   }
 
   @Test
   fun checkPilotNoFlightConfirmed() {
-    composeTestRule.setContent {
-      navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
-      viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
-      inViewModel = LocationViewModel.createViewModel(dbSetup.pilot1.id, repository)
-      LaunchFlight(navController, viewModel, inViewModel)
+    runTest {
+      inFlightViewModel.init(dbSetup.pilot3.id).join()
+      composeTestRule.setContent {
+        navController = TestNavHostController(LocalContext.current)
+        navController.navigatorProvider.addNavigator(ComposeNavigator())
+        viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot3.id)
+        LaunchFlight(navController, viewModel, inFlightViewModel)
+      }
+      composeTestRule
+          .onNodeWithText(
+              "No flight ready to be launched",
+          )
+          .assertExists()
     }
-    composeTestRule
-        .onNodeWithText(
-            "No flight ready to be launched",
-        )
-        .assertExists()
   }
 
   @Test
   fun checkPilotFlightConfirmed() {
-    composeTestRule.setContent {
-      navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
-      viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
-      inViewModel = LocationViewModel.createViewModel(dbSetup.pilot1.id, repository)
-      LaunchFlight(navController, viewModel, inViewModel)
+    runTest {
+      inFlightViewModel.init(dbSetup.pilot1.id).join()
+      composeTestRule.setContent {
+        navController = TestNavHostController(LocalContext.current)
+        navController.navigatorProvider.addNavigator(ComposeNavigator())
+        viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
+        LaunchFlight(navController, viewModel, inFlightViewModel)
+      }
+      composeTestRule.onNodeWithTag("flightCard${dbSetup.flight4.id}").assertExists()
     }
-    assert(false)
   }
 
   @Test
   fun checkPilotFlightLaunched() {
-    inViewModel.setFlightId(confirmedFlight.id)
-    composeTestRule.setContent {
-      navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
-      viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
-      inViewModel = LocationViewModel.createViewModel(dbSetup.pilot1.id, repository)
-      LaunchFlight(navController, viewModel, inViewModel)
+    runTest {
+      inFlightViewModel.init(dbSetup.pilot1.id).join()
+      inFlightViewModel.startFlight().join()
+      composeTestRule.setContent {
+        navController = TestNavHostController(LocalContext.current)
+        navController.navigatorProvider.addNavigator(ComposeNavigator())
+        viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
+        LaunchFlight(navController, viewModel, inFlightViewModel)
+      }
+      val route = navController.currentBackStackEntry?.destination?.route
+      Assert.assertEquals(route, Route.FLIGHT)
     }
-    val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.FLIGHT)
   }
 
   @Test
   fun checkCrewFlightLaunched() {
-    inViewModel.setFlightId(confirmedFlight.id)
-    composeTestRule.setContent {
-      navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
-      viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
-      inViewModel = LocationViewModel.createViewModel(dbSetup.crew1.id, repository)
-      LaunchFlight(navController, viewModel, inViewModel)
+    runTest {
+      inFlightViewModel.init(dbSetup.crew1.id).join()
+      inFlightViewModel.startFlight().join()
+      composeTestRule.setContent {
+        navController = TestNavHostController(LocalContext.current)
+        navController.navigatorProvider.addNavigator(ComposeNavigator())
+        viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
+        LaunchFlight(navController, viewModel, inFlightViewModel)
+      }
+      val route = navController.currentBackStackEntry?.destination?.route
+      Assert.assertEquals(route, Route.FLIGHT)
     }
-    val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.FLIGHT)
   }
 }

@@ -1,6 +1,8 @@
 package ch.epfl.skysync.test_end_to_end
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -17,8 +19,10 @@ import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
@@ -40,8 +44,9 @@ class E2EModifyAndDeleteFlights {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
+      val inFlightViewModel = InFlightViewModel.createViewModel(repository)
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.admin1.id)
+        homeGraph(repository, navController, dbs.admin1.id, inFlightViewModel)
       }
     }
     composeTestRule.waitUntil(2500) {
@@ -50,6 +55,14 @@ class E2EModifyAndDeleteFlights {
     }
   }
 
+  private fun clickOnFlight(flight: Flight) {
+    composeTestRule.onNodeWithTag("flightCard${flight.id}").performClick()
+    val route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
+    composeTestRule.waitUntil(2500) {
+      composeTestRule.onAllNodesWithText("Flight status").fetchSemanticsNodes().isNotEmpty()
+    }
+  }
   /**
    * scenario:
    * 1) click on flight1 in upcomming flights
@@ -59,17 +72,21 @@ class E2EModifyAndDeleteFlights {
    */
   @Test
   fun modifyAndDeleteFlight() = runTest {
+    val flight = dbs.flight1
+
     composeTestRule.waitUntil(2500) {
-      composeTestRule
-          .onAllNodesWithTag("flightCard${dbs.flight1.id}")
-          .fetchSemanticsNodes()
-          .isNotEmpty()
+      composeTestRule.onAllNodesWithTag("flightCard${flight.id}").fetchSemanticsNodes().isNotEmpty()
     }
-    composeTestRule.onNodeWithTag("flightCard${dbs.flight1.id}").performClick()
-    var route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
+
+    clickOnFlight(flight = flight)
+
+    composeTestRule.onNodeWithTag("DeleteButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("EditButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("ConfirmButton").assertIsDisplayed()
+
     composeTestRule.onNodeWithTag("EditButton").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
+
+    var route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.MODIFY_FLIGHT + "/{Flight ID}", route)
     composeTestRule.waitUntil(2500) {
       composeTestRule.onAllNodesWithTag("Flight Lazy Column").fetchSemanticsNodes().isNotEmpty()
@@ -104,25 +121,22 @@ class E2EModifyAndDeleteFlights {
     }
 
     composeTestRule.waitUntil(2500) {
-      composeTestRule
-          .onAllNodesWithTag("flightCard${dbs.flight1.id}")
-          .fetchSemanticsNodes()
-          .isNotEmpty()
+      composeTestRule.onAllNodesWithTag("flightCard${flight.id}").fetchSemanticsNodes().isNotEmpty()
     }
-    composeTestRule.onNodeWithTag("flightCard${dbs.flight1.id}").performClick()
-    route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}", route)
+
+    clickOnFlight(flight = flight)
+
     composeTestRule.onNodeWithTag("DeleteButton").performClick()
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
+    route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(Route.ADMIN_HOME, route)
+
     composeTestRule.waitUntil(2500) {
       composeTestRule
           .onAllNodesWithTag("flightCard${dbs.flight2.id}")
           .fetchSemanticsNodes()
           .isNotEmpty()
     }
-    //      composeTestRule.waitUntil(2500) {
-    //        route = navController.currentBackStackEntry?.destination?.route
-    //        Route.HOME == route
-    //      }
+    composeTestRule.onNodeWithTag("flightCard${flight.id}").assertIsNotDisplayed()
   }
 }

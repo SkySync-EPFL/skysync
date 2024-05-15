@@ -1,9 +1,12 @@
 package ch.epfl.skysync.screens.userManagement
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.Repository
@@ -89,8 +92,15 @@ class UserManagementTest {
 
     // Assuming your mockUsers are visible to the test
     composeTestRule
+        .onNodeWithTag("UserManagementLazyColumn")
+        .performScrollToNode(hasText("${dbSetup.pilot1.firstname} ${dbSetup.pilot1.lastname}"))
+    composeTestRule
         .onNodeWithText("${dbSetup.pilot1.firstname} ${dbSetup.pilot1.lastname}")
         .assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("UserManagementLazyColumn")
+        .performScrollToNode(hasText("${dbSetup.crew1.firstname} ${dbSetup.crew1.lastname}"))
+
     composeTestRule
         .onNodeWithText("${dbSetup.crew1.firstname} ${dbSetup.crew1.lastname}")
         .assertIsDisplayed()

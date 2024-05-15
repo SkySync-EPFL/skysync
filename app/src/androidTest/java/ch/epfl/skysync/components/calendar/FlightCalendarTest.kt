@@ -19,6 +19,7 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import java.time.LocalDate
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
@@ -40,8 +41,9 @@ class FlightCalendarTest {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
+      val inFlightViewModel = InFlightViewModel.createViewModel(repository)
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.crew1.id)
+        homeGraph(repository, navController, dbs.crew1.id, inFlightViewModel)
       }
     }
     composeTestRule.waitUntil {
