@@ -45,6 +45,22 @@ data class FlightSchema(
     @get:PropertyName("isOngoing") val isOngoing: Boolean? = null,
     /** In: Confirmed flight Nullable */
     val startTimestamp: Long? = null,
+    /** In: Finished flight */
+    val takeOffTime: String? = null,
+    /** In: Finished flight */
+    val takeOffLocationLat: Double? = null,
+    /** In: Finished flight */
+    val takeOffLocationLong: Double? = null,
+    /** In: Finished flight */
+    val landingTime: String? = null,
+    /** In: Finished flight */
+    val landingLocationLat: Double? = null,
+    /** In: Finished flight */
+    val landingLocationLong: Double? = null,
+    /** In: Finished flight */
+    val flightTime: Long? = null,
+    /** In: Finished flight */
+    val reportId: List<String>? = null,
 ) : Schema<Flight> {
   override fun toModel(): Flight {
     throw NotImplementedError()
