@@ -37,6 +37,8 @@ import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.util.hasError
 import ch.epfl.skysync.util.nbPassengerInputValidation
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalTime
 import java.util.Date
 
 @Composable
@@ -52,9 +54,9 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
       var newProblem by remember { mutableStateOf("") }
       var newVehicle: Vehicle? by remember { mutableStateOf(null) }
       val vehicleProblem = remember { mutableMapOf<Vehicle, String>() }
-      var takeoffTime by remember { mutableStateOf(Date.from(Instant.now())) }
+      var takeoffTime by remember { mutableStateOf(LocalTime.now()) }
       var takeoffLocation by remember { mutableStateOf(flight.takeOffLocation) }
-      var landingTime by remember { mutableStateOf(Date.from(Instant.now())) }
+      var landingTime by remember { mutableStateOf(LocalTime.now()) }
       var landingLocation by remember { mutableStateOf(flight.takeOffLocation) }
       var beginTime by remember { mutableStateOf(flight.takeOffTime) }
       var endTime by remember { mutableStateOf(flight.takeOffTime) }

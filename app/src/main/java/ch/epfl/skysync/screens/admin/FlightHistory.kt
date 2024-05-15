@@ -70,6 +70,7 @@ import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.ui.theme.veryLightBlue
@@ -78,10 +79,12 @@ import ch.epfl.skysync.ui.theme.veryLightRed
 import ch.epfl.skysync.ui.theme.veryLightSatin
 import ch.epfl.skysync.ui.theme.veryLightYellow
 import ch.epfl.skysync.util.dateToLocalDate
+import ch.epfl.skysync.util.dateToLocalTime
 import ch.epfl.skysync.util.getFormattedDate
 import ch.epfl.skysync.util.getFormattedTime
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.Date
 
 @Composable
@@ -268,7 +271,7 @@ fun FiltersMenu(
                 minValue = beginFlightTime,
                 maxValue = endFlightTime,
                 onClick = { /* TODO time picker */},
-                showString = { getFormattedTime(it) })
+                showString = { getFormattedTime(dateToLocalTime(it)) })
             TitledDropDownMenu(
                 defaultPadding = 16.dp,
                 title = "Flight type",
@@ -466,12 +469,15 @@ fun FlightHistoryScreenPreview() {
             timeSlot = TimeSlot.AM,
             vehicles = emptyList(),
             flightTime = 0L,
-            takeOffTime = Date.from(Instant.now()),
-            landingTime = Date.from(Instant.now()),
+            takeOffTime = LocalTime.now(),
+            landingTime = LocalTime.now(),
             takeOffLocation =
                 LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),
             landingLocation =
-                LocationPoint(time = 50, latitude = 1.0, longitude = 1.0, name = "test1_value2")),
+                LocationPoint(time = 50, latitude = 1.0, longitude = 1.0, name = "test1_value2"),
+            flightTrace = FlightTrace(trace=emptyList())
+        ),
+
         FinishedFlight(
             id = UNSET_ID,
             nPassengers = 0,
@@ -483,12 +489,15 @@ fun FlightHistoryScreenPreview() {
             timeSlot = TimeSlot.AM,
             vehicles = emptyList(),
             flightTime = 0L,
-            takeOffTime = Date.from(Instant.now()),
-            landingTime = Date.from(Instant.now()),
+            takeOffTime = LocalTime.now(),
+            landingTime = LocalTime.now(),
             takeOffLocation =
                 LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test2"),
             landingLocation =
-                LocationPoint(time = 50, latitude = 1.0, longitude = 1.0, name = "test2_value2")))
+                LocationPoint(time = 50, latitude = 1.0, longitude = 1.0, name = "test2_value2"),
+            flightTrace = FlightTrace(trace=emptyList())
+        )
+        )
   }
   FlightHistoryScreen(navController = rememberNavController(), allFlights = allFlights)
 }

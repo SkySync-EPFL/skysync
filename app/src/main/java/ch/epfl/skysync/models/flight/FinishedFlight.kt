@@ -6,7 +6,6 @@ import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.reports.Report
 import java.time.LocalDate
 import java.time.LocalTime
-import java.util.Date
 
 /** Represents the flight when it is finished and the report has been submitted */
 data class FinishedFlight(
@@ -27,12 +26,12 @@ data class FinishedFlight(
     val flightTime: Long, // time in milliseconds
     val reportId: List<Report> = emptyList(),
     val flightTrace: FlightTrace,
-    val flightStatus: FlightStatus = FlightStatus.MISSING_REPORT
+    val thisFlightStatus: FlightStatus = FlightStatus.MISSING_REPORT
 ) : Flight {
 
 
   override fun getFlightStatus(): FlightStatus {
-    return flightStatus
+    return thisFlightStatus
   }
-    fun reportCompleted(): Flight = copy(flightStatus = FlightStatus.COMPLETED)
+    fun reportCompleted(): Flight = copy(thisFlightStatus = FlightStatus.COMPLETED)
 }

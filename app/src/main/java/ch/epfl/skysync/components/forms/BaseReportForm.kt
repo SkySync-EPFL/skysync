@@ -13,19 +13,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Vehicle
+import java.time.LocalTime
 import java.util.Date
 
 fun LazyListScope.baseReportFields(
     defaultPadding: Dp,
-    beginTime: Date,
-    endTime: Date,
+    beginTime: LocalTime,
+    endTime: LocalTime,
     pauseDuration: Long,
     flight: FinishedFlight,
     onConfirm: (Vehicle, String) -> Unit,
     vehicleProblem: MutableMap<Vehicle, String>,
     comments: String,
-    onBeginTimeChange: (Date) -> Unit,
-    onEndTimeChange: (Date) -> Unit,
+    onBeginTimeChange: (LocalTime) -> Unit,
+    onEndTimeChange: (LocalTime) -> Unit,
     onPauseDurationChange: (Long) -> Unit,
     onCommentsChange: (String) -> Unit
 ) {

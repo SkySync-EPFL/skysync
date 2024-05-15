@@ -28,12 +28,14 @@ import androidx.compose.ui.unit.Dp
 import ch.epfl.skysync.components.TimePickerDialog
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.util.dateToLocalTime
 import ch.epfl.skysync.util.getFormattedTime
 import ch.epfl.skysync.util.hasError
+import java.time.LocalTime
 import java.util.Date
 
 @Composable
-fun TimePickerField(defaultPadding: Dp, title: String, time: Date, setTime: (Date) -> Unit) {
+fun TimePickerField(defaultPadding: Dp, title: String, time: LocalTime, setTime: (LocalTime) -> Unit) {
   var showTimePicker by remember { mutableStateOf(false) }
   Text(
       modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
@@ -59,7 +61,7 @@ fun TimePickerField(defaultPadding: Dp, title: String, time: Date, setTime: (Dat
         onCancel = { showTimePicker = false },
         onConfirm = {
           showTimePicker = false
-          setTime(it.time)
+          setTime(dateToLocalTime(it.time))
         },
         modifier = Modifier.padding(defaultPadding))
   }

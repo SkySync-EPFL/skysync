@@ -2,6 +2,7 @@ package ch.epfl.skysync.util
 
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -36,14 +37,20 @@ fun dateToLocalDate(date: Long): LocalDate {
   return Instant.ofEpochMilli(date).atZone(ZoneId.of("GMT")).toLocalDate()
 }
 
+
+/** extract time from date*/
+fun dateToLocalTime(date: Date?): LocalTime =
+    Instant.ofEpochMilli(date?.time?: 0).atZone(ZoneId.of("GMT")).toLocalTime()
+
+
 fun getFormattedDate(date: LocalDate?): String {
   return date?.format(DateTimeFormatter.ofPattern("dd/MM/yy")) ?: "--/--/--"
 }
 
-fun getFormattedTime(time: Date?): String {
+
+fun getFormattedTime(time: LocalTime?): String {
   time?.let {
-    val localTime = Instant.ofEpochMilli(it.time).atZone(ZoneId.of("GMT")).toLocalTime()
-    return localTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+    return time.format(DateTimeFormatter.ofPattern("HH:mm"))
   }
   return "--:--"
 }
