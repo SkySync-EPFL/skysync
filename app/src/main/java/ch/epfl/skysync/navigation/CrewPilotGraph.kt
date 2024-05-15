@@ -169,11 +169,11 @@ fun NavGraphBuilder.crewPilotGraph(
       CrewReportScreen(navController, finishedFlight, crew)
     }
     composable(Route.LAUNCH_FLIGHT) {
-      val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
-      flightsViewModel.refresh()
+      val viewModel = FlightsViewModel.createViewModel(repository, uid)
+      viewModel.refresh()
       LaunchFlight(
           navController = navController,
-          flightsViewModel = flightsViewModel,
+          viewModel = viewModel,
           inFlightViewModel = inFlightViewModel!!)
     }
   }
