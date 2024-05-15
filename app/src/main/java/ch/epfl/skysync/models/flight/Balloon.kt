@@ -1,6 +1,7 @@
 package ch.epfl.skysync.models.flight
 
 import ch.epfl.skysync.models.UNSET_ID
+import java.time.LocalTime
 
 /**
  * represents a balloon (envelope)

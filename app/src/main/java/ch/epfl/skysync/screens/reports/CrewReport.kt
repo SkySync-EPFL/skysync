@@ -43,17 +43,23 @@ fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFligh
       val defaultPadding = 16.dp
       var littleChampagne by remember { mutableStateOf("") }
       var errorLittleChampagne by remember { mutableStateOf(false) }
+
       var bigChampagne by remember { mutableStateOf("") }
       var errorBigChampagne by remember { mutableStateOf(false) }
+
       var prestigeChampagne by remember { mutableStateOf("") }
       var errorPrestigeChampagne by remember { mutableStateOf(false) }
+
       var addProblem by remember { mutableStateOf(false) }
       var newProblem by remember { mutableStateOf("") }
+
       var newVehicle: Vehicle? by remember { mutableStateOf(null) }
       val vehicleProblem = remember { mutableMapOf<Vehicle, String>() }
+
       var beginTime by remember { mutableStateOf(flight.takeOffTime) }
       var endTime by remember { mutableStateOf(flight.takeOffTime) }
       var pauseDuration by remember { mutableLongStateOf(0L) }
+
       var comments by remember { mutableStateOf("") }
 
       ModifyVehicleProblem(addProblem = addProblem, vehicle = newVehicle, problem = newProblem) {
