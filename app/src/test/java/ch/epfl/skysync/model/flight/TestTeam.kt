@@ -19,16 +19,13 @@ class TestTeam {
       Crew(
           firstname = "jo",
           lastname = "blunt",
-          email = "jo.blunt@gmail.com",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar())
+          email = "jo.blunt@gmail.com",)
   val testUser2 =
       Crew(
           firstname = "peter",
           lastname = "brown",
           email = "peter.brown",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar())
+      )
 
   @Test
   fun `isComplete() returns true if all roles assigned`() {

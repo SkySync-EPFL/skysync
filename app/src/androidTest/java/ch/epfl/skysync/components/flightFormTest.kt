@@ -72,8 +72,6 @@ class FlightFormTest {
               firstname = userFirstname1,
               lastname = userLastname1,
               email = "user@gmail.com",
-              availabilities = AvailabilityCalendar(),
-              assignedFlights = FlightGroupCalendar(),
           )
       user2 =
           Crew(
@@ -81,8 +79,6 @@ class FlightFormTest {
               firstname = userFirstname2,
               lastname = userLastname2,
               email = "user@gmail.com",
-              availabilities = AvailabilityCalendar(),
-              assignedFlights = FlightGroupCalendar(),
           )
 
       val availableUsers = listOf(user1, user2)

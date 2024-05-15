@@ -110,8 +110,6 @@ fun NavGraphBuilder.crewPilotGraph(
               "John",
               "Doe",
               "",
-              AvailabilityCalendar(),
-              FlightGroupCalendar(),
               setOf(RoleType.PILOT),
               BalloonQualification.MEDIUM)
       val finishedFlight =
@@ -143,8 +141,6 @@ fun NavGraphBuilder.crewPilotGraph(
               "John",
               "Doe",
               "",
-              AvailabilityCalendar(),
-              FlightGroupCalendar(),
               setOf(RoleType.PILOT),
           )
       val finishedFlight =

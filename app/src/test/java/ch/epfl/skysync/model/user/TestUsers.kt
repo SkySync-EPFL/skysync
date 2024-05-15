@@ -22,8 +22,6 @@ class TestUsers {
             firstname = "John",
             lastname = "Deer",
             email = "john.deer@gmail.com",
-            availabilities = AvailabilityCalendar(),
-            assignedFlights = FlightGroupCalendar(),
             roleTypes = setOf(RoleType.PILOT, RoleType.CREW),
             qualification = BalloonQualification.LARGE)
 
@@ -41,8 +39,7 @@ class TestUsers {
             firstname = "John",
             lastname = "Deer",
             email = "john.deer@gmail.com",
-            availabilities = AvailabilityCalendar(),
-            assignedFlights = FlightGroupCalendar())
+            )
   }
 
   @Test
@@ -52,7 +49,6 @@ class TestUsers {
             firstname = "John",
             lastname = "Deer",
             email = "john.deer@gmail.com",
-            availabilities = AvailabilityCalendar(),
-            assignedFlights = FlightGroupCalendar())
+            )
   }
 }

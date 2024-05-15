@@ -41,8 +41,7 @@ class TestConfirmedFlight {
             firstname = "Paul",
             lastname = "Panzer",
             email = "paul.panzer@gmail.com",
-            availabilities = AvailabilityCalendar(),
-            assignedFlights = FlightGroupCalendar())
+            )
 
     confirmedFlight =
         ConfirmedFlight(

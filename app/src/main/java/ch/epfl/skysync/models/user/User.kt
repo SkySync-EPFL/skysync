@@ -9,8 +9,6 @@ interface User {
   val firstname: String
   val lastname: String
   val email: String
-  val availabilities: AvailabilityCalendar
-  val assignedFlights: FlightGroupCalendar
   val roleTypes: Set<RoleType>
 
   fun addRoleType(roleType: RoleType): User
@@ -20,4 +18,7 @@ interface User {
   }
 
   fun name(): String = "$firstname $lastname"
+
 }
+
+

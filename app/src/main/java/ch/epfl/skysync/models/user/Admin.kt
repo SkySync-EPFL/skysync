@@ -10,8 +10,6 @@ data class Admin(
     override val firstname: String,
     override val lastname: String,
     override val email: String,
-    override val availabilities: AvailabilityCalendar,
-    override val assignedFlights: FlightGroupCalendar,
     override val roleTypes: Set<RoleType> = setOf(),
 ) : User {
   override fun addRoleType(roleType: RoleType): Admin {

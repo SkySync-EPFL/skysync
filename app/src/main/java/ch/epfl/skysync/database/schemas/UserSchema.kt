@@ -30,8 +30,6 @@ data class UserSchema(
               firstname = firstname!!,
               lastname = lastname!!,
               email = email!!,
-              availabilities = AvailabilityCalendar(),
-              assignedFlights = FlightGroupCalendar(),
               roleTypes = roleTypes!!.toSet(),
           )
       UserRole.CREW ->
@@ -40,8 +38,6 @@ data class UserSchema(
               firstname = firstname!!,
               lastname = lastname!!,
               email = email!!,
-              availabilities = AvailabilityCalendar(),
-              assignedFlights = FlightGroupCalendar(),
               roleTypes = roleTypes!!.toSet(),
           )
       UserRole.PILOT ->
@@ -50,8 +46,6 @@ data class UserSchema(
               firstname = firstname!!,
               lastname = lastname!!,
               email = email!!,
-              availabilities = AvailabilityCalendar(),
-              assignedFlights = FlightGroupCalendar(),
               roleTypes = roleTypes!!.toSet(),
               qualification = balloonQualification!!)
     }

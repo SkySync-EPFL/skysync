@@ -23,8 +23,7 @@ class TestRole {
           firstname = "jo",
           lastname = "blunt",
           email = "jo.blunt@gmail.com",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar())
+          )
 
   @Before
   fun setUp() {
