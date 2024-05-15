@@ -1,6 +1,7 @@
 package ch.epfl.skysync.screens.flight
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -79,6 +80,7 @@ class LaunchFlightTest {
         LaunchFlight(navController, viewModel, inFlightViewModel)
       }
       inFlightViewModel.init(dbSetup.pilot1.id).join()
+      composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
       composeTestRule.onNodeWithTag("flightCard${dbSetup.flight4.id}").assertExists()
     }
   }
@@ -96,6 +98,7 @@ class LaunchFlightTest {
       inFlightViewModel.init(dbSetup.pilot1.id).join()
       inFlightViewModel.startFlight().join()
       val route = navController.currentBackStackEntry?.destination?.route
+      composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
       Assert.assertEquals(route, Route.FLIGHT)
     }
   }
