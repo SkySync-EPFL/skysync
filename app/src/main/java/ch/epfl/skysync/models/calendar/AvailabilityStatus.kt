@@ -8,7 +8,8 @@ enum class AvailabilityStatus {
   OK,
   MAYBE,
   NO,
-  UNDEFINED;
+  UNDEFINED,
+  ASSIGNED;
 
   fun next(): AvailabilityStatus {
     return when (this) {
@@ -16,6 +17,7 @@ enum class AvailabilityStatus {
       OK -> MAYBE
       MAYBE -> NO
       NO -> UNDEFINED
+      ASSIGNED -> ASSIGNED
     }
   }
 }

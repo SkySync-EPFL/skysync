@@ -47,7 +47,7 @@ class AvailabilityCalendar(cells: MutableList<Availability> = mutableListOf()) :
             ?: AvailabilityStatus.OK // non-existing entries get init by OK
     if (nextAvailabilityStatus == AvailabilityStatus.UNDEFINED) {
       removeByDate(date, timeSlot)
-    } else {
+    } else if (nextAvailabilityStatus != AvailabilityStatus.ASSIGNED) {
       setAvailabilityByDate(date, timeSlot, nextAvailabilityStatus)
     }
     return nextAvailabilityStatus
