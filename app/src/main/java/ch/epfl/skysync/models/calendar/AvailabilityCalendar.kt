@@ -51,8 +51,11 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
             ?: AvailabilityStatus.OK // non-existing entries get init by OK
     return if (nextAvailabilityStatus == AvailabilityStatus.UNDEFINED) {
       removeByDate(date, timeSlot) as AvailabilityCalendar
-    } else {
+    } else if (nextAvailabilityStatus != AvailabilityStatus.ASSIGNED){
       setAvailabilityByDate(date, timeSlot, nextAvailabilityStatus) as AvailabilityCalendar
+    }
+      else{
+          this
     }
   }
 
