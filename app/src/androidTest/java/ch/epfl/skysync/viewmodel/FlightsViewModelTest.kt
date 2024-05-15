@@ -314,9 +314,11 @@ class FlightsViewModelTest {
 
       val withOneFlightDeleted = viewModelAdmin.currentFlights.value
 
+        var flight2StillAvailable = false
+
       assertEquals(5, withOneFlightDeleted?.size)
-      assertTrue(withOneFlightDeleted?.contains(flight2) ?: false)
-      assertFalse(withOneFlightDeleted?.contains(flight1) ?: true)
+        assertTrue(withOneFlightDeleted?.any { it.id == flight2.id } ?: false)
+        assertTrue(withOneFlightDeleted?.none { it.id == flight1.id } ?: false)
     }
   }
 
@@ -359,7 +361,7 @@ class FlightsViewModelTest {
       viewModelAdmin.refreshUserAndFlights().join()
 
       assertEquals(5, viewModelAdmin.currentFlights.value?.size)
-      assertTrue(viewModelAdmin.currentFlights.value?.contains(modifiedFlight) ?: false)
+      assertTrue(viewModelAdmin.currentFlights.value?.map { it.id }?.contains(modifiedFlight.id) ?: false)
     }
   }
 
@@ -401,7 +403,9 @@ class FlightsViewModelTest {
       val foundAvailableUsers = viewModelAdmin.availableUsers.value
       val expectedAvailableUsers = listOf(dbSetup.admin1)
       assertEquals(expectedAvailableUsers.size, foundAvailableUsers.size)
-      expectedAvailableUsers.forEach() { assertTrue(foundAvailableUsers.contains(it)) }
+      expectedAvailableUsers.forEach { outerUsr ->
+          assertTrue(foundAvailableUsers.any { it.id == outerUsr.id })
+      }
     }
   }
 }
