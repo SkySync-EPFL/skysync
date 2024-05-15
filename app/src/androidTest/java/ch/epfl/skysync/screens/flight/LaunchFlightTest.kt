@@ -23,6 +23,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.concurrent.CountDownLatch
 
 class LaunchFlightTest {
   private val db = FirestoreDatabase(useEmulator = true)
@@ -104,8 +105,32 @@ class LaunchFlightTest {
         val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
         nodes.fetchSemanticsNodes().isNotEmpty()
       }
-      inFlightViewModel.init(dbSetup.pilot1.id).join()
       inFlightViewModel.setCurrentFlight(dbSetup.flight4.id)
+      inFlightViewModel.init(dbSetup.pilot1.id).join()
+      composeTestRule.onNodeWithText("Flight").performClick()
+      composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
+      val route = navController.currentBackStackEntry?.destination?.route
+      Assert.assertEquals(route, Route.FLIGHT)
+    }
+  }
+  @Test
+  fun checkCrewFlightLaunched() {
+    runTest {
+      composeTestRule.setContent {
+        inFlightViewModel = InFlightViewModel.createViewModel(repository)
+        navController = TestNavHostController(LocalContext.current)
+        navController.navigatorProvider.addNavigator(ComposeNavigator())
+        viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
+        NavHost(navController = navController, startDestination = Route.MAIN) {
+          homeGraph(repository, navController, dbSetup.crew1.id, inFlightViewModel)
+        }
+      }
+      composeTestRule.waitUntil {
+        val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
+        nodes.fetchSemanticsNodes().isNotEmpty()
+      }
+      inFlightViewModel.setCurrentFlight(dbSetup.flight4.id)
+      inFlightViewModel.init(dbSetup.crew1.id).join()
       composeTestRule.onNodeWithText("Flight").performClick()
       composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
       val route = navController.currentBackStackEntry?.destination?.route
