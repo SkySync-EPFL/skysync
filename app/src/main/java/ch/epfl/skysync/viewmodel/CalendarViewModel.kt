@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * ViewModel for the Calendar screen
@@ -88,7 +89,9 @@ class CalendarViewModel(
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+      if (e !is CancellationException) {
+          SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+      }
   }
 
   fun setToNextAvailabilityStatus(date: LocalDate, time: TimeSlot) {
