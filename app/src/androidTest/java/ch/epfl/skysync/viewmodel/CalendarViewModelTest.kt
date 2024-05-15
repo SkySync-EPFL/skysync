@@ -66,16 +66,18 @@ class CalendarViewModelTest {
             dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
     assertEquals(AvailabilityStatus.MAYBE, currentStatus)
 
-    // 2x next
+    // 3x next
     calendarViewModel.setToNextAvailabilityStatus(
         dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
     calendarViewModel.setToNextAvailabilityStatus(
         dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
+      calendarViewModel.setToNextAvailabilityStatus(
+          dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
     availabilityCalendar = calendarViewModel.currentAvailabilityCalendar.value
     currentStatus =
         availabilityCalendar.getAvailabilityStatus(
             dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
-    assertEquals(AvailabilityStatus.UNDEFINED, currentStatus)
+    assertEquals(AvailabilityStatus.OK, currentStatus)
   }
 
   @Test
