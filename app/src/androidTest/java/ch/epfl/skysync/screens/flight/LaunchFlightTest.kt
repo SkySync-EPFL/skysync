@@ -104,9 +104,9 @@ class LaunchFlightTest {
         val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
         nodes.fetchSemanticsNodes().isNotEmpty()
       }
+      composeTestRule.onNodeWithText("Flight").performClick()
       inFlightViewModel.init(dbSetup.pilot1.id).join()
       inFlightViewModel.startFlight().join()
-      composeTestRule.onNodeWithText("Flight").performClick()
       val route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(route, Route.FLIGHT)
     }
