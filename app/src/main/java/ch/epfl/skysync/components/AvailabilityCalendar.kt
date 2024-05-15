@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -60,12 +59,13 @@ fun availabilityToColor(status: AvailabilityStatus): Color {
  * @return The color representing the availability status.
  */
 fun availabilityToText(status: AvailabilityStatus): String {
-    val availabilityToColorMap =
-        mapOf(
-            AvailabilityStatus.OK to "OK",
-            AvailabilityStatus.MAYBE to "Maybe",
-            AvailabilityStatus.NO to "NO")
-    return availabilityToColorMap.getOrDefault(status, "")
+  val availabilityToColorMap =
+      mapOf(
+          AvailabilityStatus.OK to "OK",
+          AvailabilityStatus.MAYBE to "Maybe",
+          AvailabilityStatus.NO to "NO",
+          AvailabilityStatus.ASSIGNED to "Assigned")
+  return availabilityToColorMap.getOrDefault(status, "")
 }
 
 /**
@@ -94,16 +94,13 @@ fun AvailabilityTile(
               .background(
                   color = availabilityToColor(availabilityStatus), shape = RoundedCornerShape(0.dp))
               .clickable { onClick() }) {
-      Column(
-          modifier = Modifier.fillMaxSize(),
-          verticalArrangement = Arrangement.Center,
-          horizontalAlignment = Alignment.CenterHorizontally
-      ) {
-          Text(
-              text = availabilityToText(availabilityStatus)
-          )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+              Text(text = availabilityToText(availabilityStatus))
+            }
       }
-  }
 }
 
 /**

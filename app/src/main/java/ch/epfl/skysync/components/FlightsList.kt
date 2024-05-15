@@ -63,7 +63,7 @@ fun FlightsList(
           }
     } else {
       // Display the flights in a LazyColumn if the list is not empty
-      LazyColumn(modifier = Modifier.testTag("HomeLazyList")) {
+      LazyColumn(modifier = Modifier.testTag("HomeLazyList").padding(bottom = 64.dp)) {
         items(flights) { flight -> FlightCard(flight, onFlightClick) }
       }
     }

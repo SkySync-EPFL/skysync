@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -61,26 +60,29 @@ fun UserCard(user: User, onUserClick: (String) -> Unit) {
               .testTag("userCard"),
       elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
   ) {
-    Surface(modifier = Modifier.fillMaxWidth().border(
-        border = BorderStroke(1.dp, Color.Black),
-        shape = RoundedCornerShape(
-            topStart = 12.dp,
-            topEnd = 12.dp,
-            bottomEnd = 12.dp,
-            bottomStart = 12.dp
-        )
-    ), color = lightGray) {
-      Row(
-          modifier = Modifier.fillMaxWidth().padding(16.dp),
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(
-                "${user.firstname} ${user.lastname}",
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodyLarge)
-            Text(user.roleTypes.joinToString { it.name })
-          }
-    }
+    Surface(
+        modifier =
+            Modifier.fillMaxWidth()
+                .border(
+                    border = BorderStroke(1.dp, Color.Black),
+                    shape =
+                        RoundedCornerShape(
+                            topStart = 12.dp,
+                            topEnd = 12.dp,
+                            bottomEnd = 12.dp,
+                            bottomStart = 12.dp)),
+        color = lightGray) {
+          Row(
+              modifier = Modifier.fillMaxWidth().padding(16.dp),
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(
+                    "${user.firstname} ${user.lastname}",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyLarge)
+                Text(user.roleTypes.joinToString { it.name })
+              }
+        }
   }
 }
 
@@ -197,20 +199,18 @@ fun UserManagementScreen(
       },
       bottomBar = { AdminBottomBar(navController) },
       floatingActionButton = {
-          Surface(
-              modifier = Modifier.size(56.dp),
-              shape = CircleShape,
-              color = Color.Transparent,
-              border = BorderStroke(2.dp, Color.Black)
-          ) {
+        Surface(
+            modifier = Modifier.size(56.dp),
+            shape = CircleShape,
+            color = Color.Transparent,
+            border = BorderStroke(2.dp, Color.Black)) {
               FloatingActionButton(
                   modifier = Modifier.fillMaxSize(1f),
-                          onClick = { navController.navigate(Route.ADD_USER) },
-                  containerColor = Color.White
-              ) {
-                  Icon(imageVector = Icons.Filled.Add, contentDescription = "Add User")
-              }
-          }
+                  onClick = { navController.navigate(Route.ADD_USER) },
+                  containerColor = Color.White) {
+                    Icon(imageVector = Icons.Filled.Add, contentDescription = "Add User")
+                  }
+            }
       },
       floatingActionButtonPosition = FabPosition.Center) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
