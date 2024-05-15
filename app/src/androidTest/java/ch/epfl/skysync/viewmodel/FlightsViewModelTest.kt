@@ -317,8 +317,8 @@ class FlightsViewModelTest {
       var flight2StillAvailable = false
 
       assertEquals(5, withOneFlightDeleted?.size)
-      assertTrue(withOneFlightDeleted?.any { it.id == flight2.id } ?: false)
-      assertTrue(withOneFlightDeleted?.none { it.id == flight1.id } ?: false)
+      assertTrue(withOneFlightDeleted?.contains(flight2) ?: false)
+      assertFalse(withOneFlightDeleted?.contains(flight1) ?: true)
     }
   }
 
@@ -361,8 +361,7 @@ class FlightsViewModelTest {
       viewModelAdmin.refreshUserAndFlights().join()
 
       assertEquals(5, viewModelAdmin.currentFlights.value?.size)
-      assertTrue(
-          viewModelAdmin.currentFlights.value?.map { it.id }?.contains(modifiedFlight.id) ?: false)
+      assertTrue(viewModelAdmin.currentFlights.value?.contains(modifiedFlight) ?: false)
     }
   }
 

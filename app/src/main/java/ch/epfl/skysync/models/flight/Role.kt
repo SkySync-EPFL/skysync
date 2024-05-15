@@ -50,4 +50,11 @@ data class Role(
       return roleList.map { Role(it) }
     }
   }
+
+  override fun equals(other: Any?): Boolean {
+    if (other == null) return false
+    if (other::class != this::class) return false
+    val otherRole = other as Role
+    return (roleType == otherRole.roleType && assignedUser?.id == otherRole.assignedUser?.id)
+  }
 }

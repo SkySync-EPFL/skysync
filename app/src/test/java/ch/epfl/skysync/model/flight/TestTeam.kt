@@ -95,4 +95,13 @@ class TestTeam {
     val team = Team(listOf())
     assertEquals(team.getUsers().size, 0)
   }
+
+  @Test
+  fun `equals() returns true if teams have same roles but different ordering`() {
+    val role1 = Role(RoleType.OXYGEN_MASTER).assign(testUser2)
+    val role2 = Role(RoleType.CREW).assign(testUser1)
+    val team1 = Team(listOf(role1, role2))
+    val team2 = Team(listOf(role2, role1))
+    assertEquals(team1, team2)
+  }
 }
