@@ -220,11 +220,17 @@ fun UserManagementScreen(
               Text("No such user exists", style = MaterialTheme.typography.titleLarge)
             }
           } else {
-            LazyColumn(modifier = Modifier.align(Alignment.TopCenter).padding(horizontal = 16.dp)) {
-              items(filteredUsers) { user ->
-                UserCard(user) { navController.navigate(Route.ADMIN_USER_DETAILS + "/${user.id}") }
-              }
-            }
+            LazyColumn(
+                modifier =
+                    Modifier.align(Alignment.TopCenter)
+                        .padding(horizontal = 16.dp)
+                        .testTag("UserManagementLazyColumn")) {
+                  items(filteredUsers) { user ->
+                    UserCard(user) {
+                      navController.navigate(Route.ADMIN_USER_DETAILS + "/${user.id}")
+                    }
+                  }
+                }
           }
         }
       }
