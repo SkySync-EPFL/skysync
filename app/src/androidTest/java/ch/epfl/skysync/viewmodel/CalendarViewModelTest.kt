@@ -71,8 +71,8 @@ class CalendarViewModelTest {
         dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
     calendarViewModel.setToNextAvailabilityStatus(
         dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
-      calendarViewModel.setToNextAvailabilityStatus(
-          dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
+    calendarViewModel.setToNextAvailabilityStatus(
+        dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
     availabilityCalendar = calendarViewModel.currentAvailabilityCalendar.value
     currentStatus =
         availabilityCalendar.getAvailabilityStatus(
