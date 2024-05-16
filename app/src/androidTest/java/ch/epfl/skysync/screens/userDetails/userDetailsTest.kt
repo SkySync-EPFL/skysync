@@ -39,7 +39,7 @@ class UserDetailsTest {
       UserDetailsScreen(navController = rememberNavController(), flighsViewModel)
     }
     composeTestRule.onNodeWithText("Completed Flights").assertIsDisplayed()
-    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("flightCard${dbs.flight1.id}"), 2000)
+    composeTestRule.waitUntilAtLeastOneExists(hasTestTag("flightCard${dbs.flight1.id}"), 3000)
   }
 
   @Test

@@ -20,7 +20,6 @@ fun AdminChatScreen(navController: NavHostController, viewModel: ChatViewModel) 
       bottomBar = { AdminBottomBar(navController) },
   ) { padding ->
     val groupDetails by viewModel.getGroupDetails().collectAsStateWithLifecycle()
-    println("GroupDetails $groupDetails")
     GroupChat(
         groupList = groupDetails,
         onClick = { selectedGroup ->

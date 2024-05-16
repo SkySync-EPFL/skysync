@@ -1,6 +1,5 @@
 package ch.epfl.skysync.screens.home
 
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -8,22 +7,14 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.ComposeNavigator
-import androidx.navigation.compose.NavHost
-import androidx.navigation.testing.TestNavHostController
+import androidx.navigation.NavHostController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.database.tables.BalloonTable
-import ch.epfl.skysync.database.tables.BasketTable
-import ch.epfl.skysync.database.tables.FlightTable
-import ch.epfl.skysync.database.tables.FlightTypeTable
-import ch.epfl.skysync.database.tables.VehicleTable
-import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.screens.admin.ModifyFlightScreen
 import ch.epfl.skysync.viewmodel.FlightsViewModel
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
@@ -33,12 +24,9 @@ import org.junit.Test
 class ModifyFlightTest {
 
   private val db = FirestoreDatabase(useEmulator = true)
-  private val dbSetup = DatabaseSetup()
-  private val flightTable = FlightTable(db)
-  private val basketTable = BasketTable(db)
-  private val balloonTable = BalloonTable(db)
-  private val flightTypeTable = FlightTypeTable(db)
-  private val vehicleTable = VehicleTable(db)
+  private val dbs = DatabaseSetup()
+  @get:Rule val mockkRule = MockKRule(this)
+  @RelaxedMockK lateinit var navController: NavHostController
   private val repository = Repository(db)
 
   // adding this rule should set the test dispatcher and should
@@ -52,23 +40,18 @@ class ModifyFlightTest {
 
   @Before
   fun setUp() = runTest {
-    dbSetup.clearDatabase(db)
-    dbSetup.fillDatabase(db)
+    dbs.clearDatabase(db)
+    dbs.fillDatabase(db)
+
+    composeTestRule.setContent {
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbs.admin1.id)
+      ModifyFlightScreen(
+          navController = navController, viewModel = viewModelAdmin, flightId = dbs.flight1.id)
+    }
   }
 
   @Test
   fun checkModifyPassengerCountWorks() = runTest {
-    composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
-      val currentFlights = viewModelAdmin.currentFlights.collectAsStateWithLifecycle()
-      val navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
-      NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbSetup.admin1.id)
-      }
-      ModifyFlightScreen(
-          navController = navController, viewModel = viewModelAdmin, flightId = dbSetup.flight1.id)
-    }
     viewModelAdmin.refreshUserAndFlights().join()
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
@@ -80,31 +63,18 @@ class ModifyFlightTest {
     viewModelAdmin.refreshUserAndFlights().join()
     assertEquals(
         viewModelAdmin.currentFlights.value?.any {
-          it.nPassengers == 24 && it.id == dbSetup.flight1.id
+          it.nPassengers == 24 && it.id == dbs.flight1.id
         },
         true)
   }
 
   @Test
   fun checkAssignVehicleIsPersistent() = runTest {
-    composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
-      val currentFlights = viewModelAdmin.currentFlights.collectAsStateWithLifecycle()
-      val navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
-      NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbSetup.admin1.id)
-      }
-      ModifyFlightScreen(
-          navController = navController, viewModel = viewModelAdmin, flightId = dbSetup.flight1.id)
-    }
     viewModelAdmin.refreshUserAndFlights().join()
     assertEquals(
         true,
         viewModelAdmin.currentFlights.value?.any {
-          it.vehicles.contains(dbSetup.vehicle1) &&
-              it.id == dbSetup.flight1.id &&
-              it.vehicles.size == 1
+          it.vehicles.contains(dbs.vehicle1) && it.id == dbs.flight1.id && it.vehicles.size == 1
         })
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
@@ -113,7 +83,7 @@ class ModifyFlightTest {
     viewModelAdmin.refreshUserAndFlights().join()
     assertTrue(
         viewModelAdmin.currentFlights.value?.any {
-          it.vehicles.size == 1 && it.id == dbSetup.flight1.id
+          it.vehicles.size == 1 && it.id == dbs.flight1.id
         } ?: false)
   }
 }

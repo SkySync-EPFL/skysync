@@ -12,6 +12,7 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.viewmodel.InFlightViewModel
+import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
@@ -34,8 +35,11 @@ class HomeNavigationTest {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       val inFlightViewModel = InFlightViewModel.createViewModel(repository)
+      val messageListenerViewModel = MessageListenerViewModel.createViewModel()
+
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.crew1.id, inFlightViewModel)
+        homeGraph(
+            repository, navController, dbs.crew1.id, inFlightViewModel, messageListenerViewModel)
       }
     }
     composeTestRule.waitUntil {
@@ -63,7 +67,7 @@ class HomeNavigationTest {
     composeTestRule.onNodeWithText("Flight").performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.FLIGHT)
+    Assert.assertEquals(route, Route.LAUNCH_FLIGHT)
   }
 
   @Test

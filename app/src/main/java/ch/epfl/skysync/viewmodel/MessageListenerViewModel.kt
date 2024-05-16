@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.ListenerUpdate
@@ -25,7 +24,7 @@ typealias MessageListenerCallback = (group: MessageGroup, update: ListenerUpdate
  *
  * Responsible of the listeners for the message groups
  */
-class MessageListenerSharedViewModel : ViewModel() {
+class MessageListenerViewModel : ViewModel() {
   private var initialized = false
   private lateinit var uid: String
   private lateinit var messageGroupTable: MessageGroupTable
@@ -40,23 +39,19 @@ class MessageListenerSharedViewModel : ViewModel() {
   private val callbackStack: MutableList<MessageListenerCallback> = mutableListOf()
   private lateinit var defaultCallback: MessageListenerCallback
 
+  /** ViewModel for the messages */
   companion object {
-    /**
-     * This is only used for the tests, use [NavBackStackEntry.sharedViewModel] to get an instance
-     * of the shared view model in the app.
-     */
     @Composable
-    fun createViewModel(): MessageListenerSharedViewModel {
-      return viewModel<MessageListenerSharedViewModel>(
+    fun createViewModel(): MessageListenerViewModel {
+      return viewModel<MessageListenerViewModel>(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return MessageListenerSharedViewModel() as T
+                  return MessageListenerViewModel() as T
                 }
               })
     }
   }
-
   /**
    * Initialize the view model.
    *

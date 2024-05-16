@@ -33,79 +33,13 @@ class ChatTextUiTest {
           MessageType.SENT,
           image,
       )
-  private val list =
-      listOf(
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-          fakeText,
-          myFakeText,
-      )
+  private val list = (0..50).map { i -> if (i % 2 == 0) fakeText else myFakeText }
 
   @Before
   fun setUpNavHost() {
     composeTestRule.setContent {
-      ChatText(
-          groupName = "Name",
-          messages = list,
-          onBack = {},
-          onSend = {},
-          paddingValues = PaddingValues(0.dp))
+      ChatText(messages = list, onSend = {}, paddingValues = PaddingValues(0.dp))
     }
-  }
-
-  @Test
-  fun verifyChatText() {
-    composeTestRule.onNodeWithTag("HeaderTitle").assertIsDisplayed()
-  }
-
-  @Test
-  fun verifyChatBackButton() {
-    composeTestRule.onNodeWithTag("BackButton").assertIsDisplayed()
-  }
-
-  @Test
-  fun verifyChatBackButtonIsClickable() {
-    composeTestRule.onNodeWithTag("BackButton").assertHasClickAction()
   }
 
   @Test

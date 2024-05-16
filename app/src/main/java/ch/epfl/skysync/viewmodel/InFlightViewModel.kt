@@ -201,20 +201,13 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
     _loading.value = false
   }
 
-  /** Add listeners to the previously fetched confirmed flights where the user is not the pilot. */
+  /** Add listeners to the previously fetched confirmed flights */
   private fun addFlightListeners() {
-    // do not add listener to flight where the user is the pilot
-    // as by construction only the pilot can start/stop the flight
     flightListeners +=
-        _confirmedFlights.value
-            .filter { flight -> !isUserPilotRole(flight.team) }
-            .map { flight ->
-              flightTable.addFlightListener(
-                  flight.id,
-                  { onFlightListenerUpdate(it) },
-                  viewModelScope,
-                  onError = { onError(it) })
-            }
+        _confirmedFlights.value.map { flight ->
+          flightTable.addFlightListener(
+              flight.id, { onFlightListenerUpdate(it) }, viewModelScope, onError = { onError(it) })
+        }
   }
 
   /** The function executed on flight listener update, start/stop a flight if needed. */
@@ -232,8 +225,9 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
     if (flight is ConfirmedFlight && flight.isOngoing) {
       if (!isOngoingFlight()) {
         startTimestamp = flight.startTimestamp!!
-        _currentFlight.value = flight
+        setCurrentFlight(flight.id)
         startFlightInternal()
+        SnackbarManager.showMessage("Flight started")
       }
     }
   }
@@ -332,8 +326,9 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
         // it should only be done once per flight (by the pilot)
         startTimestamp = System.currentTimeMillis()
 
+        // update the flight on the database, this triggers the listeners of all flight members
+        // including self (the pilot)
         startFlightUpdateDatabase()
-        startFlightInternal()
       }
 
   /**
@@ -429,7 +424,6 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
                 }
                 // the return is useless but needed to make sonar cloud happy
                 val user = users[userId] ?: return@listenForLocationUpdates
-
                 val lastLocation = update.adds.last()
                 _currentLocations.value =
                     _currentLocations.value.plus(Pair(userId, Pair(user, lastLocation)))
