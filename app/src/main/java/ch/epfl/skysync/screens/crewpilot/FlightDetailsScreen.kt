@@ -10,6 +10,9 @@ import ch.epfl.skysync.components.ConfirmedFlightDetailBottom
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.FlightDetails
 import ch.epfl.skysync.components.LoadingComponent
+import ch.epfl.skysync.models.user.Crew
+import ch.epfl.skysync.models.user.Pilot
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
@@ -21,14 +24,22 @@ fun FlightDetailScreen(
 ) {
 
   val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
+  val user by viewModel.currentUser.collectAsStateWithLifecycle()
   Scaffold(
       topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
-      bottomBar = { ConfirmedFlightDetailBottom() { navController.popBackStack() } },
       containerColor = lightGray) { padding ->
-        if (flight == null) {
+        if (flight == null || user == null) {
           LoadingComponent(isLoading = true, onRefresh = {}) {}
         } else {
-          FlightDetails(flight = flight, padding = padding)
+          FlightDetails(flight = flight, padding = padding) {
+            ConfirmedFlightDetailBottom {
+              if (user is Pilot) {
+                navController.navigate(Route.PILOT_REPORT)
+              } else if (user is Crew) {
+                navController.navigate(Route.CREW_REPORT)
+              }
+            }
+          }
         }
       }
 }

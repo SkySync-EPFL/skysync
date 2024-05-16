@@ -238,6 +238,42 @@ class DatabaseSetup {
           meetupTimePassenger = LocalTime.of(14, 0, 0),
           meetupLocationPassenger = "location",
       )
+  /*var flight5 =
+      FinishedFlight(
+          id = UNSET_ID,
+          nPassengers = 3,
+          team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
+          flightType = flightType1,
+          balloon = balloon1,
+          basket = basket1,
+          date = date1,
+          timeSlot = TimeSlot.PM,
+          vehicles = listOf(vehicle2),
+          color = FlightColor.GREEN,
+          flightTime = 3_600_000, // 1 hour
+          landingTime = createDate(date1.year, date1.monthValue, date1.dayOfMonth, 15, 0),
+          takeOffTime = createDate(date1.year, date1.monthValue, date1.dayOfMonth, 14, 0),
+          landingLocation = LocationPoint(0, 0.0, 0.0, "Landing"),
+          takeOffLocation = LocationPoint(0, 1.0, 1.0, "Take off"),
+      )
+  var flight6 =
+      FinishedFlight(
+          id = UNSET_ID,
+          nPassengers = 2,
+          team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew2))),
+          flightType = flightType1,
+          balloon = balloon1,
+          basket = basket1,
+          date = date1,
+          timeSlot = TimeSlot.AM,
+          vehicles = listOf(vehicle2),
+          color = FlightColor.GREEN,
+          flightTime = 3_600_000, // 1 hour
+          landingTime = createDate(date1.year, date1.monthValue, date1.dayOfMonth, 7, 0),
+          takeOffTime = createDate(date1.year, date1.monthValue, date1.dayOfMonth, 6, 0),
+          landingLocation = LocationPoint(0, 0.0, 0.0, "Landing"),
+          takeOffLocation = LocationPoint(0, 1.0, 1.0, "Take off"),
+      )*/
 
   var messageGroup1 =
       MessageGroup(name = "Group 1", userIds = setOf(admin2.id, pilot1.id, crew1.id))
@@ -405,6 +441,34 @@ class DatabaseSetup {
             basket = basket1,
             vehicles = listOf(vehicle2),
         )
+    /*flight5 =
+        flight5.copy(
+            team =
+                Team(
+                    roles =
+                        listOf(
+                            Role(RoleType.PILOT, pilot1),
+                            Role(RoleType.CREW, crew1),
+                            Role(RoleType.CREW, crew2))),
+            flightType = flightType1,
+            balloon = balloon1,
+            basket = basket1,
+            vehicles = listOf(vehicle2),
+        )
+    flight6 =
+        flight6.copy(
+            team =
+                Team(
+                    roles =
+                        listOf(
+                            Role(RoleType.PILOT, pilot1),
+                            Role(RoleType.CREW, crew1),
+                            Role(RoleType.CREW, crew2))),
+            flightType = flightType1,
+            balloon = balloon1,
+            basket = basket1,
+            vehicles = listOf(vehicle2),
+        )*/
 
     // now that the IDs are set, add the flights/messages
     listOf(
@@ -412,6 +476,8 @@ class DatabaseSetup {
             launch { flight2 = flight2.copy(id = flightTable.add(flight2)) },
             launch { flight3 = flight3.copy(id = flightTable.add(flight3)) },
             launch { flight4 = flight4.copy(id = flightTable.add(flight4)) },
+            /*launch { flight5 = flight5.copy(id = flightTable.add(flight5)) },
+            launch { flight6 = flight6.copy(id = flightTable.add(flight6)) },*/
             launch { message1 = message1.copy(id = messageTable.add(messageGroup1.id, message1)) },
             launch { message2 = message2.copy(id = messageTable.add(messageGroup1.id, message2)) },
             launch { message3 = message3.copy(id = messageTable.add(messageGroup2.id, message3)) },

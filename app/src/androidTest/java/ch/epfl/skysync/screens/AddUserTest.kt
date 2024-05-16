@@ -24,13 +24,14 @@ import org.junit.Test
 class AddUserTest {
   @get:Rule val composeTestRule = createComposeRule()
   val navController: NavHostController = mockk("NavController", relaxed = true)
-  lateinit var userManagementViewModel: UserManagementViewModel
+  private lateinit var userManagementViewModel: UserManagementViewModel
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbSetup = DatabaseSetup()
   private val repository: Repository = Repository(db)
 
   @Before
   fun setUp() = runTest {
+    dbSetup.clearDatabase(db)
     dbSetup.fillDatabase(db)
     composeTestRule.setContent {
       userManagementViewModel =

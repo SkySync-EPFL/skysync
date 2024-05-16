@@ -47,8 +47,8 @@ fun CrewReportScreen(
   Scaffold(topBar = { CustomTopAppBar(navController = navHostController, title = title) }) { padding
     ->
     Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-      if (crew == null || flight == null) {
-        LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
+      if (crew.value == null || flight.value == null) {
+        LoadingComponent(isLoading = true, onRefresh = { finishedFlightsViewModel.refresh() }) {}
       } else {
         val defaultPadding = 16.dp
         var littleChampagne by remember { mutableStateOf("") }

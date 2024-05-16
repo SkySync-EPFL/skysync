@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -51,6 +52,7 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.flight.flightColorOptions
+import ch.epfl.skysync.ui.theme.lightOrange
 import java.net.URLEncoder
 import java.time.LocalDate
 import java.time.LocalTime
@@ -63,7 +65,7 @@ import java.time.LocalTime
  * @param padding PaddingValues that specify the padding for the layout.
  */
 @Composable
-fun FlightDetails(flight: Flight?, padding: PaddingValues) {
+fun FlightDetails(flight: Flight?, padding: PaddingValues, bottomButton: @Composable () -> Unit) {
   if (flight == null) {
     LoadingComponent(isLoading = true, onRefresh = {}) {}
   } else {
@@ -92,6 +94,7 @@ fun FlightDetails(flight: Flight?, padding: PaddingValues) {
               }
             }
           }
+      bottomButton()
     }
   }
 }
@@ -309,8 +312,10 @@ fun DisplaySingleMetric(metric: String, value: String) {
 fun ConfirmedFlightDetailBottom(okClick: () -> Unit) {
   BottomAppBar {
     Button(
-        onClick = okClick, modifier = Modifier.fillMaxSize().padding(16.dp).testTag("OK Button")) {
-          Text(text = "OK", color = Color.White, overflow = TextOverflow.Clip)
+        onClick = okClick,
+        modifier = Modifier.fillMaxSize().padding(16.dp).testTag("OK Button"),
+        colors = ButtonDefaults.buttonColors(containerColor = lightOrange)) {
+          Text(text = "View Report", overflow = TextOverflow.Clip)
         }
   }
 }
@@ -344,5 +349,5 @@ fun FlightDetailsPreview() {
           meetupTimePassenger = time,
           meetupLocationPassenger = "Nancy")
 
-  FlightDetails(confirmedFlight, PaddingValues(0.dp))
+  FlightDetails(confirmedFlight, PaddingValues(0.dp)) {}
 }

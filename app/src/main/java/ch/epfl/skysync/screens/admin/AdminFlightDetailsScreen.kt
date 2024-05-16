@@ -83,7 +83,7 @@ fun AdminFlightDetailScreen(
         if (flight == null) {
           LoadingComponent(isLoading = true, onRefresh = {}) {}
         } else {
-          FlightDetails(flight = flight, padding = padding)
+          FlightDetails(flight = flight, padding = padding) {}
         }
       }
 }
@@ -168,6 +168,6 @@ fun FlightDetailScreenPreview() {
         Text(text = "Bottom Bar")
       },
       containerColor = lightGray) { padding ->
-        FlightDetails(flight = plannedFlight, padding = padding)
+        FlightDetails(flight = plannedFlight, padding = padding) {}
       }
 }

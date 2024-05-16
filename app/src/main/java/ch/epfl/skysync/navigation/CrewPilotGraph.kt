@@ -8,22 +8,6 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
-import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.flight.BASE_ROLES
-import ch.epfl.skysync.models.flight.Balloon
-import ch.epfl.skysync.models.flight.BalloonQualification
-import ch.epfl.skysync.models.flight.Basket
-import ch.epfl.skysync.models.flight.FinishedFlight
-import ch.epfl.skysync.models.flight.FlightType
-import ch.epfl.skysync.models.flight.Role
-import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.flight.Team
-import ch.epfl.skysync.models.flight.Vehicle
-import ch.epfl.skysync.models.location.LocationPoint
-import ch.epfl.skysync.models.user.Crew
-import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.screens.crewpilot.ChatScreen
 import ch.epfl.skysync.screens.crewpilot.FlightDetailScreen
 import ch.epfl.skysync.screens.crewpilot.FlightScreen
@@ -36,8 +20,6 @@ import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
-import java.time.LocalDate
-import java.util.Date
 
 fun NavGraphBuilder.crewPilotGraph(
     repository: Repository,
@@ -109,7 +91,7 @@ fun NavGraphBuilder.crewPilotGraph(
       PilotReportScreen(navController, finishedFlightsViewModel)
     }
     composable(Route.CREW_REPORT) {
-        val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid)
+      val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid)
       CrewReportScreen(navController, finishedFlightsViewModel)
     }
   }

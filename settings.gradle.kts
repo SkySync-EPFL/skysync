@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SkySync"
+rootProject.name = "skysync"
 include(":app")
  
