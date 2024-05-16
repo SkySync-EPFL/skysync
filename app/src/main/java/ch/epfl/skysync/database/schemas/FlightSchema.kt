@@ -129,7 +129,7 @@ data class FlightSchema(
               nPassengers = flight.nPassengers,
               timeSlot = flight.timeSlot,
               date = DateUtility.localDateToDate(flight.date),
-              color = FlightColor.NO_COLOR,
+              color = flight.color,
               takeOffTime = dateToHourMinuteString(flight.takeOffTime) ,
               takeOffLocationLat = flight.takeOffLocation.latitude,
               takeOffLocationLong = flight.takeOffLocation.latitude,
