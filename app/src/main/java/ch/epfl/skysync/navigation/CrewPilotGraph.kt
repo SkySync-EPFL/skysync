@@ -161,7 +161,7 @@ fun NavGraphBuilder.crewPilotGraph(
       viewModel.refresh()
       LaunchFlight(
           navController = navController,
-          viewModel = viewModel,
+          flightViewModel = viewModel,
           inFlightViewModel = inFlightViewModel!!)
     }
   }
