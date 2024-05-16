@@ -130,6 +130,7 @@ class LaunchFlightTest {
       }
       inFlightViewModel.setCurrentFlight(dbSetup.flight4.id)
       composeTestRule.onNodeWithText("Flight").performClick()
+      composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
       val route = navController.currentBackStackEntry?.destination?.route
       Assert.assertEquals(route, Route.FLIGHT)
     }
