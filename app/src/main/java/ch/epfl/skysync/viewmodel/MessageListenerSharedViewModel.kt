@@ -38,7 +38,7 @@ class MessageListenerSharedViewModel : ViewModel() {
    */
   var coroutineScope: CoroutineScope? = null
 
-  val listeners: MutableMap<String, ListenerRegistration> = mutableMapOf()
+  private val listeners: MutableMap<String, ListenerRegistration> = mutableMapOf()
   private val callbackStack: MutableList<MessageListenerCallback> = mutableListOf()
   private lateinit var defaultCallback: MessageListenerCallback
 
@@ -58,6 +58,11 @@ class MessageListenerSharedViewModel : ViewModel() {
               })
     }
   }
+
+  init{
+    println("Init shared view model")
+  }
+
 
   /**
    * Initialize the view model.

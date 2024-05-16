@@ -1,5 +1,6 @@
 package ch.epfl.skysync.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -179,13 +180,16 @@ class ChatViewModel(
 
   init {
     messageListenerViewModel.pushCallback(this::onMessageGroupChange)
+      Log.d("Debug ChatViewModel", "PUSH")
     refreshUser()
     refresh()
   }
 
   override fun onCleared() {
     messageListenerViewModel.popCallback()
-    super.onCleared()
+      Log.d("Debug ChatViewModel", "POP")
+
+      super.onCleared()
   }
 
   /** Callback executed when an error occurs on database-related operations */
