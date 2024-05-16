@@ -31,8 +31,8 @@ class TestAvailabilityCalendar {
 
   @Test
   fun `finds an availability status by date and time slot`() {
-    val calendar = AvailabilityCalendar()
-    calendar.addCells(defaultAvailabilities)
+    var calendar = AvailabilityCalendar()
+    calendar = calendar.addCells(defaultAvailabilities)
     val av1 = defaultAvailabilities[0]
     val av2 = defaultAvailabilities[1]
     assertEquals(calendar.getAvailabilityStatus(av1.date, av1.timeSlot), av1.status)
@@ -41,10 +41,10 @@ class TestAvailabilityCalendar {
 
   @Test
   fun `add a new availability by date and time slot`() {
-    val calendar = AvailabilityCalendar()
+    var calendar = AvailabilityCalendar()
     val newStatus = AvailabilityStatus.OK
     val timeSlot = TimeSlot.PM
-    calendar.setAvailabilityByDate(someDate, timeSlot, newStatus)
+    calendar = calendar.setAvailabilityByDate(someDate, timeSlot, newStatus) as AvailabilityCalendar
     assertEquals(calendar.getAvailabilityStatus(someDate, timeSlot), newStatus)
   }
 
@@ -52,9 +52,11 @@ class TestAvailabilityCalendar {
   fun `change an availability status by date and time slot without changing others`() {
     val initAvailability = Availability("1", AvailabilityStatus.MAYBE, TimeSlot.AM, someDate)
     val initAvailability2 = Availability("1", AvailabilityStatus.OK, TimeSlot.PM, someDate)
-    calendar.addCells(listOf(initAvailability, initAvailability2))
+    calendar = calendar.addCells(listOf(initAvailability, initAvailability2))
     val new_status = AvailabilityStatus.NO
-    calendar.setAvailabilityByDate(initAvailability.date, initAvailability.timeSlot, new_status)
+    calendar =
+        calendar.setAvailabilityByDate(initAvailability.date, initAvailability.timeSlot, new_status)
+            as AvailabilityCalendar
     // check availability is changed
     assertEquals(
         calendar.getAvailabilityStatus(initAvailability.date, initAvailability.timeSlot),
@@ -66,43 +68,52 @@ class TestAvailabilityCalendar {
   }
 
   @Test
-  fun `nextAvailabilityStatus updates existing entry to next status and returns correctly`() {
-    val calendar = AvailabilityCalendar()
+  fun `setToNextAvailabilityStatus updates existing entry to next status and returns correctly`() {
+    var calendar = AvailabilityCalendar()
     val availability1 = Availability("1", AvailabilityStatus.MAYBE, TimeSlot.AM, someDate)
-    calendar.addCells(listOf(availability1))
+    calendar =
+        calendar
+            .addCells(listOf(availability1))
+            .setToNextAvailabilityStatus(availability1.date, availability1.timeSlot)
     assertEquals(
-        calendar.nextAvailabilityStatus(availability1.date, availability1.timeSlot),
-        availability1.status.next())
+        availability1.status.next(),
+        calendar.getAvailabilityStatus(availability1.date, availability1.timeSlot),
+    )
   }
 
   @Test
-  fun `nextAvailabilityStatus initialises non-existing entry to OK and returns correctly`() {
-    val calendar = AvailabilityCalendar()
-    val availability1 = Availability("1", AvailabilityStatus.MAYBE, TimeSlot.AM, someDate)
+  fun `setToNextAvailabilityStatus initialises non-existing entry to OK and returns correctly`() {
+    var calendar = AvailabilityCalendar()
+    calendar = calendar.setToNextAvailabilityStatus(someDate, TimeSlot.AM)
     assertEquals(
-        calendar.nextAvailabilityStatus(availability1.date, availability1.timeSlot),
-        AvailabilityStatus.OK)
+        AvailabilityStatus.OK,
+        calendar.getAvailabilityStatus(someDate, TimeSlot.AM),
+    )
   }
 
   @Test
-  fun `nextAvailabilityStatus removes NO and returns UNDEFINED`() {
-    val calendar = AvailabilityCalendar()
+  fun `setToNextAvailabilityStatus removes NO and returns UNDEFINED`() {
+    var calendar = AvailabilityCalendar()
     val availability1 = Availability("1", AvailabilityStatus.NO, TimeSlot.AM, someDate)
-    calendar.addCells(listOf(availability1))
+    calendar =
+        calendar
+            .addCells(listOf(availability1))
+            .setToNextAvailabilityStatus(availability1.date, availability1.timeSlot)
     assertEquals(
-        calendar.nextAvailabilityStatus(availability1.date, availability1.timeSlot),
-        AvailabilityStatus.UNDEFINED)
+        AvailabilityStatus.UNDEFINED,
+        calendar.getAvailabilityStatus(availability1.date, availability1.timeSlot),
+    )
     assertEquals(calendar.getSize(), 0)
   }
 
   @Test
   fun `size is correctly returned`() {
-    val calendar = AvailabilityCalendar()
+    var calendar = AvailabilityCalendar()
     val availability1 = Availability("1", AvailabilityStatus.NO, TimeSlot.AM, someDate)
-    calendar.addCells(listOf(availability1))
+    calendar = calendar.addCells(listOf(availability1))
     assertEquals(calendar.getSize(), 1)
     val availability2 = Availability("2", AvailabilityStatus.MAYBE, TimeSlot.PM, someDate)
-    calendar.addCells(listOf(availability2))
+    calendar = calendar.addCells(listOf(availability2))
     assertEquals(calendar.getSize(), 2)
   }
 }

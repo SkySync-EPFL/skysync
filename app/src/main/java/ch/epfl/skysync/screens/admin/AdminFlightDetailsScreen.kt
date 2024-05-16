@@ -1,14 +1,19 @@
 package ch.epfl.skysync.screens.admin
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,8 +23,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConfirmAlertDialog
@@ -102,26 +110,60 @@ fun FlightDetailBottom(
     deleteClick: () -> Unit,
 ) {
   BottomAppBar(containerColor = lightGray) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically) {
-          ClickButton(
-              text = "Delete",
-              onClick = { deleteClick() },
-              modifier = Modifier.fillMaxWidth(0.3f).testTag("DeleteButton"),
-              color = lightRed)
-          ClickButton(
-              text = "Edit",
-              onClick = { editClick() },
-              modifier = Modifier.fillMaxWidth(3 / 7f).testTag("EditButton"),
-              color = Color.Yellow)
-          ClickButton(
-              text = "Confirm",
-              onClick = { confirmClick() },
-              modifier = Modifier.fillMaxWidth(0.7f).testTag("ConfirmButton"),
-              color = lightGreen)
-        }
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+      Spacer(modifier = Modifier.fillMaxWidth(0.05f))
+      Row(modifier = Modifier.fillMaxWidth(0.9f / 3 / (1 - 0.05f)).testTag("DeleteButton")) {
+        TextButton(
+            onClick = { deleteClick() },
+            shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp),
+            border = BorderStroke(1.dp, Color.Black)) {
+              Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Delete",
+                    color = Color.Black,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Normal)
+              }
+            }
+      }
+      Row(
+          modifier =
+              Modifier.fillMaxWidth((0.9f) / 3 / (1 - 0.05f - (0.9f) / 3)).testTag("EditButton")) {
+            TextButton(
+                onClick = { editClick() },
+                shape = RoundedCornerShape(0.dp),
+                border = BorderStroke(1.dp, Color.Black),
+            ) {
+              Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Edit",
+                    color = Color.Black,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Normal)
+              }
+            }
+          }
+      Row(
+          modifier =
+              Modifier.fillMaxWidth((0.9f) / 3 / (1f - 0.05f - 2 * (0.9f) / 3))
+                  .testTag("ConfirmButton")) {
+            TextButton(
+                onClick = { confirmClick() },
+                shape = RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp),
+                border = BorderStroke(1.dp, Color.Black)) {
+                  Row(
+                      horizontalArrangement = Arrangement.Center,
+                      modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "Confirm",
+                            color = Color.Black,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Normal)
+                      }
+                }
+          }
+      Spacer(modifier = Modifier.fillMaxWidth())
+    }
   }
 }
 

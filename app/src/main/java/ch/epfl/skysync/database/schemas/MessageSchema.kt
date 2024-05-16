@@ -2,8 +2,6 @@ package ch.epfl.skysync.database.schemas
 
 import ch.epfl.skysync.database.Schema
 import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.message.Message
 import ch.epfl.skysync.models.user.Admin
 import com.google.firebase.firestore.DocumentId
@@ -15,8 +13,7 @@ val UNSET_USER =
         firstname = "",
         lastname = "",
         email = "",
-        availabilities = AvailabilityCalendar(),
-        assignedFlights = FlightGroupCalendar())
+    )
 
 data class MessageSchema(
     @DocumentId val id: String? = null,

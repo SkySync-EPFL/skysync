@@ -1,8 +1,6 @@
 package ch.epfl.skysync.viewmodel
 
-import androidx.compose.material.Text
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
@@ -33,105 +31,130 @@ class CalendarViewModelTest {
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
     composeTestRule.setContent {
-      calendarViewModel = CalendarViewModel.createViewModel(dbs.admin1.id, Repository(db))
-      val uiState = calendarViewModel.uiState.collectAsStateWithLifecycle()
-      Text(text = uiState.value.user?.firstname ?: "Bob")
+      calendarViewModel = CalendarViewModel.createViewModel(dbs.crew1.id, Repository(db))
     }
   }
 
   @Test
-  fun testSaveAvailabilities() = runTest {
+  fun testReadingAvailabilityCalendar() = runTest {
     calendarViewModel.refresh().join()
-
-    val availabilityCalendar = calendarViewModel.uiState.value.availabilityCalendar
-
-    assertEquals(
-        AvailabilityStatus.NO,
-        availabilityCalendar.getAvailabilityStatus(
-            dbs.availability1Admin1.date, dbs.availability1Admin1.timeSlot))
+    val availabilityCalendar = calendarViewModel.currentAvailabilityCalendar.value
     assertEquals(
         AvailabilityStatus.OK,
         availabilityCalendar.getAvailabilityStatus(
-            dbs.availability2Admin1.date, dbs.availability2Admin1.timeSlot))
-
-    val newDate = LocalDate.of(2024, 8, 11)
-
-    // create a new availability using nextAvailabilityStatus
-    var status = availabilityCalendar.nextAvailabilityStatus(newDate, TimeSlot.AM)
-
-    assertEquals(AvailabilityStatus.OK, status)
-
-    // delete an availability using nextAvailabilityStatus
-    status =
-        availabilityCalendar.nextAvailabilityStatus(
-            dbs.availability1Admin1.date, dbs.availability1Admin1.timeSlot)
-
-    assertEquals(AvailabilityStatus.UNDEFINED, status)
-
-    calendarViewModel.saveAvailabilities().join()
-
-    val user = userTable.get(dbs.admin1.id, onError = { assertNull(it) })
-    assertNotNull(user)
-
-    user!!
-        .availabilities
-        .addCells(userTable.retrieveAvailabilities(dbs.admin1.id, onError = { assertNull(it) }))
-
-    assertEquals(
-        AvailabilityStatus.OK, user!!.availabilities.getAvailabilityStatus(newDate, TimeSlot.AM))
+            dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot))
     assertEquals(
         AvailabilityStatus.UNDEFINED,
-        user!!.availabilities.getAvailabilityStatus(dbs.availability1Admin1.date, TimeSlot.AM))
+        availabilityCalendar.getAvailabilityStatus(LocalDate.of(1999, 10, 1), TimeSlot.AM))
+  }
+
+  @Test
+  fun testSetToNextAvailabilityStatusForExisting() = runTest {
+    calendarViewModel.refresh().join()
+    // init status
+    var availabilityCalendar = calendarViewModel.currentAvailabilityCalendar.value
+    var currentStatus =
+        availabilityCalendar.getAvailabilityStatus(
+            dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
+    assertEquals(AvailabilityStatus.OK, currentStatus)
+    calendarViewModel.setToNextAvailabilityStatus(
+        dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
+    // 1x next
+    availabilityCalendar = calendarViewModel.currentAvailabilityCalendar.value
+    currentStatus =
+        availabilityCalendar.getAvailabilityStatus(
+            dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
+    assertEquals(AvailabilityStatus.MAYBE, currentStatus)
+
+    // 3x next
+    calendarViewModel.setToNextAvailabilityStatus(
+        dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
+    calendarViewModel.setToNextAvailabilityStatus(
+        dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
+    calendarViewModel.setToNextAvailabilityStatus(
+        dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
+    availabilityCalendar = calendarViewModel.currentAvailabilityCalendar.value
+    currentStatus =
+        availabilityCalendar.getAvailabilityStatus(
+            dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
+    assertEquals(AvailabilityStatus.OK, currentStatus)
+  }
+
+  @Test
+  fun testSetToNextAvailabilityStatusForNewAvailability() = runTest {
+    calendarViewModel.refresh().join()
+    var availabilityCalendar = calendarViewModel.currentAvailabilityCalendar.value
+    val newDate = LocalDate.of(2024, 8, 11)
+    val newSlot = TimeSlot.AM
+    var currentStatus = availabilityCalendar.getAvailabilityStatus(newDate, newSlot)
+    assertEquals(AvailabilityStatus.UNDEFINED, currentStatus)
+    calendarViewModel.setToNextAvailabilityStatus(newDate, newSlot)
+    availabilityCalendar = calendarViewModel.currentAvailabilityCalendar.value
+    currentStatus = availabilityCalendar.getAvailabilityStatus(newDate, newSlot)
+    assertEquals(AvailabilityStatus.OK, currentStatus)
+  }
+
+  @Test
+  fun testSaveAvailabilities() = runTest {
+    var allAvailabilities =
+        userTable.retrieveAvailabilities(dbs.crew1.id, onError = { assertNull(it) })
+    val newDate = LocalDate.of(2024, 8, 11)
+    val newSlot = TimeSlot.AM
+
+    val newAvailabilityIsNotYetPresent =
+        allAvailabilities.all { it.date != newDate || it.timeSlot != newSlot }
+    assertTrue(newAvailabilityIsNotYetPresent)
+
+    calendarViewModel.refresh().join()
+    calendarViewModel.setToNextAvailabilityStatus(newDate, newSlot)
+    calendarViewModel.saveAvailabilities().join()
+
+    allAvailabilities = userTable.retrieveAvailabilities(dbs.crew1.id, onError = { assertNull(it) })
+    val newAvailabilityIsPresent =
+        allAvailabilities.any {
+          it.date == newDate && it.timeSlot == newSlot && it.status == AvailabilityStatus.OK
+        }
+    assertTrue(newAvailabilityIsPresent)
   }
 
   @Test
   fun testCancelAvailabilities() = runTest {
     calendarViewModel.refresh().join()
 
-    val availabilityCalendar = calendarViewModel.uiState.value.availabilityCalendar
-
-    assertEquals(
-        AvailabilityStatus.NO,
-        availabilityCalendar.getAvailabilityStatus(
-            dbs.availability1Admin1.date, dbs.availability1Admin1.timeSlot))
-    assertEquals(
-        AvailabilityStatus.OK,
-        availabilityCalendar.getAvailabilityStatus(
-            dbs.availability2Admin1.date, dbs.availability2Admin1.timeSlot))
+    var availabilityCalendar = calendarViewModel.currentAvailabilityCalendar.value
 
     val newDate = LocalDate.of(2024, 8, 11)
+    val newTimeSlot = TimeSlot.AM
 
-    // create a new availability using nextAvailabilityStatus
-    var status = availabilityCalendar.nextAvailabilityStatus(newDate, TimeSlot.AM)
-
-    assertEquals(AvailabilityStatus.OK, status)
-
-    // delete an availability using nextAvailabilityStatus
-    status =
-        availabilityCalendar.nextAvailabilityStatus(
-            dbs.availability1Admin1.date, dbs.availability1Admin1.timeSlot)
-
-    assertEquals(AvailabilityStatus.UNDEFINED, status)
-
-    calendarViewModel.cancelAvailabilities().join()
-
-    val user = userTable.get(dbs.admin1.id, onError = { assertNull(it) })
-    assertNotNull(user)
-
-    user!!
-        .availabilities
-        .addCells(userTable.retrieveAvailabilities(dbs.admin1.id, onError = { assertNull(it) }))
-
-    assertEquals(
-        AvailabilityStatus.NO,
-        user.availabilities.getAvailabilityStatus(
-            dbs.availability1Admin1.date, dbs.availability1Admin1.timeSlot))
     assertEquals(
         AvailabilityStatus.OK,
-        user.availabilities.getAvailabilityStatus(
-            dbs.availability2Admin1.date, dbs.availability2Admin1.timeSlot))
+        availabilityCalendar.getAvailabilityStatus(
+            dbs.availability1Crew1.date, dbs.availability1Crew2.timeSlot))
     assertEquals(
         AvailabilityStatus.UNDEFINED,
-        user.availabilities.getAvailabilityStatus(newDate, TimeSlot.AM))
+        availabilityCalendar.getAvailabilityStatus(newDate, newTimeSlot))
+
+    calendarViewModel.setToNextAvailabilityStatus(
+        dbs.availability1Crew1.date, dbs.availability1Crew1.timeSlot)
+    calendarViewModel.setToNextAvailabilityStatus(newDate, newTimeSlot)
+
+    availabilityCalendar = calendarViewModel.currentAvailabilityCalendar.value
+    assertEquals(
+        AvailabilityStatus.MAYBE,
+        availabilityCalendar.getAvailabilityStatus(
+            dbs.availability1Crew1.date, dbs.availability1Crew2.timeSlot))
+    assertEquals(
+        AvailabilityStatus.OK, availabilityCalendar.getAvailabilityStatus(newDate, newTimeSlot))
+
+    calendarViewModel.cancelAvailabilities()
+    availabilityCalendar = calendarViewModel.currentAvailabilityCalendar.value
+
+    assertEquals(
+        AvailabilityStatus.OK,
+        availabilityCalendar.getAvailabilityStatus(
+            dbs.availability1Crew1.date, dbs.availability1Crew2.timeSlot))
+    assertEquals(
+        AvailabilityStatus.UNDEFINED,
+        availabilityCalendar.getAvailabilityStatus(newDate, newTimeSlot))
   }
 }

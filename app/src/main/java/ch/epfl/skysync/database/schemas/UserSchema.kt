@@ -2,8 +2,6 @@ package ch.epfl.skysync.database.schemas
 
 import ch.epfl.skysync.database.Schema
 import ch.epfl.skysync.database.UserRole
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.Admin
@@ -30,8 +28,6 @@ data class UserSchema(
               firstname = firstname!!,
               lastname = lastname!!,
               email = email!!,
-              availabilities = AvailabilityCalendar(),
-              assignedFlights = FlightGroupCalendar(),
               roleTypes = roleTypes!!.toSet(),
           )
       UserRole.CREW ->
@@ -40,8 +36,6 @@ data class UserSchema(
               firstname = firstname!!,
               lastname = lastname!!,
               email = email!!,
-              availabilities = AvailabilityCalendar(),
-              assignedFlights = FlightGroupCalendar(),
               roleTypes = roleTypes!!.toSet(),
           )
       UserRole.PILOT ->
@@ -50,8 +44,6 @@ data class UserSchema(
               firstname = firstname!!,
               lastname = lastname!!,
               email = email!!,
-              availabilities = AvailabilityCalendar(),
-              assignedFlights = FlightGroupCalendar(),
               roleTypes = roleTypes!!.toSet(),
               qualification = balloonQualification!!)
     }

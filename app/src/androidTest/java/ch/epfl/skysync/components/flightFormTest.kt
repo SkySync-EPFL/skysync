@@ -16,8 +16,6 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.components.forms.FlightForm
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
@@ -72,8 +70,6 @@ class FlightFormTest {
               firstname = userFirstname1,
               lastname = userLastname1,
               email = "user@gmail.com",
-              availabilities = AvailabilityCalendar(),
-              assignedFlights = FlightGroupCalendar(),
           )
       user2 =
           Crew(
@@ -81,8 +77,6 @@ class FlightFormTest {
               firstname = userFirstname2,
               lastname = userLastname2,
               email = "user@gmail.com",
-              availabilities = AvailabilityCalendar(),
-              assignedFlights = FlightGroupCalendar(),
           )
 
       val availableUsers = listOf(user1, user2)
