@@ -1,10 +1,6 @@
 package ch.epfl.skysync.navigation
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -17,17 +13,19 @@ import ch.epfl.skysync.models.message.MessageGroup
 import ch.epfl.skysync.screens.LoadingScreen
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
+import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 
 /** Graph of the main screens of the app */
 fun NavGraphBuilder.homeGraph(
     repository: Repository,
     navController: NavHostController,
     uid: String?,
-    inFlightViewModel: InFlightViewModel? = null
+    inFlightViewModel: InFlightViewModel? = null,
+    messageListenerViewModel: MessageListenerViewModel? = null,
 ) {
   navigation(startDestination = Route.LOADING, route = Route.MAIN) {
-    adminGraph(repository, navController, uid, inFlightViewModel)
-    crewPilotGraph(repository, navController, uid, inFlightViewModel)
+    adminGraph(repository, navController, uid, inFlightViewModel, messageListenerViewModel)
+    crewPilotGraph(repository, navController, uid, inFlightViewModel, messageListenerViewModel)
     composable(Route.LOADING) {
       val flightsOverviewViewModel = FlightsViewModel.createViewModel(repository, uid)
       flightsOverviewViewModel.refresh()
@@ -37,7 +35,7 @@ fun NavGraphBuilder.homeGraph(
 }
 
 /**
- * Callback executed when a message update is triggered anywhere in the app. Display a snackbar
+ * Callback executed when a message update is triggered anywhere in the app. Displays a snackbar
  * message
  *
  * (Should be refactored to a better solution later)
@@ -46,17 +44,4 @@ fun onMessageUpdate(group: MessageGroup, update: ListenerUpdate<Message>) {
   if (update.isFirstUpdate) return
   val message = update.adds.firstOrNull() ?: return
   SnackbarManager.showMessage("(${group.name}) ${message.user.firstname}: ${message.content}")
-}
-
-/**
- * Source:
- * https://github.com/philipplackner/SharingDataBetweenScreens/blob/master/app/src/main/java/com/plcoding/sharingdataprep/content/2-SharedViewModel.kt
- */
-@Composable
-inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(
-    navController: NavHostController,
-): T {
-  val navGraphRoute = destination.parent?.route ?: return viewModel()
-  val parentEntry = remember(this) { navController.getBackStackEntry(navGraphRoute) }
-  return viewModel(parentEntry)
 }

@@ -24,6 +24,7 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.viewmodel.InFlightViewModel
+import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Assert.assertEquals
@@ -52,8 +53,10 @@ class E2ECrewFlightDetail {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       val inFlightViewModel = InFlightViewModel.createViewModel(repository)
+      val messageListenerViewModel = MessageListenerViewModel.createViewModel()
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.crew1.id, inFlightViewModel)
+        homeGraph(
+            repository, navController, dbs.crew1.id, inFlightViewModel, messageListenerViewModel)
       }
     }
     composeTestRule.waitUntil {

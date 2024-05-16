@@ -1,6 +1,6 @@
 package ch.epfl.skysync.screens.crewpilot
 
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ChatText
+import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.viewmodel.ChatViewModel
 
@@ -19,12 +20,13 @@ fun TextScreen(navController: NavHostController, groupId: String, viewModel: Cha
   val group = uiState.messageGroups.find { it.id == groupId }
 
   Scaffold(
-      modifier = Modifier.fillMaxSize().testTag("ChatScreenScaffold"),
+      modifier = Modifier.testTag("ChatScreenScaffold"),
+      topBar = {
+        CustomTopAppBar(navController = navController, title = group?.name ?: "Group not found")
+      },
       bottomBar = { BottomBar(navController) }) { padding ->
         ChatText(
-            groupName = group?.name ?: "Group not found",
             messages = messages,
-            onBack = { navController.popBackStack() },
             onSend = { content -> viewModel.sendMessage(groupId, content) },
             paddingValues = padding)
       }
