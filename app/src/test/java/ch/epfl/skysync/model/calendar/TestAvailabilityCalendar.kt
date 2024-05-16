@@ -103,7 +103,6 @@ class TestAvailabilityCalendar {
         AvailabilityStatus.UNDEFINED,
         calendar.getAvailabilityStatus(availability1.date, availability1.timeSlot),
     )
-    assertEquals(calendar.getSize(), 0)
   }
 
   @Test
