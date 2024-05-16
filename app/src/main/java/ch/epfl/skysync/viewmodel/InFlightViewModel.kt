@@ -376,15 +376,6 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
     if (currentFlight.value == null) {
       return
     }
-    val finishedFlight =
-        currentFlight.value!!.finishFlight(
-            takeOffTime = takeOffTime!!,
-            takeOffLocation = _flightLocations.value.first().point,
-            landingTime = landingTime!!,
-            landingLocation = _flightLocations.value.last().point,
-            flightTime = ChronoUnit.MILLIS.between(takeOffTime, landingTime),
-            flightTrace = FlightTrace(trace = _flightLocations.value.map { it.point }))
-    flightTable.update(finishedFlight.id, finishedFlight, onError = { onError(it) })
     Log.d("InFlightViewModel", "Saving finished flight")
   }
 
