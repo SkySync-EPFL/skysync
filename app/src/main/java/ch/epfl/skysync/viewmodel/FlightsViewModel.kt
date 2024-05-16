@@ -37,18 +37,20 @@ import kotlinx.coroutines.launch
 class FlightsViewModel(
     val repository: Repository,
     val userId: String?,
+    private val notificationViewModel: NotificationViewModel
 ) : ViewModel() {
   companion object {
     @Composable
     fun createViewModel(
         repository: Repository,
         userId: String?,
+        notificationViewModel: NotificationViewModel = viewModel(),
     ): FlightsViewModel {
       return viewModel<FlightsViewModel>(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return FlightsViewModel(repository, userId) as T
+                  return FlightsViewModel(repository, userId,notificationViewModel ) as T
                 }
               })
     }
@@ -208,7 +210,17 @@ class FlightsViewModel(
                 groupName(flight.date, flight.timeSlot),
                 flight.team.getUsers().map { it.id }.toSet())
         repository.messageGroupTable.add(flightChatGroup, onError = { onError(it) })
+          // Send notifications to users
+          sendNotificationsToTeam(flight.team.getUsers().map { it.id })
       }
+
+    private fun sendNotificationsToTeam(userIds: List<String>) = viewModelScope.launch {
+        // Fetch FCM tokens for each user
+        val tokens = userIds.mapNotNull { userId ->
+            repository.userTable.getUserFcmToken(userId) // Assume this method exists in your repository
+        }
+        notificationViewModel.sendNotificationsToUsers(tokens, "Your flight has been confirmed!")
+    }
 
   fun getFlight(flightId: String): StateFlow<Flight?> {
     return _currentFlights

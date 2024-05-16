@@ -18,7 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -180,7 +180,7 @@ fun ChatInput(onSend: (String) -> Unit) {
                 Modifier.padding(start = 8.dp)
                     .background(lightOrange, CircleShape)
                     .testTag("SendButton")) {
-              Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = Color.White)
+              Icon(Icons.Filled.Send, contentDescription = "Send", tint = Color.White)
             }
       }
 }

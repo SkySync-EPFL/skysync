@@ -183,6 +183,14 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
     }
   }
 
+    suspend fun getUserFcmToken(userId: String): String? {
+        return db.getFcmToken(userId)
+    }
+
+    suspend fun getUserFcmTokens(userIds: List<String>): List<String> {
+        return db.getFcmTokens(userIds)
+    }
+
   companion object {
     const val PATH = "user"
   }

@@ -1,7 +1,7 @@
 package ch.epfl.skysync.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,7 +21,7 @@ fun CustomTopAppBar(navController: NavController, title: String) {
       navigationIcon = {
         IconButton(
             onClick = { navController.popBackStack() }, modifier = Modifier.testTag("BackButton")) {
-              Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+              Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
             }
       })
 }

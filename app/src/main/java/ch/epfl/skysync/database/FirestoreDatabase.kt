@@ -290,4 +290,28 @@ class FirestoreDatabase(private val useEmulator: Boolean = false) {
           .forEach { it.join() }
     }
   }
+    // New method to set FCM token
+    suspend fun setFcmToken(userId: String, token: String) {
+        db.collection("users").document(userId).update("fcmToken", token).await()
+        Log.d(TAG, "Updated FCM token for user $userId")
+    }
+
+    // New method to get FCM token
+    suspend fun getFcmToken(userId: String): String? {
+        val documentSnapshot = db.collection("users").document(userId).get().await()
+        return documentSnapshot.getString("fcmToken")
+    }
+
+    // New method to get FCM tokens for a list of users
+    suspend fun getFcmTokens(userIds: List<String>): List<String> {
+        val tokens = mutableListOf<String>()
+        for (userId in userIds) {
+            val token = getFcmToken(userId)
+            if (token != null) {
+                tokens.add(token)
+            }
+        }
+        return tokens
+    }
+
 }

@@ -162,6 +162,8 @@ dependencies {
 
     implementation("com.google.maps.android:maps-compose:4.3.3")
 
+    implementation("com.google.firebase:firebase-messaging")
+
     // Dependency for using Intents in instrumented tests
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
 

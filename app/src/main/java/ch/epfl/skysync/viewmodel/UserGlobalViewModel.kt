@@ -14,18 +14,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class UserGlobalViewModel(
-    repository: Repository,
+  private val repository: Repository,
+  private val notificationViewModel: NotificationViewModel // Add NotificationViewModel as a parameter
 ) : ViewModel() {
+
   companion object {
     @Composable
-    fun createViewModel(repository: Repository): UserGlobalViewModel {
+    fun createViewModel(repository: Repository, notificationViewModel: NotificationViewModel): UserGlobalViewModel {
       return viewModel<UserGlobalViewModel>(
-          factory =
-              object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return UserGlobalViewModel(repository) as T
-                }
-              })
+        factory = object : ViewModelProvider.Factory {
+          override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return UserGlobalViewModel(repository, notificationViewModel) as T
+          }
+        })
     }
   }
 
@@ -48,39 +49,51 @@ class UserGlobalViewModel(
    *     @param uid The Firebase authentication uid of the user
    *     @param email The email address of the user
    */
-  fun loadUser(uid: String, email: String) =
-      viewModelScope.launch {
-        _isLoading.value = true
+  fun loadUser(uid: String, email: String) = viewModelScope.launch {
+    _isLoading.value = true
 
-        // Case 1: User exists, fetch it from user table
-        val user = userTable.get(uid, onError = { onError(it) })
-        if (user != null) {
-          _user.value = user
-          _isLoading.value = false
-          return@launch
-        }
+    // Case 1: User exists, fetch it from user table
+    val user = userTable.get(uid, onError = { onError(it) })
+    if (user != null) {
+      _user.value = user
+      _isLoading.value = false
 
-        // Case 2: First connection since user creation, it is in the temp user table
-        val tempUser = tempUserTable.get(email, onError = { onError(it) })
-        if (tempUser != null) {
-          val newUser = tempUser.toUserSchema(uid).toModel()
-          userTable.set(uid, newUser, onError = { onError(it) })
-          tempUserTable.delete(email)
-          _user.value = newUser
-          _isLoading.value = false
-          return@launch
-        }
+      // Send a notification
+      sendWelcomeBackNotification(user.id)
 
-        // Case 3: User doesn't exists, connect with default admin account
-        val defaultUser = userTable.get("default-user", onError = { onError(it) })
-        if (defaultUser != null) {
-          _user.value = defaultUser
-          SnackbarManager.showMessage("Authentication with default Admin user")
-        } else {
-          onError(Exception("Default user not found."))
-        }
-        _isLoading.value = false
+      return@launch
+    }
+
+    // Case 2: First connection since user creation, it is in the temp user table
+    val tempUser = tempUserTable.get(email, onError = { onError(it) })
+    if (tempUser != null) {
+      val newUser = tempUser.toUserSchema(uid).toModel()
+      userTable.set(uid, newUser, onError = { onError(it) })
+      tempUserTable.delete(email)
+      _user.value = newUser
+      _isLoading.value = false
+      return@launch
+    }
+
+    // Case 3: User doesn't exists, connect with default admin account
+    val defaultUser = userTable.get("default-user", onError = { onError(it) })
+    if (defaultUser != null) {
+      _user.value = defaultUser
+      SnackbarManager.showMessage("Authentication with default Admin user")
+    } else {
+      onError(Exception("Default user not found."))
+    }
+    _isLoading.value = false
+  }
+
+  private fun sendWelcomeBackNotification(userId: String) {
+    viewModelScope.launch {
+      val token = repository.userTable.getUserFcmToken(userId)
+      if (token != null) {
+        notificationViewModel.sendPushNotification(token, "Welcome Back!!")
       }
+    }
+  }
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
