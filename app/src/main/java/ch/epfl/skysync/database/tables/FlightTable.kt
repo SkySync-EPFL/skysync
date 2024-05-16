@@ -10,12 +10,15 @@ import ch.epfl.skysync.database.schemas.FlightSchema
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.location.FlightTrace
+import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
@@ -45,7 +48,8 @@ class FlightTable(db: FirestoreDatabase) :
       balloon: Balloon?,
       basket: Basket?,
       vehicles: List<Vehicle>,
-      team: Team
+      team: Team,
+      flightTrace: FlightTrace?
   ): Flight {
     return when (schema.status!!) {
       FlightStatus.PLANNED ->
@@ -84,7 +88,33 @@ class FlightTable(db: FirestoreDatabase) :
             startTimestamp = schema.startTimestamp,
         )
       }
-      FlightStatus.FINISHED -> throw NotImplementedError()
+      FlightStatus.FINISHED ->
+          FinishedFlight(
+              id = schema.id!!,
+              nPassengers = schema.nPassengers!!,
+              team = team,
+              flightType = flightType,
+              balloon = balloon!!,
+              basket = basket!!,
+              date = DateUtility.dateToLocalDate(schema.date!!),
+              timeSlot = schema.timeSlot!!,
+              vehicles = vehicles,
+              color = schema.color!!,
+              takeOffTime =
+                  DateUtility.hourMinuteStringToDate(
+                      schema.takeOffTime!!, DateUtility.dateToLocalDate(schema.date)),
+              takeOffLocation =
+                  LocationPoint(
+                      0, schema.takeOffLocationLat!!, schema.takeOffLocationLong!!, "TakeOffSpot"),
+              landingTime =
+                  DateUtility.hourMinuteStringToDate(
+                      schema.landingTime!!, DateUtility.dateToLocalDate(schema.date)),
+              landingLocation =
+                  LocationPoint(
+                      0, schema.landingLocationLat!!, schema.landingLocationLong!!, "LandingSpot"),
+              flightTime = schema.flightTime!!,
+              reportId = listOf(), // Todo: retrieve reports
+              flightTrace = flightTrace!!)
     }
   }
 
@@ -233,7 +263,14 @@ class FlightTable(db: FirestoreDatabase) :
             launch { vehicles = retrieveVehicles(flightSchema) },
             launch { team = retrieveTeam(flightSchema) })
     jobs.forEach { it.join() }
-    makeFlight(flightSchema, flightType!!, balloon, basket, vehicles!!, team!!)
+    makeFlight(
+        flightSchema,
+        flightType!!,
+        balloon,
+        basket,
+        vehicles!!,
+        team!!,
+        FlightTrace(flightSchema.id!!, emptyList()))
   }
 
   override suspend fun get(id: String, onError: ((Exception) -> Unit)?): Flight? {

@@ -2,6 +2,7 @@ package ch.epfl.skysync.database
 
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -18,6 +19,11 @@ import java.util.Date
  * Format [LocalTime] to string, parse from string.
  */
 object DateUtility {
+  fun localDateAndTimeToDate(date: LocalDate, time: LocalTime): Date {
+    val localDateTime = LocalDateTime.of(date, time)
+    return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
+  }
+
   /**
    * Converts a [Date] object to a [LocalDate] object.
    *
@@ -103,6 +109,13 @@ object DateUtility {
       return localTime.format(DateTimeFormatter.ofPattern("HH:mm"))
     }
     return "--:--"
+  }
+
+  fun hourMinuteStringToDate(time: String, date: LocalDate): Date {
+    val formatter = DateTimeFormatter.ofPattern("HH:mm")
+    val localTime = LocalTime.parse(time, formatter)
+    val localDateTime = LocalDateTime.of(date, localTime)
+    return Date.from(localDateTime.atZone(ZoneOffset.UTC).toInstant())
   }
 
   /** Formats the given time in milliseconds to a string in the format "HH:MM:SS". */

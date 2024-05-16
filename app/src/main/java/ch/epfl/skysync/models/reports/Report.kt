@@ -5,6 +5,7 @@ import ch.epfl.skysync.models.user.User
 import java.util.Date
 
 interface Report {
+  val id: String
   val author: User
   val begin: Date
   val end: Date

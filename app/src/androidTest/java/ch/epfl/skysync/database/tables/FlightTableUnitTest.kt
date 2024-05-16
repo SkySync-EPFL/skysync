@@ -6,6 +6,9 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.models.location.FlightTrace
+import ch.epfl.skysync.models.location.LocationPoint
+import java.time.LocalTime
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
@@ -23,6 +26,21 @@ class FlightTableUnitTest {
   fun testSetup() = runTest {
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
+  }
+
+  @Test
+  fun addAndRetrieveFinishFlight() = runTest {
+    val finishedFlight =
+        dbs.flight4.finishFlight(
+            takeOffTime = LocalTime.of(12, 0, 0),
+            landingTime = LocalTime.of(14, 0, 0),
+            takeOffLocation = LocationPoint(0, 0.1, 0.1, "TakeOffSpot"),
+            landingLocation = LocationPoint(0, 0.1, 0.1, "LandingSpot"),
+            flightTime = 2,
+            flightTrace = FlightTrace(dbs.flight4.id, listOf()))
+    flightTable.update(dbs.flight4.id, finishedFlight, onError = { assertNull(it) })
+    val retrievedFlight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) })
+    assertEquals(finishedFlight, retrievedFlight)
   }
 
   @Test
