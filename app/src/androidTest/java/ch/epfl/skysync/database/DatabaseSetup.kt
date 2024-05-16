@@ -15,9 +15,7 @@ import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.database.tables.VehicleTable
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.Availability
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.calendar.getTimeSlot
 import ch.epfl.skysync.models.flight.Balloon
@@ -60,24 +58,21 @@ class DatabaseSetup {
           firstname = "admin-1",
           lastname = "lastname-admin-1",
           email = "admin1.lastname@skysnc.ch",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar())
+      )
   var admin2 =
       Admin(
           id = "id-admin-2",
           firstname = "admin-2",
           lastname = "lastname-admin-2",
           email = "admin2.lastname@skysnc.ch",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar())
+      )
   var crew1 =
       Crew(
           id = "id-crew-1",
           firstname = "crew-1",
           lastname = "lastname-crew-1",
           email = "crew1.bob@skysnc.ch",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar())
+      )
 
   var crew2 =
       Crew(
@@ -85,8 +80,7 @@ class DatabaseSetup {
           firstname = "crew-2",
           lastname = "lastname-crew-2",
           email = "crew2.denis@skysnc.ch",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar())
+      )
 
   var tempUser =
       TempUser(
@@ -101,8 +95,6 @@ class DatabaseSetup {
           firstname = "pilot-1",
           lastname = "lastname-pilot-1",
           email = "pilot1.bob@skysnc.ch",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.LARGE)
   var pilot2 =
       Pilot(
@@ -110,8 +102,6 @@ class DatabaseSetup {
           firstname = "pilot-2",
           lastname = "lastname-pilot-2",
           email = "pilot2.lastname@skysnc.ch",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.SMALL)
 
   var pilot3 =
@@ -120,8 +110,6 @@ class DatabaseSetup {
           firstname = "pilot-3",
           lastname = "pilot",
           email = "pilot3.pilot@skysnc.ch",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.SMALL)
 
   var date1 = LocalDate.of(2024, 8, 14)

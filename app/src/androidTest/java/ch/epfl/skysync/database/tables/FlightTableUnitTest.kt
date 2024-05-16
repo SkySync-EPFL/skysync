@@ -30,7 +30,7 @@ class FlightTableUnitTest {
     val flight = flightTable.get(dbs.flight1.id, onError = { assertNull(it) })
     assertEquals(dbs.flight1, flight)
 
-    var confirmedFlight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) })!!
+    val confirmedFlight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) })!!
     assertEquals(dbs.flight4, confirmedFlight)
   }
 

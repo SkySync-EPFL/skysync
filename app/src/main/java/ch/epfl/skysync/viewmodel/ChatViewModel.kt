@@ -18,6 +18,7 @@ import ch.epfl.skysync.util.WhileUiSubscribed
 import com.google.firebase.firestore.Filter
 import java.time.Instant
 import java.util.Date
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -189,6 +190,8 @@ class ChatViewModel(
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    if (e !is CancellationException) {
+      SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    }
   }
 }

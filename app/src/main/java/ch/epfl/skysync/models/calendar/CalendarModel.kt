@@ -1,7 +1,6 @@
 package ch.epfl.skysync.models.calendar
 
 import java.time.LocalDate
-import java.util.SortedSet
 
 /**
  * represents a calendar where each slot uniquely defined by its date and timeslot contains a
@@ -12,8 +11,11 @@ import java.util.SortedSet
  * (mutable class)
  */
 abstract class CalendarModel<T : CalendarViewable>(
-    protected val cells: MutableList<T> = mutableListOf()
+    val cells: List<T> = emptyList(),
 ) {
+
+  /** returns a new CalendarModel with the given cells */
+  abstract fun constructor(cells: List<T>): CalendarModel<T>
 
   /** @return number of entries in calendar */
   fun getSize(): Int {
@@ -23,17 +25,11 @@ abstract class CalendarModel<T : CalendarViewable>(
   /**
    * adds the given slots by checking that there are not duplicate slots
    *
-   * @param toAdd the slots to add
-   * @exception IllegalArgumentException: if multiple slots have the same coordinate (date,
-   *   timeSlot)
+   * @param elementsToAdd the slots to add
    */
-  fun addCells(toAdd: List<T>) {
-    for (t in toAdd) {
-      if (cells.any { it.date == t.date && it.timeSlot == t.timeSlot }) {
-        throw IllegalArgumentException("Cannot add cells for the same date and time slot twice")
-      }
-      cells.add(t)
-    }
+  open fun addCells(elementsToAdd: List<T>): CalendarModel<T> {
+    val combinedCells = cells + elementsToAdd
+    return constructor(combinedCells)
   }
 
   /**
@@ -48,10 +44,16 @@ abstract class CalendarModel<T : CalendarViewable>(
       date: LocalDate,
       timeSlot: TimeSlot,
       produceNewValue: (LocalDate, TimeSlot, oldValue: T?) -> T
-  ) {
-    val oldValue = removeByDate(date, timeSlot)
+  ): CalendarModel<T> {
+    val oldValue = getByDate(date, timeSlot)
     val newValue = produceNewValue(date, timeSlot, oldValue)
-    cells.add(newValue)
+    val newCells =
+        if (oldValue != null) {
+          cells - oldValue + newValue
+        } else {
+          cells + newValue
+        }
+    return constructor(newCells)
   }
 
   /**
@@ -59,13 +61,14 @@ abstract class CalendarModel<T : CalendarViewable>(
    * @param timeSlot the timeSlot of the cell to remove
    * @return the removed value if it was found, null otherwise
    */
-  protected fun removeByDate(date: LocalDate, timeSlot: TimeSlot): T? {
+  protected fun removeByDate(date: LocalDate, timeSlot: TimeSlot): CalendarModel<T> {
 
     val oldValue = getByDate(date, timeSlot)
-    if (oldValue != null) {
-      cells.remove(oldValue)
+    return if (oldValue != null) {
+      constructor(cells - oldValue)
+    } else {
+      this
     }
-    return oldValue
   }
 
   /**
@@ -75,23 +78,5 @@ abstract class CalendarModel<T : CalendarViewable>(
    */
   protected fun getByDate(date: LocalDate, timeSlot: TimeSlot): T? {
     return cells.firstOrNull { it.date == date && it.timeSlot == timeSlot }
-  }
-
-  /** Return a set of the cells, sorted by date and time slot */
-  private fun getSortedSetOfCells(): SortedSet<T> {
-    return cells.toSortedSet(
-        Comparator<T> { a, b -> a.date.compareTo(b.date) }.thenBy { it.timeSlot })
-  }
-
-  override fun hashCode(): Int {
-    return getSortedSetOfCells().hashCode()
-  }
-
-  override fun equals(other: Any?): Boolean {
-    if (other == null) return false
-    if (other::class != this::class) return false
-    // we do not take into account the order in which the cells have been added
-    // when performing equality check
-    return (other as CalendarModel<*>).getSortedSetOfCells() == this.getSortedSetOfCells()
   }
 }

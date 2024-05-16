@@ -28,12 +28,6 @@ data class Team(val roles: List<Role>) {
         null
   }
 
-  /** assigns the given user to the first role with the given role type */
-  fun assign(user: User, roleType: RoleType): Team {
-    // Todo: to be implemented
-    throw NotImplementedError()
-  }
-
   /**
    * @param rolesToAdd: the roles that will be added to this team
    * @return new team instance with the added roles
@@ -53,7 +47,7 @@ data class Team(val roles: List<Role>) {
   }
 
   private fun sortedRoles(): List<Role> {
-    return roles.sortedBy { it.assignedUser?.id ?: it.roleType.name }
+    return roles.sortedWith(compareBy({ it.roleType.name }, { it.assignedUser?.id }))
   }
 
   override fun hashCode(): Int {
@@ -63,8 +57,15 @@ data class Team(val roles: List<Role>) {
   override fun equals(other: Any?): Boolean {
     if (other == null) return false
     if (other::class != this::class) return false
-    // we do not take into account the order in which the roles have been added
-    // when performing equality check
-    return (other as Team).sortedRoles() == this.sortedRoles()
+    val otherTeam = other as Team
+
+    val otherTeamSortedRoles = otherTeam.sortedRoles()
+    val thisTeamSortedRoles = this.sortedRoles()
+    if (otherTeamSortedRoles.size != thisTeamSortedRoles.size) return false
+    val haveSameRoles =
+        otherTeamSortedRoles.zip(thisTeamSortedRoles).all { (otherRole, thisRole) ->
+          otherRole == thisRole
+        }
+    return haveSameRoles
   }
 }

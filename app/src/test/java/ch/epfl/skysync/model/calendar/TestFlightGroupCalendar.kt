@@ -51,8 +51,7 @@ class TestFlightGroupCalendar {
   @Test
   fun `getFirstFlightByDate() returns null if no flights found `() {
 
-    calendar.addCells(listOf(emptyFlightGroup))
-    calendar.getFirstFlightByDate(emptyFlightGroup.date, emptyFlightGroup.timeSlot)
+    calendar = calendar.addCells(listOf(emptyFlightGroup))
     assertEquals(
         calendar.getFirstFlightByDate(emptyFlightGroup.date, emptyFlightGroup.timeSlot), null)
   }
@@ -66,25 +65,29 @@ class TestFlightGroupCalendar {
   @Test
   fun `getFlightGroupByDate() returns the flight group if found`() {
     val flightGroup = FlightGroup(testFlight.date, testFlight.timeSlot, listOf(testFlight))
-    calendar.addCells(listOf(flightGroup))
+    calendar = calendar.addCells(listOf(flightGroup))
     val foundFlightGroup = calendar.getFlightGroupByDate(testFlight.date, testFlight.timeSlot)
-    assertEquals(foundFlightGroup, flightGroup)
+    assertEquals(flightGroup, foundFlightGroup)
   }
 
   @Test
   fun `getFirstFlightByDate() returns first flight if flight found`() {
-    calendar.addCells(listOf(FlightGroup(testFlight.date, testFlight.timeSlot, listOf(testFlight))))
+    calendar =
+        calendar.addCells(
+            listOf(FlightGroup(testFlight.date, testFlight.timeSlot, listOf(testFlight))))
     val foundFlight = calendar.getFirstFlightByDate(testFlight.date, testFlight.timeSlot)
     assertNotNull(foundFlight)
     if (foundFlight != null) {
-      assertEquals(foundFlight, testFlight)
+      assertEquals(testFlight, foundFlight)
     }
   }
 
   @Test
   fun `add flight to an existing flight group`() {
-    calendar.addCells(listOf(FlightGroup(testFlight.date, testFlight.timeSlot, listOf(testFlight))))
-    calendar.addFlightByDate(testFlight2.date, testFlight2.timeSlot, testFlight2)
+    calendar =
+        calendar
+            .addCells(listOf(FlightGroup(testFlight.date, testFlight.timeSlot, listOf(testFlight))))
+            .addFlightByDate(testFlight2.date, testFlight2.timeSlot, testFlight2)
     assertEquals(calendar.getSize(), 1)
     val foundGroup = calendar.getFlightGroupByDate(testFlight2.date, testFlight2.timeSlot)
     assertNotNull(foundGroup)
