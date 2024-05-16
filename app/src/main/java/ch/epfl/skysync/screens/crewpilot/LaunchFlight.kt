@@ -18,12 +18,12 @@ import ch.epfl.skysync.viewmodel.InFlightViewModel
 @Composable
 fun LaunchFlight(
     navController: NavHostController,
-    viewModel: FlightsViewModel,
+    flightViewModel: FlightsViewModel,
     inFlightViewModel: InFlightViewModel,
 ) {
   Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
     // Renders the Google Map or a permission request message based on the permission status.
-    val user by viewModel.currentUser.collectAsStateWithLifecycle()
+    val user by flightViewModel.currentUser.collectAsStateWithLifecycle()
     val loading by inFlightViewModel.loading.collectAsStateWithLifecycle()
     val currentFlight by inFlightViewModel.currentFlight.collectAsStateWithLifecycle()
     val startableFlight by inFlightViewModel.startableFlight.collectAsStateWithLifecycle()
