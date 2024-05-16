@@ -73,7 +73,7 @@ data class FlightSchema(
       return when (model) {
         is PlannedFlight -> fromPlannedFlight(model)
         is ConfirmedFlight -> fromConfirmedFlight(model)
-          is FinishedFlight -> fromFinishedFlight(model)
+        is FinishedFlight -> fromFinishedFlight(model)
         else ->
             throw UnsupportedOperationException("Unexpected class ${model.javaClass.simpleName}")
       }
@@ -115,29 +115,26 @@ data class FlightSchema(
       )
     }
 
-      /**
-       * fills the data from a [FinishedFlight] into a [FlightSchema]
-       */
-      private fun fromFinishedFlight(flight: FinishedFlight): FlightSchema =
-          FlightSchema(
-              id = flight.id,
-              flightTypeId = flight.flightType.id,
-              balloonId = flight.balloon.id,
-              basketId = flight.basket.id,
-              vehicleIds = flight.vehicles.map { it.id },
-              status = FlightStatus.FINISHED,
-              nPassengers = flight.nPassengers,
-              timeSlot = flight.timeSlot,
-              date = DateUtility.localDateToDate(flight.date),
-              color = flight.color,
-              takeOffTime = dateToHourMinuteString(flight.takeOffTime) ,
-              takeOffLocationLat = flight.takeOffLocation.latitude,
-              takeOffLocationLong = flight.takeOffLocation.latitude,
-              landingTime = dateToHourMinuteString(flight.landingTime),
-              landingLocationLat = flight.landingLocation.latitude,
-              landingLocationLong = flight.landingLocation.longitude,
-              flightTime = flight.flightTime,
-              reportId = flight.reportId.map { it.id }
-          )
+    /** fills the data from a [FinishedFlight] into a [FlightSchema] */
+    private fun fromFinishedFlight(flight: FinishedFlight): FlightSchema =
+        FlightSchema(
+            id = flight.id,
+            flightTypeId = flight.flightType.id,
+            balloonId = flight.balloon.id,
+            basketId = flight.basket.id,
+            vehicleIds = flight.vehicles.map { it.id },
+            status = FlightStatus.FINISHED,
+            nPassengers = flight.nPassengers,
+            timeSlot = flight.timeSlot,
+            date = DateUtility.localDateToDate(flight.date),
+            color = flight.color,
+            takeOffTime = dateToHourMinuteString(flight.takeOffTime),
+            takeOffLocationLat = flight.takeOffLocation.latitude,
+            takeOffLocationLong = flight.takeOffLocation.latitude,
+            landingTime = dateToHourMinuteString(flight.landingTime),
+            landingLocationLat = flight.landingLocation.latitude,
+            landingLocationLong = flight.landingLocation.longitude,
+            flightTime = flight.flightTime,
+            reportId = flight.reportId.map { it.id })
   }
 }

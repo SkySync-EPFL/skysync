@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.temporal.ChronoUnit
 
 /** ViewModel for the location tracking of the user during a flight and the timer. */
 class InFlightViewModel(val repository: Repository) : ViewModel() {
@@ -114,6 +115,9 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
           .map { DateUtility.formatTime(it) }
           .stateIn(
               viewModelScope, started = WhileUiSubscribed, initialValue = DateUtility.formatTime(0))
+
+  private var takeOffTime: LocalTime? = null
+  private var landingTime: LocalTime? = null
 
   private val _flightStage = MutableStateFlow(FlightStage.IDLE)
 
@@ -300,6 +304,7 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
   private fun startFlightInternal() {
     _flightStage.value = FlightStage.ONGOING
     startLocationTracking(_currentFlight.value!!.team)
+    takeOffTime = LocalTime.now()
     startTimer()
   }
 
@@ -344,6 +349,7 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
       viewModelScope.launch {
         if (!isOngoingFlight()) return@launch
         _flightStage.value = FlightStage.POST
+        landingTime = LocalTime.now()
         stopTimer()
         stopLocationTracking()
 
@@ -372,7 +378,18 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   /** Save the finished flight to the database */
   private suspend fun saveFinishedFlight() {
-    // TODO: save the finished flight to the database
+    if (currentFlight.value == null) {
+      return
+    }
+    val finishedFlight = currentFlight.value!!.finishFlight(
+      takeOffTime = takeOffTime!!,
+      takeOffLocation = _flightLocations.value.first().point,
+      landingTime = landingTime!!,
+      landingLocation = _flightLocations.value.last().point,
+      flightTime =  ChronoUnit.MILLIS.between(takeOffTime, landingTime),
+      flightTrace = FlightTrace(trace = _flightLocations.value.map { it.point })
+    )
+    flightTable.update(finishedFlight.id, finishedFlight, onError = { onError(it) })
     Log.d("InFlightViewModel", "Saving finished flight")
   }
 

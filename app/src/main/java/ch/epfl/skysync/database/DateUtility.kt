@@ -74,7 +74,6 @@ object DateUtility {
     return LocalTime.parse(raw, formatter)
   }
 
-
   /**
    * Converts a [Date] object to a [LocalTime] object.
    *

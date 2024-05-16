@@ -101,16 +101,21 @@ class FlightTable(db: FirestoreDatabase) :
               timeSlot = schema.timeSlot!!,
               vehicles = vehicles,
               color = schema.color!!,
-              takeOffTime = DateUtility.hourMinuteStringToDate(schema.takeOffTime!!, DateUtility.dateToLocalDate(schema.date)),
-              takeOffLocation = LocationPoint(
-                  0, schema.takeOffLocationLat!!, schema.takeOffLocationLong!!, "TakeOffSpot"),
-              landingTime = DateUtility.hourMinuteStringToDate(schema.landingTime!!, DateUtility.dateToLocalDate(schema.date)),
-              landingLocation = LocationPoint(
-                  0, schema.landingLocationLat!!, schema.landingLocationLong!!, "LandingSpot"),
+              takeOffTime =
+                  DateUtility.hourMinuteStringToDate(
+                      schema.takeOffTime!!, DateUtility.dateToLocalDate(schema.date)),
+              takeOffLocation =
+                  LocationPoint(
+                      0, schema.takeOffLocationLat!!, schema.takeOffLocationLong!!, "TakeOffSpot"),
+              landingTime =
+                  DateUtility.hourMinuteStringToDate(
+                      schema.landingTime!!, DateUtility.dateToLocalDate(schema.date)),
+              landingLocation =
+                  LocationPoint(
+                      0, schema.landingLocationLat!!, schema.landingLocationLong!!, "LandingSpot"),
               flightTime = schema.flightTime!!,
-              reportId = listOf(), //Todo: retrieve reports
-              flightTrace = flightTrace!!
-          )
+              reportId = listOf(), // Todo: retrieve reports
+              flightTrace = flightTrace!!)
     }
   }
 
@@ -259,7 +264,14 @@ class FlightTable(db: FirestoreDatabase) :
             launch { vehicles = retrieveVehicles(flightSchema) },
             launch { team = retrieveTeam(flightSchema) })
     jobs.forEach { it.join() }
-    makeFlight(flightSchema, flightType!!, balloon, basket, vehicles!!, team!!, FlightTrace(UNSET_ID, emptyList()))
+    makeFlight(
+        flightSchema,
+        flightType!!,
+        balloon,
+        basket,
+        vehicles!!,
+        team!!,
+        FlightTrace(UNSET_ID, emptyList()))
   }
 
   override suspend fun get(id: String, onError: ((Exception) -> Unit)?): Flight? {

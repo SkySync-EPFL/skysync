@@ -31,35 +31,32 @@ data class ConfirmedFlight(
     return FlightStatus.CONFIRMED
   }
 
-    /**
-     * create a finished Flight from a confirmed flight
-     */
-    fun finishFlight(
-        takeOffTime: LocalTime,
-        takeOffLocation: LocationPoint,
-        landingTime: LocalTime,
-        landingLocation: LocationPoint,
-        flightTime: Long,
-        reportIds: List<Report> = listOf(),
-        flightTrace: FlightTrace
-    ): FinishedFlight  =
-        FinishedFlight(
-            id = id,
-            nPassengers = nPassengers,
-            team = team,
-            flightType = flightType,
-            balloon = balloon,
-            basket = basket,
-            date = date,
-            timeSlot = timeSlot,
-            vehicles = vehicles,
-            color = color,
-            landingTime = localDateAndTimeToDate(date, landingTime),
-            landingLocation = landingLocation,
-            takeOffTime = localDateAndTimeToDate(date, takeOffTime),
-            takeOffLocation = takeOffLocation,
-            flightTime = flightTime,
-            flightTrace = flightTrace,
-            reportId = reportIds
-        )
+  /** create a finished Flight from a confirmed flight */
+  fun finishFlight(
+      takeOffTime: LocalTime,
+      takeOffLocation: LocationPoint,
+      landingTime: LocalTime,
+      landingLocation: LocationPoint,
+      flightTime: Long,
+      reportIds: List<Report> = listOf(),
+      flightTrace: FlightTrace
+  ): FinishedFlight =
+      FinishedFlight(
+          id = id,
+          nPassengers = nPassengers,
+          team = team,
+          flightType = flightType,
+          balloon = balloon,
+          basket = basket,
+          date = date,
+          timeSlot = timeSlot,
+          vehicles = vehicles,
+          color = color,
+          landingTime = localDateAndTimeToDate(date, landingTime),
+          landingLocation = landingLocation,
+          takeOffTime = localDateAndTimeToDate(date, takeOffTime),
+          takeOffLocation = takeOffLocation,
+          flightTime = flightTime,
+          flightTrace = flightTrace,
+          reportId = reportIds)
 }
