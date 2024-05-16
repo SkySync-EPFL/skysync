@@ -78,7 +78,7 @@ class E2EPilotDuringFlight {
       // Clicks on the "Flight" button to navigate to the flight screen
       composeTestRule.onNodeWithText("Flight").performClick()
       var route = navController.currentBackStackEntry?.destination?.route
-      Assert.assertEquals(Route.FLIGHT, route)
+      Assert.assertEquals(Route.LAUNCH_FLIGHT, route)
       println("FLIGHTS ${listOf(dbs.flight1.id, dbs.flight2.id, dbs.flight3.id, dbs.flight4.id)}")
       var usedFlightId = ""
       for (f in listOf(dbs.flight1, dbs.flight2, dbs.flight3, dbs.flight4)) {

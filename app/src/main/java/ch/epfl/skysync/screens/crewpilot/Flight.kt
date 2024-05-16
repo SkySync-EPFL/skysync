@@ -6,10 +6,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -31,22 +29,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import ch.epfl.skysync.components.FlightCard
-import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.components.Timer
-import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.location.UserMetrics
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
-import ch.epfl.skysync.ui.theme.lightViolet
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -66,43 +58,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @Composable
 fun UserLocationMarker(location: Location, user: User) {
   return Marker(state = MarkerState(position = location.point.latlng()), title = user.name())
-}
-
-@Composable
-fun ShowFlightToStart(
-    navController: NavHostController,
-    flight: ConfirmedFlight?,
-    onClick: (String) -> Unit
-) {
-  println("FLIGHT CARD ${flight?.id}")
-  Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomBar(navController) }) { padding ->
-    // Renders the Google Map or a permission request message based on the permission status.
-    Column(modifier = Modifier.fillMaxSize().padding(padding).testTag("FlightLaunch")) {
-      Text(
-          text = "Flight to be launched",
-          style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-          modifier =
-              Modifier.background(
-                      color = lightViolet,
-                      shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                  .fillMaxWidth()
-                  .padding(
-                      top = padding.calculateTopPadding() + 16.dp,
-                      start = 16.dp,
-                      end = 16.dp,
-                      bottom = 16.dp),
-          color = Color.White,
-          textAlign = TextAlign.Center)
-
-      Spacer(modifier = Modifier.height(16.dp))
-
-      if (flight == null) {
-        Text("no flight to be launched for the moment")
-      } else {
-        FlightCard(flight = flight) { onClick(it) }
-      }
-    }
-  }
 }
 
 /**
@@ -187,10 +142,6 @@ fun FlightScreen(
         Text("Please enable location permissions in settings.")
       }
     }
-  } else if (loading) {
-    LoadingComponent(isLoading = true, onRefresh = {}) {}
-  } else if (currentFlight == null) {
-    ShowFlightToStart(navController, startableFlight) { inFlightViewModel.setCurrentFlight(it) }
   } else {
     Scaffold(
         modifier = Modifier.fillMaxSize(),

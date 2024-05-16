@@ -67,7 +67,7 @@ class HomeNavigationTest {
     composeTestRule.onNodeWithText("Flight").performClick()
 
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.FLIGHT)
+    Assert.assertEquals(route, Route.LAUNCH_FLIGHT)
   }
 
   @Test
