@@ -1,7 +1,5 @@
 package ch.epfl.skysync.model.flight
 
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
@@ -20,15 +18,13 @@ class TestTeam {
           firstname = "jo",
           lastname = "blunt",
           email = "jo.blunt@gmail.com",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar())
+      )
   val testUser2 =
       Crew(
           firstname = "peter",
           lastname = "brown",
           email = "peter.brown",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar())
+      )
 
   @Test
   fun `isComplete() returns true if all roles assigned`() {
@@ -94,5 +90,14 @@ class TestTeam {
   fun `getUsers() returns empty list if team has no roles`() {
     val team = Team(listOf())
     assertEquals(team.getUsers().size, 0)
+  }
+
+  @Test
+  fun `equals() returns true if teams have same roles but different ordering`() {
+    val role1 = Role(RoleType.OXYGEN_MASTER).assign(testUser2)
+    val role2 = Role(RoleType.CREW).assign(testUser1)
+    val team1 = Team(listOf(role1, role2))
+    val team2 = Team(listOf(role2, role1))
+    assertEquals(team1, team2)
   }
 }

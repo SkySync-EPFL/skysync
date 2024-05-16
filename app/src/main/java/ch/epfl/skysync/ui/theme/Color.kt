@@ -12,6 +12,7 @@ val Pink40 = Color(0xFF7D5260)
 
 val veryLightOrange = Color(0xfffad282)
 val lightOrange = Color(0xFFFFA726)
+val deepOrange = Color(0xFFFF7009)
 val darkOrange = Color(0xFFE39B00)
 
 val veryLightSatin = Color(0xFFFEEFEC)
@@ -26,6 +27,7 @@ val lightBlue = Color(0xFFB0E0E6)
 val blue = Color(0xFF5276d9)
 val lightBrown = Color(0xFFD2B48C)
 val lightGreen = Color(0xFFAAEE7B)
+val lightTurquoise = Color(0xFFD7F5E7)
 val lightViolet = Color(0xFFE6E6FA)
 val lightPink = Color(0xFFF896FA)
 

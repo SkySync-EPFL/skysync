@@ -9,6 +9,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -46,8 +47,25 @@ fun availabilityToColor(status: AvailabilityStatus): Color {
       mapOf(
           AvailabilityStatus.OK to customGreen,
           AvailabilityStatus.MAYBE to customBlue,
-          AvailabilityStatus.NO to customRed)
+          AvailabilityStatus.NO to customRed,
+          AvailabilityStatus.ASSIGNED to darkOrange)
   return availabilityToColorMap.getOrDefault(status, customEmpty)
+}
+
+/**
+ * Maps availability status to a corresponding color.
+ *
+ * @param status The availability status to be mapped.
+ * @return The color representing the availability status.
+ */
+fun availabilityToText(status: AvailabilityStatus): String {
+  val availabilityToColorMap =
+      mapOf(
+          AvailabilityStatus.OK to "OK",
+          AvailabilityStatus.MAYBE to "Maybe",
+          AvailabilityStatus.NO to "NO",
+          AvailabilityStatus.ASSIGNED to "Assigned")
+  return availabilityToColorMap.getOrDefault(status, "")
 }
 
 /**
@@ -75,7 +93,14 @@ fun AvailabilityTile(
               .testTag(testTag)
               .background(
                   color = availabilityToColor(availabilityStatus), shape = RoundedCornerShape(0.dp))
-              .clickable { onClick() }) {}
+              .clickable { onClick() }) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+              Text(text = availabilityToText(availabilityStatus))
+            }
+      }
 }
 
 /**
@@ -139,7 +164,7 @@ fun SaveCancelButton(
 fun AvailabilityCalendar(
     padding: PaddingValues,
     getAvailabilityStatus: (LocalDate, TimeSlot) -> AvailabilityStatus,
-    nextAvailabilityStatus: (LocalDate, TimeSlot) -> AvailabilityStatus,
+    nextAvailabilityStatus: (LocalDate, TimeSlot) -> Unit,
     onSave: () -> Unit,
     onCancel: () -> Unit
 ) {
@@ -147,19 +172,9 @@ fun AvailabilityCalendar(
 
   Column(modifier = Modifier.padding(padding)) {
     ModularCalendar(modifier = Modifier.weight(1f), isDraft = isDraft) { date, time ->
-      // at the moment the Calendar is a mutable class
-      // thus the reference of the Calendar stay the same on updates
-      // -> it does not trigger a recompose. To trigger the recompose
-      // we have to store the availability status in a state and update
-      // it each time the result of getAvailabilityStatus change
-      // which is a bit hacky and should be a temporary solution
       val availabilityStatus = getAvailabilityStatus(date, time)
-      var status by remember { mutableStateOf(availabilityStatus) }
-      if (status != availabilityStatus) {
-        status = availabilityStatus
-      }
-      AvailabilityTile(date = date, time = time, availabilityStatus = status) {
-        status = nextAvailabilityStatus(date, time)
+      AvailabilityTile(date = date, time = time, availabilityStatus = availabilityStatus) {
+        nextAvailabilityStatus(date, time)
         isDraft = true
       }
     }

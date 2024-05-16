@@ -11,7 +11,7 @@ enum class CalendarDifferenceType {
 }
 
 /** represents a calendar for availabilities */
-class AvailabilityCalendar(cells: MutableList<Availability> = mutableListOf()) :
+class AvailabilityCalendar(cells: List<Availability> = listOf()) :
     CalendarModel<Availability>(cells = cells) {
 
   /**
@@ -21,8 +21,12 @@ class AvailabilityCalendar(cells: MutableList<Availability> = mutableListOf()) :
    * @param timeSlot: the timeSlot of the availability to change
    * @param status: the new status
    */
-  fun setAvailabilityByDate(date: LocalDate, timeSlot: TimeSlot, status: AvailabilityStatus) {
-    setByDate(date, timeSlot) { d, t, old ->
+  fun setAvailabilityByDate(
+      date: LocalDate,
+      timeSlot: TimeSlot,
+      status: AvailabilityStatus
+  ): CalendarModel<Availability> {
+    return setByDate(date, timeSlot) { d, t, old ->
       old?.copy(status = status) ?: Availability(UNSET_ID, status, t, d)
     }
   }
@@ -40,57 +44,68 @@ class AvailabilityCalendar(cells: MutableList<Availability> = mutableListOf()) :
    * @param timeSlot: timeSlot of the Availability of which to change the status
    * @return the new AvailabilityStatus if successfully modified, else null
    */
-  fun nextAvailabilityStatus(date: LocalDate, timeSlot: TimeSlot): AvailabilityStatus {
+  fun setToNextAvailabilityStatus(date: LocalDate, timeSlot: TimeSlot): AvailabilityCalendar {
     val currentAvailability = getByDate(date, timeSlot)
     val nextAvailabilityStatus: AvailabilityStatus =
         currentAvailability?.status?.next()
             ?: AvailabilityStatus.OK // non-existing entries get init by OK
-    if (nextAvailabilityStatus == AvailabilityStatus.UNDEFINED) {
-      removeByDate(date, timeSlot)
+    return if (nextAvailabilityStatus == AvailabilityStatus.UNDEFINED) {
+      removeByDate(date, timeSlot) as AvailabilityCalendar
+    } else if (nextAvailabilityStatus != AvailabilityStatus.ASSIGNED) {
+      setAvailabilityByDate(date, timeSlot, nextAvailabilityStatus) as AvailabilityCalendar
     } else {
-      setAvailabilityByDate(date, timeSlot, nextAvailabilityStatus)
+      this
     }
-    return nextAvailabilityStatus
   }
 
   /**
    * Returns the differences between this and the other calendar, from the point of view of the
-   * other calendar (that is, [CalendarDifferenceType.ADDED] means that [other] has an added
+   * other calendar (that is, [CalendarDifferenceType.ADDED] means that [newCalendar] has an added
    * availability compared to this)
    *
-   * @param other The other calendar
+   * @param newCalendar The other calendar
    */
   fun getDifferencesWithOtherCalendar(
-      other: AvailabilityCalendar
+      newCalendar: AvailabilityCalendar
   ): List<Pair<CalendarDifferenceType, Availability>> {
     val differences = mutableListOf<Pair<CalendarDifferenceType, Availability>>()
-    for (otherAvailability in other.cells) {
-      val date = otherAvailability.date
-      val timeSlot = otherAvailability.timeSlot
-      val thisAvailability = getByDate(date, timeSlot)
-      if (otherAvailability == thisAvailability) {
+    for (newCalendarAvailability in newCalendar.cells) {
+      val date = newCalendarAvailability.date
+      val timeSlot = newCalendarAvailability.timeSlot
+      val oldCalendarAvailability = getByDate(date, timeSlot)
+      if (newCalendarAvailability.status == oldCalendarAvailability?.status) {
         continue
       }
-      if (thisAvailability == null || thisAvailability.status == AvailabilityStatus.UNDEFINED) {
-        differences.add(Pair(CalendarDifferenceType.ADDED, otherAvailability))
-      } else if (otherAvailability.status == AvailabilityStatus.UNDEFINED) {
-        differences.add(Pair(CalendarDifferenceType.DELETED, thisAvailability))
+      if (oldCalendarAvailability == null ||
+          oldCalendarAvailability.status == AvailabilityStatus.UNDEFINED) {
+        differences.add(Pair(CalendarDifferenceType.ADDED, newCalendarAvailability))
+      } else if (newCalendarAvailability.status == AvailabilityStatus.UNDEFINED) {
+        // should not happen but checked for safety reasons
+        differences.add(Pair(CalendarDifferenceType.DELETED, oldCalendarAvailability))
       } else {
-        differences.add(Pair(CalendarDifferenceType.UPDATED, otherAvailability))
+        differences.add(Pair(CalendarDifferenceType.UPDATED, newCalendarAvailability))
       }
     }
-    for (thisAvailability in cells) {
-      val date = thisAvailability.date
-      val timeSlot = thisAvailability.timeSlot
-      val otherAvailability = other.getByDate(date, timeSlot)
-      if (otherAvailability == null) {
-        differences.add(Pair(CalendarDifferenceType.DELETED, thisAvailability))
+    for (oldCalendarAvailability in cells) {
+      val date = oldCalendarAvailability.date
+      val timeSlot = oldCalendarAvailability.timeSlot
+      val newCalendarAvailability = newCalendar.getByDate(date, timeSlot)
+      if (newCalendarAvailability == null) {
+        differences.add(Pair(CalendarDifferenceType.DELETED, oldCalendarAvailability))
       }
     }
     return differences
   }
 
   fun copy(): AvailabilityCalendar {
-    return AvailabilityCalendar(cells.toMutableList())
+    return AvailabilityCalendar(cells)
+  }
+
+  override fun constructor(cells: List<Availability>): CalendarModel<Availability> {
+    return AvailabilityCalendar(cells)
+  }
+
+  override fun addCells(elementsToAdd: List<Availability>): AvailabilityCalendar {
+    return super.addCells(elementsToAdd) as AvailabilityCalendar
   }
 }

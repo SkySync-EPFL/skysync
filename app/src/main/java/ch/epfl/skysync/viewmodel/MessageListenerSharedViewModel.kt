@@ -15,6 +15,7 @@ import ch.epfl.skysync.models.message.Message
 import ch.epfl.skysync.models.message.MessageGroup
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -144,6 +145,8 @@ class MessageListenerSharedViewModel : ViewModel() {
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    if (e !is CancellationException) {
+      SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    }
   }
 }

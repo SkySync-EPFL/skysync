@@ -4,10 +4,33 @@ import ch.epfl.skysync.models.flight.Flight
 import java.time.LocalDate
 
 /** calendar for a group of flights per slot (admin view) */
-class FlightGroupCalendar : CalendarModel<FlightGroup>() {
-  private fun setFlightGroupByDate(date: LocalDate, timeSlot: TimeSlot, flightGroup: FlightGroup) {
-    setByDate(date, timeSlot) { d, t, old -> flightGroup }
+class FlightGroupCalendar(cells: List<FlightGroup> = listOf()) : CalendarModel<FlightGroup>(cells) {
+
+  companion object {
+    /**
+     * transforms the list of flights into a list of FlightGroups and returns a calendar with the
+     * FlightGroup
+     */
+    fun fromFlightList(flightList: List<Flight>): FlightGroupCalendar {
+      val map = mutableMapOf<Pair<LocalDate, TimeSlot>, FlightGroup>()
+      for (flight in flightList) {
+        val key = Pair(flight.date, flight.timeSlot)
+        if (map.containsKey(key)) {
+          map[key]?.let { map[key] = it.addFlight(flight) }
+        } else {
+          map[key] = FlightGroup(flight.date, flight.timeSlot, listOf(flight))
+        }
+      }
+      return FlightGroupCalendar(map.values.toList())
+    }
   }
+
+  private fun setFlightGroupByDate(
+      date: LocalDate,
+      timeSlot: TimeSlot,
+      flightGroup: FlightGroup
+  ): FlightGroupCalendar =
+      setByDate(date, timeSlot) { d, t, old -> flightGroup } as FlightGroupCalendar
 
   /**
    * adds the given flight to the existing FlightGroup at slot for (date, timeSlot) or adds a new
@@ -17,9 +40,9 @@ class FlightGroupCalendar : CalendarModel<FlightGroup>() {
    * @param timeSlot the timeSlot coordinate of the slot to add the flight to
    * @param flight the flight to add
    */
-  fun addFlightByDate(date: LocalDate, timeSlot: TimeSlot, flight: Flight) {
+  fun addFlightByDate(date: LocalDate, timeSlot: TimeSlot, flight: Flight): FlightGroupCalendar {
     val currentFlightGroup = getByDate(date, timeSlot)
-    if (currentFlightGroup == null) {
+    return if (currentFlightGroup == null) {
       setFlightGroupByDate(date, timeSlot, FlightGroup(date, timeSlot, listOf(flight)))
     } else {
       setFlightGroupByDate(date, timeSlot, currentFlightGroup.addFlight(flight))
@@ -43,5 +66,13 @@ class FlightGroupCalendar : CalendarModel<FlightGroup>() {
    */
   fun getFlightGroupByDate(date: LocalDate, timeSlot: TimeSlot): FlightGroup? {
     return getByDate(date, timeSlot)
+  }
+
+  override fun constructor(cells: List<FlightGroup>): CalendarModel<FlightGroup> {
+    return FlightGroupCalendar(cells)
+  }
+
+  override fun addCells(elementsToAdd: List<FlightGroup>): FlightGroupCalendar {
+    return super.addCells(elementsToAdd) as FlightGroupCalendar
   }
 }
