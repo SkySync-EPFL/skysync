@@ -106,9 +106,7 @@ class LaunchFlightTest {
         val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
         nodes.fetchSemanticsNodes().isNotEmpty()
       }
-      composeTestRule.waitUntil {
-        !inFlightViewModel.loading.value
-      }
+      composeTestRule.waitUntil { !inFlightViewModel.loading.value }
       inFlightViewModel.setCurrentFlight(dbSetup.flight4.id)
       composeTestRule.onNodeWithText("Flight").performClick()
       composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
@@ -134,9 +132,7 @@ class LaunchFlightTest {
         val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
         nodes.fetchSemanticsNodes().isNotEmpty()
       }
-      composeTestRule.waitUntil {
-        !inFlightViewModel.loading.value
-      }
+      composeTestRule.waitUntil { !inFlightViewModel.loading.value }
       inFlightViewModel.setCurrentFlight(dbSetup.flight4.id)
       composeTestRule.onNodeWithText("Flight").performClick()
       composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
