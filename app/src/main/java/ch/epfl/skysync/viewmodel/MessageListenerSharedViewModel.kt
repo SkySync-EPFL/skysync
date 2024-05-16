@@ -1,5 +1,6 @@
 package ch.epfl.skysync.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +16,8 @@ import ch.epfl.skysync.models.message.MessageGroup
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 typealias MessageListenerCallback = (group: MessageGroup, update: ListenerUpdate<Message>) -> Unit
@@ -39,6 +42,14 @@ class MessageListenerSharedViewModel : ViewModel() {
   private val callbackStack: MutableList<MessageListenerCallback> = mutableListOf()
   private lateinit var defaultCallback: MessageListenerCallback
 
+  private val _debugState = MutableStateFlow(0)
+  val debugState = _debugState.asStateFlow()
+
+  fun updateState(){
+    _debugState.value++;
+    Log.d("Debug State"," debug state ${debugState.value}")
+
+  }
   companion object {
     /**
      * This is only used for the tests, use [NavBackStackEntry.sharedViewModel] to get an instance
@@ -74,6 +85,8 @@ class MessageListenerSharedViewModel : ViewModel() {
       this.defaultCallback = defaultCallback
       fetchGroups()
     }
+    Log.d("onInit", "Viewmodel init (MessageListenerSharedViewModel)")
+
   }
 
   /**
@@ -130,6 +143,7 @@ class MessageListenerSharedViewModel : ViewModel() {
   override fun onCleared() {
     reset()
     super.onCleared()
+    Log.d("onCleared", "Viewmodel cleared (MessageListenerSharedViewModel)")
   }
 
   /** Callback executed when an error occurs on database-related operations */

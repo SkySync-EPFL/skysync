@@ -1,5 +1,6 @@
 package ch.epfl.skysync.navigation
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Icon
@@ -63,10 +64,17 @@ fun RowScope.AddItem(
       selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
       onClick = {
         if (currentDestination?.route != screen.route) {
+            navController.navigate(screen.route)
+            println("Start destination ${navController.graph.findStartDestination().route}")
+
+            /**
           navController.navigate(screen.route) {
             popUpTo(navController.graph.findStartDestination().id)
+              println("Start destination ${navController.graph.findStartDestination().route}")
             launchSingleTop = true
           }
+          */
         }
+
       })
 }

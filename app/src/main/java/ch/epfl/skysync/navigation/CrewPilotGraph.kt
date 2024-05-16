@@ -102,7 +102,9 @@ fun NavGraphBuilder.crewPilotGraph(
           ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
       ChatScreen(navController, chatViewModel)
     }
-    composable(Route.FLIGHT) { FlightScreen(navController, inFlightViewModel!!, uid!!) }
+    composable(Route.FLIGHT) {
+        FlightScreen(navController, inFlightViewModel!!, uid!!)
+    }
     composable(Route.PILOT_REPORT) {
       // TODO remove when done with viewModel
       val pilot =
