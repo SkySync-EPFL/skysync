@@ -107,8 +107,7 @@ class LaunchFlightTest {
         nodes.fetchSemanticsNodes().isNotEmpty()
       }
       composeTestRule.waitUntil {
-        inFlightViewModel.startableFlight.value != null ||
-            inFlightViewModel.currentFlight.value != null
+        !inFlightViewModel.loading.value
       }
       inFlightViewModel.setCurrentFlight(dbSetup.flight4.id)
       composeTestRule.onNodeWithText("Flight").performClick()
@@ -136,8 +135,7 @@ class LaunchFlightTest {
         nodes.fetchSemanticsNodes().isNotEmpty()
       }
       composeTestRule.waitUntil {
-        inFlightViewModel.startableFlight.value != null ||
-            inFlightViewModel.currentFlight.value != null
+        !inFlightViewModel.loading.value
       }
       inFlightViewModel.setCurrentFlight(dbSetup.flight4.id)
       composeTestRule.onNodeWithText("Flight").performClick()
