@@ -97,6 +97,7 @@ class LaunchFlightTest {
         LaunchedEffect(Unit) { inFlightViewModel.init(dbSetup.pilot1.id).join() }
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
+        viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
         NavHost(navController = navController, startDestination = Route.MAIN) {
           homeGraph(repository, navController, dbSetup.pilot1.id, inFlightViewModel)
         }
@@ -121,6 +122,7 @@ class LaunchFlightTest {
         LaunchedEffect(Unit) { inFlightViewModel.init(dbSetup.crew1.id).join() }
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
+        viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
         NavHost(navController = navController, startDestination = Route.MAIN) {
           homeGraph(repository, navController, dbSetup.crew1.id, inFlightViewModel)
         }
