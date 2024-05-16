@@ -22,7 +22,7 @@ import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
-import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
+import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
@@ -39,7 +39,7 @@ class E2EPilotDuringFlight {
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbs = DatabaseSetup()
   private val repository = Repository(db)
-  private lateinit var messageListenerSharedViewModel: MessageListenerSharedViewModel
+  private lateinit var messageListenerViewModel: MessageListenerViewModel
   private lateinit var chatViewModel: ChatViewModel
   private lateinit var inFlightViewModel: InFlightViewModel
 
@@ -48,14 +48,17 @@ class E2EPilotDuringFlight {
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
     composeTestRule.setContent {
-      messageListenerSharedViewModel = MessageListenerSharedViewModel.createViewModel()
+      messageListenerViewModel = MessageListenerViewModel.createViewModel()
       chatViewModel =
-          ChatViewModel.createViewModel(dbs.pilot1.id, messageListenerSharedViewModel, repository)
+          ChatViewModel.createViewModel(dbs.pilot1.id, messageListenerViewModel, repository)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       inFlightViewModel = InFlightViewModel.createViewModel(repository)
+      val messageListenerViewModel = MessageListenerViewModel.createViewModel()
+
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.pilot1.id, inFlightViewModel)
+        homeGraph(
+            repository, navController, dbs.pilot1.id, inFlightViewModel, messageListenerViewModel)
       }
     }
     composeTestRule.waitUntil {
