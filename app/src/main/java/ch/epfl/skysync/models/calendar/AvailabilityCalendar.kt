@@ -49,9 +49,7 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
     val nextAvailabilityStatus: AvailabilityStatus =
         currentAvailability?.status?.next()
             ?: AvailabilityStatus.OK // non-existing entries get init by OK
-    return if (nextAvailabilityStatus == AvailabilityStatus.UNDEFINED) {
-      removeByDate(date, timeSlot) as AvailabilityCalendar
-    } else if (nextAvailabilityStatus != AvailabilityStatus.ASSIGNED) {
+    return if (nextAvailabilityStatus != AvailabilityStatus.ASSIGNED) {
       setAvailabilityByDate(date, timeSlot, nextAvailabilityStatus) as AvailabilityCalendar
     } else {
       this
@@ -76,22 +74,19 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
       if (newCalendarAvailability.status == oldCalendarAvailability?.status) {
         continue
       }
-      if (oldCalendarAvailability == null ||
-          oldCalendarAvailability.status == AvailabilityStatus.UNDEFINED) {
-        differences.add(Pair(CalendarDifferenceType.ADDED, newCalendarAvailability))
+      if (oldCalendarAvailability?.status == AvailabilityStatus.UNDEFINED) {
+        throw IllegalStateException("oldCalendarAvailability.status == UNDEFINED")
+      }
+      if (oldCalendarAvailability == null) {
+        if (newCalendarAvailability.status != AvailabilityStatus.UNDEFINED) {
+          differences.add(Pair(CalendarDifferenceType.ADDED, newCalendarAvailability))
+        }
+        // if NewCalendarAvailability.status == UNDEFINED, then it is was temporarily added
+        // and deleted again before saving
       } else if (newCalendarAvailability.status == AvailabilityStatus.UNDEFINED) {
-        // should not happen but checked for safety reasons
         differences.add(Pair(CalendarDifferenceType.DELETED, oldCalendarAvailability))
       } else {
         differences.add(Pair(CalendarDifferenceType.UPDATED, newCalendarAvailability))
-      }
-    }
-    for (oldCalendarAvailability in cells) {
-      val date = oldCalendarAvailability.date
-      val timeSlot = oldCalendarAvailability.timeSlot
-      val newCalendarAvailability = newCalendar.getByDate(date, timeSlot)
-      if (newCalendarAvailability == null) {
-        differences.add(Pair(CalendarDifferenceType.DELETED, oldCalendarAvailability))
       }
     }
     return differences
