@@ -94,7 +94,7 @@ class LaunchFlightTest {
     runTest {
       composeTestRule.setContent {
         inFlightViewModel = InFlightViewModel.createViewModel(repository)
-        LaunchedEffect(Unit) { inFlightViewModel.init(dbSetup.pilot1.id).join() }
+        LaunchedEffect(inFlightViewModel) { inFlightViewModel.init(dbSetup.pilot1.id).join() }
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
@@ -106,6 +106,7 @@ class LaunchFlightTest {
         val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
         nodes.fetchSemanticsNodes().isNotEmpty()
       }
+      composeTestRule.waitUntil { inFlightViewModel.startableFlight.value != null }
       inFlightViewModel.setCurrentFlight(dbSetup.flight4.id)
       composeTestRule.onNodeWithText("Flight").performClick()
       composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
@@ -119,7 +120,7 @@ class LaunchFlightTest {
     runTest {
       composeTestRule.setContent {
         inFlightViewModel = InFlightViewModel.createViewModel(repository)
-        LaunchedEffect(Unit) { inFlightViewModel.init(dbSetup.crew1.id).join() }
+        LaunchedEffect(inFlightViewModel) { inFlightViewModel.init(dbSetup.crew1.id).join() }
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
@@ -131,6 +132,7 @@ class LaunchFlightTest {
         val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
         nodes.fetchSemanticsNodes().isNotEmpty()
       }
+      composeTestRule.waitUntil { inFlightViewModel.startableFlight.value != null }
       inFlightViewModel.setCurrentFlight(dbSetup.flight4.id)
       composeTestRule.onNodeWithText("Flight").performClick()
       composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Timer").isDisplayed() }
