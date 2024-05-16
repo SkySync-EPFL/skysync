@@ -24,7 +24,6 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.temporal.ChronoUnit
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

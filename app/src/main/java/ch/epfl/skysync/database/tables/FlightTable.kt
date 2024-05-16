@@ -7,7 +7,6 @@ import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.FlightMemberSchema
 import ch.epfl.skysync.database.schemas.FlightSchema
-import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
