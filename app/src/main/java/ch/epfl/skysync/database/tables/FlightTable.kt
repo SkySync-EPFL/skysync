@@ -271,7 +271,7 @@ class FlightTable(db: FirestoreDatabase) :
         basket,
         vehicles!!,
         team!!,
-        FlightTrace(UNSET_ID, emptyList()))
+        FlightTrace(flightSchema.id!!, emptyList()))
   }
 
   override suspend fun get(id: String, onError: ((Exception) -> Unit)?): Flight? {
