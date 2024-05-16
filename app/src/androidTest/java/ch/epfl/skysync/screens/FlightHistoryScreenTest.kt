@@ -7,12 +7,12 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.screens.admin.FlightHistoryScreen
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
-import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -20,7 +20,7 @@ import org.junit.Test
 
 class FlightHistoryScreenTest {
   @get:Rule val composeTestRule = createComposeRule()
-  val navController: NavHostController = mockk("NavController", relaxed = true)
+  lateinit var navController: NavHostController
   private lateinit var finishedFlightsViewModel: FinishedFlightsViewModel
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbSetup = DatabaseSetup()
@@ -30,20 +30,18 @@ class FlightHistoryScreenTest {
   fun setupHistory() = runTest {
     dbSetup.clearDatabase(db)
     dbSetup.fillDatabase(db)
-    composeTestRule.setContent {
-      finishedFlightsViewModel =
-          FinishedFlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
-      FlightHistoryScreen(navController, finishedFlightsViewModel)
-    }
   }
 
   @Test
   fun filtersMenuAppearCorrectly() {
     composeTestRule.setContent {
+      navController = rememberNavController()
       finishedFlightsViewModel =
-          FinishedFlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
+          FinishedFlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
       FlightHistoryScreen(navController, finishedFlightsViewModel)
+      finishedFlightsViewModel.refresh()
     }
+    composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
     composeTestRule.onNodeWithTag("Filter Button").performClick()
     composeTestRule.onNodeWithTag("Filter Menu").assertIsDisplayed()
   }
@@ -51,10 +49,14 @@ class FlightHistoryScreenTest {
   @Test
   fun twoCardAreInitiallyDisplayed() {
     composeTestRule.setContent {
+      navController = rememberNavController()
       finishedFlightsViewModel =
-          FinishedFlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
+          FinishedFlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
       FlightHistoryScreen(navController, finishedFlightsViewModel)
+      finishedFlightsViewModel.refresh()
     }
+    composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
+    finishedFlightsViewModel.getFlights()
     composeTestRule.onNodeWithTag("Card 0").assertIsDisplayed()
     composeTestRule.onNodeWithTag("Card 1").assertIsDisplayed()
   }
@@ -63,10 +65,14 @@ class FlightHistoryScreenTest {
   fun searchBarWorksCorrectly() {
     // TODO finish the implementation of the search bar and of the test
     composeTestRule.setContent {
+      navController = rememberNavController()
       finishedFlightsViewModel =
-          FinishedFlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
+          FinishedFlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
+      finishedFlightsViewModel.refresh()
       FlightHistoryScreen(navController, finishedFlightsViewModel)
     }
+    composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
+    finishedFlightsViewModel.getFlights()
     composeTestRule.onNodeWithTag("Search Bar").onChildAt(0).performTextInput("Lausanne 1")
     // Not implemented yet
     /*composeTestRule.onNodeWithTag("Card 0").assertExists()
@@ -76,10 +82,14 @@ class FlightHistoryScreenTest {
   @Test
   fun rangeDateSelectorShowsWorksCorrectly() {
     composeTestRule.setContent {
+      navController = rememberNavController()
       finishedFlightsViewModel =
-          FinishedFlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
+          FinishedFlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
+      finishedFlightsViewModel.refresh()
       FlightHistoryScreen(navController, finishedFlightsViewModel)
     }
+    composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
+    finishedFlightsViewModel.getFlights()
     composeTestRule.onNodeWithTag("Filter Button").performClick()
     composeTestRule.onNodeWithTag("Date Range Field 1").performClick()
     composeTestRule.onNodeWithTag("Date Range Selector").assertIsDisplayed()
@@ -88,10 +98,14 @@ class FlightHistoryScreenTest {
   @Test
   fun noFlightIsCorrectlyDisplayed() {
     composeTestRule.setContent {
+      navController = rememberNavController()
       finishedFlightsViewModel =
           FinishedFlightsViewModel.createViewModel(repository, dbSetup.pilot3.id)
+      finishedFlightsViewModel.refresh()
       FlightHistoryScreen(navController, finishedFlightsViewModel)
     }
+    composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
+    finishedFlightsViewModel.getFlights()
     composeTestRule.onNodeWithTag("No Flight").assertIsDisplayed()
   }
 }

@@ -41,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,16 +79,17 @@ fun FlightHistoryScreen(
     navController: NavHostController,
     finishedFlightsViewModel: FinishedFlightsViewModel
 ) {
+
   Scaffold(
       topBar = { CustomTopAppBar(navController = navController, title = "Flight History") },
       bottomBar = { AdminBottomBar(navController = navController) }) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-          // val allFlights by finishedFlightsViewModel.currentFlights.collectAsState()
-          if (finishedFlightsViewModel.getFlights() == null) {
+          val allFlights by finishedFlightsViewModel.currentFlights.collectAsState()
+          if (allFlights == null) {
             LoadingComponent(
                 isLoading = true, onRefresh = { finishedFlightsViewModel.refresh() }) {}
           } else {
-            if (finishedFlightsViewModel.getFlights()!!.isEmpty()) {
+            if (allFlights!!.isEmpty()) {
               Text(
                   modifier = Modifier.padding(padding).testTag("No Flight"),
                   text = "No flights available")
@@ -119,7 +121,7 @@ fun FlightHistoryScreen(
                 FlightSearchBar(
                     modifier = Modifier.fillMaxWidth().weight(3f),
                     onSearch = { /* TODO search for flights by location name */},
-                    results = finishedFlightsViewModel.currentFlights!!)
+                    results = allFlights!!)
                 IconButton(
                     modifier = Modifier.testTag("Filter Button"),
                     onClick = { showFilters = !showFilters },
@@ -132,7 +134,7 @@ fun FlightHistoryScreen(
               }
             }
             LazyColumn() {
-              itemsIndexed(finishedFlightsViewModel.currentFlights!!) { id, flight ->
+              itemsIndexed(allFlights!!) { id, flight ->
                 HistoryCard(flight, Modifier.testTag("Card $id"))
               }
             }

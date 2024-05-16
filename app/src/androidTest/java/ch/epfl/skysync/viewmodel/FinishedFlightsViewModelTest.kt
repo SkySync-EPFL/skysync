@@ -41,9 +41,9 @@ class FinishedFlightsViewModelTest {
     finishedFlightsViewModel = FinishedFlightsViewModel(repository, dbSetup.pilot1.id)
     finishedFlightsViewModel.refresh()
     composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
-    val flights = finishedFlightsViewModel.getFlights()
-    assert(flights != null)
-    assert(flights!!.size == 2)
+    finishedFlightsViewModel.getFlights()
+    assert(finishedFlightsViewModel.currentFlights.value != null)
+    assert(finishedFlightsViewModel.currentFlights.value!!.size == 2)
   }
 
   @Test
@@ -51,9 +51,9 @@ class FinishedFlightsViewModelTest {
     finishedFlightsViewModel = FinishedFlightsViewModel(repository, dbSetup.admin1.id)
     finishedFlightsViewModel.refresh()
     composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
-    val flights = finishedFlightsViewModel.getFlights()
-    assert(flights != null)
-    assert(flights!!.size == 2)
+    finishedFlightsViewModel.getFlights()
+    assert(finishedFlightsViewModel.currentFlights.value != null)
+    assert(finishedFlightsViewModel.currentFlights.value!!.size == 2)
   }
 
   /*

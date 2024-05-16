@@ -112,13 +112,14 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
           takeOffLocation = LocationPoint(0, 1.0, 1.0, "Geneva"),
       )
 
-  // private val _currentFlights: MutableStateFlow<List<FinishedFlight>?> = MutableStateFlow(null)
+  private val _currentFlights: MutableStateFlow<List<FinishedFlight>?> = MutableStateFlow(null)
   private val _currentUser: MutableStateFlow<User?> = MutableStateFlow(null)
   private val _selectedFlight: MutableStateFlow<FinishedFlight?> = MutableStateFlow(null)
 
-  var currentFlights: List<FinishedFlight>? = null // _currentFlights.asStateFlow()
+  var currentFlights = _currentFlights.asStateFlow()
   val currentUser = _currentUser.asStateFlow()
   val selectedFlight = _selectedFlight.asStateFlow()
+  private val allFlights = mutableListOf(flight1, flight2)
 
   fun refresh() {
     refreshUser()
@@ -128,36 +129,22 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
   private fun refreshUser() =
       viewModelScope.launch {
         _currentUser.value = repository.userTable.get(userId ?: UNSET_ID, onError = { onError(it) })
+        getFlights()
       }
 
   /**
    * get the flights of the current user (replace refreshFlights() while finished flights are not in
    * the database)
    */
-  fun getFlights(): List<FinishedFlight>? {
+  fun getFlights() {
     when (_currentUser.value) {
       is Admin -> {
-        return listOf(flight1, flight2)
+        _currentFlights.value = allFlights
       }
       is Pilot,
       is Crew -> {
-        return when (_currentUser.value) {
-          pilot1 -> {
-            listOf(flight1, flight2)
-          }
-          crew1 -> {
-            listOf(flight1)
-          }
-          crew2 -> {
-            listOf(flight2)
-          }
-          else -> {
-            listOf()
-          }
-        }
-      }
-      else -> {
-        return null
+        _currentFlights.value =
+            allFlights.filter { it.team.roles.any { role -> role.assignedUser?.id == userId } }
       }
     }
   }
@@ -175,6 +162,12 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
               repository.flightTable, userId ?: UNSET_ID, onError = { onError(it) })
           .filterIsInstance<FinishedFlight>()
     }
+  }
+
+  fun addFlight(flight: FinishedFlight) =
+  viewModelScope.launch{
+    repository.flightTable.add(flight, onError = { onError(it) })
+    refreshFlights()
   }*/
 
   /*fun selectFlight(id: String) {
