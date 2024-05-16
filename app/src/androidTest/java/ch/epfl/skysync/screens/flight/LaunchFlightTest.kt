@@ -18,7 +18,6 @@ import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.screens.crewpilot.LaunchFlight
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
@@ -95,7 +94,7 @@ class LaunchFlightTest {
     runTest {
       composeTestRule.setContent {
         inFlightViewModel = InFlightViewModel.createViewModel(repository)
-        runBlocking {  inFlightViewModel.init(dbSetup.pilot1.id).join()}
+        runBlocking { inFlightViewModel.init(dbSetup.pilot1.id).join() }
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
@@ -120,7 +119,7 @@ class LaunchFlightTest {
     runTest {
       composeTestRule.setContent {
         inFlightViewModel = InFlightViewModel.createViewModel(repository)
-        runBlocking {  inFlightViewModel.init(dbSetup.pilot1.id).join()}
+        runBlocking { inFlightViewModel.init(dbSetup.pilot1.id).join() }
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
