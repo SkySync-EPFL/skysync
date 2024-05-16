@@ -1,8 +1,6 @@
 package ch.epfl.skysync.model.flight
 
 import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.Crew
@@ -23,8 +21,7 @@ class TestRole {
           firstname = "jo",
           lastname = "blunt",
           email = "jo.blunt@gmail.com",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar())
+      )
 
   @Before
   fun setUp() {

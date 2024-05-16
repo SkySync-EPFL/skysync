@@ -24,6 +24,7 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -495,7 +496,9 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    if (e !is CancellationException) {
+      SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    }
   }
 
   override fun onCleared() {

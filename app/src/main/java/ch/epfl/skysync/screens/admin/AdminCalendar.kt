@@ -1,6 +1,5 @@
 package ch.epfl.skysync.screens.admin
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -43,21 +42,21 @@ fun AdminCalendarScreen(
         }
       },
       bottomBar = { AdminBottomBar(navController) }) { padding ->
-        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         if (calendarType == Route.ADMIN_AVAILABILITY_CALENDAR) {
-          val availabilityCalendar = uiState.availabilityCalendar
+          val availabilityCalendar by
+              viewModel.currentAvailabilityCalendar.collectAsStateWithLifecycle()
           AvailabilityCalendar(
               padding = padding,
               getAvailabilityStatus = { date, time ->
                 availabilityCalendar.getAvailabilityStatus(date, time)
               },
               nextAvailabilityStatus = { date, time ->
-                availabilityCalendar.nextAvailabilityStatus(date, time)
+                viewModel.setToNextAvailabilityStatus(date, time)
               },
               onSave = { viewModel.saveAvailabilities() },
-              onCancel = { Log.d("TO BE IMPLEMENTED", "Cancel in Availabilities") })
+              onCancel = { viewModel.cancelAvailabilities() })
         } else if (calendarType == Route.ADMIN_FLIGHT_CALENDAR) {
-          val flightCalendar = uiState.flightGroupCalendar
+          val flightCalendar by viewModel.currentFlightGroupCalendar.collectAsStateWithLifecycle()
           FlightCalendar(
               padding = padding,
               getFirstFlightByDate = { date, time ->
