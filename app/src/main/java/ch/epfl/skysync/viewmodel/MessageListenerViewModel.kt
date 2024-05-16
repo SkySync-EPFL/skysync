@@ -1,12 +1,10 @@
 package ch.epfl.skysync.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.ListenerUpdate
@@ -41,11 +39,8 @@ class MessageListenerViewModel : ViewModel() {
   private val callbackStack: MutableList<MessageListenerCallback> = mutableListOf()
   private lateinit var defaultCallback: MessageListenerCallback
 
+  /** ViewModel for the messages */
   companion object {
-    /**
-     * This is only used for the tests, use [NavBackStackEntry.sharedViewModel] to get an instance
-     * of the shared view model in the app.
-     */
     @Composable
     fun createViewModel(): MessageListenerViewModel {
       return viewModel<MessageListenerViewModel>(
@@ -57,11 +52,6 @@ class MessageListenerViewModel : ViewModel() {
               })
     }
   }
-
-  init {
-    println("Init shared view model")
-  }
-
   /**
    * Initialize the view model.
    *
@@ -80,7 +70,6 @@ class MessageListenerViewModel : ViewModel() {
       this.defaultCallback = defaultCallback
       fetchGroups()
     }
-    Log.d("onInit", "Viewmodel init (MessageListenerSharedViewModel)")
   }
 
   /**
@@ -137,7 +126,6 @@ class MessageListenerViewModel : ViewModel() {
   override fun onCleared() {
     reset()
     super.onCleared()
-    Log.d("onCleared", "Viewmodel cleared (MessageListenerSharedViewModel)")
   }
 
   /** Callback executed when an error occurs on database-related operations */
