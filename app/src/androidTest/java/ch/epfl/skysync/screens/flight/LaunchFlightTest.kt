@@ -19,6 +19,7 @@ import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.screens.crewpilot.LaunchFlight
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
+import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
@@ -33,6 +34,7 @@ class LaunchFlightTest {
   lateinit var viewModel: FlightsViewModel
   lateinit var inFlightViewModel: InFlightViewModel
   lateinit var navController: TestNavHostController
+  lateinit var messageListenerViewModel: MessageListenerViewModel
 
   @Before
   fun setUp() = runTest {
@@ -94,12 +96,18 @@ class LaunchFlightTest {
     runTest {
       composeTestRule.setContent {
         inFlightViewModel = InFlightViewModel.createViewModel(repository)
+        messageListenerViewModel = MessageListenerViewModel.createViewModel()
         LaunchedEffect(inFlightViewModel) { inFlightViewModel.init(dbSetup.pilot1.id).join() }
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
         NavHost(navController = navController, startDestination = Route.MAIN) {
-          homeGraph(repository, navController, dbSetup.pilot1.id, inFlightViewModel)
+          homeGraph(
+              repository,
+              navController,
+              dbSetup.pilot1.id,
+              inFlightViewModel,
+              messageListenerViewModel)
         }
       }
       composeTestRule.waitUntil {
@@ -120,12 +128,19 @@ class LaunchFlightTest {
     runTest {
       composeTestRule.setContent {
         inFlightViewModel = InFlightViewModel.createViewModel(repository)
+        messageListenerViewModel = MessageListenerViewModel.createViewModel()
+
         LaunchedEffect(inFlightViewModel) { inFlightViewModel.init(dbSetup.crew1.id).join() }
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
         NavHost(navController = navController, startDestination = Route.MAIN) {
-          homeGraph(repository, navController, dbSetup.crew1.id, inFlightViewModel)
+          homeGraph(
+              repository,
+              navController,
+              dbSetup.crew1.id,
+              inFlightViewModel,
+              messageListenerViewModel)
         }
       }
       composeTestRule.waitUntil {

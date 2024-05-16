@@ -1,10 +1,6 @@
 package ch.epfl.skysync.navigation
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -48,17 +44,4 @@ fun onMessageUpdate(group: MessageGroup, update: ListenerUpdate<Message>) {
   if (update.isFirstUpdate) return
   val message = update.adds.firstOrNull() ?: return
   SnackbarManager.showMessage("(${group.name}) ${message.user.firstname}: ${message.content}")
-}
-
-/**
- * Source:
- * https://github.com/philipplackner/SharingDataBetweenScreens/blob/master/app/src/main/java/com/plcoding/sharingdataprep/content/2-SharedViewModel.kt
- */
-@Composable
-inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(
-    navController: NavHostController,
-): T {
-  val navGraphRoute = destination.parent?.route ?: return viewModel()
-  val parentEntry = remember(this) { navController.getBackStackEntry(navGraphRoute) }
-  return viewModel(parentEntry)
 }
