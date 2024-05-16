@@ -22,7 +22,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,14 +59,13 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
 
 @Composable
 fun UserLocationMarker(location: Location, user: User) {
-  return Marker(
-      state = rememberMarkerState(position = location.point.latlng()), title = user.name())
+  return Marker(state = MarkerState(position = location.point.latlng()), title = user.name())
 }
 
 @Composable
@@ -128,7 +126,7 @@ fun FlightScreen(
   val startableFlight by inFlightViewModel.startableFlight.collectAsStateWithLifecycle()
   val currentFlight by inFlightViewModel.currentFlight.collectAsStateWithLifecycle()
 
-  val currentLocations = inFlightViewModel.currentLocations.collectAsState().value
+  val currentLocations by inFlightViewModel.currentLocations.collectAsStateWithLifecycle()
   val flightLocations by inFlightViewModel.flightLocations.collectAsStateWithLifecycle()
   val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
   val fusedLocationClient = LocationServices.getFusedLocationProviderClient(LocalContext.current)
@@ -139,7 +137,6 @@ fun FlightScreen(
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(defaultLocation.latlng(), 13f)
   }
-  val markerState = rememberMarkerState(position = defaultLocation.latlng())
 
   var metrics by remember { mutableStateOf(UserMetrics(0.0f, 0.0, 0.0f, 0.0, defaultLocation)) }
 
@@ -155,7 +152,6 @@ fun FlightScreen(
                 )
 
             inFlightViewModel.addLocation(Location(userId = uid, point = newLocation))
-            markerState.position = newLocation.latlng()
             metrics = metrics.withUpdate(it.speed, it.altitude, it.bearing, newLocation)
           }
         }
@@ -255,7 +251,6 @@ fun FlightScreen(
             GoogleMap(
                 modifier = Modifier.fillMaxSize().padding(padding).testTag("Map"),
                 cameraPositionState = cameraPositionState) {
-                  Marker(state = markerState, title = "Your Location", snippet = "You are here")
                   Polyline(
                       points = flightLocations.map { it.point.latlng() },
                       color = Color.Red,
