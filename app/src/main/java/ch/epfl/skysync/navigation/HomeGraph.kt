@@ -37,7 +37,7 @@ fun NavGraphBuilder.homeGraph(
 }
 
 /**
- * Callback executed when a message update is triggered anywhere in the app. Display a snackbar
+ * Callback executed when a message update is triggered anywhere in the app. Displays a snackbar
  * message
  *
  * (Should be refactored to a better solution later)

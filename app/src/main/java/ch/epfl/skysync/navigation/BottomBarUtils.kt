@@ -1,6 +1,5 @@
 package ch.epfl.skysync.navigation
 
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Icon
@@ -11,7 +10,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import ch.epfl.skysync.R
 
 sealed class BottomBarScreen(val route: String, val title: String, @DrawableRes val icon: Int) {
@@ -64,17 +62,7 @@ fun RowScope.AddItem(
       selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
       onClick = {
         if (currentDestination?.route != screen.route) {
-            navController.navigate(screen.route)
-            println("Start destination ${navController.graph.findStartDestination().route}")
-
-            /**
-          navController.navigate(screen.route) {
-            popUpTo(navController.graph.findStartDestination().id)
-              println("Start destination ${navController.graph.findStartDestination().route}")
-            launchSingleTop = true
-          }
-          */
+          navController.navigate(screen.route)
         }
-
       })
 }

@@ -65,6 +65,7 @@ fun NavGraphBuilder.crewPilotGraph(
 
           val chatViewModel =
               ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
+
           val groupId = entry.arguments?.getString("Group ID")
           if (groupId == null) {
             navController.navigate(Route.CREW_HOME)
@@ -97,14 +98,12 @@ fun NavGraphBuilder.crewPilotGraph(
           entry.sharedViewModel<MessageListenerSharedViewModel>(
               navController,
           )
-        println(messageListenerSharedViewModel.listeners.size)
+
       val chatViewModel =
           ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
       ChatScreen(navController, chatViewModel)
     }
-    composable(Route.FLIGHT) {
-        FlightScreen(navController, inFlightViewModel!!, uid!!)
-    }
+    composable(Route.FLIGHT) { FlightScreen(navController, inFlightViewModel!!, uid!!) }
     composable(Route.PILOT_REPORT) {
       // TODO remove when done with viewModel
       val pilot =

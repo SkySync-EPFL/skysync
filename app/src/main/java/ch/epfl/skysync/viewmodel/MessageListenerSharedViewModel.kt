@@ -42,14 +42,6 @@ class MessageListenerSharedViewModel : ViewModel() {
   private val callbackStack: MutableList<MessageListenerCallback> = mutableListOf()
   private lateinit var defaultCallback: MessageListenerCallback
 
-  private val _debugState = MutableStateFlow(0)
-  val debugState = _debugState.asStateFlow()
-
-  fun updateState(){
-    _debugState.value++;
-    Log.d("Debug State"," debug state ${debugState.value}")
-
-  }
   companion object {
     /**
      * This is only used for the tests, use [NavBackStackEntry.sharedViewModel] to get an instance
@@ -86,7 +78,6 @@ class MessageListenerSharedViewModel : ViewModel() {
       fetchGroups()
     }
     Log.d("onInit", "Viewmodel init (MessageListenerSharedViewModel)")
-
   }
 
   /**
