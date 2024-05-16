@@ -9,8 +9,6 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.AvailabilityCalendar
-import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
@@ -57,8 +55,6 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
           firstname = "pilot-1",
           lastname = "lastname-pilot-1",
           email = "pilot1.bob@skysnc.ch",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar(),
           qualification = BalloonQualification.LARGE)
   var crew1 =
       Crew(
@@ -66,16 +62,14 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
           firstname = "crew-1",
           lastname = "lastname-crew-1",
           email = "crew1.bob@skysnc.ch",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar())
+      )
   var crew2 =
       Crew(
           id = "id-crew-2",
           firstname = "crew-2",
           lastname = "lastname-crew-2",
           email = "crew2.denis@skysnc.ch",
-          availabilities = AvailabilityCalendar(),
-          assignedFlights = FlightGroupCalendar())
+      )
   var vehicle2 = Vehicle(name = "vehicle-2")
   var date1 = LocalDate.of(2024, 8, 14)
   val flight1 =
