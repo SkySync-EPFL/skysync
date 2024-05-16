@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,38 +42,38 @@ import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.models.message.ChatMessage
 import ch.epfl.skysync.models.message.MessageDateFormatter
 import ch.epfl.skysync.models.message.MessageType
-import ch.epfl.skysync.ui.theme.cream
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
+import ch.epfl.skysync.ui.theme.veryLightGreen
 
 /**
- * Composable function representing a chat screen.
+ * A composable function that displays a chat interface with messages and an input field.
  *
- * @param groupName Name of the group or chat.
- * @param msgList List of chat messages with sender information, message content, and timestamp.
- * @param backClick Callback function to be invoked when the back button is clicked.
- * @param sendClick Callback function to be invoked when a message is sent.
- * @param paddingValues Padding values to be applied to the chat screen.
+ * @param messages List of chat messages to display.
+ * @param onSend Callback function to handle sending a new message.
+ * @param paddingValues Padding values to apply around the chat interface.
  */
 @Composable
 fun ChatText(messages: List<ChatMessage>, onSend: (String) -> Unit, paddingValues: PaddingValues) {
-  Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-    Spacer(modifier = Modifier.size(1.dp))
+  Column(modifier = Modifier.padding(paddingValues).imePadding()) {
     ChatTextBody(messages, modifier = Modifier.weight(1f))
     ChatInput(onSend)
   }
 }
 /**
- * Composable function representing the body of a chat screen, displaying chat bubbles.
+ * Displays a list of chat messages in a scrollable column.
  *
- * @param msgList List of chat messages with sender name, sender profile picture, message content,
- *   and timestamp.
+ * @param messages List of chat messages to display.
+ * @param modifier Modifier for styling and layout (default is Modifier).
+ *
+ * The LazyColumn displays each message using the ChatBubble composable. The list scrolls to the
+ * latest message when a new one is added.
  */
 @Composable
 fun ChatTextBody(messages: List<ChatMessage>, modifier: Modifier = Modifier) {
   var scrollTo = true
   val lazyListState = rememberLazyListState()
-  LazyColumn(modifier.background(cream).testTag("ChatTextBody"), state = lazyListState) {
+  LazyColumn(modifier.testTag("ChatTextBody"), state = lazyListState) {
     items(messages.size) { index -> ChatBubble(message = messages[index], index = "$index") }
   }
   LaunchedEffect(messages) {
@@ -98,7 +98,7 @@ fun ChatBubble(message: ChatMessage, index: String) {
   if (message.messageType == MessageType.SENT) {
     isMyMessage = true
   }
-  val backgroundColor = if (isMyMessage) Color(0xFFDCF8C6) else Color.White
+  val backgroundColor = if (isMyMessage) veryLightGreen else lightGray
   val contentColor = Color.Black
   val shape =
       when (isMyMessage) {
@@ -123,25 +123,23 @@ fun ChatBubble(message: ChatMessage, index: String) {
                 modifier =
                     Modifier.fillMaxWidth(0.075f)
                         .size(30.dp)
-                        .background(color = Color.LightGray, shape = CircleShape)) {}
+                        .background(color = Color.LightGray, shape = CircleShape))
           }
           Spacer(modifier = Modifier.size(2.dp))
         }
-        Column(
-            modifier = Modifier.background(color = backgroundColor, shape = shape).padding(8.dp)) {
-              Row {
-                Text(
-                    text = messageContent,
-                    color = contentColor,
-                    modifier = Modifier.padding(bottom = 2.dp).testTag("ChatBubbleMessage$index"))
-                Spacer(modifier = Modifier.size(4.dp))
-                Text(
-                    text = time,
-                    color = Color.Gray,
-                    fontSize = 9.sp,
-                    modifier = Modifier.align(Alignment.Bottom).testTag("ChatBubbleTime$index"))
-              }
-            }
+
+        Row(modifier = Modifier.background(color = backgroundColor, shape = shape).padding(8.dp)) {
+          Text(
+              text = messageContent,
+              color = contentColor,
+              modifier = Modifier.padding(bottom = 2.dp).testTag("ChatBubbleMessage$index"))
+          Spacer(modifier = Modifier.size(4.dp))
+          Text(
+              text = time,
+              color = Color.Gray,
+              fontSize = 9.sp,
+              modifier = Modifier.align(Alignment.Bottom).testTag("ChatBubbleTime$index"))
+        }
       }
 }
 /**
@@ -156,16 +154,17 @@ fun ChatInput(onSend: (String) -> Unit) {
   val keyboardController = LocalSoftwareKeyboardController.current
 
   Row(
-      modifier = Modifier.padding(horizontal = 16.dp),
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp).background(lightGray),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically) {
         OutlinedTextField(
             value = text,
             onValueChange = { text = it },
             label = { Text("Type a message") },
+            shape = RoundedCornerShape(24.dp),
             colors =
                 OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.DarkGray, focusedLabelColor = Color.DarkGray),
+                    focusedBorderColor = Color.Gray, focusedLabelColor = lightGray),
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
             keyboardActions =
@@ -187,7 +186,7 @@ fun ChatInput(onSend: (String) -> Unit) {
             enabled = text.isNotEmpty(),
             modifier =
                 Modifier.padding(start = 8.dp, top = 8.dp)
-                    .background(if (text.isNotEmpty()) lightOrange else lightGray, CircleShape)
+                    .background(if (text.isNotEmpty()) lightOrange else Color.Gray, CircleShape)
                     .testTag("SendButton")) {
               Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = Color.White)
             }

@@ -17,8 +17,6 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 typealias MessageListenerCallback = (group: MessageGroup, update: ListenerUpdate<Message>) -> Unit
@@ -28,7 +26,7 @@ typealias MessageListenerCallback = (group: MessageGroup, update: ListenerUpdate
  *
  * Responsible of the listeners for the message groups
  */
-class MessageListenerSharedViewModel : ViewModel() {
+class MessageListenerViewModel : ViewModel() {
   private var initialized = false
   private lateinit var uid: String
   private lateinit var messageGroupTable: MessageGroupTable
@@ -49,21 +47,20 @@ class MessageListenerSharedViewModel : ViewModel() {
      * of the shared view model in the app.
      */
     @Composable
-    fun createViewModel(): MessageListenerSharedViewModel {
-      return viewModel<MessageListenerSharedViewModel>(
+    fun createViewModel(): MessageListenerViewModel {
+      return viewModel<MessageListenerViewModel>(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return MessageListenerSharedViewModel() as T
+                  return MessageListenerViewModel() as T
                 }
               })
     }
   }
 
-  init{
+  init {
     println("Init shared view model")
   }
-
 
   /**
    * Initialize the view model.

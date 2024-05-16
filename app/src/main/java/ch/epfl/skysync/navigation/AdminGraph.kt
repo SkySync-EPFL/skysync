@@ -22,29 +22,26 @@ import ch.epfl.skysync.screens.admin.UserManagementScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
-import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
+import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 import ch.epfl.skysync.viewmodel.UserManagementViewModel
 
 fun NavGraphBuilder.adminGraph(
     repository: Repository,
     navController: NavHostController,
     uid: String?,
-    inFlightViewModel: InFlightViewModel? = null
+    inFlightViewModel: InFlightViewModel? = null,
+    messageListenerViewModel: MessageListenerViewModel? = null,
 ) {
   navigation(startDestination = Route.ADMIN_HOME, route = Route.ADMIN) {
     adminpersonalCalendar(repository, navController, uid)
-    composable(Route.ADMIN_HOME) { entry ->
+    composable(Route.ADMIN_HOME) {
       // initiate in flight view model here, so that we can notify
       // the user when a flight is started by someone else
       inFlightViewModel!!.init(uid!!)
 
       // get the MessageListenerSharedViewModel here so that it gets
       // instantiated
-      val messageListenerSharedViewModel =
-          entry.sharedViewModel<MessageListenerSharedViewModel>(
-              navController,
-          )
-      messageListenerSharedViewModel.init(uid!!, repository) { group, update ->
+      messageListenerViewModel!!.init(uid, repository) { group, update ->
         onMessageUpdate(group, update)
       }
 
@@ -91,25 +88,16 @@ fun NavGraphBuilder.adminGraph(
           val flightsViewModel = FlightsViewModel.createViewModel(repository, selectedUserId)
           UserDetailsScreen(navController, flightsViewModel)
         }
-    composable(Route.ADMIN_CHAT) { entry ->
-      val messageListenerSharedViewModel =
-          entry.sharedViewModel<MessageListenerSharedViewModel>(
-              navController,
-          )
+    composable(Route.ADMIN_CHAT) {
       val chatViewModel =
-          ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
+          ChatViewModel.createViewModel(uid!!, messageListenerViewModel!!, repository)
       AdminChatScreen(navController, chatViewModel)
     }
     composable(
         Route.ADMIN_TEXT + "/{Group ID}",
         arguments = listOf(navArgument("Group ID") { type = NavType.StringType })) { entry ->
-          val messageListenerSharedViewModel =
-              entry.sharedViewModel<MessageListenerSharedViewModel>(
-                  navController,
-              )
-
           val chatViewModel =
-              ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
+              ChatViewModel.createViewModel(uid!!, messageListenerViewModel!!, repository)
           val groupId = entry.arguments?.getString("Group ID")
           if (groupId == null) {
             navController.navigate(Route.ADMIN_HOME)

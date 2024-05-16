@@ -1,6 +1,5 @@
 package ch.epfl.skysync.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -41,14 +40,14 @@ data class ChatUiState(
  */
 class ChatViewModel(
     private val uid: String,
-    private val messageListenerViewModel: MessageListenerSharedViewModel,
+    private val messageListenerViewModel: MessageListenerViewModel,
     repository: Repository,
 ) : ViewModel() {
   companion object {
     @Composable
     fun createViewModel(
         uid: String,
-        messageListenerViewModel: MessageListenerSharedViewModel,
+        messageListenerViewModel: MessageListenerViewModel,
         repository: Repository
     ): ChatViewModel {
       return viewModel<ChatViewModel>(
@@ -116,7 +115,6 @@ class ChatViewModel(
 
   /** Callback called on message listener update. */
   private fun onMessageGroupChange(group: MessageGroup, update: ListenerUpdate<Message>) {
-    println("OUI")
     val group = messageGroups.value.find { it.id == group.id } ?: return
     var messages = group.messages
 
@@ -181,16 +179,16 @@ class ChatViewModel(
 
   init {
     messageListenerViewModel.pushCallback(this::onMessageGroupChange)
-      Log.d("Debug ChatViewModel", "PUSH")
+    println("Debug ChatViewModel PUSH")
     refreshUser()
     refresh()
   }
 
   override fun onCleared() {
     messageListenerViewModel.popCallback()
-      Log.d("Debug ChatViewModel", "POP")
+    println("Debug ChatViewModel POP")
 
-      super.onCleared()
+    super.onCleared()
   }
 
   /** Callback executed when an error occurs on database-related operations */

@@ -32,7 +32,7 @@ import ch.epfl.skysync.screens.reports.PilotReportScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
-import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
+import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 import java.time.LocalDate
 import java.util.Date
 
@@ -40,7 +40,8 @@ fun NavGraphBuilder.crewPilotGraph(
     repository: Repository,
     navController: NavHostController,
     uid: String?,
-    inFlightViewModel: InFlightViewModel? = null
+    inFlightViewModel: InFlightViewModel? = null,
+    messageListenerViewModel: MessageListenerViewModel? = null,
 ) {
   navigation(startDestination = Route.CREW_HOME, route = Route.CREW_PILOT) {
     personalCalendar(repository, navController, uid)
@@ -56,13 +57,8 @@ fun NavGraphBuilder.crewPilotGraph(
     composable(
         Route.CREW_TEXT + "/{Group ID}",
         arguments = listOf(navArgument("Group ID") { type = NavType.StringType })) { entry ->
-          val messageListenerSharedViewModel =
-              entry.sharedViewModel<MessageListenerSharedViewModel>(
-                  navController,
-              )
-
           val chatViewModel =
-              ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
+              ChatViewModel.createViewModel(uid!!, messageListenerViewModel!!, repository)
 
           val groupId = entry.arguments?.getString("Group ID")
           if (groupId == null) {
@@ -79,11 +75,7 @@ fun NavGraphBuilder.crewPilotGraph(
 
       // get the MessageListenerSharedViewModel here so that it gets
       // instantiated
-      val messageListenerSharedViewModel =
-          entry.sharedViewModel<MessageListenerSharedViewModel>(
-              navController,
-          )
-      messageListenerSharedViewModel.init(uid!!, repository) { group, update ->
+      messageListenerViewModel!!.init(uid, repository) { group, update ->
         onMessageUpdate(group, update)
       }
 
@@ -91,14 +83,9 @@ fun NavGraphBuilder.crewPilotGraph(
       flightsOverviewViewModel.refresh()
       HomeScreen(navController, flightsOverviewViewModel)
     }
-    composable(Route.CREW_CHAT) { entry ->
-      val messageListenerSharedViewModel =
-          entry.sharedViewModel<MessageListenerSharedViewModel>(
-              navController,
-          )
-
+    composable(Route.CREW_CHAT) {
       val chatViewModel =
-          ChatViewModel.createViewModel(uid!!, messageListenerSharedViewModel, repository)
+          ChatViewModel.createViewModel(uid!!, messageListenerViewModel!!, repository)
       ChatScreen(navController, chatViewModel)
     }
     composable(Route.FLIGHT) { FlightScreen(navController, inFlightViewModel!!, uid!!) }

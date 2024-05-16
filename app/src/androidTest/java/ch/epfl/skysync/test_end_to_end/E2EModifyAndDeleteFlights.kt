@@ -23,6 +23,7 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.viewmodel.InFlightViewModel
+import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
@@ -45,8 +46,10 @@ class E2EModifyAndDeleteFlights {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       val inFlightViewModel = InFlightViewModel.createViewModel(repository)
+      val messageListenerViewModel = MessageListenerViewModel.createViewModel()
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.admin1.id, inFlightViewModel)
+        homeGraph(
+            repository, navController, dbs.admin1.id, inFlightViewModel, messageListenerViewModel)
       }
     }
     composeTestRule.waitUntil(2500) {

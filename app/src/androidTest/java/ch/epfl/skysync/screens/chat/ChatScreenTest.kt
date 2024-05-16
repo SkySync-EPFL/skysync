@@ -12,7 +12,7 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.screens.admin.AdminChatScreen
 import ch.epfl.skysync.screens.crewpilot.ChatScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
-import ch.epfl.skysync.viewmodel.MessageListenerSharedViewModel
+import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 import org.junit.Rule
 import org.junit.Test
 
@@ -27,10 +27,10 @@ class ChatScreenTest {
   @Test
   fun chatScreenIsDisplayed() {
     composeTestRule.setContent {
-      val messageListenerSharedViewModel = MessageListenerSharedViewModel.createViewModel()
+      val messageListenerViewModel = MessageListenerViewModel.createViewModel()
       val viewModel =
           ChatViewModel.createViewModel(
-              uid = dbs.admin1.id, messageListenerSharedViewModel, repository = repository)
+              uid = dbs.admin1.id, messageListenerViewModel, repository = repository)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       ChatScreen(navController, viewModel)
@@ -41,10 +41,10 @@ class ChatScreenTest {
   @Test
   fun AdminChatScreenIsDispayed() {
     composeTestRule.setContent {
-      val messageListenerSharedViewModel = MessageListenerSharedViewModel.createViewModel()
+      val messageListenerViewModel = MessageListenerViewModel.createViewModel()
       val viewModel =
           ChatViewModel.createViewModel(
-              uid = dbs.admin1.id, messageListenerSharedViewModel, repository = repository)
+              uid = dbs.admin1.id, messageListenerViewModel, repository = repository)
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       AdminChatScreen(navController, viewModel)

@@ -1,6 +1,6 @@
 package ch.epfl.skysync.screens.crewpilot
 
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,7 +20,7 @@ fun TextScreen(navController: NavHostController, groupId: String, viewModel: Cha
   val group = uiState.messageGroups.find { it.id == groupId }
 
   Scaffold(
-      modifier = Modifier.fillMaxSize().testTag("ChatScreenScaffold"),
+      modifier = Modifier.testTag("ChatScreenScaffold"),
       topBar = {
         CustomTopAppBar(navController = navController, title = group?.name ?: "Group not found")
       },
