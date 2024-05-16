@@ -40,14 +40,14 @@ data class ChatUiState(
  */
 class ChatViewModel(
     private val uid: String,
-    private val messageListenerViewModel: MessageListenerSharedViewModel,
+    private val messageListenerViewModel: MessageListenerViewModel,
     repository: Repository,
 ) : ViewModel() {
   companion object {
     @Composable
     fun createViewModel(
         uid: String,
-        messageListenerViewModel: MessageListenerSharedViewModel,
+        messageListenerViewModel: MessageListenerViewModel,
         repository: Repository
     ): ChatViewModel {
       return viewModel<ChatViewModel>(
@@ -179,12 +179,15 @@ class ChatViewModel(
 
   init {
     messageListenerViewModel.pushCallback(this::onMessageGroupChange)
+    println("Debug ChatViewModel PUSH")
     refreshUser()
     refresh()
   }
 
   override fun onCleared() {
     messageListenerViewModel.popCallback()
+    println("Debug ChatViewModel POP")
+
     super.onCleared()
   }
 

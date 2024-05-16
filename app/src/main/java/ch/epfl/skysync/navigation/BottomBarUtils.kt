@@ -18,7 +18,8 @@ sealed class BottomBarScreen(val route: String, val title: String, @DrawableRes 
       BottomBarScreen(route = Route.CREW_HOME, title = "Home", icon = R.drawable.baseline_home_24)
 
   data object Flight :
-      BottomBarScreen(route = Route.FLIGHT, title = "Flight", icon = R.drawable.baseline_flight_24)
+      BottomBarScreen(
+          route = Route.LAUNCH_FLIGHT, title = "Flight", icon = R.drawable.baseline_flight_24)
 
   data object Chat :
       BottomBarScreen(route = Route.CREW_CHAT, title = "Chat", icon = R.drawable.baseline_chat_24)

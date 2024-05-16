@@ -13,6 +13,7 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.MainGraph
 import ch.epfl.skysync.ui.theme.SkySyncTheme
 import ch.epfl.skysync.viewmodel.InFlightViewModel
+import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 import ch.epfl.skysync.viewmodel.UserGlobalViewModel
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
@@ -52,12 +53,14 @@ class MainActivity : ComponentActivity() {
           val inFlightViewModel =
               InFlightViewModel.createViewModel(
                   repository = repository) // is shared between all screens
+          val messageListenerViewModel = MessageListenerViewModel.createViewModel()
           MainGraph(
               repository = repository,
               navHostController = navController,
               signInLauncher = signInLauncher,
               userGlobalViewModel = userGlobalViewModel!!,
-              inFlightsViewModel = inFlightViewModel)
+              inFlightsViewModel = inFlightViewModel,
+              messageListenerViewModel = messageListenerViewModel)
         }
       }
     }

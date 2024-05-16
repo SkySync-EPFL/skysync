@@ -26,7 +26,7 @@ class ChatViewModelTest {
   private val dbs = DatabaseSetup()
   private val repository: Repository = Repository(db)
 
-  private lateinit var messageListenerSharedViewModel: MessageListenerSharedViewModel
+  private lateinit var messageListenerViewModel: MessageListenerViewModel
   private lateinit var chatViewModel: ChatViewModel
 
   @Before
@@ -34,9 +34,9 @@ class ChatViewModelTest {
     dbs.clearDatabase(db)
     dbs.fillDatabase(db)
     composeTestRule.setContent {
-      messageListenerSharedViewModel = MessageListenerSharedViewModel.createViewModel()
+      messageListenerViewModel = MessageListenerViewModel.createViewModel()
       chatViewModel =
-          ChatViewModel.createViewModel(dbs.admin2.id, messageListenerSharedViewModel, repository)
+          ChatViewModel.createViewModel(dbs.admin2.id, messageListenerViewModel, repository)
 
       val uiState = chatViewModel.uiState.collectAsStateWithLifecycle()
       Text(text = "$uiState")
@@ -61,19 +61,17 @@ class ChatViewModelTest {
 
   @Test
   fun messageListenerTest() = runTest {
-    messageListenerSharedViewModel.coroutineScope = this
+    messageListenerViewModel.coroutineScope = this
 
     // first setup the callback
     var callbackValues = mutableListOf<Pair<String, ListenerUpdate<Message>>>()
-    messageListenerSharedViewModel.pushCallback { group, update ->
+    messageListenerViewModel.pushCallback { group, update ->
       callbackValues.add(Pair(group.id, update))
     }
 
     // then init the shared view model (this will setup the listeners)
     var defaultCallbackCount = 0
-    messageListenerSharedViewModel.init(dbs.admin2.id, repository) { _, _ ->
-      defaultCallbackCount += 1
-    }
+    messageListenerViewModel.init(dbs.admin2.id, repository) { _, _ -> defaultCallbackCount += 1 }
 
     // wait at little bit to let the time to setup and trigger the listener a first time
     SystemClock.sleep(300)
