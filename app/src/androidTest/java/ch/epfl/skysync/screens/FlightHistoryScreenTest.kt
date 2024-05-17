@@ -33,15 +33,16 @@ class FlightHistoryScreenTest {
   }
 
   @Test
-  fun filtersMenuAppearCorrectly() {
+  fun filtersMenuAppearCorrectly() = runTest {
     composeTestRule.setContent {
       navController = rememberNavController()
       finishedFlightsViewModel =
           FinishedFlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
-      FlightHistoryScreen(navController, finishedFlightsViewModel)
       finishedFlightsViewModel.refresh()
+      FlightHistoryScreen(navController, finishedFlightsViewModel)
     }
-    composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
+
+    composeTestRule.waitUntil { finishedFlightsViewModel.currentFlights.value != null }
     composeTestRule.onNodeWithTag("Filter Button").performClick()
     composeTestRule.onNodeWithTag("Filter Menu").assertIsDisplayed()
   }
@@ -52,11 +53,10 @@ class FlightHistoryScreenTest {
       navController = rememberNavController()
       finishedFlightsViewModel =
           FinishedFlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
-      FlightHistoryScreen(navController, finishedFlightsViewModel)
       finishedFlightsViewModel.refresh()
+      FlightHistoryScreen(navController, finishedFlightsViewModel)
     }
-    composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
-    finishedFlightsViewModel.getFlights()
+    composeTestRule.waitUntil(2000) { finishedFlightsViewModel.currentFlights.value != null }
     composeTestRule.onNodeWithTag("Card 0").assertIsDisplayed()
     composeTestRule.onNodeWithTag("Card 1").assertIsDisplayed()
   }
@@ -71,8 +71,7 @@ class FlightHistoryScreenTest {
       finishedFlightsViewModel.refresh()
       FlightHistoryScreen(navController, finishedFlightsViewModel)
     }
-    composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
-    finishedFlightsViewModel.getFlights()
+    composeTestRule.waitUntil { finishedFlightsViewModel.currentFlights.value != null }
     composeTestRule.onNodeWithTag("Search Bar").onChildAt(0).performTextInput("Lausanne 1")
     // Not implemented yet
     /*composeTestRule.onNodeWithTag("Card 0").assertExists()
@@ -88,8 +87,7 @@ class FlightHistoryScreenTest {
       finishedFlightsViewModel.refresh()
       FlightHistoryScreen(navController, finishedFlightsViewModel)
     }
-    composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
-    finishedFlightsViewModel.getFlights()
+    composeTestRule.waitUntil { finishedFlightsViewModel.currentFlights.value != null }
     composeTestRule.onNodeWithTag("Filter Button").performClick()
     composeTestRule.onNodeWithTag("Date Range Field 1").performClick()
     composeTestRule.onNodeWithTag("Date Range Selector").assertIsDisplayed()
@@ -104,8 +102,7 @@ class FlightHistoryScreenTest {
       finishedFlightsViewModel.refresh()
       FlightHistoryScreen(navController, finishedFlightsViewModel)
     }
-    composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
-    finishedFlightsViewModel.getFlights()
+    composeTestRule.waitUntil { finishedFlightsViewModel.currentFlights.value != null }
     composeTestRule.onNodeWithTag("No Flight").assertIsDisplayed()
   }
 }

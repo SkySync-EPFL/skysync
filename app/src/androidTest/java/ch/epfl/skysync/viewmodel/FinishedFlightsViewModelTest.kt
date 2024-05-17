@@ -28,12 +28,12 @@ class FinishedFlightsViewModelTest {
 
   @Test
   fun loadsRightUser() = runTest {
-    finishedFlightsViewModel = FinishedFlightsViewModel(repository, "id-pilot-1")
+    finishedFlightsViewModel = FinishedFlightsViewModel(repository, dbSetup.pilot1.id)
     finishedFlightsViewModel.refresh()
     val user = finishedFlightsViewModel.currentUser
     composeTestRule.waitUntil { user.value != null }
     assert(user.value is Pilot)
-    assert(user.value!!.id == "id-pilot-1")
+    assert(user.value!!.id == dbSetup.pilot1.id)
   }
 
   @Test
@@ -41,7 +41,7 @@ class FinishedFlightsViewModelTest {
     finishedFlightsViewModel = FinishedFlightsViewModel(repository, dbSetup.pilot1.id)
     finishedFlightsViewModel.refresh()
     composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
-    finishedFlightsViewModel.getFlights()
+    composeTestRule.waitUntil { finishedFlightsViewModel.currentFlights.value != null }
     assert(finishedFlightsViewModel.currentFlights.value != null)
     assert(finishedFlightsViewModel.currentFlights.value!!.size == 2)
   }
@@ -51,7 +51,7 @@ class FinishedFlightsViewModelTest {
     finishedFlightsViewModel = FinishedFlightsViewModel(repository, dbSetup.admin1.id)
     finishedFlightsViewModel.refresh()
     composeTestRule.waitUntil { finishedFlightsViewModel.currentUser.value != null }
-    finishedFlightsViewModel.getFlights()
+    composeTestRule.waitUntil { finishedFlightsViewModel.currentFlights.value != null }
     assert(finishedFlightsViewModel.currentFlights.value != null)
     assert(finishedFlightsViewModel.currentFlights.value!!.size == 2)
   }
@@ -66,13 +66,4 @@ class FinishedFlightsViewModelTest {
     assert(flight!!.size == 2)
   }*/
 
-  /*@Test
-  fun selectedFlightIsCorrect() = runTest {
-      finishedFlightsViewModel = FinishedFlightsViewModel(repository, "id-pilot-1")
-      finishedFlightsViewModel.refresh()
-      finishedFlightsViewModel.selectFlight(dbSetup.flight5.id)
-      val selectedFlight = finishedFlightsViewModel.selectedFlight
-      composeTestRule.waitUntil { selectedFlight.value != null }
-      assert(selectedFlight.value == dbSetup.flight5)
-  }*/
 }

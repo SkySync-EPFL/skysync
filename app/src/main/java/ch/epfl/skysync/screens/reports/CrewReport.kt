@@ -40,9 +40,10 @@ import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 @Composable
 fun CrewReportScreen(
     navHostController: NavHostController,
-    finishedFlightsViewModel: FinishedFlightsViewModel
+    finishedFlightsViewModel: FinishedFlightsViewModel,
+    flightId: String
 ) {
-  val flight = finishedFlightsViewModel.selectedFlight.collectAsStateWithLifecycle()
+  val flight = finishedFlightsViewModel.getFlight(flightId).collectAsStateWithLifecycle()
   val crew = finishedFlightsViewModel.currentUser.collectAsStateWithLifecycle()
   val title = "Crew Report"
   Scaffold(topBar = { CustomTopAppBar(navController = navHostController, title = title) }) { padding

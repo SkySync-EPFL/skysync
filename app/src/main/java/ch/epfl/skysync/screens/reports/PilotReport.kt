@@ -44,11 +44,12 @@ import java.util.Date
 @Composable
 fun PilotReportScreen(
     navHostController: NavHostController,
-    finishedFlightsViewModel: FinishedFlightsViewModel
+    finishedFlightsViewModel: FinishedFlightsViewModel,
+    flightId: String
 ) {
   val title = "Pilot Report"
   val pilot = finishedFlightsViewModel.currentUser.collectAsStateWithLifecycle()
-  val flight = finishedFlightsViewModel.selectedFlight.collectAsStateWithLifecycle()
+  val flight = finishedFlightsViewModel.getFlight(flightId).collectAsStateWithLifecycle()
   Scaffold(topBar = { CustomTopAppBar(navController = navHostController, title = title) }) { padding
     ->
     Column(modifier = Modifier.fillMaxSize().padding(padding)) {

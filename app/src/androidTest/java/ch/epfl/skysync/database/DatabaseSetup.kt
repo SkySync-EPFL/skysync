@@ -1,5 +1,6 @@
 package ch.epfl.skysync.database
 
+import ch.epfl.skysync.database.DateUtility.createDate
 import ch.epfl.skysync.database.tables.AvailabilityTable
 import ch.epfl.skysync.database.tables.BalloonTable
 import ch.epfl.skysync.database.tables.BasketTable
@@ -22,6 +23,7 @@ import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -29,6 +31,7 @@ import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.message.Message
 import ch.epfl.skysync.models.message.MessageGroup
 import ch.epfl.skysync.models.user.Admin
@@ -226,7 +229,7 @@ class DatabaseSetup {
           meetupTimePassenger = LocalTime.of(14, 0, 0),
           meetupLocationPassenger = "location",
       )
-  /*var flight5 =
+  var flight5 =
       FinishedFlight(
           id = UNSET_ID,
           nPassengers = 3,
@@ -261,7 +264,7 @@ class DatabaseSetup {
           takeOffTime = createDate(date1.year, date1.monthValue, date1.dayOfMonth, 6, 0),
           landingLocation = LocationPoint(0, 0.0, 0.0, "Landing"),
           takeOffLocation = LocationPoint(0, 1.0, 1.0, "Take off"),
-      )*/
+      )
 
   var messageGroup1 =
       MessageGroup(name = "Group 1", userIds = setOf(admin2.id, pilot1.id, crew1.id))
@@ -429,7 +432,7 @@ class DatabaseSetup {
             basket = basket1,
             vehicles = listOf(vehicle2),
         )
-    /*flight5 =
+    flight5 =
         flight5.copy(
             team =
                 Team(
@@ -456,7 +459,7 @@ class DatabaseSetup {
             balloon = balloon1,
             basket = basket1,
             vehicles = listOf(vehicle2),
-        )*/
+        )
 
     // now that the IDs are set, add the flights/messages
     listOf(
@@ -464,8 +467,8 @@ class DatabaseSetup {
             launch { flight2 = flight2.copy(id = flightTable.add(flight2)) },
             launch { flight3 = flight3.copy(id = flightTable.add(flight3)) },
             launch { flight4 = flight4.copy(id = flightTable.add(flight4)) },
-            /*launch { flight5 = flight5.copy(id = flightTable.add(flight5)) },
-            launch { flight6 = flight6.copy(id = flightTable.add(flight6)) },*/
+            launch { flight5 = flight5.copy(id = flightTable.add(flight5)) },
+            launch { flight6 = flight6.copy(id = flightTable.add(flight6)) },
             launch { message1 = message1.copy(id = messageTable.add(messageGroup1.id, message1)) },
             launch { message2 = message2.copy(id = messageTable.add(messageGroup1.id, message2)) },
             launch { message3 = message3.copy(id = messageTable.add(messageGroup2.id, message3)) },

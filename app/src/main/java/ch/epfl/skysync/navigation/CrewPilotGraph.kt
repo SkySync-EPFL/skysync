@@ -1,6 +1,5 @@
 package ch.epfl.skysync.navigation
 
-import android.util.Log
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -82,18 +81,15 @@ fun NavGraphBuilder.crewPilotGraph(
           val flightId = entry.arguments?.getString("flight ID") ?: UNSET_ID
           val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid)
           finishedFlightsViewModel.refresh()
-          finishedFlightsViewModel.selectFlight(flightId)
-          PilotReportScreen(navController, finishedFlightsViewModel)
+          PilotReportScreen(navController, finishedFlightsViewModel, flightId)
         }
     composable(
         Route.CREW_REPORT + "/{flight ID}",
         arguments = listOf(navArgument("flight ID") { type = NavType.StringType })) { entry ->
           val flightId = entry.arguments?.getString("flight ID") ?: UNSET_ID
           val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid)
-          Log.d("CrewPilotGraph", "Selected flight id: $flightId")
           finishedFlightsViewModel.refresh()
-          finishedFlightsViewModel.selectFlight(flightId)
-          CrewReportScreen(navController, finishedFlightsViewModel)
+          CrewReportScreen(navController, finishedFlightsViewModel, flightId)
         }
     composable(Route.LAUNCH_FLIGHT) {
       val viewModel = FlightsViewModel.createViewModel(repository, uid)
