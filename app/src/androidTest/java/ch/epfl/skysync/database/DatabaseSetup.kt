@@ -420,13 +420,7 @@ class DatabaseSetup {
         )
     flight4 =
         flight4.copy(
-            team =
-                Team(
-                    roles =
-                        listOf(
-                            Role(RoleType.PILOT, pilot1),
-                            Role(RoleType.CREW, crew1),
-                            Role(RoleType.CREW, crew2))),
+            team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
             flightType = flightType1,
             balloon = balloon1,
             basket = basket1,
@@ -434,13 +428,7 @@ class DatabaseSetup {
         )
     flight5 =
         flight5.copy(
-            team =
-                Team(
-                    roles =
-                        listOf(
-                            Role(RoleType.PILOT, pilot1),
-                            Role(RoleType.CREW, crew1),
-                            Role(RoleType.CREW, crew2))),
+            team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
             flightType = flightType1,
             balloon = balloon1,
             basket = basket1,
@@ -448,13 +436,7 @@ class DatabaseSetup {
         )
     flight6 =
         flight6.copy(
-            team =
-                Team(
-                    roles =
-                        listOf(
-                            Role(RoleType.PILOT, pilot1),
-                            Role(RoleType.CREW, crew1),
-                            Role(RoleType.CREW, crew2))),
+            team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew2))),
             flightType = flightType1,
             balloon = balloon1,
             basket = basket1,

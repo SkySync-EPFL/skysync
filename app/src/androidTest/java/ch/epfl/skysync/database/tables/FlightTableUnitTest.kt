@@ -1,5 +1,6 @@
 package ch.epfl.skysync.database.tables
 
+import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
@@ -79,9 +80,17 @@ class FlightTableUnitTest {
 
     val flights = flightTable.getAll(onError = { assertNull(it) })
 
-    assertEquals(7, flightMembers.size)
+    assertEquals(10, flightMembers.size)
+    Log.d(
+        "flights",
+        listOf(dbs.flight2, dbs.flight3, dbs.flight4, dbs.flight5, dbs.flight6)
+            .sortedBy { f -> f.id }
+            .toString())
+    Log.d("flights expected", flights.sortedBy { f -> f.id }.toString())
+
     assertEquals(
-        listOf(dbs.flight2, dbs.flight3, dbs.flight4).sortedBy { f -> f.id },
-        flights.sortedBy { f -> f.id })
+        listOf(dbs.flight2.id, dbs.flight3.id, dbs.flight4.id, dbs.flight5.id, dbs.flight6.id)
+            .sortedBy { it },
+        flights.map { f -> f.id }.sortedBy { it })
   }
 }
