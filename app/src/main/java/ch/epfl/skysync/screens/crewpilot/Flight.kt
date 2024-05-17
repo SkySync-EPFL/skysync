@@ -54,6 +54,9 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlin.math.atan2
+import kotlin.math.pow
+import kotlin.random.Random
 
 @Composable
 fun UserLocationMarker(location: Location, user: User) {
@@ -95,19 +98,44 @@ fun FlightScreen(
 
   var metrics by remember { mutableStateOf(UserMetrics(0.0f, 0.0, 0.0f, 0.0, defaultLocation)) }
 
+  var diffx by remember { mutableStateOf(0.0) }
+  var diffy by remember { mutableStateOf(0.0) }
+
+  var altitude by remember { mutableStateOf(0.0) }
+
+  var time by remember { mutableStateOf(0L) }
+
   val locationCallback =
       object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
           locationResult.lastLocation?.let {
+            val newTime = rawTime
+            altitude += -50 + 100 * Random.nextDouble()
+            val newDiffx = diffx + -0.01 + 0.03 * Random.nextDouble()
+            val newDiffy = diffy + 0.02 + 0.01 * Random.nextDouble()
+
+            val distance = (newDiffx - diffx).pow(2) + (newDiffy - diffy).pow(2)
+            val speed =
+                if (newTime - time == 0L) {
+                  0.0
+                } else {
+                  distance / (newTime - time)
+                }
+            val bearing = atan2(newDiffy - diffy, newDiffx - diffx)
+
+            time = newTime
+            diffx = newDiffx
+            diffy = newDiffy
+
             val newLocation =
                 LocationPoint(
                     time = (rawTime / 1000).toInt(),
-                    latitude = it.latitude,
-                    longitude = it.longitude,
+                    latitude = it.latitude + diffx,
+                    longitude = it.longitude + diffy,
                 )
 
             inFlightViewModel.addLocation(Location(userId = uid, point = newLocation))
-            metrics = metrics.withUpdate(it.speed, it.altitude, it.bearing, newLocation)
+            metrics = metrics.withUpdate(speed.toFloat(), altitude, bearing.toFloat(), newLocation)
           }
         }
       }
