@@ -1,5 +1,6 @@
 package ch.epfl.skysync.screens.reports
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,6 +48,7 @@ fun CrewReportScreen(
   Scaffold(topBar = { CustomTopAppBar(navController = navHostController, title = title) }) { padding
     ->
     Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+      Log.d("CrewReportScreen", "Values ${crew.value} ${flight.value}")
       if (crew.value == null || flight.value == null) {
         LoadingComponent(isLoading = true, onRefresh = { finishedFlightsViewModel.refresh() }) {}
       } else {

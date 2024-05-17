@@ -1,6 +1,7 @@
 package ch.epfl.skysync.screens.reports
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -37,12 +38,14 @@ class CrewReportScreenTest {
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(repository, navController, dbs.crew1.id)
       }
-      navController.navigate(Route.CREW_REPORT)
+      navController.navigate(Route.CREW_REPORT + "/id-flight-1")
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun allFieldsAreDisplayed() {
+    composeTestRule.waitUntilExactlyOneExists(hasTestTag("Crew Report LazyColumn"), 2000)
     composeTestRule
         .onNodeWithTag("Crew Report LazyColumn")
         .performScrollToNode(hasTestTag("Number of little champagne bottles"))
@@ -81,8 +84,10 @@ class CrewReportScreenTest {
     composeTestRule.onNodeWithTag("Submit Button").assertExists()
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun minimalReportWorks() {
+    composeTestRule.waitUntilExactlyOneExists(hasTestTag("Crew Report LazyColumn"))
     composeTestRule
         .onNodeWithTag("Crew Report LazyColumn")
         .performScrollToNode(hasTestTag("Number of little champagne bottles"))
@@ -118,7 +123,7 @@ class CrewReportScreenTest {
         .performScrollToNode(hasTestTag("Comments"))
     composeTestRule.onNodeWithTag("Add Problem Button").performClick()
     composeTestRule.onNodeWithTag("Vehicle Menu").performClick()
-    composeTestRule.onNodeWithTag("Vehicle 1").performClick()
+    composeTestRule.onNodeWithTag("Vehicle 0").performClick()
     composeTestRule.onNodeWithTag("Problem Field").performTextInput("Problem 1")
     composeTestRule.onNodeWithTag("Add Vehicle Problem Button").performClick()
 

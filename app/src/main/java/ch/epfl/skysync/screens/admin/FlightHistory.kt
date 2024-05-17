@@ -84,12 +84,12 @@ fun FlightHistoryScreen(
       topBar = { CustomTopAppBar(navController = navController, title = "Flight History") },
       bottomBar = { AdminBottomBar(navController = navController) }) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-          val allFlights by finishedFlightsViewModel.currentFlights.collectAsState()
-          if (allFlights == null) {
+          val allFlights = finishedFlightsViewModel.currentFlights.collectAsState()
+          if (allFlights.value == null) {
             LoadingComponent(
                 isLoading = true, onRefresh = { finishedFlightsViewModel.refresh() }) {}
           } else {
-            if (allFlights!!.isEmpty()) {
+            if (allFlights.value!!.isEmpty()) {
               Text(
                   modifier = Modifier.padding(padding).testTag("No Flight"),
                   text = "No flights available")
@@ -121,7 +121,7 @@ fun FlightHistoryScreen(
                 FlightSearchBar(
                     modifier = Modifier.fillMaxWidth().weight(3f),
                     onSearch = { /* TODO search for flights by location name */},
-                    results = allFlights!!)
+                    results = allFlights.value!!)
                 IconButton(
                     modifier = Modifier.testTag("Filter Button"),
                     onClick = { showFilters = !showFilters },
@@ -134,7 +134,7 @@ fun FlightHistoryScreen(
               }
             }
             LazyColumn() {
-              itemsIndexed(allFlights!!) { id, flight ->
+              itemsIndexed(allFlights.value!!) { id, flight ->
                 HistoryCard(flight, Modifier.testTag("Card $id"))
               }
             }

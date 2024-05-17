@@ -1,6 +1,7 @@
 package ch.epfl.skysync.screens.reports
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -36,12 +37,14 @@ class PilotReportScreenTest {
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(repository, navController, dbs.pilot1.id)
       }
-      navController.navigate(Route.PILOT_REPORT)
+      navController.navigate(Route.PILOT_REPORT + "/id-flight-1")
     }
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun allFieldsAreDisplayed() {
+    composeTestRule.waitUntilExactlyOneExists(hasTestTag("Pilot Report LazyColumn"))
     composeTestRule
         .onNodeWithTag("Pilot Report LazyColumn")
         .performScrollToNode(hasTestTag("Number of passengers"))
@@ -90,8 +93,10 @@ class PilotReportScreenTest {
     composeTestRule.onNodeWithTag("Submit Button").assertExists()
   }
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   fun minimalReportWorks() {
+    composeTestRule.waitUntilExactlyOneExists(hasTestTag("Crew Report LazyColumn"))
     composeTestRule
         .onNodeWithTag("Pilot Report LazyColumn")
         .performScrollToNode(hasTestTag("Number of passengers"))

@@ -74,7 +74,7 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
   var date1 = LocalDate.of(2024, 8, 14)
   val flight1 =
       FinishedFlight(
-          id = UNSET_ID,
+          id = "id-flight-1",
           nPassengers = 3,
           team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
           flightType = FlightType.DISCOVERY,
@@ -93,7 +93,7 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
           takeOffLocation = LocationPoint(0, 1.0, 1.0, "Ecublens"))
   val flight2 =
       FinishedFlight(
-          id = UNSET_ID,
+          id = "id-flight-2",
           nPassengers = 2,
           team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew2))),
           flightType = FlightType.DISCOVERY,
@@ -170,9 +170,12 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
     refreshFlights()
   }*/
 
-  /*fun selectFlight(id: String) {
-    _selectedFlight.value = currentFlights?.find { it.id == id }
-  }*/
+  fun selectFlight(id: String) =
+      viewModelScope.launch {
+        refreshUser().join()
+        _selectedFlight.value = currentFlights.value?.find { it.id == id }
+      }
+
   /*
     /** Might be used in the future to get the flights by location with a search bar */
     fun getFlightByLocation(location: String): List<FinishedFlight>? {
