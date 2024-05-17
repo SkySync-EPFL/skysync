@@ -115,6 +115,9 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
           .stateIn(
               viewModelScope, started = WhileUiSubscribed, initialValue = DateUtility.formatTime(0))
 
+  private var takeOffTime: LocalTime? = null
+  private var landingTime: LocalTime? = null
+
   private val _flightStage = MutableStateFlow(FlightStage.IDLE)
 
   /** The current flight stage */
@@ -294,6 +297,7 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
   private fun startFlightInternal() {
     _flightStage.value = FlightStage.ONGOING
     startLocationTracking(_currentFlight.value!!.team)
+    takeOffTime = LocalTime.now()
     startTimer()
   }
 
@@ -339,6 +343,7 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
       viewModelScope.launch {
         if (!isOngoingFlight()) return@launch
         _flightStage.value = FlightStage.POST
+        landingTime = LocalTime.now()
         stopTimer()
         stopLocationTracking()
 
@@ -367,7 +372,9 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   /** Save the finished flight to the database */
   private suspend fun saveFinishedFlight() {
-    // TODO: save the finished flight to the database
+    if (currentFlight.value == null) {
+      return
+    }
     Log.d("InFlightViewModel", "Saving finished flight")
   }
 

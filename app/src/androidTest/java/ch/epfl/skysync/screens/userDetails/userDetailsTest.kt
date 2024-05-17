@@ -19,7 +19,7 @@ import org.junit.Test
 
 class UserDetailsTest {
   @get:Rule val composeTestRule = createComposeRule()
-  private lateinit var flighsViewModel: FlightsViewModel
+  private lateinit var flightsViewModel: FlightsViewModel
 
   private val dbs = DatabaseSetup()
   private val db = FirestoreDatabase(useEmulator = true)
@@ -27,17 +27,21 @@ class UserDetailsTest {
 
   private lateinit var navController: NavHostController
 
-  @Before fun setUp() = runTest { dbs.fillDatabase(db) }
+  @Before
+  fun setUp() = runTest {
+    dbs.clearDatabase(db)
+    dbs.fillDatabase(db)
+  }
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  fun testPersonalFlightHistoryDisplaysFlights() {
+  fun testPersonalFlightHistoryDisplaysFlights() = runTest {
     // Check for elements
     composeTestRule.setContent {
-      flighsViewModel = FlightsViewModel.createViewModel(repository, dbs.crew1.id)
-      flighsViewModel.refresh()
-      UserDetailsScreen(navController = rememberNavController(), flighsViewModel)
+      flightsViewModel = FlightsViewModel.createViewModel(repository, dbs.crew1.id)
+      UserDetailsScreen(navController = rememberNavController(), flightsViewModel)
     }
+    flightsViewModel.refreshUserAndFlights().join()
     composeTestRule.onNodeWithText("Completed Flights").assertIsDisplayed()
     composeTestRule.waitUntilAtLeastOneExists(hasTestTag("flightCard${dbs.flight1.id}"), 3000)
   }
@@ -45,20 +49,20 @@ class UserDetailsTest {
   @Test
   fun testEmptyMessage() {
     composeTestRule.setContent {
-      flighsViewModel = FlightsViewModel.createViewModel(repository, dbs.pilot3.id)
-      flighsViewModel.refresh()
-      UserDetailsScreen(navController = rememberNavController(), flighsViewModel)
+      flightsViewModel = FlightsViewModel.createViewModel(repository, dbs.pilot3.id)
+      flightsViewModel.refresh()
+      UserDetailsScreen(navController = rememberNavController(), flightsViewModel)
     }
-    composeTestRule.waitUntil(4000) { flighsViewModel.currentUser.value != null }
+    composeTestRule.waitUntil(4000) { flightsViewModel.currentUser.value != null }
     composeTestRule.onNodeWithText("No flights").assertIsDisplayed()
   }
 
   @Test
   fun testUserNameIsDisplayed() {
     composeTestRule.setContent {
-      flighsViewModel = FlightsViewModel.createViewModel(repository, dbs.crew1.id)
-      flighsViewModel.refresh()
-      UserDetailsScreen(navController = rememberNavController(), flighsViewModel)
+      flightsViewModel = FlightsViewModel.createViewModel(repository, dbs.crew1.id)
+      flightsViewModel.refresh()
+      UserDetailsScreen(navController = rememberNavController(), flightsViewModel)
     }
     composeTestRule
         .onNodeWithText("${dbs.crew1.firstname} ${dbs.crew1.lastname}")

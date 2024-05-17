@@ -7,7 +7,7 @@ import ch.epfl.skysync.models.user.Pilot
 import java.util.Date
 
 data class PilotReport(
-    val id: String = UNSET_ID,
+    override val id: String = UNSET_ID,
     override val author: Pilot,
     val effectivePax: Int,
     val takeOffTime: Date,
