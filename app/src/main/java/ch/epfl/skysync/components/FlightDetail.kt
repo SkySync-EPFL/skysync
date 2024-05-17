@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -306,8 +307,16 @@ fun DisplaySingleMetric(metric: String, value: String) {
  * @param okClick Lambda function to handle the click event for confirming the flight details.
  */
 @Composable
-fun ConfirmedFlightDetailBottom(okClick: () -> Unit) {
+fun ConfirmedFlightDetailBottom(okClick: () -> Unit, deleteClick: () -> Unit, isAdmin: Boolean) {
   BottomAppBar {
+    if (isAdmin) {
+      Button(
+          onClick = deleteClick,
+          modifier =
+              Modifier.fillMaxHeight().fillMaxWidth(0.5f).padding(16.dp).testTag("OK Button")) {
+            Text(text = "Delete", color = Color.White, overflow = TextOverflow.Clip)
+          }
+    }
     Button(
         onClick = okClick, modifier = Modifier.fillMaxSize().padding(16.dp).testTag("OK Button")) {
           Text(text = "OK", color = Color.White, overflow = TextOverflow.Clip)
