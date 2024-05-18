@@ -80,7 +80,7 @@ class FlightTableUnitTest {
 
     val flights = flightTable.getAll(onError = { assertNull(it) })
 
-    assertEquals(10, flightMembers.size)
+    assertEquals(11, flightMembers.size)
     Log.d(
         "flights",
         listOf(dbs.flight2, dbs.flight3, dbs.flight4, dbs.flight5, dbs.flight6)
