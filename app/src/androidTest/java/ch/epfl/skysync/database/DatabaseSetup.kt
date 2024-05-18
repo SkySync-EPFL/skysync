@@ -232,29 +232,29 @@ class DatabaseSetup {
   var flight5 =
       FinishedFlight(
           id = UNSET_ID,
-          nPassengers = 3,
+          nPassengers = 2,
           team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
           flightType = flightType1,
           balloon = balloon1,
           basket = basket1,
           date = date1,
-          timeSlot = TimeSlot.PM,
+          timeSlot = TimeSlot.AM,
           vehicles = listOf(vehicle2),
           color = FlightColor.GREEN,
           flightTime = 3_600_000, // 1 hour
-          landingTime = createDate(date1.year, date1.monthValue, date1.dayOfMonth, 15, 0),
-          takeOffTime = createDate(date1.year, date1.monthValue, date1.dayOfMonth, 14, 0),
+          landingTime = createDate(date1.year, date1.monthValue, date1.dayOfMonth, 5, 0),
+          takeOffTime = createDate(date1.year, date1.monthValue, date1.dayOfMonth, 4, 0),
           landingLocation = LocationPoint(0, 0.0, 0.0, "Landing"),
           takeOffLocation = LocationPoint(0, 1.0, 1.0, "Take off"),
       )
   var flight6 =
       FinishedFlight(
           id = UNSET_ID,
-          nPassengers = 2,
+          nPassengers = 4,
           team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew2))),
-          flightType = flightType1,
-          balloon = balloon1,
-          basket = basket1,
+          flightType = flightType2,
+          balloon = balloon2,
+          basket = basket2,
           date = date1,
           timeSlot = TimeSlot.AM,
           vehicles = listOf(vehicle2),
@@ -420,7 +420,13 @@ class DatabaseSetup {
         )
     flight4 =
         flight4.copy(
-            team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
+            team =
+                Team(
+                    roles =
+                        listOf(
+                            Role(RoleType.PILOT, pilot1),
+                            Role(RoleType.CREW, crew1),
+                            Role(RoleType.CREW, crew2))),
             flightType = flightType1,
             balloon = balloon1,
             basket = basket1,
