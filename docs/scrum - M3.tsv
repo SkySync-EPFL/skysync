@@ -1,0 +1,228 @@
+Title	URL	Assignees	Status	Labels	Sprint	Estimated Time	Actual Time	Nature	Epic
+Test issue	https://github.com/SkySync-EPFL/skysync/issues/1	Plouc314	Done in Sprint 1		1			Testing	
+Repo deploy secret	https://github.com/SkySync-EPFL/skysync/issues/37		Done in Sprint 1	question	1			Sprint Task	
+Setup repo environment locally	https://github.com/SkySync-EPFL/skysync/issues/6	Baribal02, hacknstack, mathieumognol, Plouc314, Prolas, RAFInery, Zep3k	Done in Sprint 1		1			Setup	
+Figma User story: before pilot/crew	https://github.com/SkySync-EPFL/skysync/issues/14	hacknstack	Done in Sprint 1		1			Sprint Task	
+Create proper Readme for the porject	https://github.com/SkySync-EPFL/skysync/issues/15	Plouc314	Done in Sprint 1		1			Sprint Task	
+Add CI	https://github.com/SkySync-EPFL/skysync/issues/3	Prolas	Done in Sprint 1		1			Sprint Task	
+Setup firebase	https://github.com/SkySync-EPFL/skysync/issues/4	Plouc314	Done in Sprint 1		1			Sprint Task	
+Create skeleton of android app	https://github.com/SkySync-EPFL/skysync/issues/2	Prolas	Done in Sprint 1		1			Sprint Task	
+backlog (user stories + product vision)	https://github.com/SkySync-EPFL/skysync/issues/16	RAFInery	Done in Sprint 1		1			User Story	
+Figma User Story : in-flight crew	https://github.com/SkySync-EPFL/skysync/issues/13	mathieumognol	Done in Sprint 1		1			Sprint Task	
+Figma User Story: in flight pilot	https://github.com/SkySync-EPFL/skysync/issues/12	Zep3k	Done in Sprint 1		1			Sprint Task	
+user login	https://github.com/SkySync-EPFL/skysync/issues/40	Baribal02	Done in Sprint 1	Priority: MH	1			User Story	General
+Implement Google authentification	https://github.com/SkySync-EPFL/skysync/issues/5	Baribal02	Done in Sprint 1		1			Sprint Task	
+As an crew/pilot, I want to have a summary of the won money for a given week, month or year  so that I can estimate my salary	https://github.com/SkySync-EPFL/skysync/issues/36		Product Backlog	Priority: SH				User Story	After Flight
+As an admin, I want to be able to verify that everyone has seen the confirmed flight details so that all assigned staff show up at the right time and place	https://github.com/SkySync-EPFL/skysync/issues/20		Product Backlog	Priority: CH				User Story	Before Flight
+as a Crew On the flight day I want to have a checklist of things to remember for my flight so that I'm sure not to forget anything	https://github.com/SkySync-EPFL/skysync/issues/43		Product Backlog	Priority: CH				User Story	Before Flight
+As a pilot, I want to see the position of the other airborne balloons  so that I can keep track of other trajectories	https://github.com/SkySync-EPFL/skysync/issues/22		Product Backlog	Priority: CH				User Story	During Flight
+As a pilot, I want to pin and share a possible landing spot during the flight to help the crew reaching the landing region more efficiently	https://github.com/SkySync-EPFL/skysync/issues/25		Product Backlog	Priority: CH				User Story	During Flight
+As an admin, I want to access details and reports of past flights  so that I can address customer inquiries and complaints	https://github.com/SkySync-EPFL/skysync/issues/32		Sprint Backlog	Priority: MH				User Story	After Flight
+as a pilot/crew I want to be able to fill out the mandatory flight report so that my flight gets recorded	https://github.com/SkySync-EPFL/skysync/issues/44		Sprint Backlog	Priority: MH				User Story	After Flight
+as crew/pilot I want the flight report to be mostly filled out automatically  so that I save time when filling out the report 	https://github.com/SkySync-EPFL/skysync/issues/45		Sprint Backlog	Priority: SH				User Story	After Flight
+as a user I want to see the unreported flights so that I can easily add my missing report	https://github.com/SkySync-EPFL/skysync/issues/364		Sprint Backlog	Priority: SH	9			User Story	
+as an user I want to access the flight trace of my past flights so that I can compare the different trajectories	https://github.com/SkySync-EPFL/skysync/issues/365		Sprint Backlog					User story	After Flight
+as a crew/pilot I no longer want to see finished flights in the upcoming flights once the report is filled out so that I can concentrate only on the upcomming flights	https://github.com/SkySync-EPFL/skysync/issues/367		Sprint Backlog					User Story	After Flight
+as an admin I want to see the finishedFlights in the upcomming flights as long as not all reports have been filled out so that no report gets forgetten	https://github.com/SkySync-EPFL/skysync/issues/368		Sprint Backlog					User Story	
+as a user I want to filter the upcoming flights by month so that I can more easily look for a particular flight	https://github.com/SkySync-EPFL/skysync/issues/369		Sprint Backlog					User Story	
+as a user I want to see the flight trace of an ongoing flight from the take-off to the current location after closing and reopening the app so that I don't loose information about the trace when closing the app during the flight	https://github.com/SkySync-EPFL/skysync/issues/373		Sprint Backlog					User Story	During Flight
+as a user I want to be able to delete a confirmed flight so that the upcoming flights are up-to-date after a flight gets cancelled	https://github.com/SkySync-EPFL/skysync/issues/374		Sprint Backlog					User Story	
+UI: Scaffold and navigations	https://github.com/SkySync-EPFL/skysync/issues/62	Baribal02	Done in Sprint 2		2	4h	8h	Sprint Task	
+Data Model: Calendar	https://github.com/SkySync-EPFL/skysync/issues/74	RAFInery	Done in Sprint 2		2	3h	7h		
+Data model: Flight	https://github.com/SkySync-EPFL/skysync/issues/55	RAFInery	Done in Sprint 2		2	3h	6h	Sprint Task	
+Explore logging	https://github.com/SkySync-EPFL/skysync/issues/66	Zep3k	Done in Sprint 2		2	3h	3h	Sprint task	
+Data model: Person	https://github.com/SkySync-EPFL/skysync/issues/53	RAFInery	Done in Sprint 2		2	3h	3h	Sprint Task	
+Explore Firebase authentication RBAC	https://github.com/SkySync-EPFL/skysync/issues/51	Prolas	Done in Sprint 2		2	4h	5h	Sprint Task	
+UI: Create calendar component	https://github.com/SkySync-EPFL/skysync/issues/56	hacknstack, Zep3k	Done in Sprint 2		2	5h	12h	Sprint Task	
+UI: Create BottomBar component	https://github.com/SkySync-EPFL/skysync/issues/64	mathieumognol	Done in Sprint 2		2	4h	5h	Sprint Task	
+Setup Firestore database	https://github.com/SkySync-EPFL/skysync/issues/52	Plouc314	Done in Sprint 2		2	3h	4h	Sprint Task	
+Figma: Availabilities	https://github.com/SkySync-EPFL/skysync/issues/60	hacknstack	Done in Sprint 2		2	2h30	2h	Sprint Task	
+Figma: Flights view admin	https://github.com/SkySync-EPFL/skysync/issues/61	mathieumognol	Done in Sprint 2		2	2h	2h	Sprint Task	
+Figma: Home screen post sign-in for all views	https://github.com/SkySync-EPFL/skysync/issues/70	mathieumognol	Done in Sprint 2		2	3h	2h	Sprint task	
+Data model: Availability	https://github.com/SkySync-EPFL/skysync/issues/54	Plouc314	Done in Sprint 2		2	2h	3h	Sprint Task	
+Explore testing	https://github.com/SkySync-EPFL/skysync/issues/63	Prolas	Done in Sprint 2		2	4h	5h	Sprint Task	
+Figma: New user screen	https://github.com/SkySync-EPFL/skysync/issues/57	Baribal02	Done in Sprint 2		2	3h	3h	Sprint Task	
+Connect the Figma	https://github.com/SkySync-EPFL/skysync/issues/104	hacknstack	Done in Sprint 3		3	3h	4h	Sprint Task	
+UI : Add flight screen	https://github.com/SkySync-EPFL/skysync/issues/95	Baribal02	Done in Sprint 3		3	6h	11h	Sprint task	
+As an admin, I want to add flights so that crew/pilots can be assigned 	https://github.com/SkySync-EPFL/skysync/issues/17		Done in Sprint 3	Priority: MH	3			User Story	Flight Planing
+Figma User-story: Admin Company management	https://github.com/SkySync-EPFL/skysync/issues/93	Baribal02	Done in Sprint 3		3	4h		Sprint Task	
+Data model: Flight DB implementation	https://github.com/SkySync-EPFL/skysync/issues/85	Plouc314	Done in Sprint 3		3	5h	6h	Sprint Task	
+personal availabilities overview	https://github.com/SkySync-EPFL/skysync/issues/49		Done in Sprint 3	Priority: MH				User Story	Flight Planing
+general flight overview	https://github.com/SkySync-EPFL/skysync/issues/47		Done in Sprint 3	Priority: MH				User Story	Flight Planing
+Connect Calendar and ModelView	https://github.com/SkySync-EPFL/skysync/issues/88	RAFInery	Done in Sprint 3		3	4h	6h	Sprint Task	
+give availabilities	https://github.com/SkySync-EPFL/skysync/issues/28		Done in Sprint 3	Priority: MH				User Story	Flight Planing
+UI: Flight calendar screen	https://github.com/SkySync-EPFL/skysync/issues/99	Zep3k	Done in Sprint 3		3	6h	10h	Sprint task	
+Data model: User DB implementation	https://github.com/SkySync-EPFL/skysync/issues/72	Plouc314	Done in Sprint 3		3	3h	4h	Sprint Task	
+Button to create flight	https://github.com/SkySync-EPFL/skysync/issues/120	mathieumognol	Done in Sprint 3		3	0.5h	0.5h	Sprint Task	
+Calendar UI improvement + tests	https://github.com/SkySync-EPFL/skysync/issues/103	hacknstack	Done in Sprint 3		3	6h	11h	Sprint Task	
+Architecture Diagram	https://github.com/SkySync-EPFL/skysync/issues/89	mathieumognol, Plouc314, RAFInery	Done in Sprint 3		3	3h	3h	Sprint Task	
+handle empty entries in the AvailabilityCalendar	https://github.com/SkySync-EPFL/skysync/issues/116	RAFInery	Done in Sprint 3		3	1.5h			
+Firestore emulator	https://github.com/SkySync-EPFL/skysync/issues/83	Plouc314	Done in Sprint 3		3	4h	4h	Sprint Task	
+Home screen UI	https://github.com/SkySync-EPFL/skysync/issues/87	mathieumognol	Done in Sprint 3		3	6h		Sprint Task	
+Figma User-story: After flight Crew	https://github.com/SkySync-EPFL/skysync/issues/91	mathieumognol	Done in Sprint 3		3	1h	1h	Sprint Task	
+Figma User-story: After flight Pilot	https://github.com/SkySync-EPFL/skysync/issues/90	mathieumognol	Done in Sprint 3		3	1h	1h	Sprint Task	
+Figma: Admin personalized bottombar + User Management	https://github.com/SkySync-EPFL/skysync/issues/92	mathieumognol	Done in Sprint 3		3	1h	1h	Sprint Task	
+Figma: Pilot + Crew Stat screen	https://github.com/SkySync-EPFL/skysync/issues/115	mathieumognol	Done in Sprint 3		3	1h	1h	Sprint Task	
+create first ViewModel 	https://github.com/SkySync-EPFL/skysync/issues/94	RAFInery	Done in Sprint 3		3	8h	5h	Sprint Task	
+Fix SonarCloud	https://github.com/SkySync-EPFL/skysync/issues/97	Prolas	Done in Sprint 3		3	4h	4h	Sprint task	
+Diagram of current database	https://github.com/SkySync-EPFL/skysync/issues/109	Prolas	Done in Sprint 3		3	1h	1h	Sprint task	
+Define role access in database	https://github.com/SkySync-EPFL/skysync/issues/98	Prolas	Done in Sprint 3		3	2h	2h30	Sprint task	
+Increase coverage	https://github.com/SkySync-EPFL/skysync/issues/110	Prolas	Done in Sprint 3		3	4h		Sprint task	
+Switch button	https://github.com/SkySync-EPFL/skysync/issues/101	Zep3k	Done in Sprint 3		3	3h	3h	Sprint task	
+As a pilot, I want to save information about the wind strength and direction as a function of the altitude  so that later during the flight I can include it into the altitude choice	https://github.com/SkySync-EPFL/skysync/issues/30		Product Backlog	Priority: CH				User Story	During Flight
+As an crew/pilot, I want to include a photo of caused or discovered damages on equipment after the flight so that admin can get informed more easily	https://github.com/SkySync-EPFL/skysync/issues/33		Product Backlog	Priority: CH				User Story	After Flight
+As an pilot, I want to see forbidden zones on the map during the flight so that I can further decrease the risk of entering by accident	https://github.com/SkySync-EPFL/skysync/issues/34		Product Backlog	Priority: CH				User Story	During Flight
+as a pilot I want to share/suggest an entry point into my landing field with my crew so that they can quickly and convienently enter the field	https://github.com/SkySync-EPFL/skysync/issues/81		Product Backlog	Priority: CH				User Story	During Flight
+as discussed in #68  As crew/pilot I want to be able to set regular availabilities in a descriptif way so that I'm faster than setting my availabilities for each individual time slot 	https://github.com/SkySync-EPFL/skysync/issues/69		Product Backlog	Priority: CH				User Story	Flight Planing
+As crew/pilot, I want to get a notification when I'm assigned to a flight so that I stay up-to-date of my scheduled flights and that I can react in case of a schedule conflict	https://github.com/SkySync-EPFL/skysync/issues/29		Product Backlog	Priority: SH				User Story	Flight Planing
+integrate flight detail screen 	https://github.com/SkySync-EPFL/skysync/issues/152	Zep3k	Done in Sprint 4		4	6h	6h		Flight Planing
+as staff I want to see the current status associated to each displayed flight so that I know the current state of the flight (e.g. assigned, confirmed, in progress, ...)	https://github.com/SkySync-EPFL/skysync/issues/135		Done in Sprint 4		0			User Story	General
+as an admin  when creating a flight I want to see all required roles to assign once the FlightType is chosen so that I don't forget any of the required roles	https://github.com/SkySync-EPFL/skysync/issues/134		Done in Sprint 4	Priority: SH	4			User Story	Before Flight
+As a pilot, I want to see the current location of my balloon  so that I can navigate it to the correct destination	https://github.com/SkySync-EPFL/skysync/issues/21		Done in Sprint 4	Priority: MH				User Story	During Flight
+Connect database to view model	https://github.com/SkySync-EPFL/skysync/issues/129	Plouc314	Done in Sprint 4		4	6h	10h	Sprint Task	
+UI: create modify flight screen	https://github.com/SkySync-EPFL/skysync/issues/140	Baribal02	Done in Sprint 4		4	8h	8h	Sprint Task	
+Admin: create ViewModel for flights overview	https://github.com/SkySync-EPFL/skysync/issues/141	RAFInery	Done in Sprint 4		4	6h	5h		
+integrate admin VM for flights overview	https://github.com/SkySync-EPFL/skysync/issues/142	RAFInery	Done in Sprint 4		4	5h	5h		
+Create ConfirmedFlight model	https://github.com/SkySync-EPFL/skysync/issues/143	RAFInery	Done in Sprint 4		4	4h	3h	Sprint Task	
+DB update method	https://github.com/SkySync-EPFL/skysync/issues/133	Prolas	Done in Sprint 4		4	6h		Sprint Task	
+add status to flights	https://github.com/SkySync-EPFL/skysync/issues/155	RAFInery	Done in Sprint 4		4	3h	2h		Flight Planning
+UI: create confirm flight screen	https://github.com/SkySync-EPFL/skysync/issues/148	hacknstack	Done in Sprint 4		4	8h	12h	Sprint Task	
+UI: add flight status to overview	https://github.com/SkySync-EPFL/skysync/issues/157	RAFInery	Done in Sprint 4		4	4h	2h		Flight Planning
+UI: Detail flight information screen	https://github.com/SkySync-EPFL/skysync/issues/150	Zep3k	Done in Sprint 4		4	6h	7h	Sprint Task	
+make add flights more flight type oriented	https://github.com/SkySync-EPFL/skysync/issues/130	Baribal02	Done in Sprint 4		4	4h	4h	Sprint Task	
+DB set method	https://github.com/SkySync-EPFL/skysync/issues/131	Prolas	Done in Sprint 4		4	6h	5h	Sprint Task	
+User populate assignedFlights	https://github.com/SkySync-EPFL/skysync/issues/166	Plouc314	Done in Sprint 4		4	2h	1h	Sprint Task	
+implement a tracker to get current position	https://github.com/SkySync-EPFL/skysync/issues/145	mathieumognol	Done in Sprint 4		4	5h	5h		
+create google maps screen	https://github.com/SkySync-EPFL/skysync/issues/144	mathieumognol	Done in Sprint 4		4	6h	6h		During Flight
+integrate map screen into main navigation	https://github.com/SkySync-EPFL/skysync/issues/146	mathieumognol	Done in Sprint 4		4	2h	1h		
+share location between users	https://github.com/SkySync-EPFL/skysync/issues/215	mathieumognol	Done in Sprint 6		6	7h	8h	Sprint Task	
+as an admin I want to include only staff and equipment that is available for the given date + timeslot so that I'm sure not to lack any resources for a flight	https://github.com/SkySync-EPFL/skysync/issues/234		Done in Sprint 6	Priority: SH				User Story	Flight Planning
+2nd E2E test for EPIC 1	https://github.com/SkySync-EPFL/skysync/issues/237	hacknstack	Done in Sprint 6		6	4h	5h	Sprint Task	
+1st E2E test for EPIC 2	https://github.com/SkySync-EPFL/skysync/issues/238	hacknstack	Done in Sprint 6		6	4h	12h	Sprint Task	
+As crew/pilot, I want to have an overview of my upcoming flights that I have been assigned to so that I can coordinate the work with my personal agenda accordingly	https://github.com/SkySync-EPFL/skysync/issues/27		Done in Sprint 6	Priority: MH				User Story	Flight Planing
+Video Demo	https://github.com/SkySync-EPFL/skysync/issues/236	Zep3k	Done in Sprint 6		6	1h	1h	Sprint Task	
+VM: assign/choose only available users and equipment	https://github.com/SkySync-EPFL/skysync/issues/212	RAFInery	Done in Sprint 6		6	3h	5h		
+As an admin, I want to assign crew/pilots for each flight so that every flight has the correct number of crew and pilots	https://github.com/SkySync-EPFL/skysync/issues/18		Done in Sprint 6	Priority: MH	0			User Story	Flight Planing
+As pilot/crew, I want to see the correct current flight duration so that the landing can be timed correctly even if I switch between views and come back	https://github.com/SkySync-EPFL/skysync/issues/24		Done in Sprint 6	Priority: SH	6			User Story	During Flight
+as Crew/Pilot I want to (only) see the flights I'm assigned to once I get assigned so that I have a up-to-date overview of the flights relevant to me	https://github.com/SkySync-EPFL/skysync/issues/136		Done in Sprint 6	Priority: MH	6				Before Flight
+push notification	https://github.com/SkySync-EPFL/skysync/issues/213	hacknstack	Done in Sprint 6		5	4h	2h45	Sprint Task	
+Update Architecture Diagram for M2	https://github.com/SkySync-EPFL/skysync/issues/242	mathieumognol	Done in Sprint 6		6	30m	30m	Sprint Task	
+Flight history screen	https://github.com/SkySync-EPFL/skysync/issues/229	Baribal02	Done in Sprint 6		6	6h	7h	Sprint Task	
+Differentiate crew/pilot and admin home screen	https://github.com/SkySync-EPFL/skysync/issues/210	Zep3k	Done in Sprint 6		6	7h	6h	Sprint Task	
+Fix the select input in forms	https://github.com/SkySync-EPFL/skysync/issues/240	Baribal02	Done in Sprint 6		6	1h	1h	Sprint Task	
+data model finished flight	https://github.com/SkySync-EPFL/skysync/issues/227	Baribal02	Done in Sprint 6		6	4h	4h	Sprint Task	
+Admin BottomBar	https://github.com/SkySync-EPFL/skysync/issues/217	Baribal02	Done in Sprint 6		6	1h	1h	Sprint task	
+VM: show Crew/pliot specific flights in overview	https://github.com/SkySync-EPFL/skysync/issues/226	RAFInery	Done in Sprint 6			1.5h	2.5h		
+Admin User Management Screen	https://github.com/SkySync-EPFL/skysync/issues/218	mathieumognol	Done in Sprint 6		6	6h	6h	Sprint Task	
+view model chat	https://github.com/SkySync-EPFL/skysync/issues/211	Plouc314	Done in Sprint 6		6	7h	10h	Sprint Task	
+fix personal calendar DB synchronization	https://github.com/SkySync-EPFL/skysync/issues/245	RAFInery	Done in Sprint 6		6	3h	3h		
+db functions to filter for available equipment/user and for flights for user	https://github.com/SkySync-EPFL/skysync/issues/219	Prolas	Done in Sprint 6		6	5h	7h	Sprint task	
+Add confirm button when deleting a flight	https://github.com/SkySync-EPFL/skysync/issues/239	Prolas	Done in Sprint 6		6	30m	2h	Sprint Task	
+User creation: find a way to link uid to user	https://github.com/SkySync-EPFL/skysync/issues/220	Prolas	Done in Sprint 6		6	5h		Sprint task	
+Confirmed flight detail	https://github.com/SkySync-EPFL/skysync/issues/221	Zep3k	Done in Sprint 6		6	6h	6h	Sprint Task	
+Timer provider global	https://github.com/SkySync-EPFL/skysync/issues/222	RAFInery	Done in Sprint 6			3h	4h		
+db confirmed flight	https://github.com/SkySync-EPFL/skysync/issues/214	Plouc314	Done in Sprint 6		6	3h	2h	Sprint Task	
+Fix dangling tests	https://github.com/SkySync-EPFL/skysync/issues/186	Prolas	Done in Sprint 5		5	4h	3h	Sprint Task	
+As pilot, I want to see my current speed and direction during the flight so that I can include it into my navigation decisions	https://github.com/SkySync-EPFL/skysync/issues/31		Done in Sprint 5	Priority: CH				User Story	During Flight
+UI: Create user form screen	https://github.com/SkySync-EPFL/skysync/issues/147	Baribal02	Done in Sprint 5		5	5h	6h	Sprint Task	
+as a pilot  I want to see my current height (relative to take-off spot) and altitude (hight above see level) so that I can better control my flight	https://github.com/SkySync-EPFL/skysync/issues/82		Done in Sprint 5	Priority: SH				User Story	During Flight
+As an admin, I want modify and delete existing flights so that the flights overview is kept up-to-date	https://github.com/SkySync-EPFL/skysync/issues/151		Done in Sprint 5	Priority: MH	4			User Story	Flight Planing
+as staff I want to get more detailed information about a flight displayed in the overview when I click on it  so that I can get more details for a specific flight	https://github.com/SkySync-EPFL/skysync/issues/139		Done in Sprint 5	Priority: SH				User Story	Before Flight
+Explore sensors	https://github.com/SkySync-EPFL/skysync/issues/185	mathieumognol	Done in Sprint 5			8h	7h	Sprint Task	
+integrate ViewModel into ModifyFlight	https://github.com/SkySync-EPFL/skysync/issues/198	RAFInery	Done in Sprint 5		5	3h	3.5h		
+unify FlightModel with viewmodel from calendars	https://github.com/SkySync-EPFL/skysync/issues/199	RAFInery	Done in Sprint 5		5	2h	1.5h		
+integrate ViewModel into add flight	https://github.com/SkySync-EPFL/skysync/issues/196	RAFInery	Done in Sprint 5		5	3h	4h		
+integrate ViewModel into FlightDetail	https://github.com/SkySync-EPFL/skysync/issues/197	RAFInery	Done in Sprint 5		5	3h	3.5h		
+Loading component	https://github.com/SkySync-EPFL/skysync/issues/179	mathieumognol	Done in Sprint 5		5	3h	3h	Sprint Task	
+Create success/warning/error snackbar	https://github.com/SkySync-EPFL/skysync/issues/159	mathieumognol	Done in Sprint 5		5	3h	3h	Sprint Task	
+Flight time counter	https://github.com/SkySync-EPFL/skysync/issues/182	Baribal02	Done in Sprint 5		5	3h	3h	Sprint Task	
+finish integration of FlightDetail screen (without ViewModel)	https://github.com/SkySync-EPFL/skysync/issues/201	RAFInery	Done in Sprint 5		5	3h	2.5h		
+Rework the calendar and its tests	https://github.com/SkySync-EPFL/skysync/issues/204	Prolas	Done in Sprint 5		5	6h	8h		
+End-to-end test 2	https://github.com/SkySync-EPFL/skysync/issues/184	hacknstack	Done in Sprint 5		5	4h	4h30	Sprint Task	
+Make a custom searchBar composant	https://github.com/SkySync-EPFL/skysync/issues/191	Baribal02	Done in Sprint 5		5	4h	4h	Sprint Task	
+Explore Kotlin coroutine	https://github.com/SkySync-EPFL/skysync/issues/132	Plouc314	Done in Sprint 5		5	8h	7h	Sprint Task	
+Explore Chat backend	https://github.com/SkySync-EPFL/skysync/issues/180	Plouc314	Done in Sprint 5		5	4h	6h	Sprint Task	
+UI: Chat Screen	https://github.com/SkySync-EPFL/skysync/issues/187	Zep3k	Done in Sprint 5		5	12h	14h	Sprint Task	
+Integrate Confirm Flight UI	https://github.com/SkySync-EPFL/skysync/issues/158	hacknstack	Done in Sprint 5		5	5h	8h	Sprint Task	Flight Planing
+User fix roleTypes	https://github.com/SkySync-EPFL/skysync/issues/164	Plouc314	Done in Sprint 5		5	2h	1h	Sprint Task	
+Improve error handling	https://github.com/SkySync-EPFL/skysync/issues/170		Technical Backlog						
+Firestore transactions			Technical Backlog						
+flight report forms	https://github.com/SkySync-EPFL/skysync/issues/228		Technical Backlog						
+Push notification			Technical Backlog						
+Fix Bug: When spamming the back button, the navigation should return to the default screen (Home) instead of ending up on a blank page.	https://github.com/SkySync-EPFL/skysync/issues/301	Prolas	In Development		9	1h		Sprint task	
+DB: add Report	https://github.com/SkySync-EPFL/skysync/issues/354	RAFInery	Sprint Tasks		9	3h			
+integrate FinishedFlight DB connection into ViewModel	https://github.com/SkySync-EPFL/skysync/issues/356	RAFInery	Sprint Tasks		9	4h			
+PRD Technical part	https://github.com/SkySync-EPFL/skysync/issues/326	Plouc314	Sprint Tasks		9	3h		Sprint Task	
+See trace of finish flight	https://github.com/SkySync-EPFL/skysync/issues/355	Plouc314	Sprint Tasks		9	6h		Sprint Task	
+Fix flight trace bug	https://github.com/SkySync-EPFL/skysync/issues/359	Plouc314	Sprint Tasks		9	3h		Sprint Task	
+Fix flight viewmodel	https://github.com/SkySync-EPFL/skysync/issues/340	Prolas	Sprint Tasks		9	4h		Sprint task	
+Crew pilot stat screen	https://github.com/SkySync-EPFL/skysync/issues/357	mathieumognol	Sprint Tasks		9	6h		Sprint Task	
+Sort upcoming flights by date and add month	https://github.com/SkySync-EPFL/skysync/issues/358	Zep3k	Sprint Tasks		9	4h		Sprint task	
+Chat screen UI enhancement	https://github.com/SkySync-EPFL/skysync/issues/360	Zep3k	Sprint Tasks		9	3h		Sprint task	
+Group chat UI enhancement	https://github.com/SkySync-EPFL/skysync/issues/361	mathieumognol	Sprint Tasks		9	4h		Sprint Task	
+Time picker change time zone	https://github.com/SkySync-EPFL/skysync/issues/362	Prolas	Sprint Tasks		9	1h		Sprint task	
+Finish Flight report viewModel	https://github.com/SkySync-EPFL/skysync/issues/366	Baribal02	Sprint Tasks		9	6h		Sprint Task	
+filter finishedFlights in upcoming flights	https://github.com/SkySync-EPFL/skysync/issues/370	RAFInery	Sprint Tasks		9				3.5h
+Finished flight details screen	https://github.com/SkySync-EPFL/skysync/issues/363	hacknstack	Sprint Tasks		9	4h30		Sprint Task	
+Report details screen	https://github.com/SkySync-EPFL/skysync/issues/371	hacknstack	Sprint Tasks		9	5h30		Sprint Task	
+Delete confirmed flight	https://github.com/SkySync-EPFL/skysync/issues/372	hacknstack	In Review		9	2h		Sprint Task	
+UI enhancement	https://github.com/SkySync-EPFL/skysync/issues/375	Zep3k	Sprint Tasks		9	3h		Sprint task	
+PRD: Non-Functional Requirements	https://github.com/SkySync-EPFL/skysync/issues/376	Prolas	Sprint Tasks		9	3h		Sprint Task	
+Range Time Picker	https://github.com/SkySync-EPFL/skysync/issues/377	Baribal02	Sprint Tasks		9	4h		Sprint Task	
+Update firestore rules	https://github.com/SkySync-EPFL/skysync/issues/223	Prolas	Done in Sprint 7		7	3h	3h	Sprint task	
+As an admin, I want to assign only crew/pilots that are available for the particular flight so that every flight has assignees that are actually available	https://github.com/SkySync-EPFL/skysync/issues/149		Done in Sprint 7	Priority: MH				User Story	Before Flight
+as a crew/pilot, I want that the meet-up location with the passengers in the confirmed flight details screen is linked to google maps so that I can easily find the correct location	https://github.com/SkySync-EPFL/skysync/issues/153		Done in Sprint 7	Priority: CH				User Story	Before Flight
+as an admin I want to be able to confirm the flight only if all roles have been assigned so that I'm sure not to forget to assign a role	https://github.com/SkySync-EPFL/skysync/issues/138		Done in Sprint 7	Priority: SH				User Story	Before Flight
+implement push notificatoin	https://github.com/SkySync-EPFL/skysync/issues/281	hacknstack	Done in Sprint 7		7	 6h	12h	Sprint Task	
+as an admin I want to confirm a flight by adding final information and remarks so that all required details for the flight are clear	https://github.com/SkySync-EPFL/skysync/issues/137		Done in Sprint 7	Priority: MH	0			User Story	Before Flight
+as a user  I want to have a link from the meet-up locations to google maps so that I can navigate more easily to the location	https://github.com/SkySync-EPFL/skysync/issues/284		Done in Sprint 7	Priority: SH				User Story	Flight Planing
+as a user  I want to access the app with my appropriate role (crew/pilot/admin) so that I have access to the correct functionalities and screens	https://github.com/SkySync-EPFL/skysync/issues/50		Done in Sprint 7	Priority: MH	4			User Story	Sign-In
+Shared view model for flight	https://github.com/SkySync-EPFL/skysync/issues/264	RAFInery	Done in Sprint 7			4.5h	5h		
+Flight Report models	https://github.com/SkySync-EPFL/skysync/issues/276	Baribal02	Done in Sprint 7		7	2h		Sprint Task	
+Flight report form UI	https://github.com/SkySync-EPFL/skysync/issues/277	Baribal02	Done in Sprint 7		7	8h		Sprint Task	
+Explore link to google maps	https://github.com/SkySync-EPFL/skysync/issues/271	Zep3k	Done in Sprint 7		7	5h	3h	Sprint Task	
+Global view model for user	https://github.com/SkySync-EPFL/skysync/issues/263	Plouc314	Done in Sprint 7		7	2h		Sprint Task	
+synch confirm flights with DB	https://github.com/SkySync-EPFL/skysync/issues/285	Prolas	Done in Sprint 7		7	3h	5h		Planned Flight
+Confirmation pop up finish flight	https://github.com/SkySync-EPFL/skysync/issues/265	Prolas	Done in Sprint 7		7	2h	2h	Sprint task	
+Offline mode	https://github.com/SkySync-EPFL/skysync/issues/272	hacknstack	Done in Sprint 7		7	 7h	3h30	Sprint Task	
+Cancel function calendar viewmodel	https://github.com/SkySync-EPFL/skysync/issues/282	Prolas	Done in Sprint 7		7	2h	4h	Sprint Task	
+Display error message	https://github.com/SkySync-EPFL/skysync/issues/224	mathieumognol	Done in Sprint 7		7	2h	1h30m	Sprint Task	
+Explore user role distinction	https://github.com/SkySync-EPFL/skysync/issues/270	Zep3k	Done in Sprint 7		7	7h	11h	Sprint Task	
+User details UI	https://github.com/SkySync-EPFL/skysync/issues/268	mathieumognol	Done in Sprint 7		7	6h	6h	Sprint Task	
+Start working on PRD	https://github.com/SkySync-EPFL/skysync/issues/280	mathieumognol	Done in Sprint 7		7	4h	4h	Sprint Task	
+End-to-end test: as staff I want to get more detailed information about a flight displayed in the overview when I click on it so that I can get more details for a specific flight	https://github.com/SkySync-EPFL/skysync/issues/183	Prolas	Done in Sprint 7		6	3h	3h	Sprint Task	
+DB user updates	https://github.com/SkySync-EPFL/skysync/issues/225	Plouc314	Done in Sprint 7		7	3h	3h	Sprint Task	
+bugfix: assign vehicles persistently	https://github.com/SkySync-EPFL/skysync/issues/279	RAFInery	Done in Sprint 7		7	2h	2.5h	Bugfix	Flight Planing
+connect flight calendar to DB	https://github.com/SkySync-EPFL/skysync/issues/267	RAFInery	Done in Sprint 7			2.5	3h		
+connect new filtered DB functions to FlightsViewModel	https://github.com/SkySync-EPFL/skysync/issues/243	RAFInery	Done in Sprint 7		7	2.5h	3.5h		
+Backend: trace of flight	https://github.com/SkySync-EPFL/skysync/issues/273	Plouc314	Done in Sprint 7		7	7h	8h	Sprint Task	
+Flight report viewModel	https://github.com/SkySync-EPFL/skysync/issues/266	Baribal02	Done in Sprint 8		8	7h	8h	Sprint Task	
+as staff I want to see past flights so that I have an overview of the flight history	https://github.com/SkySync-EPFL/skysync/issues/235		Done in Sprint 8	Priority: MH				User Story	Flight Planing
+update User model	https://github.com/SkySync-EPFL/skysync/issues/337		Done in Sprint 8						
+As a crew, I want to see the current position of the balloon throughout the flight so that I can stay close by	https://github.com/SkySync-EPFL/skysync/issues/35		Done in Sprint 8	Priority: MH	0			User Story	During Flight
+As a pilot, I want to notify my crew that my balloon has landed and share my exact position with one click so that they can find me fast while I can concentrate on post-landing procedures	https://github.com/SkySync-EPFL/skysync/issues/23		Done in Sprint 8	Priority: SH				User Story	During Flight
+As crew & pilot, we want to have a chat just for the current flight team so that we can easily exchange flight intern information without disturbing other teams or non assigned staff	https://github.com/SkySync-EPFL/skysync/issues/26		Done in Sprint 8	Priority: SH				User Story	During Flight
+As an admin, I want to send a summary of the flight confirmation to the relevant staff so that assigned staff gets all the relevant information about the upcoming flight 	https://github.com/SkySync-EPFL/skysync/issues/19		Done in Sprint 8	Priority: MH				User Story	Before Flight
+Chat issues	https://github.com/SkySync-EPFL/skysync/issues/317	Prolas	Done in Sprint 8		8	5h	5h	Sprint task	
+Confirm flight details	https://github.com/SkySync-EPFL/skysync/issues/315	Prolas	Done in Sprint 8		8	1h	1h	Sprint task	
+DB finished flight	https://github.com/SkySync-EPFL/skysync/issues/312	RAFInery	Done in Sprint 8			5h	4h		
+bugfix: Calendar crash	https://github.com/SkySync-EPFL/skysync/issues/348	RAFInery	Done in Sprint 8			1.5h	1.5h		
+Launch flight UI	https://github.com/SkySync-EPFL/skysync/issues/320	Zep3k	Done in Sprint 8		8	5h	12h	Sprint Task	
+Fix calendar related bugs	https://github.com/SkySync-EPFL/skysync/issues/311	RAFInery	Done in Sprint 8			3h	3.5h		
+refactor Calendar: Mutable to Immutable	https://github.com/SkySync-EPFL/skysync/issues/324	RAFInery	Done in Sprint 8		8	4h	4h		
+Improve Chat UI	https://github.com/SkySync-EPFL/skysync/issues/314	Zep3k	Done in Sprint 8		8	1h	1h	Sprint Task	
+Error handling filter exception	https://github.com/SkySync-EPFL/skysync/issues/325	Zep3k	Done in Sprint 8		8	3h	3h	Sprint Task	
+Confirm flight UI refactor	https://github.com/SkySync-EPFL/skysync/issues/313	Prolas	Done in Sprint 8		8	4h	6h	Sprint Task	
+availability calendar	https://github.com/SkySync-EPFL/skysync/issues/216	hacknstack	Done in Sprint 8		8	2h	1h15	Sprint Task	
+stats screen admin placeholder	https://github.com/SkySync-EPFL/skysync/issues/319	hacknstack	Done in Sprint 8		8	2h	1h45	Sprint Task	
+Fix UI	https://github.com/SkySync-EPFL/skysync/issues/339	hacknstack	Done in Sprint 8		8	6h	5h	Sprint Task	
+user management view model	https://github.com/SkySync-EPFL/skysync/issues/316	hacknstack	Done in Sprint 8		8	6h		Sprint Task	
+APK handling	https://github.com/SkySync-EPFL/skysync/issues/307	mathieumognol	Done in Sprint 8		8	3h	3h	Sprint Task	
+Create chat group on confirm flight	https://github.com/SkySync-EPFL/skysync/issues/318	mathieumognol	Done in Sprint 8		8	4h	2h30	Sprint Task	
+Display Flight Trace	https://github.com/SkySync-EPFL/skysync/issues/309	mathieumognol	Done in Sprint 8		8	3h	3h	Sprint Task	
+UserDetails ViewModel	https://github.com/SkySync-EPFL/skysync/issues/310	Baribal02	Done in Sprint 8		8	5h	6h	Sprint Task	
+PRD History + Analysis	https://github.com/SkySync-EPFL/skysync/issues/308	hacknstack	Done in Sprint 8		8	3h	3h15	Sprint Task	
+Explore Push Notifications	https://github.com/SkySync-EPFL/skysync/issues/350	mathieumognol	Done in Sprint 8		8	4h	4h	Sprint Task	
+Ongoing flight DB/logic	https://github.com/SkySync-EPFL/skysync/issues/321	Plouc314	Done in Sprint 8		8	5h	6h	Sprint Task	
+Ongoing flight setup listener on start/stop flight	https://github.com/SkySync-EPFL/skysync/issues/322	Plouc314	Done in Sprint 8		8	6h	5h	Sprint Task	
+Flight screen UI button start flight	https://github.com/SkySync-EPFL/skysync/issues/323	Zep3k	Done in Sprint 8		8	1h	0h	Sprint Task	
