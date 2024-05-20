@@ -52,7 +52,7 @@ class FlightsViewModelTest {
   @Test
   fun setDate() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
     viewModelAdmin.setDateAndTimeSlot(LocalDate.of(2024, 8, 12), TimeSlot.AM)
     assertEquals(LocalDate.of(2024, 8, 12), viewModelAdmin.date)
@@ -62,12 +62,12 @@ class FlightsViewModelTest {
   @Test
   fun loadsCorrectAdmin() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
       val currentUser = viewModelAdmin.currentUser.value
-      assertEquals("id-admin-1", currentUser?.id)
+      assertEquals(dbSetup.admin1.id, currentUser?.id)
     }
   }
 
@@ -86,7 +86,7 @@ class FlightsViewModelTest {
   @Test
   fun fetchesCurrentFlightsOnInitForAdmin() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
@@ -174,7 +174,7 @@ class FlightsViewModelTest {
   @Test
   fun fetchesAllCurrentFlightsAsAdmin() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
     runTest() {
       var flightWithCrew =
@@ -226,7 +226,7 @@ class FlightsViewModelTest {
   @Test
   fun addsFlight() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
 
     runTest {
@@ -258,7 +258,7 @@ class FlightsViewModelTest {
   @Test
   fun deletesFlight() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
 
     runTest {
@@ -325,7 +325,7 @@ class FlightsViewModelTest {
   @Test
   fun modifyFlight() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
 
     runTest {
@@ -368,11 +368,11 @@ class FlightsViewModelTest {
   @Test
   fun hasOnlyAvailableEquipment() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
-      viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, TimeSlot.PM)
+      viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, dbSetup.date2TimeSlot)
       viewModelAdmin.refreshUserAndFlights().join()
 
       val availableBalloons = viewModelAdmin.currentBalloons.value
@@ -394,11 +394,11 @@ class FlightsViewModelTest {
   @Test
   fun hasOnlyAvailableUser() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
-      viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, TimeSlot.AM)
+      viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, dbSetup.date2TimeSlotAdmin1)
       viewModelAdmin.refreshUserAndFlights().join()
       val foundAvailableUsers = viewModelAdmin.availableUsers.value
       val expectedAvailableUsers = listOf(dbSetup.admin1)
