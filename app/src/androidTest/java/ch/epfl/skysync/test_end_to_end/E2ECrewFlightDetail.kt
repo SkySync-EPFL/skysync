@@ -78,7 +78,8 @@ class E2ECrewFlightDetail {
     val retrievedFlights =
         repository.userTable
             .retrieveAssignedFlights(
-                repository.flightTable, dbs.crew1.id, onError = { Assert.assertNull(it) }).filterNot{it is FinishedFlight}
+                repository.flightTable, dbs.crew1.id, onError = { Assert.assertNull(it) })
+            .filterNot { it is FinishedFlight }
             .sortedBy { flight: Flight -> flight.id }
 
     assertEquals(assignedFlight, retrievedFlights)
