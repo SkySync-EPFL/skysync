@@ -19,23 +19,25 @@ import ch.epfl.skysync.viewmodel.ChatViewModel
 
 @Composable
 fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel) {
-  Scaffold(
-      modifier = Modifier.fillMaxSize().testTag("ChatScreenScaffold"),
-      bottomBar = { BottomBar(navController) },
-      floatingActionButton = {
-        IconButton(onClick = { navController.navigate(Route.CREW_REPORT) }) {
-          Icon(Icons.Default.Add, contentDescription = "Add Report")
+    Scaffold(
+        modifier = Modifier.fillMaxSize().testTag("ChatScreenScaffold"),
+        bottomBar = { BottomBar(navController) },
+        floatingActionButton = {
+            IconButton(onClick = { navController.navigate(Route.CREW_REPORT) }) {
+                Icon(Icons.Default.Add, contentDescription = "Add Report")
+            }
         }
-      }) { padding ->
+    ) { padding ->
         val groupDetails by viewModel.getGroupDetails().collectAsStateWithLifecycle()
-        println("GroupDetails $groupDetails")
+        val sortedGroups = groupDetails.sortedByDescending { it.lastMessage?.date }
         GroupChat(
-            groupList = groupDetails,
+            groupList = sortedGroups,
             onClick = { selectedGroup ->
-              navController.navigate(Route.CREW_TEXT + "/${selectedGroup.id}")
+                navController.navigate(Route.CREW_TEXT + "/${selectedGroup.id}")
             },
-            paddingValues = padding)
-      }
+            paddingValues = padding
+        )
+    }
 }
 
 /*

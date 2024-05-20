@@ -1,5 +1,7 @@
 package ch.epfl.skysync.components
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,10 +14,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -27,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.testTag
@@ -38,6 +47,7 @@ import ch.epfl.skysync.models.message.GroupDetails
 import ch.epfl.skysync.models.message.MessageDateFormatter
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
+import kotlin.random.Random
 
 /**
  * Composable function to display a group chat UI.
@@ -53,46 +63,50 @@ fun GroupChat(
     onClick: (GroupDetails) -> Unit,
     paddingValues: PaddingValues
 ) {
-  var searchQuery by remember { mutableStateOf("") }
-  Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
-    GroupChatTopBar()
-    Spacer(modifier = Modifier.fillMaxHeight(0.02f))
+    var searchQuery by remember { mutableStateOf("") }
+    Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
+        GroupChatTopBar()
+        Spacer(modifier = Modifier.fillMaxHeight(0.02f))
 
-    OutlinedTextField(
-        value = searchQuery,
-        onValueChange = { searchQuery = it },
-        label = { Text("Search") },
-        colors =
-            OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = lightOrange, focusedLabelColor = lightOrange),
-        modifier = Modifier.fillMaxWidth().testTag("Search"),
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done))
-    val filteredGroups = groupList.filter { it.name.contains(searchQuery, ignoreCase = true) }
-    Spacer(modifier = Modifier.fillMaxHeight(0.05f))
-    GroupChatBody(groupList = filteredGroups, onClick = onClick)
-  }
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("Search") },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = lightOrange,
+                focusedLabelColor = lightOrange
+            ),
+            modifier = Modifier.fillMaxWidth().testTag("Search"),
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
+        )
+        val filteredGroups = groupList.filter { it.name.contains(searchQuery, ignoreCase = true) }
+        Spacer(modifier = Modifier.fillMaxHeight(0.05f))
+        GroupChatBody(groupList = filteredGroups, onClick = onClick)
+    }
 }
 /** Composable function to display the top bar of the group chat UI. */
 @Composable
 fun GroupChatTopBar() {
-  Column {
-    Box(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.05f),
-        contentAlignment = Alignment.Center,
-    ) {
-      Row(
-          modifier = Modifier.fillMaxWidth(),
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.Center) {
-            Text(
-                text = "Messages",
-                fontWeight = FontWeight.Bold,
-                fontSize = 22.sp,
-            )
-          }
+    Column {
+        Box(
+            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.05f),
+            contentAlignment = Alignment.Center,
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Messages",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
+                )
+            }
+        }
     }
-  }
 }
+
 /**
  * Composable function to display a group card in the group chat UI.
  *
@@ -102,44 +116,60 @@ fun GroupChatTopBar() {
  */
 @Composable
 fun GroupCard(groupDetails: GroupDetails, onClick: (GroupDetails) -> Unit, testTag: String) {
-  val time =
-      if (groupDetails.lastMessage != null)
-          MessageDateFormatter.format(groupDetails.lastMessage.date)
-      else ""
-  Card(
-      modifier =
-          Modifier.clickable(onClick = { onClick(groupDetails) }).fillMaxWidth().testTag(testTag),
-      shape = RectangleShape,
-      colors =
-          CardDefaults.cardColors(
-              containerColor = lightGray,
-          )) {
-        Row {
-          Spacer(modifier = Modifier.size(10.dp))
-          Column(
-              modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.SpaceBetween) {
+    val time = groupDetails.lastMessage?.let { MessageDateFormatter.format(it.date) } ?: ""
+    val randomColor = remember { Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat(), 1f) }
+
+    Card(
+        modifier = Modifier
+            .clickable(onClick = { onClick(groupDetails) })
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .testTag(testTag),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = lightGray)
+    ) {
+        Row(modifier = Modifier.padding(8.dp)) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(randomColor),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Group Icon",
+                    tint = Color.White
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(modifier = Modifier.weight(1f)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween) {
-                      Text(
-                          text = groupDetails.name,
-                          fontSize = 16.sp,
-                          fontWeight = FontWeight.Bold,
-                          color = Color.Black)
-                      Text(
-                          text = time,
-                          color = Color.Gray,
-                          style = MaterialTheme.typography.bodyMedium,
-                      )
-                    }
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = groupDetails.name,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = time,
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
                 Text(
                     text = groupDetails.lastMessage?.content ?: "",
                     color = Color.Black,
-                    style = MaterialTheme.typography.bodyMedium)
-              }
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
-      }
+    }
 }
+
 
 /**
  * Composable function to display the body of the group chat UI.
