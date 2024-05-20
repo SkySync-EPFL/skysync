@@ -78,7 +78,7 @@ class E2ECrewFlightDetail {
     val retrievedFlights =
         repository.userTable
             .retrieveAssignedFlights(
-                repository.flightTable, dbs.crew1.id, onError = { Assert.assertNull(it) })
+                repository.flightTable, dbs.crew1.id, onError = { Assert.assertNull(it) }).filterNot{it is FinishedFlight}
             .sortedBy { flight: Flight -> flight.id }
 
     assertEquals(assignedFlight, retrievedFlights)
@@ -155,7 +155,6 @@ class E2ECrewFlightDetail {
             .performScrollToNode(hasText("Remarks"))
         flight.remarks.forEach { r -> composeTestRule.onNodeWithText(r).assertIsDisplayed() }
       }
-      composeTestRule.onNodeWithText("OK").assertIsDisplayed()
       composeTestRule.onNodeWithTag("BackButton").performClick()
       route = navController.currentBackStackEntry?.destination?.route
       assertEquals(Route.CREW_HOME, route)

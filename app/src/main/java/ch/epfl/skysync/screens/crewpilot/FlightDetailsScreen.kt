@@ -10,6 +10,7 @@ import ch.epfl.skysync.components.ConfirmedFlightDetailBottom
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.FlightDetails
 import ch.epfl.skysync.components.LoadingComponent
+import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.navigation.Route
@@ -32,11 +33,13 @@ fun FlightDetailScreen(
           LoadingComponent(isLoading = true, onRefresh = {}) {}
         } else {
           FlightDetails(flight = flight, padding = padding) {
-            ConfirmedFlightDetailBottom {
-              if (user is Pilot) {
-                navController.navigate(Route.PILOT_REPORT)
-              } else if (user is Crew) {
-                navController.navigate(Route.CREW_REPORT)
+            if (flight is ConfirmedFlight) {
+              ConfirmedFlightDetailBottom {
+                if (user is Pilot) {
+                  navController.navigate(Route.PILOT_REPORT)
+                } else if (user is Crew) {
+                  navController.navigate(Route.CREW_REPORT)
+                }
               }
             }
           }
