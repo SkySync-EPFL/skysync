@@ -4,11 +4,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.database.tables.BalloonTable
-import ch.epfl.skysync.database.tables.BasketTable
 import ch.epfl.skysync.database.tables.FlightTable
-import ch.epfl.skysync.database.tables.FlightTypeTable
-import ch.epfl.skysync.database.tables.VehicleTable
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -27,10 +23,6 @@ class FlightsViewModelTest {
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbSetup = DatabaseSetup()
   private val flightTable = FlightTable(db)
-  private val basketTable = BasketTable(db)
-  private val balloonTable = BalloonTable(db)
-  private val flightTypeTable = FlightTypeTable(db)
-  private val vehicleTable = VehicleTable(db)
   private val repository = Repository(db)
 
   // adding this rule should set the test dispatcher and should
@@ -74,12 +66,12 @@ class FlightsViewModelTest {
   @Test
   fun loadsCorrectCrew() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-crew-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
     }
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
       val currentUser = viewModelAdmin.currentUser.value
-      assertEquals("id-crew-1", currentUser?.id)
+      assertEquals(dbSetup.crew1.id, currentUser?.id)
     }
   }
 
@@ -98,7 +90,7 @@ class FlightsViewModelTest {
   @Test
   fun fetchesCurrentFlightsIfAffectedAsCrew() {
     composeTestRule.setContent {
-      viewModelCrewPilot = FlightsViewModel.createViewModel(repository, "id-crew-1")
+      viewModelCrewPilot = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
     }
     runTest {
       viewModelCrewPilot.refreshUserAndFlights().join()
@@ -110,7 +102,7 @@ class FlightsViewModelTest {
   @Test
   fun doesNotFetchCurrentFlightsIfNotAffected() {
     composeTestRule.setContent {
-      viewModelCrewPilot = FlightsViewModel.createViewModel(repository, "id-pilot-2")
+      viewModelCrewPilot = FlightsViewModel.createViewModel(repository, dbSetup.pilot2.id)
     }
     runTest {
       viewModelCrewPilot.refreshUserAndFlights().join()
@@ -122,7 +114,7 @@ class FlightsViewModelTest {
   @Test
   fun fetchesRelevantCurrentFlightsAsCrew() {
     composeTestRule.setContent {
-      viewModelCrewPilot = FlightsViewModel.createViewModel(repository, "id-crew-1")
+      viewModelCrewPilot = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
     }
     runTest() {
       var flightWithCrew =
