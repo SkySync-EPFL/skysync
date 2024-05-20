@@ -1,6 +1,5 @@
 package ch.epfl.skysync.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -63,48 +61,45 @@ fun GroupChat(
     onClick: (GroupDetails) -> Unit,
     paddingValues: PaddingValues
 ) {
-    var searchQuery by remember { mutableStateOf("") }
-    Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
-        GroupChatTopBar()
-        Spacer(modifier = Modifier.fillMaxHeight(0.02f))
+  var searchQuery by remember { mutableStateOf("") }
+  Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
+    GroupChatTopBar()
+    Spacer(modifier = Modifier.fillMaxHeight(0.02f))
 
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            label = { Text("Search") },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = lightOrange,
-                focusedLabelColor = lightOrange
-            ),
-            modifier = Modifier.fillMaxWidth().testTag("Search"),
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
-        )
-        val filteredGroups = groupList.filter { it.name.contains(searchQuery, ignoreCase = true) }
-        Spacer(modifier = Modifier.fillMaxHeight(0.05f))
-        GroupChatBody(groupList = filteredGroups, onClick = onClick)
-    }
+    OutlinedTextField(
+        value = searchQuery,
+        onValueChange = { searchQuery = it },
+        label = { Text("Search") },
+        colors =
+            OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = lightOrange, focusedLabelColor = lightOrange),
+        modifier = Modifier.fillMaxWidth().testTag("Search"),
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done))
+    val filteredGroups = groupList.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    Spacer(modifier = Modifier.fillMaxHeight(0.05f))
+    GroupChatBody(groupList = filteredGroups, onClick = onClick)
+  }
 }
 /** Composable function to display the top bar of the group chat UI. */
 @Composable
 fun GroupChatTopBar() {
-    Column {
-        Box(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.05f),
-            contentAlignment = Alignment.Center,
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Messages",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp,
-                )
-            }
-        }
+  Column {
+    Box(
+        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.05f),
+        contentAlignment = Alignment.Center,
+    ) {
+      Row(
+          modifier = Modifier.fillMaxWidth(),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.Center) {
+            Text(
+                text = "Messages",
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp,
+            )
+          }
     }
+  }
 }
 
 /**
@@ -116,60 +111,52 @@ fun GroupChatTopBar() {
  */
 @Composable
 fun GroupCard(groupDetails: GroupDetails, onClick: (GroupDetails) -> Unit, testTag: String) {
-    val time = groupDetails.lastMessage?.let { MessageDateFormatter.format(it.date) } ?: ""
-    val randomColor = remember { Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat(), 1f) }
+  val time = groupDetails.lastMessage?.let { MessageDateFormatter.format(it.date) } ?: ""
+  val randomColor = remember {
+    Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat(), 1f)
+  }
 
-    Card(
-        modifier = Modifier
-            .clickable(onClick = { onClick(groupDetails) })
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .testTag(testTag),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = lightGray)
-    ) {
+  Card(
+      modifier =
+          Modifier.clickable(onClick = { onClick(groupDetails) })
+              .fillMaxWidth()
+              .padding(vertical = 4.dp)
+              .testTag(testTag),
+      shape = RoundedCornerShape(8.dp),
+      colors = CardDefaults.cardColors(containerColor = lightGray)) {
         Row(modifier = Modifier.padding(8.dp)) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(randomColor),
-                contentAlignment = Alignment.Center
-            ) {
+          Box(
+              modifier = Modifier.size(40.dp).clip(CircleShape).background(randomColor),
+              contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Group Icon",
-                    tint = Color.White
-                )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = groupDetails.name,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                    Text(
-                        text = time,
-                        color = Color.Gray,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                    tint = Color.White)
+              }
+          Spacer(modifier = Modifier.width(8.dp))
+          Column(modifier = Modifier.weight(1f)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                  Text(
+                      text = groupDetails.name,
+                      fontSize = 16.sp,
+                      fontWeight = FontWeight.Bold,
+                      color = Color.Black)
+                  Text(
+                      text = time,
+                      color = Color.Gray,
+                      style = MaterialTheme.typography.bodyMedium,
+                  )
                 }
-                Text(
-                    text = groupDetails.lastMessage?.content ?: "",
-                    color = Color.Black,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+            Text(
+                text = groupDetails.lastMessage?.content ?: "",
+                color = Color.Black,
+                style = MaterialTheme.typography.bodyMedium)
+          }
         }
-    }
+      }
 }
-
 
 /**
  * Composable function to display the body of the group chat UI.
