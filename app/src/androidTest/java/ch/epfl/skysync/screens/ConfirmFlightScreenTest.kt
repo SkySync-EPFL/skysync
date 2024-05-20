@@ -18,7 +18,6 @@ import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.screens.admin.Confirmation
 import ch.epfl.skysync.utils.inputTimePicker
-import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.verify
