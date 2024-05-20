@@ -24,7 +24,8 @@ class TimerTest {
           isPilot = true,
           onStart = {},
           onStop = {},
-          onClear = {})
+          onClear = {},
+          onQuitDisplay = {})
     }
     composeTestRule.onNodeWithTag("Timer").assertExists()
     composeTestRule.onNodeWithTag("Timer Value").assertIsDisplayed()
@@ -45,7 +46,7 @@ class TimerTest {
           onStart = { controlVariableOnStart = true },
           onStop = { controlVariableOnStop = true },
           onClear = {},
-      )
+          onQuitDisplay = {})
     }
     composeTestRule.onNodeWithTag("Start Button").performClick()
     assert(controlVariableOnStart)
@@ -65,7 +66,7 @@ class TimerTest {
           onStart = { controlVariableOnStart = true },
           onStop = { controlVariableOnStop = true },
           onClear = {},
-      )
+          onQuitDisplay = {})
     }
     composeTestRule.onNodeWithTag("Stop Button").performClick()
     assert(controlVariableOnStop)

@@ -219,4 +219,35 @@ class InFlightViewModelTest {
         ),
         flightTrace)
   }
+
+  @Test
+  fun testDisplayFlightTrace() = runTest {
+    val flightTrace =
+        FlightTrace(
+            trace =
+                listOf(
+                    LocationPoint(0, 0.0, 0.0),
+                    LocationPoint(1, 1.0, 0.0),
+                    LocationPoint(2, 2.0, 0.0),
+                    LocationPoint(3, 3.0, 0.0),
+                ))
+    flightTraceTable.set(dbs.flight4.id, flightTrace, onError = { assertNull(it) })
+
+    assertEquals(0, inFlightViewModel.flightLocations.value.size)
+
+    inFlightViewModel.setCurrentFlight(dbs.flight4.id)
+
+    inFlightViewModel.startDisplayFlightTrace().join()
+
+    assertEquals(InFlightViewModel.FlightStage.DISPLAY, inFlightViewModel.flightStage.value)
+
+    val locations = inFlightViewModel.flightLocations.value
+
+    assertEquals(flightTrace.trace, locations.map { it.point })
+
+    inFlightViewModel.quitDisplayFlightTrace()
+
+    assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
+    assertEquals(0, inFlightViewModel.flightLocations.value.size)
+  }
 }
