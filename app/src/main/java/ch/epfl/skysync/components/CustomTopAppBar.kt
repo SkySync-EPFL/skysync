@@ -13,20 +13,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import ch.epfl.skysync.navigation.Route
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTopAppBar(navController: NavController, title: String) {
-  val navBackStackEntry by navController.currentBackStackEntryAsState()
-  val currentDestination = navBackStackEntry?.destination
   TopAppBar(
       title = { Text(text = title, style = MaterialTheme.typography.headlineMedium) },
       navigationIcon = {
         IconButton(
             onClick = {
               if (!navController.popBackStack()) {
-                currentDestination?.route?.let { navController.navigate(it) }
+                navController.navigate(Route.MAIN)
               }
             },
             modifier = Modifier.testTag("BackButton")) {
