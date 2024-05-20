@@ -132,7 +132,6 @@ class FlightsViewModel(
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
-          _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
         } else {
           _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
         }
