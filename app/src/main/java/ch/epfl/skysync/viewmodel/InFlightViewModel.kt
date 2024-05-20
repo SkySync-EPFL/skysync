@@ -421,8 +421,6 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
               userId,
               { update ->
                 val update = filterLocationUpdate(update)
-                println("UPDATE $userId")
-                println(update)
 
                 if (userId == pilotId) {
                   updateFlightLocations(update)
