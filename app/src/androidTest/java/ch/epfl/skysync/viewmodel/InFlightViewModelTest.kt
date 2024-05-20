@@ -129,6 +129,55 @@ class InFlightViewModelTest {
     assertEquals(listOf<Location>(), pilotLocations)
   }
 
+  /**
+   * Verify that pilot locations that have been added before the user startFlight on his screen are
+   * correctly fetched
+   */
+  @Test
+  fun testFetchPreviousFlightLocation() = runTest {
+    val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) }) as ConfirmedFlight
+
+    // location with to high time (here 127) should not be taken into account as they are
+    // leftover locations from a previous flight
+    locationTable.addLocation(
+        Location(userId = dbs.pilot1.id, point = LocationPoint(127, 12.0, -3.0)),
+        onError = { assertNull(it) })
+    locationTable.addLocation(
+        Location(userId = dbs.pilot1.id, point = LocationPoint(0, 0.0, 0.0)),
+        onError = { assertNull(it) })
+    locationTable.addLocation(
+        Location(userId = dbs.pilot1.id, point = LocationPoint(1, 1.0, 0.0)),
+        onError = { assertNull(it) })
+    locationTable.addLocation(
+        Location(userId = dbs.pilot1.id, point = LocationPoint(2, 2.0, 0.0)),
+        onError = { assertNull(it) })
+
+    inFlightViewModel.setCurrentFlight(flight.id)
+
+    inFlightViewModel.startFlight().join()
+
+    locationTable.addLocation(
+        Location(userId = dbs.pilot1.id, point = LocationPoint(3, 3.0, 0.0)),
+        onError = { assertNull(it) })
+    locationTable.addLocation(
+        Location(userId = dbs.pilot1.id, point = LocationPoint(4, 4.0, 0.0)),
+        onError = { assertNull(it) })
+
+    inFlightViewModel.stopFlight().join()
+
+    val locations = inFlightViewModel.flightLocations.value
+
+    assertEquals(
+        listOf(
+            LocationPoint(0, 0.0, 0.0),
+            LocationPoint(1, 1.0, 0.0),
+            LocationPoint(2, 2.0, 0.0),
+            LocationPoint(3, 3.0, 0.0),
+            LocationPoint(4, 4.0, 0.0),
+        ),
+        locations.map { it.point })
+  }
+
   @Test
   fun testSaveFlightTrace() = runTest {
     val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) }) as ConfirmedFlight

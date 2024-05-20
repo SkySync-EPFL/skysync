@@ -15,6 +15,7 @@ import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.models.flight.Vehicle
 import java.time.LocalDate
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
@@ -372,22 +373,26 @@ class FlightsViewModelTest {
     }
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
-      viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, TimeSlot.PM)
+      viewModelAdmin.setDateAndTimeSlot(dbSetup.date1, TimeSlot.AM)
+
+      // we need to wait for setDateAndTimeSlot refreshes to finish
+      viewModelAdmin.refreshUserAndFlights().join()
       viewModelAdmin.refreshUserAndFlights().join()
 
       val availableBalloons = viewModelAdmin.currentBalloons.value
-      val expectedAvailableBalloons = listOf(dbSetup.balloon2, dbSetup.balloon3)
+      val expectedAvailableBalloons = listOf(dbSetup.balloon3)
       expectedAvailableBalloons.forEach() { assertTrue(availableBalloons.contains(it)) }
       assertEquals(expectedAvailableBalloons.size, availableBalloons.size)
+
       val availableBaskets = viewModelAdmin.currentBaskets.value
-      val expectedAvailableBaskets = listOf(dbSetup.basket2, dbSetup.basket3)
+      val expectedAvailableBaskets = listOf(dbSetup.basket3)
       expectedAvailableBaskets.forEach() { assertTrue(availableBaskets.contains(it)) }
       assertEquals(expectedAvailableBaskets.size, availableBaskets.size)
 
       val availableVehicles = viewModelAdmin.currentVehicles.value
-      val exepctedAvailableVehicles = listOf(dbSetup.vehicle1, dbSetup.vehicle3)
-      exepctedAvailableVehicles.forEach() { assertTrue(availableVehicles.contains(it)) }
-      assertEquals(exepctedAvailableVehicles.size, availableVehicles.size)
+      val expectedAvailableVehicles = listOf<Vehicle>()
+      expectedAvailableVehicles.forEach() { assertTrue(availableVehicles.contains(it)) }
+      assertEquals(expectedAvailableVehicles.size, availableVehicles.size)
     }
   }
 
@@ -398,10 +403,14 @@ class FlightsViewModelTest {
     }
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
-      viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, TimeSlot.AM)
+      viewModelAdmin.setDateAndTimeSlot(dbSetup.date1, TimeSlot.PM)
+
+      // we need to wait for setDateAndTimeSlot refreshes to finish
       viewModelAdmin.refreshUserAndFlights().join()
+      viewModelAdmin.refreshUserAndFlights().join()
+
       val foundAvailableUsers = viewModelAdmin.availableUsers.value
-      val expectedAvailableUsers = listOf(dbSetup.admin1)
+      val expectedAvailableUsers = listOf(dbSetup.crew2)
       assertEquals(expectedAvailableUsers.size, foundAvailableUsers.size)
       expectedAvailableUsers.forEach { outerUsr ->
         assertTrue(foundAvailableUsers.any { it.id == outerUsr.id })
