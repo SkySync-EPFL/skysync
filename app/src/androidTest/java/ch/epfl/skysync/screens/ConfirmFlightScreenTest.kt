@@ -50,7 +50,7 @@ class ConfirmFlightScreenTest {
   fun backButtonWorks() {
     composeTestRule.onNodeWithTag("BackButton").performClick()
     verify { navController.popBackStack() }
-    confirmVerified(navController)
+    verify { navController.navigate(Route.MAIN) }
   }
 
   @Test
