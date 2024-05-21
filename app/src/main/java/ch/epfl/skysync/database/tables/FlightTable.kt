@@ -19,6 +19,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.models.reports.Report
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
@@ -40,6 +41,7 @@ class FlightTable(db: FirestoreDatabase) :
   private val vehicleTable = VehicleTable(db)
   private val flightMemberTable = FlightMemberTable(db)
   private val userTable = UserTable(db)
+    private val reportTable = ReportTable(db)
 
   /** Create a [Flight] instance from the flight schema and the retrieved entities */
   private fun makeFlight(
@@ -231,6 +233,8 @@ class FlightTable(db: FirestoreDatabase) :
         .filterNotNull()
   }
 
+
+
   /** Retrieve all the entities linked to the flight */
   private suspend fun retrieveFlight(flightSchema: FlightSchema): Flight? = coroutineScope {
     var flightType: FlightType? = null
@@ -238,6 +242,7 @@ class FlightTable(db: FirestoreDatabase) :
     var basket: Basket? = null
     var vehicles: List<Vehicle>? = null
     var team: Team? = null
+      var reports: List<Report>? = null
     val jobs =
         listOf(
             launch {
@@ -259,6 +264,10 @@ class FlightTable(db: FirestoreDatabase) :
               if (basket == null) {
                 // report
               }
+            },
+            launch {
+                if (flightSchema.reportIds == null) return@launch
+                reports = reportTable.retrieveReports(flightSchema)
             },
             launch { vehicles = retrieveVehicles(flightSchema) },
             launch { team = retrieveTeam(flightSchema) })

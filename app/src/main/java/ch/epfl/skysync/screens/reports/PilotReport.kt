@@ -131,7 +131,7 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
             if (!hasError(errorPax)) {
               val vehicleProblems = vehicleProblem.toMap()
               PilotReport(
-                  author = pilot,
+                  author = pilot.id,
                   effectivePax = pax.toInt(),
                   takeOffTime = takeoffTime,
                   takeOffLocation = takeoffLocation,

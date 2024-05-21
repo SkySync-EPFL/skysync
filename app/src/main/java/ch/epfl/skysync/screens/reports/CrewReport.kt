@@ -124,7 +124,7 @@ fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFligh
             if (!hasError(errorLittleChampagne, errorBigChampagne, errorPrestigeChampagne)) {
               val vehicleProblems = vehicleProblem.toMap()
               CrewReport(
-                  author = crew,
+                  author = crew.id,
                   littleChampagne = littleChampagne.toInt(),
                   bigChampagne = bigChampagne.toInt(),
                   prestigeChampagne = prestigeChampagne.toInt(),

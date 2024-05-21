@@ -6,7 +6,7 @@ import java.util.Date
 
 interface Report {
   val id: String
-  val author: User
+  val author: String
   val begin: Date
   val end: Date
   val pauseDuration: Long? // in milliseconds
