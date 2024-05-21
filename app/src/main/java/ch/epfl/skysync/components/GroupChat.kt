@@ -111,7 +111,6 @@ fun GroupChatTopBar() {
 @Composable
 fun GroupCard(groupDetails: GroupDetails, onClick: (GroupDetails) -> Unit, testTag: String) {
   val time = groupDetails.lastMessage?.let { MessageDateFormatter.format(it.date) } ?: ""
-
   Card(
       modifier =
           Modifier.clickable(onClick = { onClick(groupDetails) })
