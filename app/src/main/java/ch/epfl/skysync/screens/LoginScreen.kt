@@ -28,6 +28,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -83,9 +85,13 @@ fun LoginScreen(
                               .fillMaxWidth(0.7f)
                               .testTag("LoginButton"),
                       colors = ButtonDefaults.buttonColors(Color.White)) {
-                        Spacer(modifier = Modifier.width(3.dp))
                         Text(
-                            text = "Authenticate with Google", color = deepOrange, fontSize = 17.sp)
+                            text = "Authenticate with Google",
+                            color = deepOrange,
+                            fontSize = 15.sp,
+                            style = TextStyle(
+                                fontWeight = FontWeight.SemiBold),
+                            textAlign = TextAlign.Center,)
                       }
                 }
             Text(text = "You need to log in")

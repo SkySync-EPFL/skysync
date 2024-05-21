@@ -150,7 +150,7 @@ fun FlightDetailBottom(
                   .testTag("ConfirmButton")) {
             TextButton(
                 onClick = { confirmClick() },
-                shape = RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp),
+                shape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp),
                 border = BorderStroke(1.dp, Color.Black)) {
                   Row(
                       horizontalArrangement = Arrangement.Center,
