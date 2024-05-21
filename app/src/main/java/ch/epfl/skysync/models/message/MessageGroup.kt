@@ -1,6 +1,7 @@
 package ch.epfl.skysync.models.message
 
 import ch.epfl.skysync.models.UNSET_ID
+import ch.epfl.skysync.models.flight.FlightColor
 
 /**
  * Represents a message group
@@ -12,6 +13,7 @@ import ch.epfl.skysync.models.UNSET_ID
 data class MessageGroup(
     val id: String = UNSET_ID,
     val name: String,
+    val color: FlightColor,
     val userIds: Set<String> = setOf(),
     val messages: List<Message> = listOf()
 ) {

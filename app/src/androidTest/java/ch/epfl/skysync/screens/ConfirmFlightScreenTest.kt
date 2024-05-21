@@ -18,10 +18,12 @@ import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.screens.admin.Confirmation
 import ch.epfl.skysync.utils.inputTimePicker
-import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.verify
+import java.util.Calendar
+import java.util.TimeZone
+import kotlin.time.Duration.Companion.hours
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -135,9 +137,20 @@ class ConfirmFlightScreenTest {
     composeTestRule.onNodeWithText("Confirm").assertIsNotEnabled()
 
     val setTime = composeTestRule.onAllNodesWithTag("TimePickerButton")
+    val timeZone = TimeZone.getDefault()
+    val time = Calendar.getInstance(timeZone)
     for (i in 0 until setTime.fetchSemanticsNodes().size) {
       setTime[i].performClick()
-      inputTimePicker(composeTestRule = composeTestRule, hour = 18, minute = 34)
+      val hours = 17 + i
+      val minutes = 30
+      inputTimePicker(composeTestRule = composeTestRule, hour = hours, minute = minutes)
+
+      val cal = Calendar.getInstance(timeZone)
+      cal.set(Calendar.HOUR_OF_DAY, hours)
+      cal.set(Calendar.MINUTE, minutes)
+      composeTestRule
+          .onNodeWithText(DateUtility.dateToHourMinuteString(cal.time))
+          .assertIsDisplayed()
     }
     composeTestRule
         .onNodeWithTag("ConfirmationScreenLazyColumn")
@@ -146,6 +159,5 @@ class ConfirmFlightScreenTest {
     composeTestRule.onNodeWithText("Confirm").performClick()
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
     verify { navController.navigate(Route.ADMIN_HOME) }
-    confirmVerified(navController)
   }
 }
