@@ -23,7 +23,7 @@ fun FlightDetailScreen(
   val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
   Scaffold(
       topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
-      bottomBar = { ConfirmedFlightDetailBottom() { navController.popBackStack() } },
+      bottomBar = { ConfirmedFlightDetailBottom({ navController.popBackStack() }, {}, false) },
       containerColor = lightGray) { padding ->
         if (flight == null) {
           LoadingComponent(isLoading = true, onRefresh = {}) {}
