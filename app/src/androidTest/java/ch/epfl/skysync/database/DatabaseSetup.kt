@@ -35,12 +35,12 @@ import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.models.user.TempUser
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.Date
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 
 /**
  * Represent a mock database setup
@@ -228,8 +228,8 @@ class DatabaseSetup {
       )
 
   var messageGroup1 =
-      MessageGroup(name = "Group 1", userIds = setOf(admin2.id, pilot1.id, crew1.id))
-  var messageGroup2 = MessageGroup(name = "Group 2", userIds = setOf(admin1.id, admin2.id))
+      MessageGroup(name = "Group 1", color = FlightColor.RED, userIds = setOf(admin2.id, pilot1.id, crew1.id))
+  var messageGroup2 = MessageGroup(name = "Group 2",color = FlightColor.GREEN, userIds = setOf(admin1.id, admin2.id))
 
   var message1 =
       Message(user = admin2, date = Date.from(Instant.now().minusSeconds(20)), content = "Hello")
