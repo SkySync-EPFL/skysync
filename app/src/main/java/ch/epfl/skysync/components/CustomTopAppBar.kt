@@ -9,9 +9,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
+import ch.epfl.skysync.navigation.Route
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -20,7 +22,12 @@ fun CustomTopAppBar(navController: NavController, title: String) {
       title = { Text(text = title, style = MaterialTheme.typography.headlineMedium) },
       navigationIcon = {
         IconButton(
-            onClick = { navController.popBackStack() }, modifier = Modifier.testTag("BackButton")) {
+            onClick = {
+              if (!navController.popBackStack()) {
+                navController.navigate(Route.MAIN)
+              }
+            },
+            modifier = Modifier.testTag("BackButton")) {
               Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
       })
