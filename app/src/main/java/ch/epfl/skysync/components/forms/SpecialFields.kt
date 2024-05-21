@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ch.epfl.skysync.components.GenericTimePicker
+import ch.epfl.skysync.components.RangeTimePicker
 import ch.epfl.skysync.components.SmallTitle
 import ch.epfl.skysync.database.DateUtility.dateToHourMinuteString
 import ch.epfl.skysync.models.flight.Vehicle
@@ -247,7 +248,13 @@ fun VehicleProblemField(
 @Composable
 fun PauseField(defaultPadding: Dp, pauseDuration: Long, setPauseDuration: (Long) -> Unit) {
   val title = "Pause duration"
-  // TODO time range picker
+  var showPausePicker by remember { mutableStateOf(false) }
+  RangeTimePicker(padding = 16.dp,
+      title = title,
+      showDialog = showPausePicker,
+      onDismiss = { showPausePicker = false },
+      onConfirm = { setPauseDuration(it) }
+  )
   Text(
       modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
       text = title,
