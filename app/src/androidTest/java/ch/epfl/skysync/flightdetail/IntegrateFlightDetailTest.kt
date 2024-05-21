@@ -44,7 +44,12 @@ class IntegrateFlightDetailTest {
       val connectivityStatus = remember { ConnectivityStatus(context) }
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(
-            repository, navController, dbs.crew1.id, inFlightViewModel, messageListenerViewModel, connectivityStatus)
+            repository,
+            navController,
+            dbs.crew1.id,
+            inFlightViewModel,
+            messageListenerViewModel,
+            connectivityStatus)
       }
     }
     composeTestRule.waitUntil {

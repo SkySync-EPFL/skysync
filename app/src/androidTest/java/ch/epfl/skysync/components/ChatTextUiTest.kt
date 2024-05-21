@@ -22,7 +22,6 @@ class ChatTextUiTest {
   @get:Rule val composeTestRule = createComposeRule()
   val dbs = DatabaseSetup()
 
-
   val image: ImageVector? = null
   private val fakeText =
       ChatMessage(
@@ -41,9 +40,10 @@ class ChatTextUiTest {
   @Before
   fun setUpNavHost() {
     composeTestRule.setContent {
-        val context = LocalContext.current
-        val connectivityStatus = remember { ConnectivityStatus(context) }
-      ChatText(messages = list, onSend = {}, paddingValues = PaddingValues(0.dp), connectivityStatus)
+      val context = LocalContext.current
+      val connectivityStatus = remember { ConnectivityStatus(context) }
+      ChatText(
+          messages = list, onSend = {}, paddingValues = PaddingValues(0.dp), connectivityStatus)
     }
   }
 

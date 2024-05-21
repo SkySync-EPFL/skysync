@@ -42,7 +42,6 @@ class LaunchFlightTest {
   fun setUp() = runTest {
     dbSetup.clearDatabase(db)
     dbSetup.fillDatabase(db)
-
   }
 
   @Test

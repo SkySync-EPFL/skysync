@@ -42,7 +42,12 @@ class AdminBottomBarTest {
       val connectivityStatus = remember { ConnectivityStatus(context) }
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(
-            repository, navController, dbs.admin1.id, inFlightViewModel, messageListenerViewModel, connectivityStatus)
+            repository,
+            navController,
+            dbs.admin1.id,
+            inFlightViewModel,
+            messageListenerViewModel,
+            connectivityStatus)
       }
     }
     composeTestRule.waitUntil {

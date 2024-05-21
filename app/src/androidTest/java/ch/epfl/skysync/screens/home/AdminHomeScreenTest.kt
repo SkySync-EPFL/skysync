@@ -40,7 +40,8 @@ class AdminHomeScreenTest {
       flightsViewModel = FlightsViewModel.createViewModel(repository, dbs.admin1.id)
       val context = LocalContext.current
       val connectivityStatus = remember { ConnectivityStatus(context) }
-      AdminHomeScreen(navController = navController, viewModel = flightsViewModel, connectivityStatus)
+      AdminHomeScreen(
+          navController = navController, viewModel = flightsViewModel, connectivityStatus)
     }
     runTest {
       flightsViewModel.refreshUserAndFlights().join()

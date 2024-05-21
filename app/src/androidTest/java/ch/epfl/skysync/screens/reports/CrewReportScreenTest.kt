@@ -36,10 +36,10 @@ class CrewReportScreenTest {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-        val context = LocalContext.current
-        val connectivityStatus = remember { ConnectivityStatus(context) }
+      val context = LocalContext.current
+      val connectivityStatus = remember { ConnectivityStatus(context) }
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.crew1.id, connectivityStatus= connectivityStatus)
+        homeGraph(repository, navController, dbs.crew1.id, connectivityStatus = connectivityStatus)
       }
       navController.navigate(Route.CREW_REPORT)
     }

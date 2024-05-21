@@ -25,12 +25,12 @@ import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerViewModel
+import java.time.LocalDate
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.time.LocalDate
 
 class AvailabiltyCalendarTest {
 
@@ -53,7 +53,12 @@ class AvailabiltyCalendarTest {
       val connectivityStatus = remember { ConnectivityStatus(context) }
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(
-            repository, navController, dbs.crew1.id, inFlightViewModel, messageListenerViewModel, connectivityStatus)
+            repository,
+            navController,
+            dbs.crew1.id,
+            inFlightViewModel,
+            messageListenerViewModel,
+            connectivityStatus)
       }
     }
     composeTestRule.waitUntil {

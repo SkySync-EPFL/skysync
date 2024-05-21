@@ -90,8 +90,8 @@ class UserManagementTest {
       userManagementViewModel =
           UserManagementViewModel.createViewModel(repository, dbSetup.admin1.id)
       userManagementViewModel.refresh()
-        val context = LocalContext.current
-        val connectivityStatus = remember { ConnectivityStatus(context) }
+      val context = LocalContext.current
+      val connectivityStatus = remember { ConnectivityStatus(context) }
       UserManagementScreen(rememberNavController(), userManagementViewModel, connectivityStatus)
     }
 
