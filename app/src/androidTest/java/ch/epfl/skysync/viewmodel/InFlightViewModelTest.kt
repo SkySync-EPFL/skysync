@@ -76,6 +76,20 @@ class InFlightViewModelTest {
   }
 
   @Test
+  fun testInvalidStateOperations() = runTest {
+    inFlightViewModel.startFlight().join()
+    assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
+    inFlightViewModel.stopFlight().join()
+    assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
+    inFlightViewModel.clearFlight().join()
+    assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
+    inFlightViewModel.startDisplayFlightTrace().join()
+    assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
+    inFlightViewModel.quitDisplayFlightTrace()
+    assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
+  }
+
+  @Test
   fun testInitialLocationSetup() {
     assertNotNull(inFlightViewModel.currentLocations)
   }
