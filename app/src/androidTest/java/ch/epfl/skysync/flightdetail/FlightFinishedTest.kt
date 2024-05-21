@@ -12,7 +12,6 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.FlightDetails
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.DateUtility
-import ch.epfl.skysync.database.FlightStatus
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import org.junit.Before
@@ -40,17 +39,25 @@ class FlightFinishedTest {
 
   @Test
   fun operationalTimesAreDisplayed() {
-    composeTestRule.onNodeWithTag("FlightDetailLazyColumn").performScrollToNode(hasText("Operational times"))
+    composeTestRule
+        .onNodeWithTag("FlightDetailLazyColumn")
+        .performScrollToNode(hasText("Operational times"))
     composeTestRule.onNodeWithText("Operational times").assertIsDisplayed()
-    helper("Takeoff time", DateUtility.localTimeToString(DateUtility.dateToLocalTime(flight.takeOffTime)))
-    helper("Landing time",DateUtility.localTimeToString(DateUtility.dateToLocalTime(flight.landingTime)))
+    helper(
+        "Takeoff time",
+        DateUtility.localTimeToString(DateUtility.dateToLocalTime(flight.takeOffTime)))
+    helper(
+        "Landing time",
+        DateUtility.localTimeToString(DateUtility.dateToLocalTime(flight.landingTime)))
   }
 
   @Test
   fun locationAreDisplayed() {
-    composeTestRule.onNodeWithTag("FlightDetailLazyColumn").performScrollToNode(hasText("Landing location"))
+    composeTestRule
+        .onNodeWithTag("FlightDetailLazyColumn")
+        .performScrollToNode(hasText("Landing location"))
     helper("Takeoff location", flight.takeOffLocation.name)
-    helper("Landing location",flight.landingLocation.name)
+    helper("Landing location", flight.landingLocation.name)
   }
 
   @Test
