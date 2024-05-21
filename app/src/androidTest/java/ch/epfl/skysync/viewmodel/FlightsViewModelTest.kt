@@ -11,7 +11,6 @@ import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
-import ch.epfl.skysync.models.flight.Vehicle
 import java.time.LocalDate
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
