@@ -127,7 +127,7 @@ fun LocationPickerField(
     title: String,
     setLocation: (LocationPoint) -> Unit
 ) {
-  // TODO implement search bar logic (done with viewmodel)
+  // TODO implement search bar logic
   var active by remember { mutableStateOf(false) }
   var query by remember { mutableStateOf("") }
   Text(
@@ -249,12 +249,12 @@ fun VehicleProblemField(
 fun PauseField(defaultPadding: Dp, pauseDuration: Long, setPauseDuration: (Long) -> Unit) {
   val title = "Pause duration"
   var showPausePicker by remember { mutableStateOf(false) }
-  RangeTimePicker(padding = 16.dp,
+  RangeTimePicker(
+      padding = 16.dp,
       title = title,
       showDialog = showPausePicker,
       onDismiss = { showPausePicker = false },
-      onConfirm = { setPauseDuration(it) }
-  )
+      onConfirm = { setPauseDuration(it) })
   Text(
       modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
       text = title,
@@ -262,10 +262,10 @@ fun PauseField(defaultPadding: Dp, pauseDuration: Long, setPauseDuration: (Long)
   OutlinedTextField(
       modifier =
           Modifier.fillMaxWidth()
-              .clickable { /* TODO */}
+              .clickable { showPausePicker = true }
               .padding(start = defaultPadding, end = defaultPadding, bottom = defaultPadding)
               .testTag(title),
-      value = "",
+      value = pauseDuration.toString(),
       onValueChange = {},
       enabled = false,
       colors =

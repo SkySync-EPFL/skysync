@@ -34,7 +34,7 @@ fun RangeTimePicker(
     title: String,
     showDialog: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: (Long) -> Unit,
+    onConfirm: (Long) -> Unit
 ) {
   if (!showDialog) {
     return
@@ -55,13 +55,15 @@ fun RangeTimePicker(
               modifier = Modifier.fillMaxWidth().weight(1f),
               listState1,
               itemHeight = itemHeight,
-              visibleItemCount = visibleItemCount)
+              visibleItemCount = visibleItemCount,
+              testTag = "HourCircularList")
           CircularList(
               items = (0..59).map { "%02d".format(it) },
               modifier = Modifier.fillMaxWidth().weight(1f),
               listState2,
               itemHeight = itemHeight,
-              visibleItemCount = visibleItemCount)
+              visibleItemCount = visibleItemCount,
+              testTag = "MinuteCircularList")
         }
       },
       confirmButton = {
@@ -93,10 +95,11 @@ fun CircularList(
     isEndless: Boolean = true,
     itemHeight: Dp = 60.dp,
     visibleItemCount: Int = 3,
+    testTag: String
 ) {
   val verticalPadding = 10.dp
   val listHeight = (itemHeight + 2 * verticalPadding) * visibleItemCount
-  LazyColumn(state = listState, modifier = modifier.height(listHeight)) {
+  LazyColumn(state = listState, modifier = modifier.height(listHeight).testTag(testTag)) {
     items(
         count = if (isEndless) Int.MAX_VALUE else items.size,
         itemContent = { index ->
