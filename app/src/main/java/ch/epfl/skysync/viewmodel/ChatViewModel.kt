@@ -83,7 +83,7 @@ class ChatViewModel(
         .map { groups ->
           groups
               .map { group ->
-                GroupDetails(group.id, group.name, null, group.messages.getOrNull(0))
+                GroupDetails(group.id, group.name, group.color, null, group.messages.getOrNull(0))
               }
               .sortedByDescending { it.lastMessage?.date ?: Date.from(Instant.now()) }
         }

@@ -28,9 +28,9 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel) {
         }
       }) { padding ->
         val groupDetails by viewModel.getGroupDetails().collectAsStateWithLifecycle()
-        println("GroupDetails $groupDetails")
+        val sortedGroups = groupDetails.sortedByDescending { it.lastMessage?.date }
         GroupChat(
-            groupList = groupDetails,
+            groupList = sortedGroups,
             onClick = { selectedGroup ->
               navController.navigate(Route.CREW_TEXT + "/${selectedGroup.id}")
             },

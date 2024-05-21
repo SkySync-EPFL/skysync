@@ -4,11 +4,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.database.tables.BalloonTable
-import ch.epfl.skysync.database.tables.BasketTable
 import ch.epfl.skysync.database.tables.FlightTable
-import ch.epfl.skysync.database.tables.FlightTypeTable
-import ch.epfl.skysync.database.tables.VehicleTable
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -28,10 +24,6 @@ class FlightsViewModelTest {
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbSetup = DatabaseSetup()
   private val flightTable = FlightTable(db)
-  private val basketTable = BasketTable(db)
-  private val balloonTable = BalloonTable(db)
-  private val flightTypeTable = FlightTypeTable(db)
-  private val vehicleTable = VehicleTable(db)
   private val repository = Repository(db)
 
   // adding this rule should set the test dispatcher and should
@@ -53,7 +45,7 @@ class FlightsViewModelTest {
   @Test
   fun setDate() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
     viewModelAdmin.setDateAndTimeSlot(LocalDate.of(2024, 8, 12), TimeSlot.AM)
     assertEquals(LocalDate.of(2024, 8, 12), viewModelAdmin.date)
@@ -63,31 +55,31 @@ class FlightsViewModelTest {
   @Test
   fun loadsCorrectAdmin() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
       val currentUser = viewModelAdmin.currentUser.value
-      assertEquals("id-admin-1", currentUser?.id)
+      assertEquals(dbSetup.admin1.id, currentUser?.id)
     }
   }
 
   @Test
   fun loadsCorrectCrew() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-crew-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
     }
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
       val currentUser = viewModelAdmin.currentUser.value
-      assertEquals("id-crew-1", currentUser?.id)
+      assertEquals(dbSetup.crew1.id, currentUser?.id)
     }
   }
 
   @Test
   fun fetchesCurrentFlightsOnInitForAdmin() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
@@ -99,7 +91,7 @@ class FlightsViewModelTest {
   @Test
   fun fetchesCurrentFlightsIfAffectedAsCrew() {
     composeTestRule.setContent {
-      viewModelCrewPilot = FlightsViewModel.createViewModel(repository, "id-crew-1")
+      viewModelCrewPilot = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
     }
     runTest {
       viewModelCrewPilot.refreshUserAndFlights().join()
@@ -111,7 +103,7 @@ class FlightsViewModelTest {
   @Test
   fun doesNotFetchCurrentFlightsIfNotAffected() {
     composeTestRule.setContent {
-      viewModelCrewPilot = FlightsViewModel.createViewModel(repository, "id-pilot-2")
+      viewModelCrewPilot = FlightsViewModel.createViewModel(repository, dbSetup.pilot2.id)
     }
     runTest {
       viewModelCrewPilot.refreshUserAndFlights().join()
@@ -123,7 +115,7 @@ class FlightsViewModelTest {
   @Test
   fun fetchesRelevantCurrentFlightsAsCrew() {
     composeTestRule.setContent {
-      viewModelCrewPilot = FlightsViewModel.createViewModel(repository, "id-crew-1")
+      viewModelCrewPilot = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
     }
     runTest() {
       var flightWithCrew =
@@ -175,7 +167,7 @@ class FlightsViewModelTest {
   @Test
   fun fetchesAllCurrentFlightsAsAdmin() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
     runTest() {
       var flightWithCrew =
@@ -227,7 +219,7 @@ class FlightsViewModelTest {
   @Test
   fun addsFlight() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
 
     runTest {
@@ -259,7 +251,7 @@ class FlightsViewModelTest {
   @Test
   fun deletesFlight() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
 
     runTest {
@@ -326,7 +318,7 @@ class FlightsViewModelTest {
   @Test
   fun modifyFlight() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
 
     runTest {
@@ -369,48 +361,40 @@ class FlightsViewModelTest {
   @Test
   fun hasOnlyAvailableEquipment() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
-      viewModelAdmin.setDateAndTimeSlot(dbSetup.date1, TimeSlot.AM)
-
-      // we need to wait for setDateAndTimeSlot refreshes to finish
-      viewModelAdmin.refreshUserAndFlights().join()
+      viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, dbSetup.date2TimeSlot)
       viewModelAdmin.refreshUserAndFlights().join()
 
       val availableBalloons = viewModelAdmin.currentBalloons.value
-      val expectedAvailableBalloons = listOf(dbSetup.balloon3)
+      val expectedAvailableBalloons = listOf(dbSetup.balloon2, dbSetup.balloon3)
       expectedAvailableBalloons.forEach() { assertTrue(availableBalloons.contains(it)) }
       assertEquals(expectedAvailableBalloons.size, availableBalloons.size)
-
       val availableBaskets = viewModelAdmin.currentBaskets.value
-      val expectedAvailableBaskets = listOf(dbSetup.basket3)
+      val expectedAvailableBaskets = listOf(dbSetup.basket2, dbSetup.basket3)
       expectedAvailableBaskets.forEach() { assertTrue(availableBaskets.contains(it)) }
       assertEquals(expectedAvailableBaskets.size, availableBaskets.size)
 
       val availableVehicles = viewModelAdmin.currentVehicles.value
-      val expectedAvailableVehicles = listOf<Vehicle>()
-      expectedAvailableVehicles.forEach() { assertTrue(availableVehicles.contains(it)) }
-      assertEquals(expectedAvailableVehicles.size, availableVehicles.size)
+      val exepctedAvailableVehicles = listOf(dbSetup.vehicle1, dbSetup.vehicle3)
+      exepctedAvailableVehicles.forEach() { assertTrue(availableVehicles.contains(it)) }
+      assertEquals(exepctedAvailableVehicles.size, availableVehicles.size)
     }
   }
 
   @Test
   fun hasOnlyAvailableUser() {
     composeTestRule.setContent {
-      viewModelAdmin = FlightsViewModel.createViewModel(repository, "id-admin-1")
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
     }
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
-      viewModelAdmin.setDateAndTimeSlot(dbSetup.date1, TimeSlot.PM)
-
-      // we need to wait for setDateAndTimeSlot refreshes to finish
+      viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, dbSetup.date2TimeSlotAdmin1)
       viewModelAdmin.refreshUserAndFlights().join()
-      viewModelAdmin.refreshUserAndFlights().join()
-
       val foundAvailableUsers = viewModelAdmin.availableUsers.value
-      val expectedAvailableUsers = listOf(dbSetup.crew2)
+      val expectedAvailableUsers = listOf(dbSetup.admin1)
       assertEquals(expectedAvailableUsers.size, foundAvailableUsers.size)
       expectedAvailableUsers.forEach { outerUsr ->
         assertTrue(foundAvailableUsers.any { it.id == outerUsr.id })
