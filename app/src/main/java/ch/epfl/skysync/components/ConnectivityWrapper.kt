@@ -1,5 +1,6 @@
 package ch.epfl.skysync.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,7 +31,7 @@ fun ConnectivityWrapper(
     content: @Composable () -> Unit
 ) {
   var showOfflineMessage by remember { mutableStateOf(false) }
-
+  Log.d("ConnectivityWrapper", "isOnline: ${connectivityStatus.isOnline()}")
   if (connectivityStatus.isOnline()) {
     content()
   } else {
