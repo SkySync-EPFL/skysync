@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -91,13 +92,9 @@ fun ChatTextBody(messages: List<ChatMessage>, modifier: Modifier = Modifier) {
  */
 @Composable
 fun ChatBubble(message: ChatMessage, index: String) {
-  var isMyMessage = false
-  val image = message.profilePicture
+    val isMyMessage = message.messageType == MessageType.SENT
   val messageContent = message.message.content
   val time = MessageDateFormatter.format(message.message.date)
-  if (message.messageType == MessageType.SENT) {
-    isMyMessage = true
-  }
   val backgroundColor = if (isMyMessage) veryLightGreen else lightGray
   val contentColor = Color.Black
   val shape =
@@ -110,37 +107,39 @@ fun ChatBubble(message: ChatMessage, index: String) {
         }
       }
   Row(
-      modifier = Modifier.padding(8.dp).fillMaxWidth(),
+      modifier = Modifier.padding(12.dp).fillMaxWidth(),
       horizontalArrangement = if (isMyMessage) Arrangement.End else Arrangement.Start,
       verticalAlignment = Alignment.Bottom) {
-        if (!isMyMessage) {
-          if (image != null) {
-            Box(modifier = Modifier.fillMaxWidth(0.125f).size(30.dp)) {
-              Image(imageVector = image, contentDescription = "Image of Sender")
-            }
-          } else {
-            Box(
-                modifier =
-                    Modifier.fillMaxWidth(0.075f)
-                        .size(30.dp)
-                        .background(color = Color.LightGray, shape = CircleShape))
+      Column {
+          if (!isMyMessage) {
+              Text(
+                  text = message.message.user.name(),
+                  style = TextStyle(fontSize = 12.sp, color = Color.Gray),
+                  modifier = Modifier.testTag("ChatBubbleUser$index")
+              )
           }
-          Spacer(modifier = Modifier.size(2.dp))
-        }
-
-        Row(modifier = Modifier.background(color = backgroundColor, shape = shape).padding(8.dp)) {
-          Text(
-              text = messageContent,
-              color = contentColor,
-              modifier = Modifier.padding(bottom = 2.dp).testTag("ChatBubbleMessage$index"))
-          Spacer(modifier = Modifier.size(4.dp))
-          Text(
-              text = time,
-              color = Color.Gray,
-              fontSize = 9.sp,
-              modifier = Modifier.align(Alignment.Bottom).testTag("ChatBubbleTime$index"))
-        }
+          Column(
+              modifier =
+              Modifier.background(color = backgroundColor, shape = shape).padding(8.dp)
+          ) {
+              Row {
+                  Text(
+                      text = messageContent,
+                      color = contentColor,
+                      modifier = Modifier.padding(bottom = 2.dp).testTag("ChatBubbleMessage$index")
+                  )
+                  Spacer(modifier = Modifier.size(4.dp))
+                  Text(
+                      text = time,
+                      color = Color.Gray,
+                      fontSize = 9.sp,
+                      modifier = Modifier.align(Alignment.Bottom).testTag("ChatBubbleTime$index")
+                  )
+              }
+          }
       }
+  }
+
 }
 /**
  * Composable function representing an input field for typing and sending messages.
@@ -154,13 +153,13 @@ fun ChatInput(onSend: (String) -> Unit) {
   val keyboardController = LocalSoftwareKeyboardController.current
 
   Row(
-      modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp).background(lightGray),
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically) {
         OutlinedTextField(
             value = text,
             onValueChange = { text = it },
-            label = { Text("Type a message") },
+            placeholder = { Text("Type a message") },
             shape = RoundedCornerShape(24.dp),
             colors =
                 OutlinedTextFieldDefaults.colors(
@@ -185,7 +184,7 @@ fun ChatInput(onSend: (String) -> Unit) {
             },
             enabled = text.isNotEmpty(),
             modifier =
-                Modifier.padding(start = 8.dp, top = 8.dp)
+                Modifier.padding(start = 8.dp)
                     .background(if (text.isNotEmpty()) lightOrange else Color.Gray, CircleShape)
                     .testTag("SendButton")) {
               Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = Color.White)
