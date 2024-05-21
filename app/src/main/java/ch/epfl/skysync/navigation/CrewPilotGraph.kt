@@ -92,7 +92,7 @@ fun NavGraphBuilder.crewPilotGraph(
       ChatScreen(navController, chatViewModel)
     }
     composable(Route.FLIGHT) {
-      FlightScreen(navController, inFlightViewModel!!, uid!!, connectivityStatus)
+      FlightScreen(navController, inFlightViewModel!!, uid!!)
     }
     composable(Route.PILOT_REPORT) {
       // TODO remove when done with viewModel
