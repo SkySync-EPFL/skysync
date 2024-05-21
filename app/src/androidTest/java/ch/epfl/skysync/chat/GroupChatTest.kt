@@ -26,7 +26,7 @@ class GroupChatTest {
   val dbs = DatabaseSetup()
   val image: ImageVector? = null
   val group = GroupDetails("id1", "Group", FlightColor.NO_COLOR, image, dbs.message1)
-  val searchGroup = GroupDetails("id2", "GroupSearch",FlightColor.GREEN, image, dbs.message2)
+  val searchGroup = GroupDetails("id2", "GroupSearch", FlightColor.GREEN, image, dbs.message2)
   val groups =
       listOf(
           group,
