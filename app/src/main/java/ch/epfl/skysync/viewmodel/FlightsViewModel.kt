@@ -126,7 +126,6 @@ class FlightsViewModel(
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
-          _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
         } else {
           _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
         }
@@ -206,6 +205,7 @@ class FlightsViewModel(
             MessageGroup(
                 UNSET_ID,
                 groupName(flight.date, flight.timeSlot),
+                flight.color,
                 flight.team.getUsers().map { it.id }.toSet())
         repository.messageGroupTable.add(flightChatGroup, onError = { onError(it) })
       }
