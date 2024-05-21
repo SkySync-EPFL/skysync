@@ -107,7 +107,7 @@ fun CircularList(
           val layoutInfo = remember { derivedStateOf { listState.layoutInfo } }
           val scrollOffset = remember { derivedStateOf { listState.firstVisibleItemScrollOffset } }
           val idx = index % items.size
-          val middleIndex = firstVisibleIndex.value + layoutInfo.value.visibleItemsInfo.size / 2
+          val middleIndex = firstVisibleIndex.value + visibleItemCount / 2
           val isEnabled = index == middleIndex
           val animatedColor by
               animateColorAsState(
