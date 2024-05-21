@@ -13,7 +13,11 @@ enum class FlightColor {
   ORANGE,
   GREEN,
   PINK,
-  NO_COLOR
+  NO_COLOR;
+
+  fun toColor(): Color? {
+    return flightColorOptions[this]
+  }
 }
 
 val flightColorOptions =
