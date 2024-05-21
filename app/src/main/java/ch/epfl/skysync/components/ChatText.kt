@@ -1,9 +1,7 @@
 package ch.epfl.skysync.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -92,7 +90,7 @@ fun ChatTextBody(messages: List<ChatMessage>, modifier: Modifier = Modifier) {
  */
 @Composable
 fun ChatBubble(message: ChatMessage, index: String) {
-    val isMyMessage = message.messageType == MessageType.SENT
+  val isMyMessage = message.messageType == MessageType.SENT
   val messageContent = message.message.content
   val time = MessageDateFormatter.format(message.message.date)
   val backgroundColor = if (isMyMessage) veryLightGreen else lightGray
@@ -110,36 +108,31 @@ fun ChatBubble(message: ChatMessage, index: String) {
       modifier = Modifier.padding(12.dp).fillMaxWidth(),
       horizontalArrangement = if (isMyMessage) Arrangement.End else Arrangement.Start,
       verticalAlignment = Alignment.Bottom) {
-      Column {
+        Column {
           if (!isMyMessage) {
-              Text(
-                  text = message.message.user.name(),
-                  style = TextStyle(fontSize = 12.sp, color = Color.Gray),
-                  modifier = Modifier.testTag("ChatBubbleUser$index")
-              )
+            Text(
+                text = message.message.user.name(),
+                style = TextStyle(fontSize = 12.sp, color = Color.Gray),
+                modifier = Modifier.testTag("ChatBubbleUser$index"))
           }
           Column(
               modifier =
-              Modifier.background(color = backgroundColor, shape = shape).padding(8.dp)
-          ) {
-              Row {
+                  Modifier.background(color = backgroundColor, shape = shape).padding(8.dp)) {
+                Row {
                   Text(
                       text = messageContent,
                       color = contentColor,
-                      modifier = Modifier.padding(bottom = 2.dp).testTag("ChatBubbleMessage$index")
-                  )
+                      modifier = Modifier.padding(bottom = 2.dp).testTag("ChatBubbleMessage$index"))
                   Spacer(modifier = Modifier.size(4.dp))
                   Text(
                       text = time,
                       color = Color.Gray,
                       fontSize = 9.sp,
-                      modifier = Modifier.align(Alignment.Bottom).testTag("ChatBubbleTime$index")
-                  )
+                      modifier = Modifier.align(Alignment.Bottom).testTag("ChatBubbleTime$index"))
+                }
               }
-          }
+        }
       }
-  }
-
 }
 /**
  * Composable function representing an input field for typing and sending messages.
