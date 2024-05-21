@@ -45,7 +45,6 @@ import ch.epfl.skysync.models.message.GroupDetails
 import ch.epfl.skysync.models.message.MessageDateFormatter
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
-import kotlin.random.Random
 
 /**
  * Composable function to display a group chat UI.
@@ -112,9 +111,6 @@ fun GroupChatTopBar() {
 @Composable
 fun GroupCard(groupDetails: GroupDetails, onClick: (GroupDetails) -> Unit, testTag: String) {
   val time = groupDetails.lastMessage?.let { MessageDateFormatter.format(it.date) } ?: ""
-  val randomColor = remember {
-    Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat(), 1f)
-  }
 
   Card(
       modifier =
@@ -126,7 +122,8 @@ fun GroupCard(groupDetails: GroupDetails, onClick: (GroupDetails) -> Unit, testT
       colors = CardDefaults.cardColors(containerColor = lightGray)) {
         Row(modifier = Modifier.padding(8.dp)) {
           Box(
-              modifier = Modifier.size(40.dp).clip(CircleShape).background(randomColor),
+              modifier =
+                  Modifier.size(40.dp).clip(CircleShape).background(groupDetails.color.toColor()!!),
               contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = Icons.Default.Person,
