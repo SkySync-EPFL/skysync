@@ -1,5 +1,6 @@
 package ch.epfl.skysync.screens.reports
 
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -12,6 +13,7 @@ import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
@@ -34,8 +36,10 @@ class CrewReportScreenTest {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
+        val context = LocalContext.current
+        val connectivityStatus = remember { ConnectivityStatus(context) }
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.crew1.id)
+        homeGraph(repository, navController, dbs.crew1.id, connectivityStatus= connectivityStatus)
       }
       navController.navigate(Route.CREW_REPORT)
     }

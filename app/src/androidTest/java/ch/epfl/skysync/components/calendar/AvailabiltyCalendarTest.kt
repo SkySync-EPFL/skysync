@@ -1,5 +1,6 @@
 package ch.epfl.skysync.components.calendar
 
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -15,6 +16,7 @@ import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.getStartOfWeek
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
@@ -23,12 +25,12 @@ import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerViewModel
-import java.time.LocalDate
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.time.LocalDate
 
 class AvailabiltyCalendarTest {
 
@@ -47,9 +49,11 @@ class AvailabiltyCalendarTest {
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       val inFlightViewModel = InFlightViewModel.createViewModel(repository)
       val messageListenerViewModel = MessageListenerViewModel.createViewModel()
+      val context = LocalContext.current
+      val connectivityStatus = remember { ConnectivityStatus(context) }
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(
-            repository, navController, dbs.crew1.id, inFlightViewModel, messageListenerViewModel)
+            repository, navController, dbs.crew1.id, inFlightViewModel, messageListenerViewModel, connectivityStatus)
       }
     }
     composeTestRule.waitUntil {

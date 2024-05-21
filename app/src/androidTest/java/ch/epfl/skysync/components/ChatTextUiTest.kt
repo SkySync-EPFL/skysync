@@ -1,7 +1,9 @@
 package ch.epfl.skysync.components
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
@@ -19,6 +21,7 @@ import org.junit.Test
 class ChatTextUiTest {
   @get:Rule val composeTestRule = createComposeRule()
   val dbs = DatabaseSetup()
+
 
   val image: ImageVector? = null
   private val fakeText =
@@ -38,7 +41,9 @@ class ChatTextUiTest {
   @Before
   fun setUpNavHost() {
     composeTestRule.setContent {
-      ChatText(messages = list, onSend = {}, paddingValues = PaddingValues(0.dp))
+        val context = LocalContext.current
+        val connectivityStatus = remember { ConnectivityStatus(context) }
+      ChatText(messages = list, onSend = {}, paddingValues = PaddingValues(0.dp), connectivityStatus)
     }
   }
 

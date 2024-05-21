@@ -1,5 +1,6 @@
 package ch.epfl.skysync.test_end_to_end
 
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isDisplayed
@@ -16,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.rule.GrantPermissionRule
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
@@ -55,10 +57,11 @@ class E2EPilotDuringFlight {
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       inFlightViewModel = InFlightViewModel.createViewModel(repository)
       val messageListenerViewModel = MessageListenerViewModel.createViewModel()
-
+      val context = LocalContext.current
+      val connectivityStatus = remember { ConnectivityStatus(context) }
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(
-            repository, navController, dbs.pilot1.id, inFlightViewModel, messageListenerViewModel)
+            repository, navController, dbs.pilot1.id, inFlightViewModel, messageListenerViewModel, connectivityStatus)
       }
     }
     composeTestRule.waitUntil {

@@ -1,5 +1,6 @@
 package ch.epfl.skysync.screens.home
 
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -7,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.screens.admin.AdminHomeScreen
@@ -36,7 +38,9 @@ class AdminHomeScreenTest {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       flightsViewModel = FlightsViewModel.createViewModel(repository, dbs.admin1.id)
-      AdminHomeScreen(navController = navController, viewModel = flightsViewModel)
+      val context = LocalContext.current
+      val connectivityStatus = remember { ConnectivityStatus(context) }
+      AdminHomeScreen(navController = navController, viewModel = flightsViewModel, connectivityStatus)
     }
     runTest {
       flightsViewModel.refreshUserAndFlights().join()
