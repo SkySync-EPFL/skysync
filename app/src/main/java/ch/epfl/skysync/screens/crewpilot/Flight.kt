@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.Timer
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.location.LocationPoint
@@ -72,8 +73,10 @@ fun UserLocationMarker(location: Location, user: User) {
 fun FlightScreen(
     navController: NavHostController,
     inFlightViewModel: InFlightViewModel,
-    uid: String
+    uid: String,
+    connectivityStatus: ConnectivityStatus
 ) {
+
   val loading by inFlightViewModel.loading.collectAsStateWithLifecycle()
   val rawTime by inFlightViewModel.rawCounter.collectAsStateWithLifecycle()
   val currentTime by inFlightViewModel.counter.collectAsStateWithLifecycle()
