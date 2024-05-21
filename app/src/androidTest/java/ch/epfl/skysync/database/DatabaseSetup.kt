@@ -22,6 +22,7 @@ import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -29,6 +30,7 @@ import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.message.Message
 import ch.epfl.skysync.models.message.MessageGroup
 import ch.epfl.skysync.models.user.Admin
@@ -226,6 +228,29 @@ class DatabaseSetup {
           meetupTimePassenger = LocalTime.of(14, 0, 0),
           meetupLocationPassenger = "location",
       )
+
+    var flight5 =
+        FinishedFlight(
+            "1234",
+            3,
+            Team(listOf(Role(RoleType.CREW), Role(RoleType.CREW))),
+            FlightType.DISCOVERY,
+            Balloon("Balloon Name", BalloonQualification.LARGE, "Ballon Name"),
+            Basket("Basket Name", true, "1234"),
+            LocalDate.now().plusDays(3),
+            TimeSlot.PM,
+            listOf(
+                Vehicle("Peugeot 308", "1234"),
+                Vehicle("Peugeot 308", "1234"),
+                Vehicle("Peugeot 308", "1234"),
+            ),
+            color = FlightColor.RED,
+            takeOffTime = Date.from(Instant.now().minusSeconds(12)),
+            takeOffLocation = LocationPoint(22,46.217033,6.084294,"Vernier, 1214"),
+            landingTime = Date.from(Instant.now()),
+            landingLocation = LocationPoint(21,46.217030,6.084290,"Vernier"),
+            flightTime = 2000000
+        )
 
   var messageGroup1 =
       MessageGroup(name = "Group 1", userIds = setOf(admin2.id, pilot1.id, crew1.id))
