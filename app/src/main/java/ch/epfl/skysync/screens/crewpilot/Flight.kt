@@ -161,9 +161,9 @@ fun FlightScreen(
                       onStart = { inFlightViewModel.startFlight() },
                       onStop = { inFlightViewModel.stopFlight() },
                       onClear = {
-                          inFlightViewModel.clearFlight()
-                          navController.navigate(Route.CREW_HOME)
-                                },
+                        inFlightViewModel.clearFlight()
+                        navController.navigate(Route.CREW_HOME)
+                      },
                       onQuitDisplay = {
                         inFlightViewModel.quitDisplayFlightTrace()
                         navController.popBackStack()
