@@ -32,7 +32,6 @@ import ch.epfl.skysync.components.forms.TitledInputTextField
 import ch.epfl.skysync.components.forms.baseReportFields
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.reports.PilotReport
-import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.util.hasError
@@ -142,9 +141,8 @@ fun PilotReportScreen(
             onClick = {
               errorPax = !nbPassengerInputValidation(pax)
               if (!hasError(errorPax)) {
-                val vehicleProblems = vehicleProblem.toMap()
                 PilotReport(
-                    author = pilot.value as Pilot,
+                    author = pilot.value!!.id,
                     effectivePax = pax.toInt(),
                     takeOffTime = takeoffTime,
                     takeOffLocation = takeoffLocation,
@@ -152,9 +150,9 @@ fun PilotReportScreen(
                     landingTime = landingTime,
                     begin = beginTime,
                     end = endTime,
-                    pauseDuration = pauseDuration,
+                    pauseDuration = pauseDuration.toInt(),
                     comments = comments,
-                    vehicleProblems = vehicleProblems)
+                )
                 // TODO save report
                 navHostController.navigate(Route.CREW_HOME) {
                   popUpTo(Route.CREW_HOME) { inclusive = true }

@@ -30,7 +30,6 @@ import ch.epfl.skysync.components.forms.TitledInputTextField
 import ch.epfl.skysync.components.forms.baseReportFields
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.reports.CrewReport
-import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.util.bottleInputValidation
@@ -141,17 +140,13 @@ fun CrewReportScreen(
               errorBigChampagne = !bottleInputValidation(bigChampagne)
               errorPrestigeChampagne = !bottleInputValidation(prestigeChampagne)
               if (!hasError(errorLittleChampagne, errorBigChampagne, errorPrestigeChampagne)) {
-                val vehicleProblems = vehicleProblem.toMap()
                 CrewReport(
-                    author = crew.value!! as Crew,
-                    littleChampagne = littleChampagne.toInt(),
-                    bigChampagne = bigChampagne.toInt(),
-                    prestigeChampagne = prestigeChampagne.toInt(),
+                    author = crew.value!!.id,
                     begin = beginTime,
                     end = endTime,
-                    pauseDuration = pauseDuration,
+                    pauseDuration = pauseDuration.toInt(),
                     comments = comments,
-                    vehicleProblems = vehicleProblems)
+                )
                 // TODO save report
                 navHostController.navigate(Route.CREW_HOME) {
                   popUpTo(Route.CREW_HOME) { inclusive = true }
