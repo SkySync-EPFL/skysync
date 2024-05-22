@@ -14,6 +14,9 @@ import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.DateUtility
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -49,7 +52,13 @@ class FlightFinishedTest {
     helper(
         "Landing time",
         DateUtility.localTimeToString(DateUtility.dateToLocalTime(flight.landingTime)))
-    helper("Flight Duration", (flight.flightTime / 1000.0).toString() + " sec")
+    val formatter = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+    val date = Date(flight.flightTime)
+    val formattedTime = formatter.format(date)
+    val hours = formattedTime.substring(0, 2).toInt()
+    val minutes = formattedTime.substring(3, 5).toInt()
+    val seconds = formattedTime.substring(6, 8).toInt()
+    helper("Flight Duration", "$hours:$minutes:$seconds")
   }
 
   @Test

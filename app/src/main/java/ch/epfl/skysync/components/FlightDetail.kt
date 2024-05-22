@@ -54,9 +54,11 @@ import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.flight.flightColorOptions
 import ch.epfl.skysync.models.location.LocationPoint
 import java.net.URLEncoder
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.util.Date
+import java.util.Locale
 
 /**
  * Composable function for displaying flight details in a UI.
@@ -232,8 +234,18 @@ fun FinishedFlightTimes(finishedFlight: FinishedFlight, padding: Dp, cardColor: 
       DisplaySingleMetric(
           metric = label, value = DateUtility.localTimeToString(DateUtility.dateToLocalTime(time)))
     }
-    DisplaySingleMetric("Flight Duration", (finishedFlight.flightTime / 1000.0).toString() + " sec")
+    DisplaySingleMetric("Flight Duration", longToTime(finishedFlight.flightTime))
   }
+}
+
+fun longToTime(timeInMillis: Long): String {
+  val formatter = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+  val date = Date(timeInMillis)
+  val formattedTime = formatter.format(date)
+  val hours = formattedTime.substring(0, 2).toInt()
+  val minutes = formattedTime.substring(3, 5).toInt()
+  val seconds = formattedTime.substring(6, 8).toInt()
+  return "$hours:$minutes:$seconds"
 }
 
 /**
