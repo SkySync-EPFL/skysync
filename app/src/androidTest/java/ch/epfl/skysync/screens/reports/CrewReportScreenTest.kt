@@ -129,7 +129,7 @@ class CrewReportScreenTest {
         .performScrollToNode(hasTestTag("Comments"))
     composeTestRule.onNodeWithTag("Add Problem Button").performClick()
     composeTestRule.onNodeWithTag("Vehicle Menu").performClick()
-    composeTestRule.onNodeWithTag("Vehicle 1").performClick()
+    composeTestRule.onNodeWithTag("Vehicle 0").performClick()
     composeTestRule.onNodeWithTag("Problem Field").performTextInput("Problem 1")
     composeTestRule.onNodeWithTag("Add Vehicle Problem Button").performClick()
 
