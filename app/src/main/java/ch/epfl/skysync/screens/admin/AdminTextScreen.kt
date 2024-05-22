@@ -9,12 +9,18 @@ import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ChatText
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.viewmodel.ChatViewModel
 
 @Composable
-fun AdminTextScreen(navController: NavHostController, groupId: String, viewModel: ChatViewModel) {
+fun AdminTextScreen(
+    navController: NavHostController,
+    groupId: String,
+    viewModel: ChatViewModel,
+    connectivityStatus: ConnectivityStatus
+) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val messages by viewModel.getGroupChatMessages(groupId).collectAsStateWithLifecycle()
   val group = uiState.messageGroups.find { it.id == groupId }
@@ -28,6 +34,7 @@ fun AdminTextScreen(navController: NavHostController, groupId: String, viewModel
         ChatText(
             messages = messages,
             onSend = { content -> viewModel.sendMessage(groupId, content) },
-            paddingValues = padding)
+            paddingValues = padding,
+            connectivityStatus)
       }
 }

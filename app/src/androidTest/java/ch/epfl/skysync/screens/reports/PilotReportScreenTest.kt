@@ -1,6 +1,7 @@
 package ch.epfl.skysync.screens.reports
 
-import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -10,43 +11,43 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import androidx.navigation.NavHostController
+import androidx.navigation.compose.ComposeNavigator
+import androidx.navigation.compose.NavHost
+import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.navigation.Route
+import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.utils.inputTimePicker
-import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
-import io.mockk.mockk
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class PilotReportScreenTest {
   @get:Rule val composeTestRule = createComposeRule()
-  private val navController: NavHostController = mockk(relaxed = true)
+  private lateinit var navController: TestNavHostController
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbs = DatabaseSetup()
   private val repository = Repository(db)
-  private val viewModel = FinishedFlightsViewModel(repository, dbs.pilot1.id)
 
   @Before
-  fun setUp() = runTest {
-    dbs.clearDatabase(db)
-    dbs.fillDatabase(db)
-    viewModel.refresh()
+  fun setUp() {
     composeTestRule.setContent {
-      PilotReportScreen(
-          navHostController = navController,
-          finishedFlightsViewModel = viewModel,
-          flightId = dbs.finishedFlight1.id)
+      navController = TestNavHostController(LocalContext.current)
+      navController.navigatorProvider.addNavigator(ComposeNavigator())
+      val context = LocalContext.current
+      val connectivityStatus = remember { ContextConnectivityStatus(context) }
+      NavHost(navController = navController, startDestination = Route.MAIN) {
+        homeGraph(repository, navController, dbs.pilot1.id, connectivityStatus = connectivityStatus)
+      }
+      navController.navigate(Route.PILOT_REPORT)
     }
   }
 
-  @OptIn(ExperimentalTestApi::class)
   @Test
   fun allFieldsAreDisplayed() {
-    composeTestRule.waitUntilExactlyOneExists(hasTestTag("Pilot Report LazyColumn"), 2000)
     composeTestRule
         .onNodeWithTag("Pilot Report LazyColumn")
         .performScrollToNode(hasTestTag("Number of passengers"))
@@ -95,10 +96,8 @@ class PilotReportScreenTest {
     composeTestRule.onNodeWithTag("Submit Button").assertExists()
   }
 
-  @OptIn(ExperimentalTestApi::class)
   @Test
   fun minimalReportWorks() {
-    composeTestRule.waitUntilExactlyOneExists(hasTestTag("Pilot Report LazyColumn"), 2000)
     composeTestRule
         .onNodeWithTag("Pilot Report LazyColumn")
         .performScrollToNode(hasTestTag("Number of passengers"))
