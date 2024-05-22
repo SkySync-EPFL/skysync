@@ -42,7 +42,7 @@ class FlightTable(db: FirestoreDatabase) :
   private val vehicleTable = VehicleTable(db)
   private val flightMemberTable = FlightMemberTable(db)
   private val userTable = UserTable(db)
-    private val reportTable = ReportTable(db)
+  private val reportTable = ReportTable(db)
 
   /** Create a [Flight] instance from the flight schema and the retrieved entities */
   private fun makeFlight(
@@ -234,8 +234,6 @@ class FlightTable(db: FirestoreDatabase) :
         .filterNotNull()
   }
 
-
-
   /** Retrieve all the entities linked to the flight */
   private suspend fun retrieveFlight(flightSchema: FlightSchema): Flight? = coroutineScope {
     var flightType: FlightType? = null
@@ -243,7 +241,7 @@ class FlightTable(db: FirestoreDatabase) :
     var basket: Basket? = null
     var vehicles: List<Vehicle>? = null
     var team: Team? = null
-      var reports: List<Report>? = null
+    var reports: List<Report>? = null
     val jobs =
         listOf(
             launch {
@@ -267,8 +265,8 @@ class FlightTable(db: FirestoreDatabase) :
               }
             },
             launch {
-                if (flightSchema.id == null) return@launch
-                reports = reportTable.retrieveReports(flightSchema.id)
+              if (flightSchema.id == null) return@launch
+              reports = reportTable.retrieveReports(flightSchema.id)
             },
             launch { vehicles = retrieveVehicles(flightSchema) },
             launch { team = retrieveTeam(flightSchema) })
@@ -343,9 +341,9 @@ class FlightTable(db: FirestoreDatabase) :
     return withErrorCallback(onError) {
       val flightId = db.addItem(path, FlightSchema.fromModel(item))
       addTeam(flightId, item.team)
-        if (item is FinishedFlight && item.reportId.isNotEmpty()) {
-          reportTable.addAll(item.reportId as List<FlightReport>, flightId)
-        }
+      if (item is FinishedFlight && item.reportId.isNotEmpty()) {
+        reportTable.addAll(item.reportId as List<FlightReport>, flightId)
+      }
       flightId
     }
   }

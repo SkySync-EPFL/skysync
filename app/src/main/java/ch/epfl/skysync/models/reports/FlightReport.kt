@@ -1,8 +1,6 @@
 package ch.epfl.skysync.models.reports
 
 import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.flight.Vehicle
-import ch.epfl.skysync.models.user.Crew
 import java.util.Date
 
 data class FlightReport(

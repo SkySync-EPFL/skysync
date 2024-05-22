@@ -140,7 +140,7 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
                   end = endTime,
                   pauseDuration = pauseDuration.toInt(),
                   comments = comments,
-                  )
+              )
               // TODO save report
               navHostController.navigate(Route.CREW_HOME) {
                 popUpTo(Route.CREW_HOME) { inclusive = true }

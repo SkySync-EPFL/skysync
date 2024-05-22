@@ -75,9 +75,7 @@ abstract class Table<M, S : Schema<M>>(
       onError: ((Exception) -> Unit)? = null
   ): List<M> {
     return withErrorCallback(onError) {
-      db.query(path, filter, clazz, limit, orderBy, orderByDirection).map {
-          it.toModel()
-      }
+      db.query(path, filter, clazz, limit, orderBy, orderByDirection).map { it.toModel() }
     }
   }
 

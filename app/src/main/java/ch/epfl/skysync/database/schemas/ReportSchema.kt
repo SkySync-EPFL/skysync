@@ -1,10 +1,8 @@
 package ch.epfl.skysync.database.schemas
 
 import ch.epfl.skysync.database.Schema
-import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.reports.FlightReport
 import ch.epfl.skysync.models.reports.Report
-import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.DocumentId
 import java.util.Date
 
@@ -32,12 +30,12 @@ data class ReportSchema(
     fun fromModel(model: Report, flightId: String?): ReportSchema {
       return ReportSchema(
           id = model.id,
-            authorId = model.author,
+          authorId = model.author,
           flightId = flightId,
-            shiftBegin = model.begin,
-            shiftEnd = model.end,
-            pauseDuration = model.pauseDuration,
-            comment = model.comments,
+          shiftBegin = model.begin,
+          shiftEnd = model.end,
+          pauseDuration = model.pauseDuration,
+          comment = model.comments,
       )
     }
   }
