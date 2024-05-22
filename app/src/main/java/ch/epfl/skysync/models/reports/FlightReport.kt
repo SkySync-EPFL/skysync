@@ -3,7 +3,7 @@ package ch.epfl.skysync.models.reports
 import ch.epfl.skysync.models.UNSET_ID
 import java.util.Date
 
-data class CrewReport(
+data class FlightReport(
     override val id: String = UNSET_ID,
     override val author: String,
     override val begin: Date,
