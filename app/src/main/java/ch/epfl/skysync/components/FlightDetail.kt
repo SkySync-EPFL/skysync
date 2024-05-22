@@ -56,7 +56,6 @@ import ch.epfl.skysync.models.location.LocationPoint
 import java.net.URLEncoder
 import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalTime
 import java.util.Date
 
 /**
@@ -398,33 +397,6 @@ fun FinishedFlightDetailBottom(reportClick: () -> Unit) {
 @Preview
 @Composable
 fun FlightDetailsPreview() {
-  val time = LocalTime.of(10, 30)
-  val confirmedFlight =
-      ConfirmedFlight(
-          "1234",
-          3,
-          Team(listOf(Role(RoleType.CREW), Role(RoleType.CREW))),
-          FlightType.DISCOVERY,
-          Balloon("Balloon Name", BalloonQualification.LARGE, "Ballon Name"),
-          Basket("Basket Name", true, "1234"),
-          LocalDate.now().plusDays(3),
-          TimeSlot.PM,
-          listOf(
-              Vehicle("Peugeot 308", "1234"),
-              Vehicle("Peugeot 308", "1234"),
-              Vehicle("Peugeot 308", "1234"),
-          ),
-          remarks =
-              listOf(
-                  "Team(listOf(Role(RoleType.CREW), Role(RoleType.CREW)))",
-                  "To create a LocalTime object in Kotlin, you can use the LocalTime.of() method. This method allows you to specify the hour, minute, second, and optionally nanosecond components of the time. Here's how you can create a LocalTime object"),
-          color = FlightColor.RED,
-          meetupTimeTeam = time,
-          departureTimeTeam = time,
-          meetupTimePassenger = time,
-          meetupLocationPassenger = "Nancy")
-  val timer = Date.from(Instant.now())
-  val location = LocationPoint(21, 46.217030, 6.084290, "Vernier")
   val finishedFlight =
       FinishedFlight(
           "1234",
@@ -437,14 +409,12 @@ fun FlightDetailsPreview() {
           TimeSlot.PM,
           listOf(
               Vehicle("Peugeot 308", "1234"),
-              Vehicle("Peugeot 308", "1234"),
-              Vehicle("Peugeot 308", "1234"),
           ),
           color = FlightColor.RED,
-          takeOffTime = timer,
-          takeOffLocation = location,
-          landingTime = timer,
-          landingLocation = location,
+          takeOffTime = Date.from(Instant.now()),
+          takeOffLocation = LocationPoint(21, 46.0, 6.0, "Vernier"),
+          landingTime = Date.from(Instant.now()),
+          landingLocation = LocationPoint(21, 46.2, 6.1, "Vernier"),
           flightTime = 2000000)
 
   FlightDetails(finishedFlight, PaddingValues(0.dp))

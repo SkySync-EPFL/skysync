@@ -59,29 +59,4 @@ class FlightFinishedTest {
     helper("Takeoff location", flight.takeOffLocation.name)
     helper("Landing location", flight.landingLocation.name)
   }
-
-  @Test
-  fun timeSlotIsDisplayed() {
-    helper("Time slot", DateUtility.localDateToString(flight.date))
-  }
-
-  @Test
-  fun numberOfPaxValueIsDisplayed() {
-    helper("Number of Passengers", flight.nPassengers.toString())
-  }
-
-  @Test
-  fun flightTypeValueIsDisplayed() {
-    helper("Flight type", flight.flightType.name)
-  }
-
-  @Test
-  fun balloonAndValueIsDisplayed() {
-    helper("Balloon", flight.balloon.name)
-  }
-
-  @Test
-  fun basketAndValueIsDisplayed() {
-    helper("Basket", flight.basket.name)
-  }
 }

@@ -29,7 +29,7 @@ fun FlightDetailScreen(
         if (flight !is FinishedFlight) {
           ConfirmedFlightDetailBottom({ navController.popBackStack() }, {}, false)
         } else {
-          FinishedFlightDetailBottom({})
+          FinishedFlightDetailBottom(reportClick = {})
         }
       },
       containerColor = lightGray) { padding ->
