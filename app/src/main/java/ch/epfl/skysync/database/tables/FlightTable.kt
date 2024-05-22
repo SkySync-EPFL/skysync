@@ -345,7 +345,7 @@ class FlightTable(db: FirestoreDatabase) :
       val flightId = db.addItem(path, FlightSchema.fromModel(item))
       addTeam(flightId, item.team)
       if (item is FinishedFlight && item.reportId.isNotEmpty()) {
-        reportTable.addAll(item.reportId as List<FlightReport>, flightId)
+        reportTable.addAll(item.reportId, flightId)
       }
       flightId
     }
