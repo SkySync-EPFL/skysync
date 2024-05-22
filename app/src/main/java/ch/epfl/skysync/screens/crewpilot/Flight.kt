@@ -147,6 +147,7 @@ fun FlightScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
+          // only display the action buttons for ongoing flight not for flight trace display
           if (locationPermission.status.isGranted) {
             Box(
                 modifier =
@@ -160,11 +161,16 @@ fun FlightScreen(
                       onStart = { inFlightViewModel.startFlight() },
                       onStop = { inFlightViewModel.stopFlight() },
                       onClear = { inFlightViewModel.clearFlight() },
-                  )
+                      onQuitDisplay = {
+                        inFlightViewModel.quitDisplayFlightTrace()
+                        navController.popBackStack()
+                      })
 
                   Row(
                       horizontalArrangement = Arrangement.SpaceBetween,
                       modifier = Modifier.fillMaxWidth()) {
+                        // actions disabled on flight trace display
+                        if (inFlightViewModel.isDisplayTrace()) return@Row
                         FloatingActionButton(
                             onClick = {
                               // Moves the camera to the current location when clicked.
@@ -197,8 +203,6 @@ fun FlightScreen(
           }
         },
         bottomBar = { BottomBar(navController) }) { padding ->
-          // Renders the Google Map or a permission request message based on the permission status.
-
           if (locationPermission.status.isGranted) {
             GoogleMap(
                 modifier = Modifier.fillMaxSize().padding(padding).testTag("Map"),
@@ -211,13 +215,15 @@ fun FlightScreen(
                     UserLocationMarker(location, user)
                   }
                 }
-            Text(
-                text = "$metrics",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier =
-                    Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
-                        .background(color = Color.White, shape = RoundedCornerShape(8.dp))
-                        .padding(6.dp))
+            if (!inFlightViewModel.isDisplayTrace()) {
+              Text(
+                  text = "$metrics",
+                  style = MaterialTheme.typography.bodyLarge,
+                  modifier =
+                      Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
+                          .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                          .padding(6.dp))
+            }
           }
         }
   }
