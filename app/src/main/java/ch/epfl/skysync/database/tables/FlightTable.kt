@@ -53,7 +53,7 @@ class FlightTable(db: FirestoreDatabase) :
       vehicles: List<Vehicle>,
       team: Team,
       flightTrace: FlightTrace?,
-      reports: List<Report> = emptyList(),
+      reports: List<Report>? = emptyList(),
   ): Flight {
     return when (schema.status!!) {
       FlightStatus.PLANNED ->
@@ -117,7 +117,7 @@ class FlightTable(db: FirestoreDatabase) :
                   LocationPoint(
                       0, schema.landingLocationLat!!, schema.landingLocationLong!!, "LandingSpot"),
               flightTime = schema.flightTime!!,
-              reportId = reports,
+              reportId = reports!!,
               flightTrace = flightTrace!!)
     }
   }
@@ -279,6 +279,7 @@ class FlightTable(db: FirestoreDatabase) :
         basket = basket,
         vehicles = vehicles!!,
         team = team!!,
+        reports = reports,
         flightTrace = FlightTrace(flightSchema.id!!, emptyList())
     )
   }
