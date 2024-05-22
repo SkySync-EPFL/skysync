@@ -11,5 +11,4 @@ interface Report {
   val end: Date
   val pauseDuration: Long? // in milliseconds
   val comments: String
-  val vehicleProblems: Map<Vehicle, String>
 }

@@ -18,5 +18,4 @@ data class PilotReport(
     override val end: Date,
     override val pauseDuration: Long?, // in milliseconds
     override val comments: String,
-    override val vehicleProblems: Map<Vehicle, String>
 ) : Report

@@ -11,28 +11,33 @@ import java.util.Date
 data class ReportSchema(
     @DocumentId val id: String? = null,
     val authorId: String? = null,
+    val flightId: String? = null,
     val shiftBegin: Date? = null,
     val shiftEnd: Date? = null,
     val pauseDuration: Long?, // in milliseconds
     val comment: String? = null,
-    val vehicleProblems: Map<String, String>
 ) : Schema<Report> {
   override fun toModel(): Report {
-      throw UnsupportedOperationException()
+    return FlightReport(
+        id = id!!,
+        author = authorId!!,
+        begin = shiftBegin!!,
+        end = shiftEnd!!,
+        pauseDuration = pauseDuration!!,
+        comments = comment!!,
+    )
   }
 
   companion object {
-    fun fromModel(model: Report): ReportSchema {
+    fun fromModel(model: Report, flightId: String?): ReportSchema {
       return ReportSchema(
           id = model.id,
             authorId = model.author,
+          flightId = flightId,
             shiftBegin = model.begin,
             shiftEnd = model.end,
             pauseDuration = model.pauseDuration,
             comment = model.comments,
-            vehicleProblems = model.vehicleProblems.map {
-                it.key.id to it.value
-            }.toMap()
       )
     }
   }
