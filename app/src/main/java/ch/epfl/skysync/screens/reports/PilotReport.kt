@@ -129,9 +129,8 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
           onClick = {
             errorPax = !nbPassengerInputValidation(pax)
             if (!hasError(errorPax)) {
-              val vehicleProblems = vehicleProblem.toMap()
               PilotReport(
-                  author = pilot,
+                  author = pilot.id,
                   effectivePax = pax.toInt(),
                   takeOffTime = takeoffTime,
                   takeOffLocation = takeoffLocation,
@@ -139,9 +138,9 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
                   landingTime = landingTime,
                   begin = beginTime,
                   end = endTime,
-                  pauseDuration = pauseDuration,
+                  pauseDuration = pauseDuration.toInt(),
                   comments = comments,
-                  vehicleProblems = vehicleProblems)
+              )
               // TODO save report
               navHostController.navigate(Route.CREW_HOME) {
                 popUpTo(Route.CREW_HOME) { inclusive = true }
