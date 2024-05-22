@@ -41,9 +41,12 @@ class UserTableUnitTest {
 
     availabilities = userTable.retrieveAvailabilities(dbs.pilot1.id, onError = { assertNull(it) })
     assertEquals(
-        listOf(dbs.availability1Pilot1, dbs.availability2Pilot1, dbs.availability3Pilot1).sortedBy {
-          it.id
-        },
+        listOf(
+                dbs.availability1Pilot1,
+                dbs.availability2Pilot1,
+                dbs.availability3Pilot1,
+                dbs.availability4Pilot1)
+            .sortedBy { it.id },
         availabilities.sortedBy { it.id })
 
     user = userTable.get(dbs.crew1.id, onError = { assertNull(it) })

@@ -16,7 +16,8 @@ fun ModifyFlightScreen(
     viewModel: FlightsViewModel,
     flightId: String
 ) {
-  val flightToModify by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
+
+  val flightToModify = viewModel.getFlight(flightId).collectAsStateWithLifecycle()
   val allFlightTypes = viewModel.currentFlightTypes.collectAsStateWithLifecycle()
   val allBalloons = viewModel.currentBalloons.collectAsStateWithLifecycle()
   val allBaskets = viewModel.currentBaskets.collectAsStateWithLifecycle()
@@ -24,7 +25,7 @@ fun ModifyFlightScreen(
   val availableUsers = viewModel.availableUsers.collectAsStateWithLifecycle()
   val allRoleTypes = RoleType.entries
   FlightForm(
-      currentFlight = flightToModify,
+      currentFlight = flightToModify.value,
       navController = navController,
       title = "Modify Flight",
       modifyMode = true,

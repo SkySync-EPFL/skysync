@@ -135,25 +135,10 @@ fun FlightForm(
         }
         val lazyListState = rememberLazyListState()
 
-        var isUserAvailable = remember { mutableMapOf<User, Boolean>() }
-
-        selectedTeamMembers.forEach { role ->
-          if (role.assignedUser != null) {
-            isUserAvailable[role.assignedUser!!] = true
-          }
-        }
         var flightTypeValueError by remember { mutableStateOf(false) }
         var nbPassengersValueError by remember { mutableStateOf(false) }
-        var balloonAvailable by remember { mutableStateOf(false) }
-        var basketAvailable by remember { mutableStateOf(false) }
-        var vehiclesAvailable by remember { mutableStateOf(false) }
-        var usersAvailable by remember { mutableStateOf(false) }
-        var isSelectedVehicleAvailable = remember { mutableMapOf<Vehicle, Boolean>() }
-        selectedVehicles.value.forEach { vehicle ->
-          if (vehicle != null) {
-            isSelectedVehicleAvailable[vehicle] = true
-          }
-        }
+        val isSelectedBalloonAvailable = availableBalloons.value.contains(balloonValue)
+        val isSelectedBasketAvailable = availableBaskets.value.contains(basketValue)
 
         var isError by remember { mutableStateOf(false) }
 
@@ -190,21 +175,11 @@ fun FlightForm(
                                 .atZone(ZoneId.of("GMT"))
                                 .toLocalDate()
                         refreshDate(dateValue, timeSlotValue)
-                        balloonValue?.let {
-                          balloonAvailable = availableBalloons.value.contains(balloonValue)
-                        }
-                        basketValue?.let {
-                          basketAvailable = availableBaskets.value.contains(basketValue)
-                        }
-                        selectedVehicles.value.forEach { vehicle ->
-                          if (vehicle != null) {
-                            isSelectedVehicleAvailable[vehicle] = availableVehicles.value.contains(vehicle)
-                          }
-                        }
-                        usersAvailable =
-                            !availableUsers.value.containsAll(
-                                selectedTeamMembers.mapNotNull { r -> r.assignedUser })
                       }
+                      println("PATATE")
+                      println(availableBalloons.value)
+                      println(availableVehicles.value)
+                      println(availableBaskets.value)
                     },
                     onclickDismiss = { openDatePicker = false },
                     onclickField = { openDatePicker = true },
@@ -220,7 +195,7 @@ fun FlightForm(
                     value = timeSlotValue,
                     onclickMenu = { item ->
                       timeSlotValue = item
-                      refreshDate(dateValue, item)
+                      refreshDate(dateValue, timeSlotValue)
                     },
                     items = TimeSlot.entries)
               }
@@ -262,7 +237,10 @@ fun FlightForm(
                           availableUsers.value.filterNot {
                             Team(selectedTeamMembers).getUsers().contains(it)
                           },
-                      userAvailable = usersAvailable)
+                      isSelectedUserAvailable =
+                          (if (role.assignedUser != null)
+                              availableUsers.value.contains(role.assignedUser)
+                          else true))
                 }
               }
               item {
@@ -306,7 +284,8 @@ fun FlightForm(
                             },
                             items = availableVehicles.value,
                             showString = { it?.name ?: "choose vehicle" },
-                            isError = !(isSelectedVehicleAvailable[car] ?: true),
+                            isError =
+                                !(if (car != null) availableVehicles.value.contains(car) else true),
                             messageError = "Vehicle not available")
 
                         IconButton(
@@ -331,7 +310,9 @@ fun FlightForm(
                     value = balloonValue,
                     onclickMenu = { item -> balloonValue = item },
                     items = availableBalloons.value,
-                    showString = { it?.name ?: "Choose the balloon" })
+                    showString = { it?.name ?: "Choose the balloon" },
+                    isError = !isSelectedBalloonAvailable,
+                    messageError = "Balloon not available")
               }
               // Drop down menu for the basket
               item {
@@ -342,7 +323,9 @@ fun FlightForm(
                     value = basketValue,
                     onclickMenu = { item -> basketValue = item },
                     items = availableBaskets.value,
-                    showString = { it?.name ?: "Choose the basket" })
+                    showString = { it?.name ?: "Choose the basket" },
+                    isError = !isSelectedBasketAvailable,
+                    messageError = "Basket not available")
               }
             }
         // Button to add the flight to the list of flights
@@ -355,11 +338,7 @@ fun FlightForm(
                   hasError(
                       nbPassengersValueError,
                       flightTypeValueError,
-                      basketAvailable,
-                      balloonAvailable,
-                      usersAvailable,
-                      vehiclesAvailable,
-                      *isSelectedVehicleAvailable.values.toBooleanArray())
+                  )
               if (!isError) {
                 val allRoles = selectedTeamMembers.toList()
                 val team = Team(allRoles)
@@ -441,7 +420,7 @@ fun RoleField(
     onReassign: (User?) -> Unit,
     specialName: String = "",
     availableUsers: List<User>,
-    userAvailable: Boolean
+    isSelectedUserAvailable: Boolean
 ) {
   Text(
       modifier =
@@ -454,7 +433,7 @@ fun RoleField(
       verticalAlignment = Alignment.CenterVertically) {
         CustomDropDownMenu(
             modifier = Modifier.weight(1f),
-            isError = userAvailable,
+            isError = !isSelectedUserAvailable,
             defaultPadding = defaultPadding,
             title = "overview:${role.roleType.description}",
             value = role.assignedUser,

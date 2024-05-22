@@ -126,6 +126,8 @@ class DatabaseSetup {
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Crew1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
+  var availability4Crew1 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotAdmin1, date = date2)
 
   var availability1Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -133,6 +135,8 @@ class DatabaseSetup {
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
+  var availability4Crew2 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotAdmin1, date = date2)
 
   var availability1Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -140,6 +144,8 @@ class DatabaseSetup {
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
+  var availability4Pilot1 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotAdmin1, date = date2)
 
   var availability1Pilot2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -320,6 +326,8 @@ class DatabaseSetup {
                   availability2Crew1.copy(id = availabilityTable.add(crew1.id, availability2Crew1))
               availability3Crew1 =
                   availability3Crew1.copy(id = availabilityTable.add(crew1.id, availability3Crew1))
+              availability4Crew1 =
+                  availability4Crew1.copy(id = availabilityTable.add(crew1.id, availability4Crew1))
             },
             launch {
               userTable.set(pilot1.id, pilot1)
@@ -332,6 +340,9 @@ class DatabaseSetup {
               availability3Pilot1 =
                   availability3Pilot1.copy(
                       id = availabilityTable.add(pilot1.id, availability3Pilot1))
+              availability4Pilot1 =
+                  availability4Pilot1.copy(
+                      id = availabilityTable.add(pilot1.id, availability4Pilot1))
             },
             launch {
               userTable.set(crew2.id, crew2)
@@ -341,6 +352,8 @@ class DatabaseSetup {
                   availability2Crew2.copy(id = availabilityTable.add(crew2.id, availability2Crew2))
               availability3Crew2 =
                   availability3Crew2.copy(id = availabilityTable.add(crew2.id, availability3Crew2))
+              availability4Crew2 =
+                  availability4Crew2.copy(id = availabilityTable.add(crew2.id, availability4Crew2))
             },
             launch {
               userTable.set(pilot2.id, pilot2)
