@@ -11,7 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ch.epfl.skysync.Repository
-import ch.epfl.skysync.components.ConnectivityStatus
+import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.screens.LoginScreen
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerViewModel
@@ -29,7 +29,7 @@ fun MainGraph(
 ) {
   val user by userGlobalViewModel.user.collectAsStateWithLifecycle()
   val context = LocalContext.current
-  val connectivityStatus = remember { ConnectivityStatus(context) }
+  val connectivityStatus = remember { ContextConnectivityStatus(context) }
   NavHost(
       navController = navHostController,
       startDestination = if (user == null) Route.LOGIN else Route.MAIN) {

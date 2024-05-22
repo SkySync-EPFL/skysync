@@ -41,7 +41,7 @@ class ChatTextUiTest {
   fun setUpNavHost() {
     composeTestRule.setContent {
       val context = LocalContext.current
-      val connectivityStatus = remember { ConnectivityStatus(context) }
+      val connectivityStatus = remember { ContextConnectivityStatus(context) }
       ChatText(
           messages = list, onSend = {}, paddingValues = PaddingValues(0.dp), connectivityStatus)
     }

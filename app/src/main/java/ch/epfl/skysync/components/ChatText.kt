@@ -62,9 +62,8 @@ fun ChatText(
 ) {
   Column(modifier = Modifier.padding(paddingValues).imePadding()) {
     ChatTextBody(messages, modifier = Modifier.weight(1f))
-    if (connectivityStatus.isOnline()) {
-      ChatInput(onSend)
-    }
+      ChatInput(onSend, connectivityStatus)
+
   }
 }
 /**
@@ -156,7 +155,7 @@ fun ChatBubble(message: ChatMessage, index: String) {
  *   parameter.
  */
 @Composable
-fun ChatInput(onSend: (String) -> Unit) {
+fun ChatInput(onSend: (String) -> Unit, connectivityStatus: ConnectivityStatus) {
   var text by remember { mutableStateOf("") }
   val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -190,7 +189,7 @@ fun ChatInput(onSend: (String) -> Unit) {
                 keyboardController?.hide()
               }
             },
-            enabled = text.isNotEmpty(),
+            enabled = text.isNotEmpty() && connectivityStatus.isOnline(),
             modifier =
                 Modifier.padding(start = 8.dp, top = 8.dp)
                     .background(if (text.isNotEmpty()) lightOrange else Color.Gray, CircleShape)

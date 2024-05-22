@@ -16,6 +16,7 @@ import androidx.navigation.testing.TestNavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.ConnectivityStatus
+import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.FirestoreDatabase
@@ -57,7 +58,7 @@ class E2ECrewFlightDetail {
       val inFlightViewModel = InFlightViewModel.createViewModel(repository)
       val messageListenerViewModel = MessageListenerViewModel.createViewModel()
       val context = LocalContext.current
-      val connectivityStatus = remember { ConnectivityStatus(context) }
+      val connectivityStatus = remember { ContextConnectivityStatus(context) }
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(
             repository,

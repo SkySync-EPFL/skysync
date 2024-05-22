@@ -17,7 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.rule.GrantPermissionRule
 import ch.epfl.skysync.Repository
-import ch.epfl.skysync.components.ConnectivityStatus
+import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
@@ -58,7 +58,7 @@ class E2EPilotDuringFlight {
       inFlightViewModel = InFlightViewModel.createViewModel(repository)
       val messageListenerViewModel = MessageListenerViewModel.createViewModel()
       val context = LocalContext.current
-      val connectivityStatus = remember { ConnectivityStatus(context) }
+      val connectivityStatus = remember { ContextConnectivityStatus(context) }
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(
             repository,

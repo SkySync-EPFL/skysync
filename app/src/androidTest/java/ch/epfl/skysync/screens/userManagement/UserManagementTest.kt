@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.ConnectivityStatus
+import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.flight.RoleType
@@ -91,7 +92,7 @@ class UserManagementTest {
           UserManagementViewModel.createViewModel(repository, dbSetup.admin1.id)
       userManagementViewModel.refresh()
       val context = LocalContext.current
-      val connectivityStatus = remember { ConnectivityStatus(context) }
+      val connectivityStatus = remember { ContextConnectivityStatus(context) }
       UserManagementScreen(rememberNavController(), userManagementViewModel, connectivityStatus)
     }
 

@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.ConnectivityStatus
+import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
@@ -53,7 +54,7 @@ class LaunchFlightTest {
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
         val context = LocalContext.current
-        val connectivityStatus = remember { ConnectivityStatus(context) }
+        val connectivityStatus = remember { ContextConnectivityStatus(context) }
         LaunchFlight(navController, viewModel, inFlightViewModel, connectivityStatus)
       }
       inFlightViewModel.init(dbSetup.crew1.id).join()
@@ -70,7 +71,7 @@ class LaunchFlightTest {
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot3.id)
         val context = LocalContext.current
-        val connectivityStatus = remember { ConnectivityStatus(context) }
+        val connectivityStatus = remember { ContextConnectivityStatus(context) }
         LaunchFlight(navController, viewModel, inFlightViewModel, connectivityStatus)
       }
       inFlightViewModel.init(dbSetup.pilot3.id).join()
@@ -91,7 +92,7 @@ class LaunchFlightTest {
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
         val context = LocalContext.current
-        val connectivityStatus = remember { ConnectivityStatus(context) }
+        val connectivityStatus = remember { ContextConnectivityStatus(context) }
         LaunchFlight(navController, viewModel, inFlightViewModel, connectivityStatus)
       }
       inFlightViewModel.init(dbSetup.pilot1.id).join()
@@ -110,7 +111,7 @@ class LaunchFlightTest {
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
         val context = LocalContext.current
-        val connectivityStatus = remember { ConnectivityStatus(context) }
+        val connectivityStatus = remember { ContextConnectivityStatus(context) }
         NavHost(navController = navController, startDestination = Route.MAIN) {
           homeGraph(
               repository,
@@ -146,7 +147,7 @@ class LaunchFlightTest {
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
         val context = LocalContext.current
-        val connectivityStatus = remember { ConnectivityStatus(context) }
+        val connectivityStatus = remember { ContextConnectivityStatus(context) }
         NavHost(navController = navController, startDestination = Route.MAIN) {
           homeGraph(
               repository,
