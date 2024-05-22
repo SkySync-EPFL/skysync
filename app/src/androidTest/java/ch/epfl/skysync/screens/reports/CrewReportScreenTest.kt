@@ -1,7 +1,5 @@
 package ch.epfl.skysync.screens.reports
 
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -11,24 +9,21 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import androidx.navigation.compose.ComposeNavigator
-import androidx.navigation.compose.NavHost
-import androidx.navigation.testing.TestNavHostController
+import androidx.navigation.NavHostController
 import ch.epfl.skysync.Repository
-import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.utils.inputTimePicker
+import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
+import io.mockk.mockk
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class CrewReportScreenTest {
-
   @get:Rule val composeTestRule = createComposeRule()
-  private lateinit var navController: TestNavHostController
+  private val navController: NavHostController = mockk(relaxed = true)
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbs = DatabaseSetup()
   private val repository = Repository(db)
@@ -36,14 +31,13 @@ class CrewReportScreenTest {
   @Before
   fun setUp() {
     composeTestRule.setContent {
-      navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
-      val context = LocalContext.current
-      val connectivityStatus = remember { ContextConnectivityStatus(context) }
-      NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.crew1.id, connectivityStatus = connectivityStatus)
-      }
-      navController.navigate(Route.CREW_REPORT)
+      val finishedFlightsViewModel =
+          FinishedFlightsViewModel.createViewModel(repository = repository, userId = dbs.crew1.id)
+      CrewReportScreen(
+          navHostController = navController,
+          finishedFlightsViewModel = finishedFlightsViewModel,
+          flightId = dbs.finishedFlight1.id)
+      navController.navigate(Route.PILOT_REPORT)
     }
   }
 
