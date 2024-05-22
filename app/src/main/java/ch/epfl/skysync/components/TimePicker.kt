@@ -207,8 +207,6 @@ fun PickerDialog(
         // Buttons
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.primary) {
           ProvideTextStyle(MaterialTheme.typography.labelLarge) {
-            // TODO This should wrap on small screens, but we can't use AlertDialogFlowRow as it is
-            // no public
             Row(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, end = 6.dp, start = 6.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
