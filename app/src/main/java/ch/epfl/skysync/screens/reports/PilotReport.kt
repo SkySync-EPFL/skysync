@@ -129,7 +129,6 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
           onClick = {
             errorPax = !nbPassengerInputValidation(pax)
             if (!hasError(errorPax)) {
-              val vehicleProblems = vehicleProblem.toMap()
               PilotReport(
                   author = pilot.id,
                   effectivePax = pax.toInt(),

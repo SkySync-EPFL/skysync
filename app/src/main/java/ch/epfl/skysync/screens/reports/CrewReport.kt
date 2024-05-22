@@ -122,10 +122,8 @@ fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFligh
             errorBigChampagne = !bottleInputValidation(bigChampagne)
             errorPrestigeChampagne = !bottleInputValidation(prestigeChampagne)
             if (!hasError(errorLittleChampagne, errorBigChampagne, errorPrestigeChampagne)) {
-              val vehicleProblems = vehicleProblem.toMap()
               CrewReport(
                   author = crew.id,
-
                   begin = beginTime,
                   end = endTime,
                   pauseDuration = pauseDuration,
