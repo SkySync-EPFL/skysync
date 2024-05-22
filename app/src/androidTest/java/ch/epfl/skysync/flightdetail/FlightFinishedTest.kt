@@ -23,7 +23,6 @@ class FlightFinishedTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   @get:Rule val mockkRule = MockKRule(this)
-  // Relaxed mocks methods have a default implementation returning values
   @RelaxedMockK lateinit var navController: NavHostController
   private val dbs = DatabaseSetup()
   private val flight = dbs.flight5
