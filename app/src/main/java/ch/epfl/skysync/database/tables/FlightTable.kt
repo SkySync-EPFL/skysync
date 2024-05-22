@@ -20,7 +20,6 @@ import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.reports.Report
-import ch.epfl.skysync.models.reports.FlightReport
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
@@ -280,8 +279,7 @@ class FlightTable(db: FirestoreDatabase) :
         vehicles = vehicles!!,
         team = team!!,
         reports = reports,
-        flightTrace = FlightTrace(flightSchema.id!!, emptyList())
-    )
+        flightTrace = FlightTrace(flightSchema.id!!, emptyList()))
   }
 
   override suspend fun get(id: String, onError: ((Exception) -> Unit)?): Flight? {
@@ -366,12 +364,11 @@ class FlightTable(db: FirestoreDatabase) :
           listOf(
                   launch { db.setItem(path, id, FlightSchema.fromModel(item)) },
                   launch { setTeam(id, item.team) },
-                    launch {
-                        if (item is FinishedFlight && item.reportId.isNotEmpty()) {
-                            reportTable.addAll(item.reportId, id)
-                        }
+                  launch {
+                    if (item is FinishedFlight && item.reportId.isNotEmpty()) {
+                      reportTable.addAll(item.reportId, id)
                     }
-          )
+                  })
               .forEach { it.join() }
         }
       }
