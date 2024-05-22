@@ -56,6 +56,10 @@ class InFlightViewModelTest {
     inFlightViewModel.setCurrentFlight(dbs.flight4.id)
     inFlightViewModel.startFlight().join()
 
+    // we should not be able to start display flight trace
+    inFlightViewModel.startDisplayFlightTrace()
+    assert(!inFlightViewModel.isDisplayTrace())
+
     composeTestRule.waitUntil(timeoutMillis = 1500) {
       val countString = inFlightViewModel.counter.value
       countString == "00:00:01"
