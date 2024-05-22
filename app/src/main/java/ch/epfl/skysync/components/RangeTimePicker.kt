@@ -40,8 +40,8 @@ fun RangeTimePicker(
     return
   }
   var timeDuration by remember { mutableLongStateOf(0L) }
-  val listState1 = rememberLazyListState(Int.MAX_VALUE / 2)
-  val listState2 = rememberLazyListState(Int.MAX_VALUE / 2)
+  val hourListState = rememberLazyListState(Int.MAX_VALUE / 2)
+  val minuteListState = rememberLazyListState(Int.MAX_VALUE / 2)
   val visibleItemCount = 3
   val itemHeight = 80.dp
   AlertDialog(
@@ -53,14 +53,14 @@ fun RangeTimePicker(
           CircularList(
               items = (0..23).map { "%02d".format(it) },
               modifier = Modifier.fillMaxWidth().weight(1f),
-              listState1,
+              hourListState,
               itemHeight = itemHeight,
               visibleItemCount = visibleItemCount,
               testTag = "HourCircularList")
           CircularList(
               items = (0..59).map { "%02d".format(it) },
               modifier = Modifier.fillMaxWidth().weight(1f),
-              listState2,
+              minuteListState,
               itemHeight = itemHeight,
               visibleItemCount = visibleItemCount,
               testTag = "MinuteCircularList")
@@ -70,8 +70,8 @@ fun RangeTimePicker(
         TextButton(
             onClick = {
               val offset = visibleItemCount / 2
-              val hour = (listState1.firstVisibleItemIndex + offset) % 24
-              val minute = (listState2.firstVisibleItemIndex + offset) % 60
+              val hour = (hourListState.firstVisibleItemIndex + offset) % 24
+              val minute = (minuteListState.firstVisibleItemIndex + offset) % 60
               timeDuration = ((hour * 60 + minute) * 60_000).toLong() // convert to milliseconds
               onConfirm(timeDuration)
             },
