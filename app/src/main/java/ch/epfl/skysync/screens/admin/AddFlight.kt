@@ -12,6 +12,7 @@ import ch.epfl.skysync.viewmodel.FlightsViewModel
 
 @Composable
 fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewModel) {
+
   val allFlightTypes by viewModel.currentFlightTypes.collectAsStateWithLifecycle()
   val allBalloons by viewModel.currentBalloons.collectAsStateWithLifecycle()
   val allBaskets by viewModel.currentBaskets.collectAsStateWithLifecycle()

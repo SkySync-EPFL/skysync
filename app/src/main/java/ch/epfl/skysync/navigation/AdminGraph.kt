@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.screens.AddFlightScreen
 import ch.epfl.skysync.screens.UserDetailsScreen
@@ -31,6 +32,7 @@ fun NavGraphBuilder.adminGraph(
     uid: String?,
     inFlightViewModel: InFlightViewModel? = null,
     messageListenerViewModel: MessageListenerViewModel? = null,
+    connectivityStatus: ConnectivityStatus
 ) {
   navigation(startDestination = Route.ADMIN_HOME, route = Route.ADMIN) {
     adminpersonalCalendar(repository, navController, uid)
@@ -47,7 +49,7 @@ fun NavGraphBuilder.adminGraph(
 
       val flightsOverviewViewModel = FlightsViewModel.createViewModel(repository, uid)
       flightsOverviewViewModel.refresh()
-      AdminHomeScreen(navController, flightsOverviewViewModel)
+      AdminHomeScreen(navController, flightsOverviewViewModel, connectivityStatus)
     }
 
     composable(Route.ADD_FLIGHT) {
@@ -78,7 +80,8 @@ fun NavGraphBuilder.adminGraph(
     composable(Route.USER) {
       val userManagementViewModel = UserManagementViewModel.createViewModel(repository, uid)
       userManagementViewModel.refresh()
-      UserManagementScreen(navController = navController, userManagementViewModel)
+      UserManagementScreen(
+          navController = navController, userManagementViewModel, connectivityStatus)
     }
     composable(
         Route.ADMIN_USER_DETAILS + "/{User ID}",
@@ -103,7 +106,7 @@ fun NavGraphBuilder.adminGraph(
             navController.navigate(Route.ADMIN_HOME)
             return@composable
           }
-          AdminTextScreen(navController, groupId, chatViewModel)
+          AdminTextScreen(navController, groupId, chatViewModel, connectivityStatus)
         }
     composable(
         Route.ADMIN_FLIGHT_DETAILS + "/{Flight ID}",
