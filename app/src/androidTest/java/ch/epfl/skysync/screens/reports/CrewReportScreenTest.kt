@@ -40,7 +40,7 @@ class CrewReportScreenTest {
       CrewReportScreen(
           navHostController = navController,
           finishedFlightsViewModel = viewModel,
-          flightId = dbs.flight5.id)
+          flightId = dbs.finishedFlight1.id)
     }
   }
 

@@ -83,13 +83,18 @@ class FlightTableUnitTest {
     assertEquals(11, flightMembers.size)
     Log.d(
         "flights",
-        listOf(dbs.flight2, dbs.flight3, dbs.flight4, dbs.flight5, dbs.flight6)
+        listOf(dbs.flight2, dbs.flight3, dbs.flight4, dbs.finishedFlight1, dbs.finishedFlight2)
             .sortedBy { f -> f.id }
             .toString())
     Log.d("flights expected", flights.sortedBy { f -> f.id }.toString())
 
     assertEquals(
-        listOf(dbs.flight2.id, dbs.flight3.id, dbs.flight4.id, dbs.flight5.id, dbs.flight6.id)
+        listOf(
+                dbs.flight2.id,
+                dbs.flight3.id,
+                dbs.flight4.id,
+                dbs.finishedFlight1.id,
+                dbs.finishedFlight2.id)
             .sortedBy { it },
         flights.map { f -> f.id }.sortedBy { it })
   }

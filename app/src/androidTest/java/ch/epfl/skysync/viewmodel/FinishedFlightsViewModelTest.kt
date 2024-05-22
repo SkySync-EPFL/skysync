@@ -5,9 +5,13 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.models.UNSET_ID
+import ch.epfl.skysync.models.reports.PilotReport
 import ch.epfl.skysync.models.user.Pilot
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -56,14 +60,51 @@ class FinishedFlightsViewModelTest {
     assert(finishedFlightsViewModel.currentFlights.value!!.size == 2)
   }
 
-  /*
   @Test
-  fun getFlightByLocationWorksCorrectly() = runTest {
-    finishedFlightsViewModel = FinishedFlightsViewModel(repository, "id-pilot-1")
+  fun addFlightWorksCorrectly() = runTest {
+    finishedFlightsViewModel = FinishedFlightsViewModel(repository, dbSetup.pilot1.id)
     finishedFlightsViewModel.refresh()
-    val flight = finishedFlightsViewModel.getFlightByLocation("0.0")
-    composeTestRule.waitUntil { flight != null }
-    assert(flight!!.size == 2)
-  }*/
+    val flight = dbSetup.finishedFlight1
+    finishedFlightsViewModel.addFlight(flight)
+    composeTestRule.waitUntil { finishedFlightsViewModel.currentFlights.value != null }
+    assert(finishedFlightsViewModel.currentFlights.value!!.size == 3)
+  }
 
+  @Test
+  fun addReportWorksCorrectly() = runTest {
+    finishedFlightsViewModel = FinishedFlightsViewModel(repository, dbSetup.pilot1.id)
+    val report =
+        PilotReport(
+            id = UNSET_ID,
+            author = dbSetup.pilot1.id,
+            effectivePax = 2,
+            takeOffTime = dbSetup.takeOffTime2,
+            landingTime = dbSetup.landingTime2,
+            takeOffLocation = dbSetup.takeOffLocation1,
+            landingLocation = dbSetup.landingLocation1,
+            begin = dbSetup.takeOffTime2,
+            end = dbSetup.landingTime2,
+            pauseDuration = 0,
+            comments = "Some comments",
+        )
+    finishedFlightsViewModel.refresh()
+    val flight = dbSetup.finishedFlight1
+    finishedFlightsViewModel.refreshAndSelectFlight(flight.id).join()
+    finishedFlightsViewModel.getAllReports(flight.id).join()
+    val nbReportBefore = finishedFlightsViewModel.flightReports.value!!.size
+    finishedFlightsViewModel.addReport(report).join()
+    finishedFlightsViewModel.getAllReports(flight.id).join()
+    assertEquals(nbReportBefore + 1, finishedFlightsViewModel.flightReports.value!!.size)
+  }
+
+  @Test
+  fun viewReportsWorksCorrectly() = runTest {
+    finishedFlightsViewModel = FinishedFlightsViewModel(repository, dbSetup.pilot1.id)
+    val flight = dbSetup.finishedFlight1
+    finishedFlightsViewModel.refresh()
+    finishedFlightsViewModel.getAllReports(flight.id).join()
+    val reports = finishedFlightsViewModel.flightReports.value
+    assertNotEquals(null, reports)
+    assertEquals(2, reports!!.size)
+  }
 }

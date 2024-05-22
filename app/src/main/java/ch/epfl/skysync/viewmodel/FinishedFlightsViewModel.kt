@@ -1,5 +1,6 @@
 package ch.epfl.skysync.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -9,6 +10,7 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.flight.FinishedFlight
+import ch.epfl.skysync.models.reports.Report
 import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
@@ -43,9 +45,12 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
   private val _currentUser: MutableStateFlow<User?> = MutableStateFlow(null)
   private val _selectedFlightId: MutableStateFlow<String?> = MutableStateFlow(null)
   private val isLoading = MutableStateFlow(false)
+  private val _flightReports: MutableStateFlow<List<Report>?> = MutableStateFlow(null)
 
   val currentFlights = _currentFlights.asStateFlow()
   val currentUser = _currentUser.asStateFlow()
+  val selectedFlightId = _selectedFlightId.asStateFlow()
+  val flightReports = _flightReports.asStateFlow()
 
   fun refresh() {
     refreshUserAndFlights()
@@ -99,15 +104,21 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
         .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
   }
 
-  /*fun addReport(report: Report) =
-  viewModelScope.launch {
-    repository.reportTable.add(report, onError = { onError(it) })
-  }
-  fun addReport(reportId: String) =
-  viewModelScope.launch {
-    repository.reportTable.delete(report, onError = { onError(it) })
-  }
-  */
+  fun addReport(report: Report) =
+      viewModelScope.launch {
+        if (_selectedFlightId.value == null) {
+          onError(Exception("No flight selected"))
+          return@launch
+        }
+        repository.reportTable.add(report, _selectedFlightId.value!!, onError = { onError(it) })
+      }
+
+  fun getAllReports(flightId: String) =
+      viewModelScope.launch {
+        _flightReports.value =
+            repository.reportTable.retrieveReports(flightId, onError = { onError(it) })
+        Log.d("FinishedFlightsViewModel", "Reports retrieved : ${_flightReports.value}")
+      }
 
   private fun selectFlight(id: String) = viewModelScope.launch { _selectedFlightId.value = id }
 
@@ -117,15 +128,6 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
         selectFlight(id)
       }
 
-  /** Might be used in the future to get the flights by location with a search bar */
-  fun getFlightByLocation(location: String): List<FinishedFlight>? {
-    return _currentFlights.value?.filter {
-      it.landingLocation.name == location ||
-          it.takeOffLocation.name == location ||
-          it.takeOffLocation.latlng().toString() == location ||
-          it.landingLocation.latlng().toString() == location
-    }
-  }
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
     SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
