@@ -74,7 +74,7 @@ fun FlightTile(date: LocalDate, time: TimeSlot, flight: Flight?, onClick: () -> 
 fun FlightCalendar(
     padding: PaddingValues,
     getFirstFlightByDate: (LocalDate, TimeSlot) -> Flight?,
-    onFlightClick: (Flight) -> Unit
+    onFlightClick: (String) -> Unit
 ) {
   Column(modifier = Modifier.padding(padding)) {
     ModularCalendar(modifier = Modifier, isDraft = false) { date, time ->
@@ -84,7 +84,7 @@ fun FlightCalendar(
           time = time,
           flight = flight,
       ) {
-        onFlightClick(flight!!)
+        onFlightClick(flight!!.id)
       }
     }
   }

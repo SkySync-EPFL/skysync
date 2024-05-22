@@ -1,5 +1,6 @@
 package ch.epfl.skysync.components.forms
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -337,6 +338,7 @@ fun FlightForm(
   }
 }
 
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerField(
