@@ -15,6 +15,7 @@ data class ReportSchema(
     val pauseDuration: Int? = null, // in milliseconds
     val comment: String? = null,
 ) : Schema<Report> {
+  /** Convert the schema to a model. Returns a [FlightReport] object. */
   override fun toModel(): Report {
     return FlightReport(
         id = id!!,

@@ -22,10 +22,22 @@ class ReportTable(db: FirestoreDatabase) :
     return withErrorCallback(onError) { db.addItem(path, ReportSchema.fromModel(item, flightId)) }
   }
 
+  /**
+   * Add a list of reports belonging to a given flight to the database
+   *
+   * @param reports The list of reports to add to the database
+   * @param flightId The id of the flight to which the reports belong
+   */
   suspend fun addAll(reports: List<Report>, flightId: String): Unit = coroutineScope {
     reports.map { report -> async { add(report, flightId, onError = { throw it }) } }.awaitAll()
   }
 
+  /**
+   * Retrieve all reports for a given flight
+   *
+   * @param flightId The id of the flight for which to retrieve the reports
+   * @return The list of reports for the given flight
+   */
   suspend fun retrieveReports(flightId: String): List<Report> = coroutineScope {
     query(Filter.equalTo("flightId", flightId))
   }
