@@ -114,7 +114,8 @@ object DateUtility {
    */
   fun dateToHourMinuteString(date: Date?): String {
     date?.let {
-      val localTime = Instant.ofEpochMilli(date.time).atZone(ZoneId.of("GMT")).toLocalTime()
+      val zoneId = ZoneId.systemDefault()
+      val localTime = Instant.ofEpochMilli(date.time).atZone(zoneId).toLocalTime()
       return localTime.format(DateTimeFormatter.ofPattern("HH:mm"))
     }
     return "--:--"

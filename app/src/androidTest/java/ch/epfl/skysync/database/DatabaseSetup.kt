@@ -120,7 +120,7 @@ class DatabaseSetup {
   // this the date of flight4, it needs to be today for the InFlightViewModel tests
   var date2 = LocalDate.now()
   var date2TimeSlot = getTimeSlot(LocalTime.now())
-
+  var date2TimeSlotAdmin1 = if (date2TimeSlot == TimeSlot.AM) TimeSlot.PM else TimeSlot.AM
   var dateNoFlight = LocalDate.of(2024, 8, 16)
 
   var availability1Crew1 =
@@ -154,7 +154,7 @@ class DatabaseSetup {
   var availability1Admin1 =
       Availability(status = AvailabilityStatus.NO, timeSlot = TimeSlot.AM, date = date1)
   var availability2Admin1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotAdmin1, date = date2)
 
   var balloon1 = Balloon(name = "balloon-1", qualification = BalloonQualification.MEDIUM)
 
@@ -267,8 +267,13 @@ class DatabaseSetup {
       )
 
   var messageGroup1 =
-      MessageGroup(name = "Group 1", userIds = setOf(admin2.id, pilot1.id, crew1.id))
-  var messageGroup2 = MessageGroup(name = "Group 2", userIds = setOf(admin1.id, admin2.id))
+      MessageGroup(
+          name = "Group 1",
+          color = FlightColor.RED,
+          userIds = setOf(admin2.id, pilot1.id, crew1.id))
+  var messageGroup2 =
+      MessageGroup(
+          name = "Group 2", color = FlightColor.GREEN, userIds = setOf(admin1.id, admin2.id))
 
   var message1 =
       Message(user = admin2, date = Date.from(Instant.now().minusSeconds(20)), content = "Hello")

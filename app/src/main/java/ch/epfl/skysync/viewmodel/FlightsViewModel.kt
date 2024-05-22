@@ -211,6 +211,7 @@ class FlightsViewModel(
             MessageGroup(
                 UNSET_ID,
                 groupName(flight.date, flight.timeSlot),
+                flight.color,
                 flight.team.getUsers().map { it.id }.toSet())
         repository.messageGroupTable.add(flightChatGroup, onError = { onError(it) })
       }

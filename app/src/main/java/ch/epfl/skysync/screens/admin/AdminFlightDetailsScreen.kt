@@ -83,7 +83,8 @@ fun AdminFlightDetailScreen(
                 deleteClick = { showConfirmDialog = true })
           }
           is ConfirmedFlight -> {
-            ConfirmedFlightDetailBottom() { navController.popBackStack() }
+            ConfirmedFlightDetailBottom(
+                { navController.popBackStack() }, { showConfirmDialog = true }, true)
           }
         }
       },
