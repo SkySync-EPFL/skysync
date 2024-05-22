@@ -24,7 +24,8 @@ class TimerTest {
           isPilot = true,
           onStart = {},
           onStop = {},
-          onClear = {})
+          onClear = {},
+          onQuitDisplay = {})
     }
     composeTestRule.onNodeWithTag("Timer").assertExists()
     composeTestRule.onNodeWithTag("Timer Value").assertIsDisplayed()
@@ -45,7 +46,7 @@ class TimerTest {
           onStart = { controlVariableOnStart = true },
           onStop = { controlVariableOnStop = true },
           onClear = {},
-      )
+          onQuitDisplay = {})
     }
     composeTestRule.onNodeWithTag("Start Button").performClick()
     assert(controlVariableOnStart)
@@ -65,10 +66,35 @@ class TimerTest {
           onStart = { controlVariableOnStart = true },
           onStop = { controlVariableOnStop = true },
           onClear = {},
-      )
+          onQuitDisplay = {})
     }
     composeTestRule.onNodeWithTag("Stop Button").performClick()
     assert(controlVariableOnStop)
     assertFalse(controlVariableOnStart)
+  }
+
+  @Test
+  fun correctButtonIsDisplayedAndClickableIfDisplayFlightTrace() {
+    var controlVariableOnStart = false
+    var controlVariableOnStop = false
+    var controlVariableOnClear = false
+    var controlVariableOnQuitDisplay = false
+    composeTestRule.setContent {
+      Timer(
+          modifier = Modifier,
+          currentTimer = "0:0:0",
+          flightStage = InFlightViewModel.FlightStage.DISPLAY,
+          isPilot = true,
+          onStart = { controlVariableOnStart = true },
+          onStop = { controlVariableOnStop = true },
+          onClear = { controlVariableOnClear = true },
+          onQuitDisplay = { controlVariableOnQuitDisplay = true })
+    }
+    composeTestRule.onNodeWithTag("Quit Button").performClick()
+
+    assertFalse(controlVariableOnStart)
+    assertFalse(controlVariableOnStop)
+    assertFalse(controlVariableOnClear)
+    assert(controlVariableOnQuitDisplay)
   }
 }

@@ -53,6 +53,9 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
     /** There a flight that is finished but still displayed */
     POST,
+
+    /** Displaying a finished flight trace */
+    DISPLAY,
   }
 
   companion object {
@@ -175,6 +178,9 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   /** If the current flight stage is [FlightStage.POST] */
   fun isPostFlight(): Boolean = _flightStage.value == FlightStage.POST
+
+  /** If the current flight stage is [FlightStage.DISPLAY] */
+  fun isDisplayTrace(): Boolean = _flightStage.value == FlightStage.DISPLAY
 
   /** Returns if the user is the pilot of the ongoing flight */
   fun isPilot(): Boolean = pilotId == _userId
@@ -371,6 +377,38 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
         clearLocationTracking()
       }
 
+  /**
+   * Set the [flightStage] to [FlightStage.DISPLAY].
+   *
+   * Must set the current flight first ([setCurrentFlight]). Load the flight trace.
+   */
+  fun startDisplayFlightTrace() =
+      viewModelScope.launch {
+        if (isOngoingFlight() || isPostFlight()) {
+          onError(Exception("There is already a flight ongoing."))
+          return@launch
+        }
+        if (_currentFlight.value == null) {
+          onError(Exception("Missing the flight to start."))
+          return@launch
+        }
+        _flightStage.value = FlightStage.DISPLAY
+        loadFlightTrace()
+      }
+
+  /**
+   * Quit the [FlightStage.DISPLAY] stage.
+   *
+   * Clear the current flight, flight trace.
+   */
+  fun quitDisplayFlightTrace() {
+    if (_flightStage.value != FlightStage.DISPLAY) return
+    _flightStage.value = FlightStage.IDLE
+    pilotId = null
+    _currentFlight.value = null
+    _flightLocations.value = listOf()
+  }
+
   /** Save the finished flight to the database */
   private suspend fun saveFinishedFlight() {
 
@@ -496,6 +534,12 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
    * flight trace.
    */
   private fun startLocationTracking(team: Team) {
+
+    // it is necessary to clear the flight location (can't rely on clearLocationTracking)
+    // as it is set in startDisplayFlightTrace and on flight start, the flight stage
+    // switch from DISPLAY to ONGOING directly (quitDisplayFlightTrace is then not called)
+    _flightLocations.value = emptyList()
+
     val users = team.roles.map { it.assignedUser!! }
     users.forEach { this.users[it.id] = it }
 
@@ -525,6 +569,15 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
     if (e !is CancellationException) {
       SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
     }
+  }
+
+  private suspend fun loadFlightTrace() {
+    val flightTrace = flightTraceTable.get(_currentFlight.value!!.id, onError = { onError(it) })
+    if (flightTrace == null) {
+      onError(Exception("Flight trace not found."))
+      return
+    }
+    _flightLocations.value = flightTrace.trace.map { Location(userId = "", point = it) }
   }
 
   override fun onCleared() {
