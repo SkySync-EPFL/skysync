@@ -62,7 +62,7 @@ data class FlightSchema(
     /** In: Finished flight */
     val flightTime: Long? = null,
     /** In: Finished flight */
-    val reportId: List<String>? = null,
+    val reportIds: List<String>? = null,
 ) : Schema<Flight> {
   override fun toModel(): Flight {
     throw NotImplementedError()
@@ -135,6 +135,6 @@ data class FlightSchema(
             landingLocationLat = flight.landingLocation.latitude,
             landingLocationLong = flight.landingLocation.longitude,
             flightTime = flight.flightTime,
-            reportId = flight.reportId.map { it.id })
+            reportIds = flight.reportId.map { it.id })
   }
 }

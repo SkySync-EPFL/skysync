@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.FlightsList
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
@@ -25,7 +26,11 @@ import ch.epfl.skysync.viewmodel.FlightsViewModel
 // Scaffold wrapper for the Home Screen
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun AdminHomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
+fun AdminHomeScreen(
+    navController: NavHostController,
+    viewModel: FlightsViewModel,
+    connectivityStatus: ConnectivityStatus
+) {
   val currentFlights by viewModel.currentFlights.collectAsStateWithLifecycle()
   // Display the Home Screen with the list of upcoming flights
   Scaffold(
@@ -33,12 +38,15 @@ fun AdminHomeScreen(navController: NavHostController, viewModel: FlightsViewMode
       bottomBar = { AdminBottomBar(navController = navController) },
       floatingActionButton = {
         // Define the FloatingActionButton to create a flight
-        FloatingActionButton(
-            modifier = Modifier.testTag("addFlightButton"),
-            onClick = { navController.navigate(Route.ADD_FLIGHT) { launchSingleTop = true } },
-            containerColor = lightOrange) {
-              Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
-            }
+        if (connectivityStatus.isOnline()) {
+          FloatingActionButton(
+              modifier = Modifier.testTag("addFlightButton"),
+              onClick = { navController.navigate(Route.ADD_FLIGHT) { launchSingleTop = true } },
+              containerColor = lightOrange) {
+                Icon(
+                    imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color.White)
+              }
+        }
       },
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->

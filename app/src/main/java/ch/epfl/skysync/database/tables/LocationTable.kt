@@ -26,6 +26,8 @@ class LocationTable(db: FirestoreDatabase) :
   /**
    * Listen for real-time updates to locations in the database.
    *
+   * Fetch all locations of the user, sorted by time (newest to oldest).
+   *
    * @param onChange Callback called each time there is an update.
    * @param coroutineScope CoroutineScope for launching asynchronous tasks.
    */
@@ -36,7 +38,6 @@ class LocationTable(db: FirestoreDatabase) :
   ): ListenerRegistration {
     return queryListener(
         Filter.equalTo("userId", userId),
-        limit = 1,
         orderBy = "time",
         orderByDirection = Query.Direction.DESCENDING,
         onChange = { update ->

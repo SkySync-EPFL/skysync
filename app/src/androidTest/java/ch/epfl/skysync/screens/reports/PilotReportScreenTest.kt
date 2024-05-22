@@ -1,9 +1,12 @@
 package ch.epfl.skysync.screens.reports
 
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
@@ -12,6 +15,7 @@ import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
@@ -33,8 +37,10 @@ class PilotReportScreenTest {
     composeTestRule.setContent {
       navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
+      val context = LocalContext.current
+      val connectivityStatus = remember { ContextConnectivityStatus(context) }
       NavHost(navController = navController, startDestination = Route.MAIN) {
-        homeGraph(repository, navController, dbs.pilot1.id)
+        homeGraph(repository, navController, dbs.pilot1.id, connectivityStatus = connectivityStatus)
       }
       navController.navigate(Route.PILOT_REPORT)
     }
@@ -109,6 +115,14 @@ class PilotReportScreenTest {
         .performScrollToNode(hasTestTag("Effective time of end"))
     composeTestRule.onNodeWithTag("Effective time of end").performClick()
     inputTimePicker(composeTestRule, 14, 40)
+
+    composeTestRule
+        .onNodeWithTag("Pilot Report LazyColumn")
+        .performScrollToNode(hasTestTag("Pause duration"))
+    composeTestRule.onNodeWithTag("Pause duration").performClick()
+    composeTestRule.onNodeWithTag("HourCircularList").performScrollToNode(hasText("00"))
+    composeTestRule.onNodeWithTag("MinuteCircularList").performScrollToNode(hasText("30"))
+    composeTestRule.onNodeWithText("Confirm", true).performClick()
 
     composeTestRule.onNodeWithTag("Submit Button").performClick()
   }
