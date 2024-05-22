@@ -115,24 +115,41 @@ fun ChatBubble(message: ChatMessage, index: String) {
                 style = TextStyle(fontSize = 12.sp, color = Color.Gray),
                 modifier = Modifier.testTag("ChatBubbleUser$index"))
           }
-          Column(
-              modifier =
-                  Modifier.background(color = backgroundColor, shape = shape).padding(8.dp)) {
-                Row {
-                  Text(
-                      text = messageContent,
-                      color = contentColor,
-                      modifier = Modifier.padding(bottom = 2.dp).testTag("ChatBubbleMessage$index"))
-                  Spacer(modifier = Modifier.size(4.dp))
-                  Text(
-                      text = time,
-                      color = Color.Gray,
-                      fontSize = 9.sp,
-                      modifier = Modifier.align(Alignment.Bottom).testTag("ChatBubbleTime$index"))
-                }
-              }
+          Message(
+              messageContent = messageContent,
+              time = time,
+              backgroundColor = backgroundColor,
+              contentColor = contentColor,
+              shape = shape,
+              index = index,
+          )
         }
       }
+}
+
+@Composable
+fun Message(
+    messageContent: String,
+    time: String,
+    backgroundColor: Color,
+    contentColor: Color,
+    shape: RoundedCornerShape,
+    index: String
+) {
+  Column(modifier = Modifier.background(color = backgroundColor, shape = shape).padding(8.dp)) {
+    Row {
+      Text(
+          text = messageContent,
+          color = contentColor,
+          modifier = Modifier.padding(bottom = 2.dp).testTag("ChatBubbleMessage$index"))
+      Spacer(modifier = Modifier.size(4.dp))
+      Text(
+          text = time,
+          color = Color.Gray,
+          fontSize = 9.sp,
+          modifier = Modifier.align(Alignment.Bottom).testTag("ChatBubbleTime$index"))
+    }
+  }
 }
 /**
  * Composable function representing an input field for typing and sending messages.
