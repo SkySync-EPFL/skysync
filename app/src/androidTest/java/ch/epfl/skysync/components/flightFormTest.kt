@@ -27,7 +27,6 @@ import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.User
 import io.mockk.mockk
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -81,15 +80,15 @@ class FlightFormTest {
               lastname = userLastname2,
               email = "user@gmail.com",
           )
-        // Wrap the list in a MutableState
+      // Wrap the list in a MutableState
 
       val allRoleTypes = RoleType.entries
-        val allFlightsState = remember { mutableStateOf(allFlights) }
-        val allVehiclesState = remember { mutableStateOf(allVehicles) }
-        val allBalloonsState = remember { mutableStateOf(allBalloons) }
-        val allBasketsState = remember { mutableStateOf(allBaskets) }
-        val availableUsersState = remember { mutableStateOf(listOf(user1, user2)) }
-        navController = TestNavHostController(LocalContext.current)
+      val allFlightsState = remember { mutableStateOf(allFlights) }
+      val allVehiclesState = remember { mutableStateOf(allVehicles) }
+      val allBalloonsState = remember { mutableStateOf(allBalloons) }
+      val allBasketsState = remember { mutableStateOf(allBaskets) }
+      val availableUsersState = remember { mutableStateOf(listOf(user1, user2)) }
+      navController = TestNavHostController(LocalContext.current)
       FlightForm(
           currentFlight = null,
           navController = navController,

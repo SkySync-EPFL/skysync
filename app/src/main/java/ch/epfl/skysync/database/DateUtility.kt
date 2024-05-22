@@ -40,7 +40,7 @@ object DateUtility {
    * @return The equivalent [LocalDate] object.
    */
   fun dateToLocalDate(date: Long): LocalDate {
-    return Instant.ofEpochMilli(date).atZone(ZoneId.of("GMT")).toLocalDate()
+    return Instant.ofEpochMilli(date).atZone(ZoneId.systemDefault()).toLocalDate()
   }
   /**
    * Converts a [LocalDate] object to a [Date] object.

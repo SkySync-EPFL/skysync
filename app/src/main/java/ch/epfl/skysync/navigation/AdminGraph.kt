@@ -8,8 +8,8 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.screens.admin.AddFlightScreen
 import ch.epfl.skysync.screens.UserDetailsScreen
+import ch.epfl.skysync.screens.admin.AddFlightScreen
 import ch.epfl.skysync.screens.admin.AddUserScreen
 import ch.epfl.skysync.screens.admin.AdminChatScreen
 import ch.epfl.skysync.screens.admin.AdminFlightDetailScreen

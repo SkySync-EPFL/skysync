@@ -201,7 +201,7 @@ class DatabaseSetup {
           nPassengers = 3,
           team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
           flightType = flightType1,
-          balloon = balloon1,
+          balloon = balloon3,
           basket = basket3,
           date = date1,
           timeSlot = TimeSlot.PM,
@@ -375,7 +375,7 @@ class DatabaseSetup {
         flight3.copy(
             team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
             flightType = flightType1,
-            balloon = balloon1,
+            balloon = balloon3,
             basket = basket3,
             vehicles = listOf(vehicle1, vehicle2),
         )
