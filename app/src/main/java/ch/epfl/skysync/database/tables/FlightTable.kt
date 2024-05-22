@@ -365,7 +365,13 @@ class FlightTable(db: FirestoreDatabase) :
         withErrorCallback(onError) {
           listOf(
                   launch { db.setItem(path, id, FlightSchema.fromModel(item)) },
-                  launch { setTeam(id, item.team) })
+                  launch { setTeam(id, item.team) },
+                    launch {
+                        if (item is FinishedFlight && item.reportId.isNotEmpty()) {
+                            reportTable.addAll(item.reportId, id)
+                        }
+                    }
+          )
               .forEach { it.join() }
         }
       }
