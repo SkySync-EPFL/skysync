@@ -60,7 +60,6 @@ fun AdminFlightDetailScreen(
     flightId: String,
     viewModel: FlightsViewModel,
     inFlightViewModel: InFlightViewModel
-
 ) {
 
   val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
@@ -92,7 +91,13 @@ fun AdminFlightDetailScreen(
                 { navController.popBackStack() }, { showConfirmDialog = true }, true)
           }
           is FinishedFlight -> {
-            FinishedFlightDetailBottom(reportClick = {},flightTraceClick={navController.navigate(Route.FLIGHT)})
+            FinishedFlightDetailBottom(
+                reportClick = {},
+                flightTraceClick = {
+                  inFlightViewModel.setCurrentFlight(flightId)
+                  inFlightViewModel.startDisplayFlightTrace()
+                  navController.navigate(Route.FLIGHT)
+                })
           }
         }
       },

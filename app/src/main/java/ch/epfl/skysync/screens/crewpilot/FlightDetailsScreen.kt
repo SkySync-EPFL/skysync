@@ -12,6 +12,7 @@ import ch.epfl.skysync.components.FinishedFlightDetailBottom
 import ch.epfl.skysync.components.FlightDetails
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.FinishedFlight
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
@@ -26,13 +27,18 @@ fun FlightDetailScreen(
 
   val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
   Scaffold(
-
       topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
       bottomBar = {
         if (flight !is FinishedFlight) {
           ConfirmedFlightDetailBottom({ navController.popBackStack() }, {}, false)
         } else {
-          FinishedFlightDetailBottom(reportClick = {},flightTraceClick = {})
+          FinishedFlightDetailBottom(
+              reportClick = {},
+              flightTraceClick = {
+                inFlightViewModel.setCurrentFlight(flightId)
+                inFlightViewModel.startDisplayFlightTrace()
+                navController.navigate(Route.FLIGHT)
+              })
         }
       },
       containerColor = lightGray) { padding ->

@@ -49,6 +49,7 @@ class FlightFinishedTest {
     helper(
         "Landing time",
         DateUtility.localTimeToString(DateUtility.dateToLocalTime(flight.landingTime)))
+    helper("Flight Duration", (flight.flightTime / 1000.0).toString() + " sec")
   }
 
   @Test
@@ -59,9 +60,10 @@ class FlightFinishedTest {
     helper("Takeoff location", flight.takeOffLocation.name)
     helper("Landing location", flight.landingLocation.name)
   }
-    @Test
-    fun teamAndColorsAreDisplayed() {
-        composeTestRule.onNodeWithTag("FlightDetailLazyColumn").performScrollToNode(hasText("Team"))
-        composeTestRule.onNodeWithText("COLOR ${flight.color}").assertIsDisplayed()
-    }
+
+  @Test
+  fun teamAndColorsAreDisplayed() {
+    composeTestRule.onNodeWithTag("FlightDetailLazyColumn").performScrollToNode(hasText("Team"))
+    composeTestRule.onNodeWithText("COLOR ${flight.color}").assertIsDisplayed()
+  }
 }
