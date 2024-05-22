@@ -51,6 +51,13 @@ class InFlightViewModelTest {
     assertTrue(countString == "00:00:00")
   }
 
+    @Test
+    fun finishedFlightIsSaved()  = runTest {
+        inFlightViewModel.setCurrentFlight(dbs.flight4.id)
+        inFlightViewModel.startFlight().join()
+        inFlightViewModel.stopFlight().join()
+    }
+
   @Test
   fun testStartFunction() = runTest {
     inFlightViewModel.setCurrentFlight(dbs.flight4.id)
