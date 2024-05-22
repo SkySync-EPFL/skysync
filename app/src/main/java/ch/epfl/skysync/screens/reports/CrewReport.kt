@@ -125,14 +125,12 @@ fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFligh
               val vehicleProblems = vehicleProblem.toMap()
               CrewReport(
                   author = crew.id,
-                  littleChampagne = littleChampagne.toInt(),
-                  bigChampagne = bigChampagne.toInt(),
-                  prestigeChampagne = prestigeChampagne.toInt(),
+
                   begin = beginTime,
                   end = endTime,
                   pauseDuration = pauseDuration,
                   comments = comments,
-                  vehicleProblems = vehicleProblems)
+                  )
               // TODO save report
               navHostController.navigate(Route.CREW_HOME) {
                 popUpTo(Route.CREW_HOME) { inclusive = true }
