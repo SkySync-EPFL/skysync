@@ -31,6 +31,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,11 +41,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
@@ -71,15 +70,15 @@ import java.util.Calendar
 @Composable
 fun FlightForm(
     navController: NavHostController,
-    currentFlight: Flight?,
+    currentFlight : Flight?,
     modifyMode: Boolean,
     title: String,
-    allFlightTypes: List<FlightType>,
+    allFlightTypes: State<List<FlightType>>,
     allRoleTypes: List<RoleType>,
-    availableVehicles: List<Vehicle>,
-    availableBalloons: List<Balloon>,
-    availableBaskets: List<Basket>,
-    availableUsers: List<User>,
+    availableVehicles: State<List<Vehicle>>,
+    availableBalloons: State<List<Balloon>>,
+    availableBaskets: State<List<Basket>>,
+    availableUsers: State<List<User>>,
     onSaveFlight: (PlannedFlight) -> Unit,
     refreshDate: (LocalDate, TimeSlot) -> Unit,
 ) {
@@ -98,6 +97,7 @@ fun FlightForm(
           mutableStateOf(currentFlight?.nPassengers?.toString() ?: "")
         }
         var nbPassengersValueError by remember { mutableStateOf(false) }
+
 
         var openDatePicker by remember { mutableStateOf(false) }
         var dateValue by remember {
@@ -136,8 +136,10 @@ fun FlightForm(
               *currentFlight?.team?.roles?.toTypedArray()
                   ?: Role.initRoles(BASE_ROLES).toTypedArray())
         }
-        val specialRoles: MutableList<Role> = remember { mutableStateListOf() }
 
+          var userAvailable = remember {
+              mutableStateOf( mapOf<User, Boolean>())
+          }
         val lazyListState = rememberLazyListState()
 
         var isError by remember { mutableStateOf(false) }
@@ -151,7 +153,10 @@ fun FlightForm(
           }
         }
         LazyColumn(
-            modifier = Modifier.padding(padding).weight(1f).testTag("Flight Lazy Column"),
+            modifier = Modifier
+                .padding(padding)
+                .weight(1f)
+                .testTag("Flight Lazy Column"),
             state = lazyListState,
             verticalArrangement = Arrangement.SpaceBetween) {
               // Field getting the number of passengers. Only number can be entered
@@ -175,6 +180,10 @@ fun FlightForm(
                                 .atZone(ZoneId.of("GMT"))
                                 .toLocalDate()
                         refreshDate(dateValue, timeSlotValue)
+                          println("PAtATAE")
+                          println(availableUsers.value)
+                          println(teamMembers.toList())
+
                       }
                     },
                     onclickDismiss = { openDatePicker = false },
@@ -203,7 +212,7 @@ fun FlightForm(
                     title = flightTypeTitle,
                     value = flightTypeValue,
                     onclickMenu = { item -> flightTypeValue = item },
-                    items = allFlightTypes,
+                    items = allFlightTypes.value,
                     showString = { it?.name ?: "Choose the flightType" },
                     isError = flightTypeValueError,
                     messageError = "Please choose a flight type")
@@ -215,18 +224,18 @@ fun FlightForm(
                     crewMembers = teamMembers,
                     allRoleTypes = allRoleTypes,
                     availableUsers =
-                        availableUsers.filterNot { Team(teamMembers).getUsers().contains(it) })
+                        availableUsers.value.filterNot { Team(teamMembers).getUsers().contains(it) })
               }
-              teamMembers.withIndex().forEach() { (id, role) ->
+              teamMembers.withIndex().forEach { (index, role) ->
                 item {
                   RoleField(
                       defaultPadding = defaultPadding,
                       role = role,
-                      id = id,
-                      onDelete = { teamMembers.removeAt(id) },
-                      onReassign = { user -> teamMembers[id] = Role(role.roleType, user) },
+                      index = index,
+                      onDelete = { teamMembers.removeAt(index) },
+                      onReassign = { user -> teamMembers[index] = Role(role.roleType, user) },
                       availableUsers =
-                          availableUsers.filterNot { Team(teamMembers).getUsers().contains(it) },
+                          availableUsers.value.filterNot { Team(teamMembers).getUsers().contains(it) },
                   )
                 }
               }
@@ -241,8 +250,9 @@ fun FlightForm(
                           style = MaterialTheme.typography.headlineSmall)
                       IconButton(
                           modifier =
-                              Modifier.padding(horizontal = defaultPadding)
-                                  .testTag("Add Vehicle Button"),
+                          Modifier
+                              .padding(horizontal = defaultPadding)
+                              .testTag("Add Vehicle Button"),
                           onClick = {
                             val tempMutableList = chosenVehicles.value.toMutableList()
                             tempMutableList.add(null)
@@ -269,7 +279,7 @@ fun FlightForm(
                               tempMutableList[idList] = item
                               chosenVehicles.value = tempMutableList.toList()
                             },
-                            items = availableVehicles,
+                            items = availableVehicles.value,
                             showString = { it?.name ?: "choose vehicle" })
                         IconButton(
                             modifier = Modifier.testTag("Delete Vehicle $idList Button"),
@@ -292,7 +302,7 @@ fun FlightForm(
                     title = balloonTitle,
                     value = balloonValue,
                     onclickMenu = { item -> balloonValue = item },
-                    items = availableBalloons,
+                    items = availableBalloons.value,
                     showString = { it?.name ?: "Choose the balloon" })
               }
               // Drop down menu for the basket
@@ -303,19 +313,22 @@ fun FlightForm(
                     title = basketTitle,
                     value = basketValue,
                     onclickMenu = { item -> basketValue = item },
-                    items = availableBaskets,
+                    items = availableBaskets.value,
                     showString = { it?.name ?: "Choose the basket" })
               }
             }
         // Button to add the flight to the list of flights
         Button(
-            modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("$title Button"),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(defaultPadding)
+                .testTag("$title Button"),
             onClick = {
               nbPassengersValueError = !nbPassengerInputValidation(nbPassengersValue.value)
               flightTypeValueError = !inputNonNullValidation(flightTypeValue)
               isError = hasError(nbPassengersValueError, flightTypeValueError)
               if (!isError) {
-                val allRoles = teamMembers.toList() + specialRoles
+                val allRoles = teamMembers.toList()
                 val team = Team(allRoles)
                 val newFlight =
                     PlannedFlight(
@@ -375,10 +388,11 @@ fun DatePickerField(
 
   OutlinedTextField(
       modifier =
-          Modifier.fillMaxWidth()
-              .padding(defaultPadding)
-              .clickable(onClick = onclickField)
-              .testTag("Date Field"),
+      Modifier
+          .fillMaxWidth()
+          .padding(defaultPadding)
+          .clickable(onClick = onclickField)
+          .testTag("Date Field"),
       enabled = false,
       value =
           String.format(
@@ -390,7 +404,7 @@ fun DatePickerField(
 fun RoleField(
     defaultPadding: Dp,
     role: Role,
-    id: Int,
+    index: Int,
     onDelete: () -> Unit,
     onReassign: (User?) -> Unit,
     specialName: String = "",
@@ -398,7 +412,10 @@ fun RoleField(
 ) {
   Text(
       modifier =
-          Modifier.fillMaxWidth().padding(horizontal = defaultPadding).testTag("RoleField $id"),
+      Modifier
+          .fillMaxWidth()
+          .padding(horizontal = defaultPadding)
+          .testTag("RoleField $index"),
       text = role.roleType.description,
   )
   Row(
@@ -417,7 +434,7 @@ fun RoleField(
             messageError = "no message")
 
         IconButton(
-            modifier = Modifier.testTag("Delete Crew Member $id"), onClick = { onDelete() }) {
+            modifier = Modifier.testTag("Delete Crew Member $index"), onClick = { onDelete() }) {
               Icon(
                   imageVector = Icons.Default.Delete,
                   contentDescription = "Delete $specialName Crew Member")
@@ -535,7 +552,9 @@ fun TeamHeader(
             style = MaterialTheme.typography.headlineSmall,
         )
         IconButton(
-            modifier = Modifier.padding(horizontal = defaultPadding).testTag("Add Crew Button"),
+            modifier = Modifier
+                .padding(horizontal = defaultPadding)
+                .testTag("Add Crew Button"),
             onClick = { showAddMemberDialog = true },
         ) {
           Icon(Icons.Default.Add, contentDescription = "Add Crew Member")
@@ -552,13 +571,12 @@ fun TeamHeader(
             })
       }
 }
-
+/**
 @Composable
 @Preview
 fun FlightFormPreview() {
   val navController = rememberNavController()
-  val currentFlight =
-      PlannedFlight(
+  val currentFlight?  PlannedFlight(
           nPassengers = 1,
           date = LocalDate.now(),
           flightType = FlightType.PREMIUM,
@@ -569,8 +587,7 @@ fun FlightFormPreview() {
           id = "testId")
   FlightForm(
       navController = navController,
-      currentFlight,
-      modifyMode = false,
+      currentFlight? modifyMode = false,
       "Flight Form",
       emptyList(),
       emptyList(),
@@ -581,3 +598,4 @@ fun FlightFormPreview() {
       onSaveFlight = {},
       refreshDate = { _, _ -> })
 }
+ */

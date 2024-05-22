@@ -1,5 +1,7 @@
 package ch.epfl.skysync.components
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
@@ -25,6 +27,7 @@ import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.User
 import io.mockk.mockk
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -78,21 +81,26 @@ class FlightFormTest {
               lastname = userLastname2,
               email = "user@gmail.com",
           )
+        // Wrap the list in a MutableState
 
-      val availableUsers = listOf(user1, user2)
       val allRoleTypes = RoleType.entries
-      navController = TestNavHostController(LocalContext.current)
+        val allFlightsState = remember { mutableStateOf(allFlights) }
+        val allVehiclesState = remember { mutableStateOf(allVehicles) }
+        val allBalloonsState = remember { mutableStateOf(allBalloons) }
+        val allBasketsState = remember { mutableStateOf(allBaskets) }
+        val availableUsersState = remember { mutableStateOf(listOf(user1, user2)) }
+        navController = TestNavHostController(LocalContext.current)
       FlightForm(
           currentFlight = null,
           navController = navController,
           modifyMode = false,
           title = title,
-          allFlightTypes = allFlights,
+          allFlightTypes = allFlightsState,
           allRoleTypes = allRoleTypes,
-          availableVehicles = allVehicles,
-          availableBalloons = allBalloons,
-          availableBaskets = allBaskets,
-          availableUsers = availableUsers,
+          availableVehicles = allVehiclesState,
+          availableBalloons = allBalloonsState,
+          availableBaskets = allBasketsState,
+          availableUsers = availableUsersState,
           onSaveFlight = { _ -> },
           refreshDate = { _, _ -> },
       )

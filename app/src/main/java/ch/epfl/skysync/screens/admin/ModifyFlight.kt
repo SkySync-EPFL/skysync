@@ -17,11 +17,11 @@ fun ModifyFlightScreen(
     flightId: String
 ) {
   val flightToModify by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
-  val allFlightTypes by viewModel.currentFlightTypes.collectAsStateWithLifecycle()
-  val allBalloons by viewModel.currentBalloons.collectAsStateWithLifecycle()
-  val allBaskets by viewModel.currentBaskets.collectAsStateWithLifecycle()
-  val allVehicles by viewModel.currentVehicles.collectAsStateWithLifecycle()
-  val availableUsers by viewModel.availableUsers.collectAsStateWithLifecycle()
+  val allFlightTypes = viewModel.currentFlightTypes.collectAsStateWithLifecycle()
+  val allBalloons = viewModel.currentBalloons.collectAsStateWithLifecycle()
+  val allBaskets = viewModel.currentBaskets.collectAsStateWithLifecycle()
+  val allVehicles = viewModel.currentVehicles.collectAsStateWithLifecycle()
+  val availableUsers = viewModel.availableUsers.collectAsStateWithLifecycle()
   val allRoleTypes = RoleType.entries
   FlightForm(
       currentFlight = flightToModify,
