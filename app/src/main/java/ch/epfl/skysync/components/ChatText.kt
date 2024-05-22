@@ -62,8 +62,7 @@ fun ChatText(
 ) {
   Column(modifier = Modifier.padding(paddingValues).imePadding()) {
     ChatTextBody(messages, modifier = Modifier.weight(1f))
-      ChatInput(onSend, connectivityStatus)
-
+    ChatInput(onSend, connectivityStatus)
   }
 }
 /**

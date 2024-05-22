@@ -11,12 +11,12 @@ class ContextConnectivityStatus(private val context: Context) : ConnectivityStat
 
   override fun isOnline(): Boolean {
     val connectivityManager =
-      context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     val activeNetwork = connectivityManager.activeNetworkInfo
     return activeNetwork != null && activeNetwork.isConnected
   }
 }
 
-class DummyConnectivityStatus(private val isOnline: Boolean): ConnectivityStatus {
+class DummyConnectivityStatus(private val isOnline: Boolean) : ConnectivityStatus {
   override fun isOnline(): Boolean = isOnline
 }

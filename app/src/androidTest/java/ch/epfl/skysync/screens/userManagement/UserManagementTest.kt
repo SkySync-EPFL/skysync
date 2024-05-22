@@ -12,7 +12,6 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.Repository
-import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
