@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.components.GroupChat
 import ch.epfl.skysync.database.DatabaseSetup
+import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.models.message.GroupDetails
 import org.junit.Before
 import org.junit.Rule
@@ -24,8 +25,8 @@ class GroupChatTest {
   lateinit var navController: TestNavHostController
   val dbs = DatabaseSetup()
   val image: ImageVector? = null
-  val group = GroupDetails("id1", "Group", image, dbs.message1)
-  val searchGroup = GroupDetails("id2", "GroupSearch", image, dbs.message2)
+  val group = GroupDetails("id1", "Group", FlightColor.NO_COLOR, image, dbs.message1)
+  val searchGroup = GroupDetails("id2", "GroupSearch", FlightColor.GREEN, image, dbs.message2)
   val groups =
       listOf(
           group,

@@ -25,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -43,6 +44,7 @@ import androidx.compose.ui.window.DialogProperties
 import ch.epfl.skysync.R
 import java.util.Calendar
 import java.util.Date
+import java.util.TimeZone
 
 /**
  * A generic time picker composable that wraps a content composable and displays a time picker
@@ -64,15 +66,11 @@ fun GenericTimePicker(
     onConfirm: (Date) -> Unit,
     f: @Composable () -> Unit
 ) {
-  var time by remember { mutableStateOf<Date?>(null) }
   f()
   if (showTimePicker) {
     TimePickerDialog(
         onCancel = { onDismiss() },
-        onConfirm = {
-          time = it.time
-          onConfirm(it.time)
-        },
+        onConfirm = { onConfirm(it.time) },
         modifier = Modifier.padding(padding))
   }
 }
@@ -93,8 +91,8 @@ fun TimePickerDialog(
     onConfirm: (Calendar) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-  val time = Calendar.getInstance()
+  val timeZone = TimeZone.getDefault()
+  val time = Calendar.getInstance(timeZone)
   time.timeInMillis = System.currentTimeMillis()
 
   var mode: DisplayMode by remember { mutableStateOf(DisplayMode.Picker) }
@@ -105,7 +103,7 @@ fun TimePickerDialog(
           is24Hour = true)
 
   fun onConfirmClicked() {
-    val cal = Calendar.getInstance()
+    val cal = Calendar.getInstance(timeZone)
     cal.set(Calendar.HOUR_OF_DAY, timeState.hour)
     cal.set(Calendar.MINUTE, timeState.minute)
     cal.isLenient = false
@@ -132,8 +130,7 @@ fun TimePickerDialog(
   ) {
     val contentModifier = Modifier.padding(horizontal = 24.dp)
     when (mode) {
-      DisplayMode.Picker ->
-          androidx.compose.material3.TimePicker(modifier = contentModifier, state = timeState)
+      DisplayMode.Picker -> TimePicker(modifier = contentModifier, state = timeState)
       DisplayMode.Input -> TimeInput(modifier = contentModifier, state = timeState)
     }
   }
@@ -210,8 +207,6 @@ fun PickerDialog(
         // Buttons
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.primary) {
           ProvideTextStyle(MaterialTheme.typography.labelLarge) {
-            // TODO This should wrap on small screens, but we can't use AlertDialogFlowRow as it is
-            // no public
             Row(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, end = 6.dp, start = 6.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
