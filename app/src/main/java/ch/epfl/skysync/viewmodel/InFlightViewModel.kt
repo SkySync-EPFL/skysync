@@ -372,9 +372,16 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   /** Save the finished flight to the database */
   private suspend fun saveFinishedFlight() {
-    if (currentFlight.value == null) {
-      return
-    }
+    val flightToSave = _currentFlight.value ?: return
+    val finishedFlight = flightToSave.finishFlight(
+        takeOffTime = takeOffTime!!,
+        landingTime = landingTime!!,
+        flightTime = _counter.value,
+        takeOffLocation = _flightLocations.value.first().point,
+        landingLocation = _flightLocations.value.last().point,
+        flightTrace = FlightTrace(trace = _flightLocations.value.map { it.point })
+    )
+    flightTable.update(finishedFlight.id, finishedFlight, onError = { onError(it) })
     Log.d("InFlightViewModel", "Saving finished flight")
   }
 
