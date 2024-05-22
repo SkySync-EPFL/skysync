@@ -56,6 +56,10 @@ class InFlightViewModelTest {
     inFlightViewModel.setCurrentFlight(dbs.flight4.id)
     inFlightViewModel.startFlight().join()
 
+    // we should not be able to start display flight trace
+    inFlightViewModel.startDisplayFlightTrace()
+    assert(!inFlightViewModel.isDisplayTrace())
+
     composeTestRule.waitUntil(timeoutMillis = 1500) {
       val countString = inFlightViewModel.counter.value
       countString == "00:00:01"
@@ -73,6 +77,20 @@ class InFlightViewModelTest {
     }
     inFlightViewModel.stopFlight().join()
     assertEquals(InFlightViewModel.FlightStage.POST, inFlightViewModel.flightStage.value)
+  }
+
+  @Test
+  fun testInvalidStateOperations() = runTest {
+    inFlightViewModel.startFlight().join()
+    assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
+    inFlightViewModel.stopFlight().join()
+    assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
+    inFlightViewModel.clearFlight().join()
+    assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
+    inFlightViewModel.startDisplayFlightTrace().join()
+    assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
+    inFlightViewModel.quitDisplayFlightTrace()
+    assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
   }
 
   @Test
@@ -129,6 +147,55 @@ class InFlightViewModelTest {
     assertEquals(listOf<Location>(), pilotLocations)
   }
 
+  /**
+   * Verify that pilot locations that have been added before the user startFlight on his screen are
+   * correctly fetched
+   */
+  @Test
+  fun testFetchPreviousFlightLocation() = runTest {
+    val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) }) as ConfirmedFlight
+
+    // location with to high time (here 127) should not be taken into account as they are
+    // leftover locations from a previous flight
+    locationTable.addLocation(
+        Location(userId = dbs.pilot1.id, point = LocationPoint(127, 12.0, -3.0)),
+        onError = { assertNull(it) })
+    locationTable.addLocation(
+        Location(userId = dbs.pilot1.id, point = LocationPoint(0, 0.0, 0.0)),
+        onError = { assertNull(it) })
+    locationTable.addLocation(
+        Location(userId = dbs.pilot1.id, point = LocationPoint(1, 1.0, 0.0)),
+        onError = { assertNull(it) })
+    locationTable.addLocation(
+        Location(userId = dbs.pilot1.id, point = LocationPoint(2, 2.0, 0.0)),
+        onError = { assertNull(it) })
+
+    inFlightViewModel.setCurrentFlight(flight.id)
+
+    inFlightViewModel.startFlight().join()
+
+    locationTable.addLocation(
+        Location(userId = dbs.pilot1.id, point = LocationPoint(3, 3.0, 0.0)),
+        onError = { assertNull(it) })
+    locationTable.addLocation(
+        Location(userId = dbs.pilot1.id, point = LocationPoint(4, 4.0, 0.0)),
+        onError = { assertNull(it) })
+
+    inFlightViewModel.stopFlight().join()
+
+    val locations = inFlightViewModel.flightLocations.value
+
+    assertEquals(
+        listOf(
+            LocationPoint(0, 0.0, 0.0),
+            LocationPoint(1, 1.0, 0.0),
+            LocationPoint(2, 2.0, 0.0),
+            LocationPoint(3, 3.0, 0.0),
+            LocationPoint(4, 4.0, 0.0),
+        ),
+        locations.map { it.point })
+  }
+
   @Test
   fun testSaveFlightTrace() = runTest {
     val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) }) as ConfirmedFlight
@@ -169,5 +236,36 @@ class InFlightViewModelTest {
                 ),
         ),
         flightTrace)
+  }
+
+  @Test
+  fun testDisplayFlightTrace() = runTest {
+    val flightTrace =
+        FlightTrace(
+            trace =
+                listOf(
+                    LocationPoint(0, 0.0, 0.0),
+                    LocationPoint(1, 1.0, 0.0),
+                    LocationPoint(2, 2.0, 0.0),
+                    LocationPoint(3, 3.0, 0.0),
+                ))
+    flightTraceTable.set(dbs.flight4.id, flightTrace, onError = { assertNull(it) })
+
+    assertEquals(0, inFlightViewModel.flightLocations.value.size)
+
+    inFlightViewModel.setCurrentFlight(dbs.flight4.id)
+
+    inFlightViewModel.startDisplayFlightTrace().join()
+
+    assertEquals(InFlightViewModel.FlightStage.DISPLAY, inFlightViewModel.flightStage.value)
+
+    val locations = inFlightViewModel.flightLocations.value
+
+    assertEquals(flightTrace.trace, locations.map { it.point })
+
+    inFlightViewModel.quitDisplayFlightTrace()
+
+    assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
+    assertEquals(0, inFlightViewModel.flightLocations.value.size)
   }
 }
