@@ -13,10 +13,10 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.utils.inputTimePicker
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,21 +24,24 @@ import org.junit.Test
 class CrewReportScreenTest {
   @get:Rule val composeTestRule = createComposeRule()
   private val navController: NavHostController = mockk(relaxed = true)
+  private lateinit var finishedFlightsViewModel: FinishedFlightsViewModel
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbs = DatabaseSetup()
   private val repository = Repository(db)
 
   @Before
-  fun setUp() {
+  fun setUp() = runTest {
+    dbs.clearDatabase(db)
+    dbs.fillDatabase(db)
     composeTestRule.setContent {
-      val finishedFlightsViewModel =
+      finishedFlightsViewModel =
           FinishedFlightsViewModel.createViewModel(repository = repository, userId = dbs.crew1.id)
       CrewReportScreen(
           navHostController = navController,
           finishedFlightsViewModel = finishedFlightsViewModel,
           flightId = dbs.finishedFlight1.id)
-      navController.navigate(Route.PILOT_REPORT)
     }
+    finishedFlightsViewModel.refreshAndSelectFlight(dbs.finishedFlight1.id).join()
   }
 
   @Test
