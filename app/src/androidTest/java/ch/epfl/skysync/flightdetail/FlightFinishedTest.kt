@@ -59,4 +59,9 @@ class FlightFinishedTest {
     helper("Takeoff location", flight.takeOffLocation.name)
     helper("Landing location", flight.landingLocation.name)
   }
+    @Test
+    fun teamAndColorsAreDisplayed() {
+        composeTestRule.onNodeWithTag("FlightDetailLazyColumn").performScrollToNode(hasText("Team"))
+        composeTestRule.onNodeWithText("COLOR ${flight.color}").assertIsDisplayed()
+    }
 }

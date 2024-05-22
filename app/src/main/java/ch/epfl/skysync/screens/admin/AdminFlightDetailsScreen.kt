@@ -51,13 +51,16 @@ import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.*
 import ch.epfl.skysync.viewmodel.FlightsViewModel
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import java.time.LocalDate
 
 @Composable
 fun AdminFlightDetailScreen(
     navController: NavHostController,
     flightId: String,
-    viewModel: FlightsViewModel
+    viewModel: FlightsViewModel,
+    inFlightViewModel: InFlightViewModel
+
 ) {
 
   val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
@@ -89,7 +92,7 @@ fun AdminFlightDetailScreen(
                 { navController.popBackStack() }, { showConfirmDialog = true }, true)
           }
           is FinishedFlight -> {
-            FinishedFlightDetailBottom(reportClick = {})
+            FinishedFlightDetailBottom(reportClick = {},flightTraceClick={navController.navigate(Route.FLIGHT)})
           }
         }
       },

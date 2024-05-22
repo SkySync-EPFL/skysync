@@ -180,6 +180,12 @@ fun DisplayFlightColor(flight: Flight, padding: Dp) {
           padding = padding,
           color = flightColorOptions.getOrDefault(flight.color, Color.Gray))
     }
+      is FinishedFlight -> {
+          SmallTitle(
+              title = "COLOR ${flight.color}",
+              padding = padding,
+              color = flightColorOptions.getOrDefault(flight.color, Color.Gray))
+      }
   }
 }
 
@@ -262,6 +268,7 @@ fun FinishedFlightLocation(finishedFlight: FinishedFlight, padding: Dp, cardColo
     HyperLinkText(location = finishedFlight.landingLocation.name, padding = padding)
   }
 }
+
 
 /**
  * Composable function for displaying a location as a hyperlink.
@@ -381,17 +388,22 @@ fun ConfirmedFlightDetailBottom(okClick: () -> Unit, deleteClick: () -> Unit, is
 /**
  * Composable function for displaying the bottom section of the confirmed flight details UI.
  *
- * @param okClick Lambda function to handle the click event for confirming the flight details.
+ * @param reportClick Lambda function to handle the click event for confirming the flight details.
  */
 @Composable
-fun FinishedFlightDetailBottom(reportClick: () -> Unit) {
-  BottomAppBar {
-    Button(
-        onClick = reportClick,
-        modifier = Modifier.fillMaxSize().padding(16.dp).testTag("Report Button")) {
-          Text(text = "Report", color = Color.White, overflow = TextOverflow.Clip)
+fun FinishedFlightDetailBottom(reportClick: () -> Unit,flightTraceClick : () -> Unit) {
+    BottomAppBar {
+            Button(
+                onClick = reportClick,
+                modifier =
+                Modifier.fillMaxHeight().fillMaxWidth(0.5f).padding(16.dp).testTag("Report")) {
+                Text(text = "Report", color = Color.White, overflow = TextOverflow.Clip)
+            }
+        Button(
+            onClick = flightTraceClick, modifier = Modifier.fillMaxSize().padding(16.dp).testTag("Flight Trace")) {
+            Text(text = "Flight Trace", color = Color.White, overflow = TextOverflow.Clip)
         }
-  }
+    }
 }
 
 @Preview
