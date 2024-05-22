@@ -266,8 +266,8 @@ class FlightTable(db: FirestoreDatabase) :
               }
             },
             launch {
-                if (flightSchema.reportIds == null) return@launch
-                reports = reportTable.retrieveReports(flightSchema)
+                if (flightSchema.id == null) return@launch
+                reports = reportTable.retrieveReports(flightSchema.id)
             },
             launch { vehicles = retrieveVehicles(flightSchema) },
             launch { team = retrieveTeam(flightSchema) })
@@ -342,6 +342,9 @@ class FlightTable(db: FirestoreDatabase) :
     return withErrorCallback(onError) {
       val flightId = db.addItem(path, FlightSchema.fromModel(item))
       addTeam(flightId, item.team)
+        if (item is FinishedFlight && item.reportId.isNotEmpty()) {
+          reportTable.addAll(item.reportId, flightId)
+        }
       flightId
     }
   }
