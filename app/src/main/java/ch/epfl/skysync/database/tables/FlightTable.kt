@@ -19,6 +19,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.models.reports.Report
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
@@ -49,7 +50,8 @@ class FlightTable(db: FirestoreDatabase) :
       basket: Basket?,
       vehicles: List<Vehicle>,
       team: Team,
-      flightTrace: FlightTrace?
+      flightTrace: FlightTrace?,
+      reports: List<Report> = emptyList(),
   ): Flight {
     return when (schema.status!!) {
       FlightStatus.PLANNED ->
@@ -113,7 +115,7 @@ class FlightTable(db: FirestoreDatabase) :
                   LocationPoint(
                       0, schema.landingLocationLat!!, schema.landingLocationLong!!, "LandingSpot"),
               flightTime = schema.flightTime!!,
-              reportId = listOf(), // Todo: retrieve reports
+              reportId = reports,
               flightTrace = flightTrace!!)
     }
   }
@@ -264,13 +266,14 @@ class FlightTable(db: FirestoreDatabase) :
             launch { team = retrieveTeam(flightSchema) })
     jobs.forEach { it.join() }
     makeFlight(
-        flightSchema,
-        flightType!!,
-        balloon,
-        basket,
-        vehicles!!,
-        team!!,
-        FlightTrace(flightSchema.id!!, emptyList()))
+        schema = flightSchema,
+        flightType = flightType!!,
+        balloon = balloon,
+        basket = basket,
+        vehicles = vehicles!!,
+        team = team!!,
+        flightTrace = FlightTrace(flightSchema.id!!, emptyList())
+    )
   }
 
   override suspend fun get(id: String, onError: ((Exception) -> Unit)?): Flight? {
