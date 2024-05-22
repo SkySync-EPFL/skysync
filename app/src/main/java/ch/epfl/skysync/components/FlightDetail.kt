@@ -37,6 +37,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.database.DateUtility
+import ch.epfl.skysync.database.DateUtility.dateToLocalDate
+import ch.epfl.skysync.database.DateUtility.formatTime
+import ch.epfl.skysync.database.DateUtility.localDateAndTimeToDate
+import ch.epfl.skysync.database.DateUtility.stringToLocalTime
 import ch.epfl.skysync.database.FlightStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
@@ -54,11 +58,9 @@ import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.flight.flightColorOptions
 import ch.epfl.skysync.models.location.LocationPoint
 import java.net.URLEncoder
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.util.Date
-import java.util.Locale
 
 /**
  * Composable function for displaying flight details in a UI.
@@ -102,7 +104,17 @@ fun FlightDetails(flight: Flight?, padding: PaddingValues) {
                 }
                 item {
                   FinishedFlightLocation(
-                      finishedFlight = flight, padding = defaultPadding, cardColor = cardColor)
+                      title = "Takeoff location",
+                      locationName = flight.takeOffLocation.name,
+                      padding = defaultPadding,
+                      cardColor = cardColor)
+                }
+                item {
+                  FinishedFlightLocation(
+                      title = "Landing location",
+                      locationName = flight.landingLocation.name,
+                      padding = defaultPadding,
+                      cardColor = cardColor)
                 }
               }
             }
@@ -226,7 +238,11 @@ fun FinishedFlightTimes(finishedFlight: FinishedFlight, padding: Dp, cardColor: 
   val times =
       mapOf(
           "Takeoff time" to finishedFlight.takeOffTime,
-          "Landing time" to finishedFlight.landingTime)
+          "Landing time" to finishedFlight.landingTime,
+          "Flight duration" to
+              localDateAndTimeToDate(
+                  dateToLocalDate(finishedFlight.flightTime),
+                  stringToLocalTime(formatTime(finishedFlight.flightTime))))
 
   Card(colors = CardDefaults.cardColors(cardColor)) {
     LargeTitle(title = "Operational times", padding = padding, color = Color.Black)
@@ -234,18 +250,7 @@ fun FinishedFlightTimes(finishedFlight: FinishedFlight, padding: Dp, cardColor: 
       DisplaySingleMetric(
           metric = label, value = DateUtility.localTimeToString(DateUtility.dateToLocalTime(time)))
     }
-    DisplaySingleMetric("Flight Duration", longToTime(finishedFlight.flightTime))
   }
-}
-
-fun longToTime(timeInMillis: Long): String {
-  val formatter = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-  val date = Date(timeInMillis)
-  val formattedTime = formatter.format(date)
-  val hours = formattedTime.substring(0, 2).toInt()
-  val minutes = formattedTime.substring(3, 5).toInt()
-  val seconds = formattedTime.substring(6, 8).toInt()
-  return "$hours:$minutes:$seconds"
 }
 
 /**
@@ -264,21 +269,18 @@ fun ConfirmFlightLocation(confirmedFlight: ConfirmedFlight, padding: Dp, cardCol
 }
 
 /**
- * Composable function for displaying the takeoff and landing location of a finished flight.
+ * Composable function for displaying the location of a finished flight.
  *
- * @param finishedFlight The finished flight object containing details to be displayed.
+ * @param title The title of the location type to be displayed
+ * @param locationName name of the location to display
  * @param padding The padding value to be applied around the content.
  * @param cardColor The color to be used for the card background.
  */
 @Composable
-fun FinishedFlightLocation(finishedFlight: FinishedFlight, padding: Dp, cardColor: Color) {
+fun FinishedFlightLocation(title: String, locationName: String, padding: Dp, cardColor: Color) {
   Card(colors = CardDefaults.cardColors(cardColor), modifier = Modifier.fillMaxWidth()) {
-    LargeTitle(title = "Takeoff location", padding = padding, color = Color.Black)
-    HyperLinkText(location = finishedFlight.takeOffLocation.name, padding = padding)
-  }
-  Card(colors = CardDefaults.cardColors(cardColor), modifier = Modifier.fillMaxWidth()) {
-    LargeTitle(title = "Landing location", padding = padding, color = Color.Black)
-    HyperLinkText(location = finishedFlight.landingLocation.name, padding = padding)
+    LargeTitle(title = title, padding = padding, color = Color.Black)
+    HyperLinkText(location = locationName, padding = padding)
   }
 }
 
