@@ -43,7 +43,7 @@ fun FlightCard(flight: Flight, onFlightClick: (String) -> Unit) {
             Text(
                 text =
                     flight.date.format(
-                        DateTimeFormatter.ofPattern("E\ndd").withLocale(Locale.ENGLISH)),
+                        DateTimeFormatter.ofPattern("E\nMMM dd").withLocale(Locale.ENGLISH)),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.alignByBaseline(),
                 color = Color.Black)

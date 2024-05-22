@@ -63,8 +63,9 @@ fun FlightsList(
           }
     } else {
       // Display the flights in a LazyColumn if the list is not empty
+        val sortedFlights = flights.sortedBy { it.date }
       LazyColumn(modifier = Modifier.testTag("HomeLazyList").padding(paddingValues)) {
-        items(flights) { flight -> FlightCard(flight, onFlightClick) }
+        items(sortedFlights) { flight -> FlightCard(flight, onFlightClick) }
       }
     }
   }
