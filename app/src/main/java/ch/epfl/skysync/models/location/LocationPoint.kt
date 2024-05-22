@@ -10,4 +10,10 @@ data class LocationPoint(
     val name: String = ""
 ) {
   fun latlng(): LatLng = LatLng(latitude, longitude)
+
+    companion object {
+        val UNKNONWN_POINT = LocationPoint(-1, 0.0, 0.0)
+    }
 }
+
+

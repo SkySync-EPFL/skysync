@@ -18,6 +18,7 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.Location
+import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
 import com.google.firebase.firestore.Filter
@@ -372,13 +373,14 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   /** Save the finished flight to the database */
   private suspend fun saveFinishedFlight() {
+
     val flightToSave = _currentFlight.value ?: return
     val finishedFlight = flightToSave.finishFlight(
         takeOffTime = takeOffTime!!,
         landingTime = landingTime!!,
         flightTime = _counter.value,
-        takeOffLocation = _flightLocations.value.first().point,
-        landingLocation = _flightLocations.value.last().point,
+        takeOffLocation = _flightLocations.value.firstOrNull()?.point?: LocationPoint.UNKNONWN_POINT,
+        landingLocation = _flightLocations.value.lastOrNull()?.point?: LocationPoint.UNKNONWN_POINT,
         flightTrace = FlightTrace(trace = _flightLocations.value.map { it.point })
     )
     flightTable.update(finishedFlight.id, finishedFlight, onError = { onError(it) })
