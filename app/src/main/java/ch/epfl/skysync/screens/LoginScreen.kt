@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,7 +28,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -89,9 +87,9 @@ fun LoginScreen(
                             text = "Authenticate with Google",
                             color = deepOrange,
                             fontSize = 15.sp,
-                            style = TextStyle(
-                                fontWeight = FontWeight.SemiBold),
-                            textAlign = TextAlign.Center,)
+                            style = TextStyle(fontWeight = FontWeight.SemiBold),
+                            textAlign = TextAlign.Center,
+                        )
                       }
                 }
             Text(text = "You need to log in")

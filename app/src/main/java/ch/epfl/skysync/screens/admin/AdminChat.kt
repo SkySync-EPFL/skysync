@@ -25,7 +25,8 @@ fun AdminChatScreen(navController: NavHostController, viewModel: ChatViewModel) 
         onClick = { selectedGroup ->
           navController.navigate(Route.ADMIN_TEXT + "/${selectedGroup.id}")
         },
-        paddingValues = padding)
+        paddingValues = padding,
+        true)
   }
 }
 

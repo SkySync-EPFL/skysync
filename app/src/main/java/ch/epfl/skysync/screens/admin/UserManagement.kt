@@ -30,7 +30,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,32 +54,26 @@ import ch.epfl.skysync.viewmodel.UserManagementViewModel
 fun UserCard(user: User, onUserClick: (String) -> Unit) {
   Card(
       modifier =
-      Modifier
-          .fillMaxWidth()
-          .padding(vertical = 1.dp)
-          .clickable { onUserClick(user.id) }
-          .testTag("userCard"),
+          Modifier.fillMaxWidth()
+              .padding(vertical = 1.dp)
+              .clickable { onUserClick(user.id) }
+              .testTag("userCard"),
       elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
   ) {
     Surface(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .border(
-                border = BorderStroke(1.dp, Color.Black),
-                shape =
-                RoundedCornerShape(
-                    topStart = 12.dp,
-                    topEnd = 12.dp,
-                    bottomEnd = 12.dp,
-                    bottomStart = 12.dp
-                )
-            ),
+            Modifier.fillMaxWidth()
+                .border(
+                    border = BorderStroke(1.dp, Color.Black),
+                    shape =
+                        RoundedCornerShape(
+                            topStart = 12.dp,
+                            topEnd = 12.dp,
+                            bottomEnd = 12.dp,
+                            bottomStart = 12.dp)),
         color = lightGray) {
           Row(
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(16.dp),
+              modifier = Modifier.fillMaxWidth().padding(16.dp),
               verticalAlignment = Alignment.CenterVertically,
               horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
@@ -96,27 +89,23 @@ fun UserCard(user: User, onUserClick: (String) -> Unit) {
 // Composable function to display the top bar title with user count.
 @Composable
 fun TopBarTitle(paddingValues: PaddingValues) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)){
-        Text(
-            text = "Users",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            modifier =
-            Modifier
-                .background(
+  Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+    Text(
+        text = "Users",
+        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+        modifier =
+            Modifier.background(
                     color = lightOrange,
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                )
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .fillMaxWidth()
                 .padding(
                     top = paddingValues.calculateTopPadding() + 16.dp,
                     start = 16.dp,
                     end = 16.dp,
-                    bottom = 16.dp
-                ),
-            color = Color.White,
-            textAlign = TextAlign.Center
-        )
-    }
+                    bottom = 16.dp),
+        color = Color.White,
+        textAlign = TextAlign.Center)
+  }
 }
 
 // Composable function for the search bar.
@@ -125,9 +114,7 @@ fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
   OutlinedTextField(
       value = query,
       onValueChange = onQueryChanged,
-      modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp, vertical = 8.dp),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
       placeholder = { Text("Search users") },
       singleLine = true,
       trailingIcon = {
@@ -144,60 +131,51 @@ fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
 fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>, count: Int) {
   var expanded by remember { mutableStateOf(false) } // State to manage dropdown expansion.
   var displayText by remember { mutableStateOf("Filter by role") }
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-        ) {
-            Button(
-                onClick = { expanded = true },
-                colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = lightOrange,
-                    contentColor = Color.Black
-                )
-            ) {
-                Text(text = displayText)
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Expand or collapse menu"
-                )
-            }
+  Row(
+      modifier = Modifier.fillMaxWidth(),
+      verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Column(modifier = Modifier.padding(16.dp)) {
+      Button(
+          onClick = { expanded = true },
+          colors =
+              ButtonDefaults.buttonColors(
+                  containerColor = lightOrange, contentColor = Color.Black)) {
+            Text(text = displayText)
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "Expand or collapse menu")
+          }
 
-            // Dropdown menu for selecting roles.
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                DropdownMenuItem(
-                    onClick = {
-                        displayText = "Filter by role"
-                        onRoleSelected(null)
-                        expanded = false
-                    },
-                    text = { Text("All Roles") })
-                roles.forEach { role ->
-                    DropdownMenuItem(
-                        onClick = {
-                            displayText = role.name
-                            onRoleSelected(role)
-                            expanded = false
-                        },
-                        text = { Text(role.name) })
-                }
-            }
+      // Dropdown menu for selecting roles.
+      DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        DropdownMenuItem(
+            onClick = {
+              displayText = "Filter by role"
+              onRoleSelected(null)
+              expanded = false
+            },
+            text = { Text("All Roles") })
+        roles.forEach { role ->
+          DropdownMenuItem(
+              onClick = {
+                displayText = role.name
+                onRoleSelected(role)
+                expanded = false
+              },
+              text = { Text(role.name) })
         }
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .background(color = lightTurquoise, shape = CircleShape)
-                .padding(8.dp)) {
-            Text(
-                text = count.toString(),
-                style = MaterialTheme.typography.titleLarge,
-            )
-        }
+      }
     }
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.background(color = lightTurquoise, shape = CircleShape).padding(8.dp)) {
+          Text(
+              text = count.toString(),
+              style = MaterialTheme.typography.titleLarge,
+          )
+        }
+  }
 }
 
 // Main screen composable integrating all components. List of users to later be replaced with
@@ -239,41 +217,32 @@ fun UserManagementScreen(
             }
       },
       floatingActionButtonPosition = FabPosition.Center) { padding ->
-      Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
           TopBarTitle(padding)
           SearchBar(query = searchQuery, onQueryChanged = { searchQuery = it })
           RoleFilter(
-              onRoleSelected = { selectedRole = it },
-              roles = roles,
-              count = filteredUsers.size
-          )
-          Box(
-              modifier = Modifier
-                  .fillMaxSize()
-                  .padding(padding)
-          ) {
-              if (filteredUsers.isEmpty()) {
-                  // Display a message when no users are found
-                  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                      Text("No such user exists", style = MaterialTheme.typography.titleLarge)
-                  }
-              } else {
-                  LazyColumn(
-                      modifier =
-                      Modifier
-                          .align(Alignment.TopCenter)
-                          .padding(horizontal = 16.dp)
-                          .testTag("UserManagementLazyColumn")
-                  ) {
-                      items(filteredUsers) { user ->
-                          UserCard(user) {
-                              navController.navigate(Route.ADMIN_USER_DETAILS + "/${user.id}")
-                          }
-                          Spacer(modifier = Modifier.height(8.dp))
-                      }
-                  }
+              onRoleSelected = { selectedRole = it }, roles = roles, count = filteredUsers.size)
+          Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+            if (filteredUsers.isEmpty()) {
+              // Display a message when no users are found
+              Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("No such user exists", style = MaterialTheme.typography.titleLarge)
               }
+            } else {
+              LazyColumn(
+                  modifier =
+                      Modifier.align(Alignment.TopCenter)
+                          .padding(horizontal = 16.dp)
+                          .testTag("UserManagementLazyColumn")) {
+                    items(filteredUsers) { user ->
+                      UserCard(user) {
+                        navController.navigate(Route.ADMIN_USER_DETAILS + "/${user.id}")
+                      }
+                      Spacer(modifier = Modifier.height(8.dp))
+                    }
+                  }
+            }
           }
+        }
       }
-  }
 }
