@@ -9,6 +9,6 @@ interface Report {
   val author: String
   val begin: Date
   val end: Date
-  val pauseDuration: Long? // in milliseconds
+  val pauseDuration: Int // in milliseconds
   val comments: String
 }

@@ -126,7 +126,7 @@ fun CrewReportScreen(navHostController: NavHostController, flight: FinishedFligh
                   author = crew.id,
                   begin = beginTime,
                   end = endTime,
-                  pauseDuration = pauseDuration,
+                  pauseDuration = pauseDuration.toInt(),
                   comments = comments,
                   )
               // TODO save report

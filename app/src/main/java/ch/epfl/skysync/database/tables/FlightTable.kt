@@ -19,6 +19,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.models.reports.FlightReport
 import ch.epfl.skysync.models.reports.Report
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.FieldPath
@@ -343,7 +344,7 @@ class FlightTable(db: FirestoreDatabase) :
       val flightId = db.addItem(path, FlightSchema.fromModel(item))
       addTeam(flightId, item.team)
         if (item is FinishedFlight && item.reportId.isNotEmpty()) {
-          reportTable.addAll(item.reportId, flightId)
+          reportTable.addAll(item.reportId as List<FlightReport>, flightId)
         }
       flightId
     }

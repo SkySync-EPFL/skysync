@@ -10,6 +10,6 @@ data class FlightReport(
     override val author: String,
     override val begin: Date,
     override val end: Date,
-    override val pauseDuration: Long?, // in milliseconds
+    override val pauseDuration: Int, // in milliseconds
     override val comments: String,
 ) : Report

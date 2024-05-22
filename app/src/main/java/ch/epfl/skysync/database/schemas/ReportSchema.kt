@@ -14,7 +14,7 @@ data class ReportSchema(
     val flightId: String? = null,
     val shiftBegin: Date? = null,
     val shiftEnd: Date? = null,
-    val pauseDuration: Long?, // in milliseconds
+    val pauseDuration: Int? = null, // in milliseconds
     val comment: String? = null,
 ) : Schema<Report> {
   override fun toModel(): Report {

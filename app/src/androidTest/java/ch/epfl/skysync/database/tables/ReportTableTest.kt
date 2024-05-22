@@ -7,6 +7,7 @@ import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.tables.BasketTable
 import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.database.tables.ReportTable
+import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.reports.FlightReport
@@ -45,14 +46,15 @@ class ReportTableTest {
           LocalDate.of(2022, 1, 1),
           LocalTime.of(13, 1))
       val flightId = dbs.flight1.id
-      val report  = FlightReport(
+      var report  = FlightReport(
           author = dbs.admin2.id,
           begin = start,
           end = stop,
           pauseDuration = 0,
           comments = "test"
       )
-      reportTable.add(report, flightId)
+      val reportId = reportTable.add(report, flightId)
+      report = report.copy(id = reportId)
       val retrievedReportsForFlight = reportTable.retrieveReports(flightId)
       assertEquals(1, retrievedReportsForFlight.size)
         assertEquals(report, retrievedReportsForFlight[0])

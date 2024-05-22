@@ -138,7 +138,7 @@ fun PilotReportScreen(flight: FinishedFlight, navHostController: NavHostControll
                   landingTime = landingTime,
                   begin = beginTime,
                   end = endTime,
-                  pauseDuration = pauseDuration,
+                  pauseDuration = pauseDuration.toInt(),
                   comments = comments,
                   )
               // TODO save report
