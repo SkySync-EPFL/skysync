@@ -13,6 +13,7 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -104,11 +105,16 @@ class FlightsViewModel(
         _currentUser.value = repository.userTable.get(userId ?: UNSET_ID, onError = { onError(it) })
         if (_currentUser.value is Admin) {
           Log.d("FlightsViewModel", "Admin user loaded")
-          _currentFlights.value = repository.flightTable.getAll(onError = { onError(it) })
+          _currentFlights.value =
+              repository.flightTable.getAll(onError = { onError(it) }).filterNot {
+                it is FinishedFlight
+              }
         } else if (_currentUser.value is Pilot || _currentUser.value is Crew) {
           _currentFlights.value =
-              repository.userTable.retrieveAssignedFlights(
-                  repository.flightTable, userId ?: UNSET_ID, onError = { onError(it) })
+              repository.userTable
+                  .retrieveAssignedFlights(
+                      repository.flightTable, userId ?: UNSET_ID, onError = { onError(it) })
+                  .filterNot { it is FinishedFlight }
           Log.d("FlightsViewModel", "Pilot or Crew user loaded")
         }
       }

@@ -1,5 +1,6 @@
 package ch.epfl.skysync.database
 
+import ch.epfl.skysync.database.DateUtility.createDate
 import ch.epfl.skysync.database.tables.AvailabilityTable
 import ch.epfl.skysync.database.tables.BalloonTable
 import ch.epfl.skysync.database.tables.BasketTable
@@ -10,6 +11,7 @@ import ch.epfl.skysync.database.tables.FlightTypeTable
 import ch.epfl.skysync.database.tables.LocationTable
 import ch.epfl.skysync.database.tables.MessageGroupTable
 import ch.epfl.skysync.database.tables.MessageTable
+import ch.epfl.skysync.database.tables.ReportTable
 import ch.epfl.skysync.database.tables.TempUserTable
 import ch.epfl.skysync.database.tables.UserTable
 import ch.epfl.skysync.database.tables.VehicleTable
@@ -22,6 +24,7 @@ import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.FlightColor
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -29,8 +32,11 @@ import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
+import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.message.Message
 import ch.epfl.skysync.models.message.MessageGroup
+import ch.epfl.skysync.models.reports.CrewReport
+import ch.epfl.skysync.models.reports.PilotReport
 import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
@@ -232,6 +238,50 @@ class DatabaseSetup {
           meetupTimePassenger = LocalTime.of(14, 0, 0),
           meetupLocationPassenger = "location",
       )
+  val landingTime1 = createDate(date1.year, date1.monthValue, date1.dayOfMonth, 5, 0)
+  val takeOffTime1 = createDate(date1.year, date1.monthValue, date1.dayOfMonth, 4, 0)
+  val landingTime2 = createDate(date1.year, date1.monthValue, date1.dayOfMonth, 7, 0)
+  val takeOffTime2 = createDate(date1.year, date1.monthValue, date1.dayOfMonth, 6, 0)
+
+  val landingLocation1 = LocationPoint(0, 0.0, 0.0, "Landing")
+  val takeOffLocation1 = LocationPoint(0, 1.0, 1.0, "Take off")
+  var finishedFlight1 =
+      FinishedFlight(
+          id = UNSET_ID,
+          nPassengers = 2,
+          team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
+          flightType = flightType1,
+          balloon = balloon1,
+          basket = basket1,
+          date = date1,
+          timeSlot = TimeSlot.AM,
+          vehicles = listOf(vehicle2),
+          color = FlightColor.GREEN,
+          flightTime = takeOffTime1.time - landingTime1.time,
+          landingTime = landingTime1,
+          takeOffTime = takeOffTime1,
+          landingLocation = landingLocation1,
+          takeOffLocation = takeOffLocation1,
+      )
+
+  var finishedFlight2 =
+      FinishedFlight(
+          id = UNSET_ID,
+          nPassengers = 4,
+          team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew2))),
+          flightType = flightType2,
+          balloon = balloon2,
+          basket = basket2,
+          date = date1,
+          timeSlot = TimeSlot.AM,
+          vehicles = listOf(vehicle2),
+          color = FlightColor.GREEN,
+          flightTime = takeOffTime2.time - landingTime2.time,
+          landingTime = landingTime2,
+          takeOffTime = takeOffTime2,
+          landingLocation = landingLocation1,
+          takeOffLocation = takeOffLocation1,
+      )
 
   var messageGroup1 =
       MessageGroup(
@@ -248,6 +298,30 @@ class DatabaseSetup {
       Message(user = pilot1, date = Date.from(Instant.now().minusSeconds(10)), content = "World")
 
   var message3 = Message(user = admin2, date = Date.from(Instant.now()), content = "Some stuff")
+
+  var report1 =
+      PilotReport(
+          id = UNSET_ID,
+          author = pilot1.id,
+          effectivePax = 2,
+          takeOffTime = takeOffTime2,
+          landingTime = landingTime2,
+          takeOffLocation = takeOffLocation1,
+          landingLocation = landingLocation1,
+          begin = takeOffTime2,
+          end = landingTime2,
+          pauseDuration = 0,
+          comments = "Some comments",
+      )
+  var report2 =
+      CrewReport(
+          id = UNSET_ID,
+          author = crew1.id,
+          begin = takeOffTime2,
+          end = landingTime2,
+          pauseDuration = 0,
+          comments = "Some comments",
+      )
 
   /**
    * Delete all items in all tables of the database
@@ -269,6 +343,7 @@ class DatabaseSetup {
             launch { MessageTable(db).deleteTable(onError = null) },
             launch { MessageGroupTable(db).deleteTable(onError = null) },
             launch { LocationTable(db).deleteTable(onError = null) },
+            launch { ReportTable(db).deleteTable(onError = null) },
         )
         .forEach { it.join() }
   }
@@ -289,6 +364,7 @@ class DatabaseSetup {
     val availabilityTable = AvailabilityTable(db)
     val messageTable = MessageTable(db)
     val messageGroupTable = MessageGroupTable(db)
+    val reportTable = ReportTable(db)
 
     listOf(
             launch { flightType1 = flightType1.copy(id = flightTypeTable.add(flightType1)) },
@@ -411,6 +487,22 @@ class DatabaseSetup {
             basket = basket1,
             vehicles = listOf(vehicle2),
         )
+    finishedFlight1 =
+        finishedFlight1.copy(
+            team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
+            flightType = flightType1,
+            balloon = balloon1,
+            basket = basket1,
+            vehicles = listOf(vehicle2),
+        )
+    finishedFlight2 =
+        finishedFlight2.copy(
+            team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew2))),
+            flightType = flightType1,
+            balloon = balloon1,
+            basket = basket1,
+            vehicles = listOf(vehicle2),
+        )
 
     // now that the IDs are set, add the flights/messages
     listOf(
@@ -418,9 +510,21 @@ class DatabaseSetup {
             launch { flight2 = flight2.copy(id = flightTable.add(flight2)) },
             launch { flight3 = flight3.copy(id = flightTable.add(flight3)) },
             launch { flight4 = flight4.copy(id = flightTable.add(flight4)) },
+            launch {
+              finishedFlight1 = finishedFlight1.copy(id = flightTable.add(finishedFlight1))
+            },
+            launch {
+              finishedFlight2 = finishedFlight2.copy(id = flightTable.add(finishedFlight2))
+            },
             launch { message1 = message1.copy(id = messageTable.add(messageGroup1.id, message1)) },
             launch { message2 = message2.copy(id = messageTable.add(messageGroup1.id, message2)) },
             launch { message3 = message3.copy(id = messageTable.add(messageGroup2.id, message3)) },
+        )
+        .forEach { it.join() }
+
+    listOf(
+            launch { report1 = report1.copy(id = reportTable.add(report1, finishedFlight1.id)) },
+            launch { report2 = report2.copy(id = reportTable.add(report2, finishedFlight1.id)) },
         )
         .forEach { it.join() }
 

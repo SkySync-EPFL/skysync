@@ -49,7 +49,16 @@ object DateUtility {
    * @return The equivalent [Date] object.
    */
   fun localDateToDate(localDate: LocalDate): Date {
-    return Date.from(localDate.atStartOfDay(ZoneOffset.UTC).toInstant())
+    return Date.from(localDate.atStartOfDay(ZoneOffset.systemDefault()).toInstant())
+  }
+
+  /**
+   * Creates a [Date] object from the given year, month, day, hour, and minute.
+   *
+   * @return The [Date] object created.
+   */
+  fun createDate(year: Int, month: Int, day: Int, hour: Int, minute: Int): Date {
+    return Date.from(LocalDate.of(year, month, day).atTime(hour, minute).toInstant(ZoneOffset.UTC))
   }
 
   /**
@@ -116,7 +125,7 @@ object DateUtility {
     val formatter = DateTimeFormatter.ofPattern("HH:mm")
     val localTime = LocalTime.parse(time, formatter)
     val localDateTime = LocalDateTime.of(date, localTime)
-    return Date.from(localDateTime.atZone(ZoneOffset.UTC).toInstant())
+    return Date.from(localDateTime.atZone(ZoneOffset.systemDefault()).toInstant())
   }
 
   /** Formats the given time in milliseconds to a string in the format "HH:MM:SS". */

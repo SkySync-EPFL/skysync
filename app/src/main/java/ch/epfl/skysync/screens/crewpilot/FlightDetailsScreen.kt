@@ -21,14 +21,16 @@ fun FlightDetailScreen(
 ) {
 
   val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
+  val user by viewModel.currentUser.collectAsStateWithLifecycle()
   Scaffold(
       topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
-      bottomBar = { ConfirmedFlightDetailBottom({ navController.popBackStack() }, {}, false) },
       containerColor = lightGray) { padding ->
-        if (flight == null) {
+        if (flight == null || user == null) {
           LoadingComponent(isLoading = true, onRefresh = {}) {}
         } else {
-          FlightDetails(flight = flight, padding = padding)
+          FlightDetails(flight = flight, padding = padding) {
+            ConfirmedFlightDetailBottom({ navController.popBackStack() }, {}, false)
+          }
         }
       }
 }

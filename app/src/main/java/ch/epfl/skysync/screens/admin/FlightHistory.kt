@@ -41,8 +41,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -53,93 +53,90 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.R
 import ch.epfl.skysync.components.CustomTopAppBar
+import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.components.forms.TitledDropDownMenu
 import ch.epfl.skysync.database.DateUtility.dateToHourMinuteString
 import ch.epfl.skysync.database.DateUtility.dateToLocalDate
 import ch.epfl.skysync.database.DateUtility.localDateToString
-import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.flight.BASE_ROLES
-import ch.epfl.skysync.models.flight.Balloon
-import ch.epfl.skysync.models.flight.BalloonQualification
-import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.FlightType
-import ch.epfl.skysync.models.flight.Role
-import ch.epfl.skysync.models.flight.Team
-import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.ui.theme.veryLightBlue
 import ch.epfl.skysync.ui.theme.veryLightJasmine
 import ch.epfl.skysync.ui.theme.veryLightRed
 import ch.epfl.skysync.ui.theme.veryLightSatin
 import ch.epfl.skysync.ui.theme.veryLightYellow
-import java.time.Instant
+import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import java.time.LocalDate
 import java.util.Date
 
 @Composable
 fun FlightHistoryScreen(
     navController: NavHostController,
-    allFlights: List<FinishedFlight> = emptyList()
+    finishedFlightsViewModel: FinishedFlightsViewModel
 ) {
+
   Scaffold(
       topBar = { CustomTopAppBar(navController = navController, title = "Flight History") },
       bottomBar = { AdminBottomBar(navController = navController) }) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-          if (allFlights.isEmpty()) {
-            Text(
-                modifier = Modifier.padding(padding).testTag("No Flight"),
-                text = "No flights available")
+          val allFlights = finishedFlightsViewModel.currentFlights.collectAsState()
+          if (allFlights.value == null) {
+            LoadingComponent(
+                isLoading = true, onRefresh = { finishedFlightsViewModel.refresh() }) {}
           } else {
-            var beginDate: LocalDate? by remember { mutableStateOf(null) }
-            var endDate: LocalDate? by remember { mutableStateOf(null) }
-            var beginFlightTime: Date? by remember { mutableStateOf(null) }
-            var endFlightTime: Date? by remember { mutableStateOf(null) }
-            var flightType: FlightType? by remember { mutableStateOf(null) }
-            var showFilters by remember { mutableStateOf(false) }
-            if (showFilters) {
-              FiltersMenu(
-                  onDismissRequest = { showFilters = false },
-                  onConfirmRequest = {
-                      tmpBeginDate,
-                      tmpEndDate,
-                      tmpBeginFlightTime,
-                      tmpEndFlightTime,
-                      tmpFlightType ->
-                    beginDate = tmpBeginDate
-                    endDate = tmpEndDate
-                    beginFlightTime = tmpBeginFlightTime
-                    endFlightTime = tmpEndFlightTime
-                    flightType = tmpFlightType
-                    showFilters = false
-                  })
+            if (allFlights.value!!.isEmpty()) {
+              Text(
+                  modifier = Modifier.padding(padding).testTag("No Flight"),
+                  text = "No flights available")
+            } else {
+              var beginDate: LocalDate? by remember { mutableStateOf(null) }
+              var endDate: LocalDate? by remember { mutableStateOf(null) }
+              var beginFlightTime: Date? by remember { mutableStateOf(null) }
+              var endFlightTime: Date? by remember { mutableStateOf(null) }
+              var flightType: FlightType? by remember { mutableStateOf(null) }
+              var showFilters by remember { mutableStateOf(false) }
+              if (showFilters) {
+                FiltersMenu(
+                    onDismissRequest = { showFilters = false },
+                    onConfirmRequest = {
+                        tmpBeginDate,
+                        tmpEndDate,
+                        tmpBeginFlightTime,
+                        tmpEndFlightTime,
+                        tmpFlightType ->
+                      beginDate = tmpBeginDate
+                      endDate = tmpEndDate
+                      beginFlightTime = tmpBeginFlightTime
+                      endFlightTime = tmpEndFlightTime
+                      flightType = tmpFlightType
+                      showFilters = false
+                    })
+              }
+              Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.Top) {
+                FlightSearchBar(
+                    modifier = Modifier.fillMaxWidth().weight(3f),
+                    onSearch = { /* TODO search for flights by location name */},
+                    results = allFlights.value!!)
+                IconButton(
+                    modifier = Modifier.testTag("Filter Button"),
+                    onClick = { showFilters = !showFilters },
+                    content = {
+                      Icon(
+                          modifier = Modifier.padding(top = 16.dp),
+                          painter = painterResource(id = R.drawable.baseline_filter_list_alt_24),
+                          contentDescription = "Filters")
+                    })
+              }
             }
-            Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.Top) {
-              FlightSearchBar(
-                  modifier = Modifier.fillMaxWidth().weight(3f),
-                  onSearch = { /* TODO search for flights by location name */},
-                  results = allFlights)
-              IconButton(
-                  modifier = Modifier.testTag("Filter Button"),
-                  onClick = { showFilters = !showFilters },
-                  content = {
-                    Icon(
-                        modifier = Modifier.padding(top = 16.dp),
-                        painter = painterResource(id = R.drawable.baseline_filter_list_alt_24),
-                        contentDescription = "Filters")
-                  })
-            }
-          }
-          LazyColumn() {
-            itemsIndexed(allFlights) { id, flight ->
-              HistoryCard(flight, Modifier.testTag("Card $id"))
+            LazyColumn() {
+              itemsIndexed(allFlights.value!!) { id, flight ->
+                HistoryCard(flight, Modifier.testTag("Card $id"))
+              }
             }
           }
         }
@@ -448,47 +445,4 @@ fun <T> TitledRangedFilterField(
         readOnly = true,
         enabled = false)
   }
-}
-
-@Preview
-@Composable
-fun FlightHistoryScreenPreview() {
-  val allFlights: MutableList<FinishedFlight> = remember {
-    mutableStateListOf(
-        FinishedFlight(
-            id = UNSET_ID,
-            nPassengers = 0,
-            team = Team(Role.initRoles(BASE_ROLES)),
-            flightType = FlightType.DISCOVERY,
-            balloon = Balloon("Balloon", BalloonQualification.MEDIUM),
-            basket = Basket("Basket", true),
-            date = LocalDate.now(),
-            timeSlot = TimeSlot.AM,
-            vehicles = emptyList(),
-            flightTime = 0L,
-            takeOffTime = Date.from(Instant.now()),
-            landingTime = Date.from(Instant.now()),
-            takeOffLocation =
-                LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),
-            landingLocation =
-                LocationPoint(time = 50, latitude = 1.0, longitude = 1.0, name = "test1_value2")),
-        FinishedFlight(
-            id = UNSET_ID,
-            nPassengers = 0,
-            team = Team(Role.initRoles(BASE_ROLES)),
-            flightType = FlightType.HIGH_ALTITUDE,
-            balloon = Balloon("Balloon", BalloonQualification.MEDIUM),
-            basket = Basket("Basket", true),
-            date = LocalDate.now(),
-            timeSlot = TimeSlot.AM,
-            vehicles = emptyList(),
-            flightTime = 0L,
-            takeOffTime = Date.from(Instant.now()),
-            landingTime = Date.from(Instant.now()),
-            takeOffLocation =
-                LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test2"),
-            landingLocation =
-                LocationPoint(time = 50, latitude = 1.0, longitude = 1.0, name = "test2_value2")))
-  }
-  FlightHistoryScreen(navController = rememberNavController(), allFlights = allFlights)
 }

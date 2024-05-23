@@ -51,7 +51,8 @@ class GroupChatTest {
   @Before
   fun setUpNavHost() {
     composeTestRule.setContent {
-      GroupChat(groupList = groups, onClick = {}, paddingValues = PaddingValues(0.dp))
+      GroupChat(
+          groupList = groups, onClick = {}, paddingValues = PaddingValues(0.dp), isAdmin = false)
     }
   }
 
