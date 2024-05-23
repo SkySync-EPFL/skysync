@@ -129,7 +129,7 @@ fun FlightDetailBottom(
       Row(modifier = Modifier.fillMaxWidth(0.9f / 3 / (1 - 0.05f)).testTag("DeleteButton")) {
         TextButton(
             onClick = { deleteClick() },
-            shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp),
+            shape = leftCornerRounded,
             border = BorderStroke(1.dp, Color.Black)) {
               Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                 Text(
@@ -163,7 +163,7 @@ fun FlightDetailBottom(
                   .testTag("ConfirmButton")) {
             TextButton(
                 onClick = { confirmClick() },
-                shape = RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp),
+                shape = rightCornerRounded,
                 border = BorderStroke(1.dp, Color.Black)) {
                   Row(
                       horizontalArrangement = Arrangement.Center,

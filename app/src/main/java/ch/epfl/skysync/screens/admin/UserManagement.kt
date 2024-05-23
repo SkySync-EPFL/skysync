@@ -30,13 +30,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -89,20 +89,23 @@ fun UserCard(user: User, onUserClick: (String) -> Unit) {
 
 // Composable function to display the top bar title with user count.
 @Composable
-fun TopBarTitle(userCount: Int) {
-  Row(verticalAlignment = Alignment.CenterVertically) {
+fun TopBarTitle(paddingValues: PaddingValues) {
+  Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
     Text(
         text = "Users",
-        style = MaterialTheme.typography.headlineLarge,
-        modifier = Modifier.padding(end = 8.dp))
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.background(color = lightTurquoise, shape = CircleShape).padding(8.dp)) {
-          Text(
-              text = userCount.toString(),
-              style = MaterialTheme.typography.titleLarge,
-          )
-        }
+        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+        modifier =
+            Modifier.background(
+                    color = lightOrange,
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                .fillMaxWidth()
+                .padding(
+                    top = paddingValues.calculateTopPadding() + 16.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp),
+        color = Color.White,
+        textAlign = TextAlign.Center)
   }
 }
 
@@ -126,40 +129,53 @@ fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
 
 // Composable function to filter users by role.
 @Composable
-fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>) {
+fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>, count: Int) {
   var expanded by remember { mutableStateOf(false) } // State to manage dropdown expansion.
   var displayText by remember { mutableStateOf("Filter by role") }
+  Row(
+      modifier = Modifier.fillMaxWidth(),
+      verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Column(modifier = Modifier.padding(16.dp)) {
+      Button(
+          onClick = { expanded = true },
+          colors =
+              ButtonDefaults.buttonColors(
+                  containerColor = lightOrange, contentColor = Color.Black)) {
+            Text(text = displayText)
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "Expand or collapse menu")
+          }
 
-  Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-    Button(
-        onClick = { expanded = true },
-        colors =
-            ButtonDefaults.buttonColors(containerColor = lightOrange, contentColor = Color.Black)) {
-          Text(text = displayText)
-          Icon(
-              imageVector = Icons.Default.ArrowDropDown,
-              contentDescription = "Expand or collapse menu")
-        }
-
-    // Dropdown menu for selecting roles.
-    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-      DropdownMenuItem(
-          onClick = {
-            displayText = "Filter by role"
-            onRoleSelected(null)
-            expanded = false
-          },
-          text = { Text("All Roles") })
-      roles.forEach { role ->
+      // Dropdown menu for selecting roles.
+      DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
         DropdownMenuItem(
             onClick = {
-              displayText = role.name
-              onRoleSelected(role)
+              displayText = "Filter by role"
+              onRoleSelected(null)
               expanded = false
             },
-            text = { Text(role.name) })
+            text = { Text("All Roles") })
+        roles.forEach { role ->
+          DropdownMenuItem(
+              onClick = {
+                displayText = role.description
+                onRoleSelected(role)
+                expanded = false
+              },
+              text = { Text(role.description) })
+        }
       }
     }
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.background(color = lightTurquoise, shape = CircleShape).padding(8.dp)) {
+          Text(
+              text = count.toString(),
+              style = MaterialTheme.typography.titleLarge,
+          )
+        }
   }
 }
 
@@ -187,18 +203,6 @@ fun UserManagementScreen(
 
   Scaffold(
       modifier = Modifier.fillMaxSize(),
-      topBar = {
-        Column {
-          TopAppBar(
-              title = { TopBarTitle(userCount = users.value.size) },
-          )
-          SearchBar(query = searchQuery, onQueryChanged = { searchQuery = it })
-          RoleFilter(
-              onRoleSelected = { selectedRole = it },
-              roles = roles,
-          )
-        }
-      },
       bottomBar = { AdminBottomBar(navController) },
       floatingActionButton = {
         if (connectivityStatus.isOnline()) {
@@ -217,24 +221,31 @@ fun UserManagementScreen(
         }
       },
       floatingActionButtonPosition = FabPosition.Center) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-          if (filteredUsers.isEmpty()) {
-            // Display a message when no users are found
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-              Text("No such user exists", style = MaterialTheme.typography.titleLarge)
-            }
-          } else {
-            LazyColumn(
-                modifier =
-                    Modifier.align(Alignment.TopCenter)
-                        .padding(horizontal = 16.dp)
-                        .testTag("UserManagementLazyColumn")) {
-                  items(filteredUsers) { user ->
-                    UserCard(user) {
-                      navController.navigate(Route.ADMIN_USER_DETAILS + "/${user.id}")
+        Column(modifier = Modifier.fillMaxSize()) {
+          TopBarTitle(padding)
+          SearchBar(query = searchQuery, onQueryChanged = { searchQuery = it })
+          RoleFilter(
+              onRoleSelected = { selectedRole = it }, roles = roles, count = filteredUsers.size)
+          Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+            if (filteredUsers.isEmpty()) {
+              // Display a message when no users are found
+              Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("No such user exists", style = MaterialTheme.typography.titleLarge)
+              }
+            } else {
+              LazyColumn(
+                  modifier =
+                      Modifier.align(Alignment.TopCenter)
+                          .padding(horizontal = 16.dp)
+                          .testTag("UserManagementLazyColumn")) {
+                    items(filteredUsers) { user ->
+                      UserCard(user) {
+                        navController.navigate(Route.ADMIN_USER_DETAILS + "/${user.id}")
+                      }
+                      Spacer(modifier = Modifier.height(8.dp))
                     }
                   }
-                }
+            }
           }
         }
       }
