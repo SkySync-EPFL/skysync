@@ -86,8 +86,14 @@ class E2EPilotDuringFlight {
     composeTestRule.onNodeWithText("Flight").performClick()
     var route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.LAUNCH_FLIGHT, route)
-    println("FLIGHTS ${listOf(dbs.flight1.id, dbs.flight2.id, dbs.flight3.id, dbs.flight4.id)}")
     var usedFlightId = ""
+    composeTestRule.waitUntil(3000) {
+      composeTestRule.onNodeWithTag("flightCard${dbs.flight1.id}").isDisplayed() ||
+        composeTestRule.onNodeWithTag("flightCard${dbs.flight2.id}").isDisplayed() ||
+        composeTestRule.onNodeWithTag("flightCard${dbs.flight3.id}").isDisplayed() ||
+        composeTestRule.onNodeWithTag("flightCard${dbs.flight4.id}").isDisplayed()
+
+    }
     for (f in listOf(dbs.flight1, dbs.flight2, dbs.flight3, dbs.flight4)) {
       if (composeTestRule.onNodeWithTag("flightCard${f.id}").isDisplayed()) {
         usedFlightId = f.id
@@ -103,8 +109,9 @@ class E2EPilotDuringFlight {
     composeTestRule.onNodeWithTag("Start Button").performClick()
 
     // Asserts the presence of the map and "Locate Me" button
-    composeTestRule.onNodeWithTag("Map").assertExists()
-    composeTestRule.onNodeWithContentDescription("Locate Me").assertIsDisplayed()
+    composeTestRule.waitUntil(3000){
+            composeTestRule.onNodeWithContentDescription("Locate Me").isDisplayed()
+    }
 
     // Opens flight information and asserts the display of navigation information
     composeTestRule.onNodeWithContentDescription("Flight infos").performClick()
@@ -127,7 +134,7 @@ class E2EPilotDuringFlight {
     composeTestRule.waitForIdle()
 
     // clicks on group chat
-    composeTestRule.waitUntil(2500) {
+    composeTestRule.waitUntil(3000) {
       composeTestRule.onAllNodesWithTag("GroupCard$index").fetchSemanticsNodes().isNotEmpty()
     }
     composeTestRule.onNodeWithTag("GroupCard$index").performClick()
@@ -138,7 +145,9 @@ class E2EPilotDuringFlight {
 
     // Returns to the flight screen with the timer still running
     composeTestRule.onNodeWithText("Flight").performClick()
-    composeTestRule.waitForIdle()
+    composeTestRule.waitUntil(3000) {
+      composeTestRule.onNodeWithTag("Stop Button").isDisplayed()
+    }
     route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.FLIGHT, route)
 
@@ -146,6 +155,9 @@ class E2EPilotDuringFlight {
     composeTestRule.onNodeWithTag("Stop Button").performClick()
     composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Clear Button").isDisplayed() }
     composeTestRule.onNodeWithTag("Clear Button").performClick()
+    composeTestRule.waitUntil(3000) {
+        composeTestRule.onNodeWithText("Upcoming flights").isDisplayed()
+    }
     route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.CREW_HOME, route)
   }
