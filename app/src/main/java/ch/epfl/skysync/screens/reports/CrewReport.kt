@@ -140,14 +140,15 @@ fun CrewReportScreen(
               errorBigChampagne = !bottleInputValidation(bigChampagne)
               errorPrestigeChampagne = !bottleInputValidation(prestigeChampagne)
               if (!hasError(errorLittleChampagne, errorBigChampagne, errorPrestigeChampagne)) {
-                CrewReport(
-                    author = crew.value!!.id,
-                    begin = beginTime,
-                    end = endTime,
-                    pauseDuration = pauseDuration.toInt(),
-                    comments = comments,
-                )
-                // TODO save report
+                val report =
+                    CrewReport(
+                        author = crew.value!!.id,
+                        begin = beginTime,
+                        end = endTime,
+                        pauseDuration = pauseDuration.toInt(),
+                        comments = comments,
+                    )
+                finishedFlightsViewModel.addReport(report, flightId)
                 navHostController.navigate(Route.CREW_HOME) {
                   popUpTo(Route.CREW_HOME) { inclusive = true }
                 }

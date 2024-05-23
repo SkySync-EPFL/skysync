@@ -89,10 +89,9 @@ class FinishedFlightsViewModelTest {
         )
     finishedFlightsViewModel.refresh()
     val flight = dbSetup.finishedFlight1
-    finishedFlightsViewModel.refreshAndSelectFlight(flight.id).join()
     finishedFlightsViewModel.getAllReports(flight.id).join()
     val nbReportBefore = finishedFlightsViewModel.flightReports.value!!.size
-    finishedFlightsViewModel.addReport(report).join()
+    finishedFlightsViewModel.addReport(report, flight.id).join()
     finishedFlightsViewModel.getAllReports(flight.id).join()
     assertEquals(nbReportBefore + 1, finishedFlightsViewModel.flightReports.value!!.size)
   }

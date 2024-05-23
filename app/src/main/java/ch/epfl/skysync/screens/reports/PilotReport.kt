@@ -141,19 +141,20 @@ fun PilotReportScreen(
             onClick = {
               errorPax = !nbPassengerInputValidation(pax)
               if (!hasError(errorPax)) {
-                PilotReport(
-                    author = pilot.value!!.id,
-                    effectivePax = pax.toInt(),
-                    takeOffTime = takeoffTime,
-                    takeOffLocation = takeoffLocation,
-                    landingLocation = landingLocation,
-                    landingTime = landingTime,
-                    begin = beginTime,
-                    end = endTime,
-                    pauseDuration = pauseDuration.toInt(),
-                    comments = comments,
-                )
-                // TODO save report
+                val report =
+                    PilotReport(
+                        author = pilot.value!!.id,
+                        effectivePax = pax.toInt(),
+                        takeOffTime = takeoffTime,
+                        takeOffLocation = takeoffLocation,
+                        landingLocation = landingLocation,
+                        landingTime = landingTime,
+                        begin = beginTime,
+                        end = endTime,
+                        pauseDuration = pauseDuration.toInt(),
+                        comments = comments,
+                    )
+                finishedFlightsViewModel.addReport(report, flightId)
                 navHostController.navigate(Route.CREW_HOME) {
                   popUpTo(Route.CREW_HOME) { inclusive = true }
                 }

@@ -1,6 +1,5 @@
 package ch.epfl.skysync.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -16,6 +15,7 @@ import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,12 +24,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /** ViewModel for the user for the finished flights */
-class FinishedFlightsViewModel(val repository: Repository, val userId: String?) : ViewModel() {
+class FinishedFlightsViewModel(val repository: Repository, val userId: String) : ViewModel() {
   companion object {
     @Composable
     fun createViewModel(
         repository: Repository,
-        userId: String?,
+        userId: String,
     ): FinishedFlightsViewModel {
       return viewModel<FinishedFlightsViewModel>(
           factory =
@@ -43,13 +43,11 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
 
   private val _currentFlights: MutableStateFlow<List<FinishedFlight>?> = MutableStateFlow(null)
   private val _currentUser: MutableStateFlow<User?> = MutableStateFlow(null)
-  private val _selectedFlightId: MutableStateFlow<String?> = MutableStateFlow(null)
   private val isLoading = MutableStateFlow(false)
   private val _flightReports: MutableStateFlow<List<Report>?> = MutableStateFlow(null)
 
   val currentFlights = _currentFlights.asStateFlow()
   val currentUser = _currentUser.asStateFlow()
-  val selectedFlightId = _selectedFlightId.asStateFlow()
   val flightReports = _flightReports.asStateFlow()
 
   fun refresh() {
@@ -78,7 +76,7 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
       }
 
   /** Refreshes the user logged in and its finished flights */
-  fun refreshUserAndFlights() =
+  private fun refreshUserAndFlights() =
       viewModelScope.launch {
         isLoading.value = true
         refreshUser().join()
@@ -92,44 +90,27 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String?) 
         refreshUserAndFlights()
       }
 
-  fun deleteFlight(flightId: String) =
-      viewModelScope.launch {
-        repository.flightTable.delete(flightId, onError = { onError(it) })
-        refreshUserAndFlights()
-      }
-
   fun getFlight(flightId: String): StateFlow<FinishedFlight?> {
     return _currentFlights
         .map { flights -> flights?.find { it.id == flightId } }
         .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
   }
 
-  fun addReport(report: Report) =
+  fun addReport(report: Report, flightId: String) =
       viewModelScope.launch {
-        if (_selectedFlightId.value == null) {
-          onError(Exception("No flight selected"))
-          return@launch
-        }
-        repository.reportTable.add(report, _selectedFlightId.value!!, onError = { onError(it) })
+        repository.reportTable.add(report, flightId, onError = { onError(it) })
       }
 
   fun getAllReports(flightId: String) =
       viewModelScope.launch {
         _flightReports.value =
             repository.reportTable.retrieveReports(flightId, onError = { onError(it) })
-        Log.d("FinishedFlightsViewModel", "Reports retrieved : ${_flightReports.value}")
-      }
-
-  private fun selectFlight(id: String) = viewModelScope.launch { _selectedFlightId.value = id }
-
-  fun refreshAndSelectFlight(id: String) =
-      viewModelScope.launch {
-        refreshUserAndFlights().join()
-        selectFlight(id)
       }
 
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
-    SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    if (e !is CancellationException) {
+      SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
+    }
   }
 }

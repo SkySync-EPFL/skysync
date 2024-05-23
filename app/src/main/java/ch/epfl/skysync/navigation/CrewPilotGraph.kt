@@ -81,7 +81,7 @@ fun NavGraphBuilder.crewPilotGraph(
         Route.PILOT_REPORT + "/{flight ID}",
         arguments = listOf(navArgument("flight ID") { type = NavType.StringType })) { entry ->
           val flightId = entry.arguments?.getString("flight ID") ?: UNSET_ID
-          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid)
+          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
           finishedFlightsViewModel.refresh()
           PilotReportScreen(navController, finishedFlightsViewModel, flightId)
         }
@@ -89,7 +89,7 @@ fun NavGraphBuilder.crewPilotGraph(
         Route.CREW_REPORT + "/{flight ID}",
         arguments = listOf(navArgument("flight ID") { type = NavType.StringType })) { entry ->
           val flightId = entry.arguments?.getString("flight ID") ?: UNSET_ID
-          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid)
+          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
           finishedFlightsViewModel.refresh()
           CrewReportScreen(navController, finishedFlightsViewModel, flightId)
         }
