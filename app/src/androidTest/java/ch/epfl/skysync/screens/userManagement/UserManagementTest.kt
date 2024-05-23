@@ -83,7 +83,7 @@ class UserManagementTest {
     }
 
     composeTestRule.onNodeWithText("Filter by role").performClick()
-    composeTestRule.onNodeWithText("PILOT").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Pilot").assertIsDisplayed()
   }
 
   @Test
