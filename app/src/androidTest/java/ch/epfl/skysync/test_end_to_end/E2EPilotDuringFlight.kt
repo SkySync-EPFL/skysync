@@ -89,10 +89,9 @@ class E2EPilotDuringFlight {
     var usedFlightId = ""
     composeTestRule.waitUntil(3000) {
       composeTestRule.onNodeWithTag("flightCard${dbs.flight1.id}").isDisplayed() ||
-        composeTestRule.onNodeWithTag("flightCard${dbs.flight2.id}").isDisplayed() ||
-        composeTestRule.onNodeWithTag("flightCard${dbs.flight3.id}").isDisplayed() ||
-        composeTestRule.onNodeWithTag("flightCard${dbs.flight4.id}").isDisplayed()
-
+          composeTestRule.onNodeWithTag("flightCard${dbs.flight2.id}").isDisplayed() ||
+          composeTestRule.onNodeWithTag("flightCard${dbs.flight3.id}").isDisplayed() ||
+          composeTestRule.onNodeWithTag("flightCard${dbs.flight4.id}").isDisplayed()
     }
     for (f in listOf(dbs.flight1, dbs.flight2, dbs.flight3, dbs.flight4)) {
       if (composeTestRule.onNodeWithTag("flightCard${f.id}").isDisplayed()) {
@@ -109,8 +108,8 @@ class E2EPilotDuringFlight {
     composeTestRule.onNodeWithTag("Start Button").performClick()
 
     // Asserts the presence of the map and "Locate Me" button
-    composeTestRule.waitUntil(3000){
-            composeTestRule.onNodeWithContentDescription("Locate Me").isDisplayed()
+    composeTestRule.waitUntil(3000) {
+      composeTestRule.onNodeWithContentDescription("Locate Me").isDisplayed()
     }
 
     // Opens flight information and asserts the display of navigation information
@@ -145,9 +144,7 @@ class E2EPilotDuringFlight {
 
     // Returns to the flight screen with the timer still running
     composeTestRule.onNodeWithText("Flight").performClick()
-    composeTestRule.waitUntil(3000) {
-      composeTestRule.onNodeWithTag("Stop Button").isDisplayed()
-    }
+    composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Stop Button").isDisplayed() }
     route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.FLIGHT, route)
 
@@ -156,7 +153,7 @@ class E2EPilotDuringFlight {
     composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Clear Button").isDisplayed() }
     composeTestRule.onNodeWithTag("Clear Button").performClick()
     composeTestRule.waitUntil(3000) {
-        composeTestRule.onNodeWithText("Upcoming flights").isDisplayed()
+      composeTestRule.onNodeWithText("Upcoming flights").isDisplayed()
     }
     route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.CREW_HOME, route)
