@@ -35,7 +35,7 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel) {
               navController.navigate(Route.CREW_TEXT + "/${selectedGroup.id}")
             },
             paddingValues = padding,
-            false)
+            isAdmin = false)
       }
 }
 

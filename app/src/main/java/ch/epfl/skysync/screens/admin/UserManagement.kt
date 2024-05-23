@@ -160,11 +160,11 @@ fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>, count
         roles.forEach { role ->
           DropdownMenuItem(
               onClick = {
-                displayText = role.name
+                displayText = role.description
                 onRoleSelected(role)
                 expanded = false
               },
-              text = { Text(role.name) })
+              text = { Text(role.description) })
         }
       }
     }

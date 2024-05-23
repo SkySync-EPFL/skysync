@@ -61,11 +61,11 @@ fun GroupChat(
     groupList: List<GroupDetails>,
     onClick: (GroupDetails) -> Unit,
     paddingValues: PaddingValues,
-    adminBoolean: Boolean
+    isAdmin: Boolean
 ) {
   var searchQuery by remember { mutableStateOf("") }
   Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
-    GroupChatTopBar(adminBoolean, paddingValues)
+    GroupChatTopBar(isAdmin = isAdmin, paddingValues = paddingValues)
     Spacer(modifier = Modifier.fillMaxHeight(0.02f))
 
     OutlinedTextField(
@@ -84,8 +84,8 @@ fun GroupChat(
 }
 /** Composable function to display the top bar of the group chat UI. */
 @Composable
-fun GroupChatTopBar(adminBoolean: Boolean, paddingValues: PaddingValues) {
-  val color = if (adminBoolean) lightOrange else Purple40
+fun GroupChatTopBar(isAdmin: Boolean, paddingValues: PaddingValues) {
+  val color = if (isAdmin) lightOrange else Purple40
   Text(
       text = "Messages",
       style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
