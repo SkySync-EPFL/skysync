@@ -106,6 +106,7 @@ fun NavGraphBuilder.crewPilotGraph(
     composable(Route.STATS) {
       val viewModel =
           FinishedFlightsViewModel.createViewModel(repository = repository, userId = uid!!)
+      viewModel.refresh()
       StatsScreen(navController, viewModel)
     }
   }
