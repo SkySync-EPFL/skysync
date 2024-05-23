@@ -506,6 +506,10 @@ class DatabaseSetup {
             launch { message1 = message1.copy(id = messageTable.add(messageGroup1.id, message1)) },
             launch { message2 = message2.copy(id = messageTable.add(messageGroup1.id, message2)) },
             launch { message3 = message3.copy(id = messageTable.add(messageGroup2.id, message3)) },
+        )
+        .forEach { it.join() }
+
+    listOf(
             launch { report1 = report1.copy(id = reportTable.add(report1, finishedFlight1.id)) },
             launch { report2 = report2.copy(id = reportTable.add(report2, finishedFlight1.id)) },
         )
