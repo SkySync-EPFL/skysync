@@ -366,7 +366,6 @@ class FlightsViewModelTest {
       viewModelAdmin.refreshUserAndFlights().join()
       viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, dbSetup.date2TimeSlot)
       viewModelAdmin.refreshUserAndFlights().join()
-
       val availableBalloons = viewModelAdmin.currentBalloons.value
       val expectedAvailableBalloons = listOf(dbSetup.balloon2, dbSetup.balloon3)
       expectedAvailableBalloons.forEach() { assertTrue(availableBalloons.contains(it)) }

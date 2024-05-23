@@ -30,7 +30,7 @@ class FlightDetailTest {
 
   @Before
   fun setUpNavHost() {
-    composeTestRule.setContent { FlightDetails(flight, PaddingValues(0.dp)) }
+    composeTestRule.setContent { FlightDetails(flight, PaddingValues(0.dp)) {} }
   }
 
   private fun helper(field: String, value: String) {

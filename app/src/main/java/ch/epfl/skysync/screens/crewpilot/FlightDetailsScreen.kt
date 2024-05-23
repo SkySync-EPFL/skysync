@@ -25,27 +25,17 @@ fun FlightDetailScreen(
     inFlightViewModel: InFlightViewModel
 ) {
 
-  val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
-  Scaffold(
-      topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
-      bottomBar = {
-        if (flight !is FinishedFlight) {
-          ConfirmedFlightDetailBottom({ navController.popBackStack() }, {}, false)
-        } else {
-          FinishedFlightDetailBottom(
-              reportClick = {},
-              flightTraceClick = {
-                inFlightViewModel.setCurrentFlight(flightId)
-                inFlightViewModel.startDisplayFlightTrace()
-                navController.navigate(Route.FLIGHT)
-              })
+        val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
+        val user by viewModel.currentUser.collectAsStateWithLifecycle()
+        Scaffold(
+            topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
+            containerColor = lightGray) { padding ->
+            if (flight == null || user == null) {
+                LoadingComponent(isLoading = true, onRefresh = {}) {}
+            } else {
+                FlightDetails(flight = flight, padding = padding) {
+                    ConfirmedFlightDetailBottom({ navController.popBackStack() }, {}, false)
+                }
+            }
         }
-      },
-      containerColor = lightGray) { padding ->
-        if (flight == null) {
-          LoadingComponent(isLoading = true, onRefresh = {}) {}
-        } else {
-          FlightDetails(flight = flight, padding = padding)
-        }
-      }
-}
+    }
