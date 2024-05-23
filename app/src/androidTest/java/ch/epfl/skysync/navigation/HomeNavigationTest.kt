@@ -85,4 +85,11 @@ class HomeNavigationTest {
     val route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(route, Route.CREW_CHAT)
   }
+
+  @Test
+  fun routeIsRightIfClickOnStat() {
+    composeTestRule.onNodeWithText("Stats").performClick()
+    val route = navController.currentBackStackEntry?.destination?.route
+    Assert.assertEquals(route, Route.STATS)
+  }
 }

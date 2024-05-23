@@ -1,6 +1,5 @@
 package ch.epfl.skysync.screens.crewpilot
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
@@ -26,7 +25,6 @@ fun StatsScreen(navController: NavHostController, viewModel: FinishedFlightsView
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
     FlightsList(finishedFlights, Purple40, padding, "Flights History") { selectedFlight ->
-      Log.d("StatsScreen", "Navigating to FinishFlightDetails with id $selectedFlight")
       navController.navigate(Route.CREW_FLIGHT_DETAILS + "/${selectedFlight}")
     }
   }

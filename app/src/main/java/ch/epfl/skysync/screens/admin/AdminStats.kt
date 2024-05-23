@@ -1,6 +1,5 @@
 package ch.epfl.skysync.screens.admin
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
@@ -25,7 +24,6 @@ fun AdminStatsScreen(navController: NavHostController, viewModel: FinishedFlight
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
     FlightsList(finishedFlights, lightOrange, padding, "Flights History") { selectedFlight ->
-      Log.d("StatsScreen", "Navigating to FinishFlightDetails with id $selectedFlight")
       navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/${selectedFlight}")
     }
   }

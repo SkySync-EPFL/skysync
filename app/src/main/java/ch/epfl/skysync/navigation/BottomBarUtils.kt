@@ -37,6 +37,10 @@ sealed class BottomBarScreen(val route: String, val title: String, @DrawableRes 
       BottomBarScreen(
           route = Route.STATS, title = "Stats", icon = R.drawable.baseline_equalizer_24)
 
+  data object AdminStats :
+      BottomBarScreen(
+          route = Route.ADMIN_STATS, title = "Stats", icon = R.drawable.baseline_equalizer_24)
+
   data object AdminHome :
       BottomBarScreen(route = Route.ADMIN_HOME, title = "Home", icon = R.drawable.baseline_home_24)
 
