@@ -68,7 +68,7 @@ fun Timer(
                 }
             FlightStage.POST ->
                 Button(modifier = Modifier.testTag("Clear Button"), onClick = { onClear() }) {
-                  Text(text = "Clear Flight")
+                  Text(text = "Exit Flight")
                 }
             FlightStage.DISPLAY ->
                 Button(modifier = Modifier.testTag("Quit Button"), onClick = { onQuitDisplay() }) {

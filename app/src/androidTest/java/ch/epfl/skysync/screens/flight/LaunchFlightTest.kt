@@ -1,6 +1,7 @@
 package ch.epfl.skysync.screens.flight
 
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -12,6 +13,7 @@ import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.navigation.Route
@@ -50,7 +52,9 @@ class LaunchFlightTest {
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
-        LaunchFlight(navController, viewModel, inFlightViewModel)
+        val context = LocalContext.current
+        val connectivityStatus = remember { ContextConnectivityStatus(context) }
+        LaunchFlight(navController, viewModel, inFlightViewModel, connectivityStatus)
       }
       inFlightViewModel.init(dbSetup.crew1.id).join()
       composeTestRule.onNodeWithText("No flight started").assertExists()
@@ -65,7 +69,9 @@ class LaunchFlightTest {
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot3.id)
-        LaunchFlight(navController, viewModel, inFlightViewModel)
+        val context = LocalContext.current
+        val connectivityStatus = remember { ContextConnectivityStatus(context) }
+        LaunchFlight(navController, viewModel, inFlightViewModel, connectivityStatus)
       }
       inFlightViewModel.init(dbSetup.pilot3.id).join()
       composeTestRule
@@ -84,7 +90,9 @@ class LaunchFlightTest {
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
-        LaunchFlight(navController, viewModel, inFlightViewModel)
+        val context = LocalContext.current
+        val connectivityStatus = remember { ContextConnectivityStatus(context) }
+        LaunchFlight(navController, viewModel, inFlightViewModel, connectivityStatus)
       }
       inFlightViewModel.init(dbSetup.pilot1.id).join()
       composeTestRule.onNodeWithTag("flightCard${dbSetup.flight4.id}").assertExists()
@@ -101,13 +109,16 @@ class LaunchFlightTest {
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
+        val context = LocalContext.current
+        val connectivityStatus = remember { ContextConnectivityStatus(context) }
         NavHost(navController = navController, startDestination = Route.MAIN) {
           homeGraph(
               repository,
               navController,
               dbSetup.pilot1.id,
               inFlightViewModel,
-              messageListenerViewModel)
+              messageListenerViewModel,
+              connectivityStatus)
         }
       }
       composeTestRule.waitUntil {
@@ -134,13 +145,16 @@ class LaunchFlightTest {
         navController = TestNavHostController(LocalContext.current)
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         viewModel = FlightsViewModel.createViewModel(repository, dbSetup.crew1.id)
+        val context = LocalContext.current
+        val connectivityStatus = remember { ContextConnectivityStatus(context) }
         NavHost(navController = navController, startDestination = Route.MAIN) {
           homeGraph(
               repository,
               navController,
               dbSetup.crew1.id,
               inFlightViewModel,
-              messageListenerViewModel)
+              messageListenerViewModel,
+              connectivityStatus)
         }
       }
       composeTestRule.waitUntil {
