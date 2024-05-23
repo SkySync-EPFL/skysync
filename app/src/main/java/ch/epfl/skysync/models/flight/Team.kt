@@ -18,6 +18,13 @@ data class Team(val roles: List<Role>) {
     return roles.isNotEmpty() && roles.all { it.isAssigned() }
   }
 
+  /**
+   * @return the number of roles in the team
+   */
+  fun size(): Int {
+    return roles.size
+  }
+
   fun getUsers(): List<User> {
     return roles.mapNotNull { it.assignedUser }
   }
