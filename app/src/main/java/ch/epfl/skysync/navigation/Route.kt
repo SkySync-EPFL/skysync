@@ -41,5 +41,4 @@ object Route {
   const val CREW_HOME = "Home"
   const val CREW_TEXT = "Text"
   const val LAUNCH_FLIGHT = "Launch Flight"
-  const val CREW_FINISHED_FLIGHT_DETAILS = "Finished Flight Details"
 }
