@@ -38,8 +38,11 @@ class ReportTable(db: FirestoreDatabase) :
    * @param flightId The id of the flight for which to retrieve the reports
    * @return The list of reports for the given flight
    */
-  suspend fun retrieveReports(flightId: String): List<Report> = coroutineScope {
-    query(Filter.equalTo("flightId", flightId))
+  suspend fun retrieveReports(
+      flightId: String,
+      onError: ((Exception) -> Unit)? = null
+  ): List<Report> = coroutineScope {
+    query(Filter.equalTo("flightId", flightId), onError = onError)
   }
 
   companion object {

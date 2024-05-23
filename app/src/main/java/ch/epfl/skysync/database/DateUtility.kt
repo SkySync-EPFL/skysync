@@ -54,6 +54,15 @@ object DateUtility {
   }
 
   /**
+   * Creates a [Date] object from the given year, month, day, hour, and minute.
+   *
+   * @return The [Date] object created.
+   */
+  fun createDate(year: Int, month: Int, day: Int, hour: Int, minute: Int): Date {
+    return Date.from(LocalDate.of(year, month, day).atTime(hour, minute).toInstant(ZoneOffset.UTC))
+  }
+
+  /**
    * Converts a [LocalTime] object to a string in "HH:mm:ss" format.
    *
    * @param localTime The [LocalTime] object to be converted.
