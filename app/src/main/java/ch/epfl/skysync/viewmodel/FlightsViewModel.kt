@@ -98,6 +98,10 @@ class FlightsViewModel(
     refreshFilteredByDateAndTimeSlot()
   }
 
+  /**
+   * refreshes the user and the flights. Finished flights are filtered to contain only the
+   * uncompleted ones
+   */
   fun refreshUserAndFlights() =
       viewModelScope.launch {
         _currentUser.value = repository.userTable.get(userId!!, onError = { onError(it) })
