@@ -53,11 +53,11 @@ fun FlightDetailScreen(
                             var reportFound =
                             flight.reportId.any { report -> (report.author == user!!.id && report.id ==flightId) }
                                 if (reportFound) {
-                                    navController.navigate(Route.REPORT + "/{$flightId}")
+                                    navController.navigate(Route.REPORT + "/${flightId}")
                                 } else if (user!! is Crew) {
-                                    navController.navigate(Route.CREW_REPORT + "/{$flightId}")
+                                    navController.navigate(Route.CREW_REPORT + "/${flightId}")
                                 } else {
-                                    navController.navigate(Route.PILOT_REPORT + "/{$flightId}")
+                                    navController.navigate(Route.PILOT_REPORT + "/${flightId}")
                                 }
                         },
                         flightTraceClick = {
