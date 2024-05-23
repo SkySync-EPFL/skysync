@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.database.DateUtility
+import ch.epfl.skysync.database.DateUtility.formatTime
 import ch.epfl.skysync.database.FlightStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
@@ -52,9 +54,12 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.flight.flightColorOptions
+import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.ui.theme.lightOrange
 import java.net.URLEncoder
+import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalTime
+import java.util.Date
 
 /**
  * Composable function for displaying flight details in a UI.
@@ -64,7 +69,7 @@ import java.time.LocalTime
  * @param padding PaddingValues that specify the padding for the layout.
  */
 @Composable
-fun FlightDetails(flight: Flight?, padding: PaddingValues) {
+fun FlightDetails(flight: Flight?, padding: PaddingValues, bottomButton: @Composable () -> Unit) {
   if (flight == null) {
     LoadingComponent(isLoading = true, onRefresh = {}) {}
   } else {
@@ -91,8 +96,29 @@ fun FlightDetails(flight: Flight?, padding: PaddingValues) {
                       confirmedFlight = flight, padding = defaultPadding, cardColor = cardColor)
                 }
               }
+              is FinishedFlight -> {
+                item {
+                  FinishedFlightTimes(
+                      finishedFlight = flight, padding = defaultPadding, cardColor = cardColor)
+                }
+                item {
+                  FinishedFlightLocation(
+                      title = "Takeoff location",
+                      locationName = flight.takeOffLocation.name,
+                      padding = defaultPadding,
+                      cardColor = cardColor)
+                }
+                item {
+                  FinishedFlightLocation(
+                      title = "Landing location",
+                      locationName = flight.landingLocation.name,
+                      padding = defaultPadding,
+                      cardColor = cardColor)
+                }
+              }
             }
           }
+      bottomButton()
     }
   }
 }
@@ -168,6 +194,12 @@ fun DisplayFlightColor(flight: Flight, padding: Dp) {
           padding = padding,
           color = flightColorOptions.getOrDefault(flight.color, Color.Gray))
     }
+    is FinishedFlight -> {
+      SmallTitle(
+          title = "COLOR ${flight.color}",
+          padding = padding,
+          color = flightColorOptions.getOrDefault(flight.color, Color.Gray))
+    }
   }
 }
 
@@ -195,6 +227,31 @@ fun ConfirmFlightTimes(confirmedFlight: ConfirmedFlight, padding: Dp, cardColor:
 }
 
 /**
+ * Composable function for displaying the takeoff and landing times for a finished flight.
+ *
+ * @param finishedFlight The finished flight object containing details to be displayed.
+ * @param padding The padding value to be applied around the content.
+ * @param cardColor The color to be used for the card background.
+ */
+@Composable
+fun FinishedFlightTimes(finishedFlight: FinishedFlight, padding: Dp, cardColor: Color) {
+  val times =
+      mapOf(
+          "Takeoff time" to
+              DateUtility.localTimeToString(
+                  DateUtility.dateToLocalTime(finishedFlight.takeOffTime)),
+          "Landing time" to
+              DateUtility.localTimeToString(
+                  DateUtility.dateToLocalTime(finishedFlight.landingTime)),
+          "Flight duration" to formatTime(finishedFlight.flightTime))
+
+  Card(colors = CardDefaults.cardColors(cardColor)) {
+    LargeTitle(title = "Operational times", padding = padding, color = Color.Black)
+    times.forEach { (label, time) -> DisplaySingleMetric(metric = label, value = time) }
+  }
+}
+
+/**
  * Composable function for displaying the meetup location of a confirmed flight.
  *
  * @param confirmedFlight The confirmed flight object containing details to be displayed.
@@ -206,6 +263,22 @@ fun ConfirmFlightLocation(confirmedFlight: ConfirmedFlight, padding: Dp, cardCol
   Card(colors = CardDefaults.cardColors(cardColor), modifier = Modifier.fillMaxWidth()) {
     LargeTitle(title = "Passengers meet up location", padding = padding, color = Color.Black)
     HyperLinkText(location = confirmedFlight.meetupLocationPassenger, padding = padding)
+  }
+}
+
+/**
+ * Composable function for displaying the location of a finished flight.
+ *
+ * @param title The title of the location type to be displayed
+ * @param locationName name of the location to display
+ * @param padding The padding value to be applied around the content.
+ * @param cardColor The color to be used for the card background.
+ */
+@Composable
+fun FinishedFlightLocation(title: String, locationName: String, padding: Dp, cardColor: Color) {
+  Card(colors = CardDefaults.cardColors(cardColor), modifier = Modifier.fillMaxWidth()) {
+    LargeTitle(title = title, padding = padding, color = Color.Black)
+    HyperLinkText(location = locationName, padding = padding)
   }
 }
 
@@ -318,8 +391,31 @@ fun ConfirmedFlightDetailBottom(okClick: () -> Unit, deleteClick: () -> Unit, is
           }
     }
     Button(
-        onClick = okClick, modifier = Modifier.fillMaxSize().padding(16.dp).testTag("OK Button")) {
-          Text(text = "OK", color = Color.White, overflow = TextOverflow.Clip)
+        onClick = okClick,
+        modifier = Modifier.fillMaxSize().padding(16.dp).testTag("OK Button"),
+        colors = ButtonDefaults.buttonColors(containerColor = lightOrange)) {
+          Text(text = "Ok", overflow = TextOverflow.Clip)
+        }
+  }
+}
+
+/**
+ * Composable function for displaying the bottom section of the confirmed flight details UI.
+ *
+ * @param reportClick Lambda function to handle the click event for confirming the flight details.
+ */
+@Composable
+fun FinishedFlightDetailBottom(reportClick: () -> Unit, flightTraceClick: () -> Unit) {
+  BottomAppBar {
+    Button(
+        onClick = reportClick,
+        modifier = Modifier.fillMaxHeight().fillMaxWidth(0.5f).padding(16.dp).testTag("Report")) {
+          Text(text = "Report", color = Color.White, overflow = TextOverflow.Clip)
+        }
+    Button(
+        onClick = flightTraceClick,
+        modifier = Modifier.fillMaxSize().padding(16.dp).testTag("Flight Trace")) {
+          Text(text = "Flight Trace", color = Color.White, overflow = TextOverflow.Clip)
         }
   }
 }
@@ -327,9 +423,8 @@ fun ConfirmedFlightDetailBottom(okClick: () -> Unit, deleteClick: () -> Unit, is
 @Preview
 @Composable
 fun FlightDetailsPreview() {
-  val time = LocalTime.of(10, 30)
-  val confirmedFlight =
-      ConfirmedFlight(
+  val finishedFlight =
+      FinishedFlight(
           "1234",
           3,
           Team(listOf(Role(RoleType.CREW), Role(RoleType.CREW))),
@@ -340,18 +435,15 @@ fun FlightDetailsPreview() {
           TimeSlot.PM,
           listOf(
               Vehicle("Peugeot 308", "1234"),
-              Vehicle("Peugeot 308", "1234"),
-              Vehicle("Peugeot 308", "1234"),
           ),
-          remarks =
-              listOf(
-                  "Team(listOf(Role(RoleType.CREW), Role(RoleType.CREW)))",
-                  "To create a LocalTime object in Kotlin, you can use the LocalTime.of() method. This method allows you to specify the hour, minute, second, and optionally nanosecond components of the time. Here's how you can create a LocalTime object"),
           color = FlightColor.RED,
-          meetupTimeTeam = time,
-          departureTimeTeam = time,
-          meetupTimePassenger = time,
-          meetupLocationPassenger = "Nancy")
+          takeOffTime = Date.from(Instant.now()),
+          takeOffLocation = LocationPoint(21, 46.0, 6.0, "Vernier"),
+          landingTime = Date.from(Instant.now()),
+          landingLocation = LocationPoint(21, 46.2, 6.1, "Vernier"),
+          flightTime = 2000000)
 
-  FlightDetails(confirmedFlight, PaddingValues(0.dp))
+  FlightDetails(finishedFlight, PaddingValues(0.dp)) {
+    FinishedFlightDetailBottom(reportClick = {}, flightTraceClick = {})
+  }
 }

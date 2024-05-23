@@ -8,27 +8,49 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConfirmedFlightDetailBottom
 import ch.epfl.skysync.components.CustomTopAppBar
+import ch.epfl.skysync.components.FinishedFlightDetailBottom
 import ch.epfl.skysync.components.FlightDetails
 import ch.epfl.skysync.components.LoadingComponent
+import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FinishedFlight
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.viewmodel.FlightsViewModel
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 
 @Composable
 fun FlightDetailScreen(
     navController: NavHostController,
     flightId: String,
-    viewModel: FlightsViewModel
+    viewModel: FlightsViewModel,
+    inFlightViewModel: InFlightViewModel
 ) {
 
   val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
+  val user by viewModel.currentUser.collectAsStateWithLifecycle()
   Scaffold(
       topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
-      bottomBar = { ConfirmedFlightDetailBottom({ navController.popBackStack() }, {}, false) },
       containerColor = lightGray) { padding ->
-        if (flight == null) {
+        if (flight == null || user == null) {
           LoadingComponent(isLoading = true, onRefresh = {}) {}
         } else {
-          FlightDetails(flight = flight, padding = padding)
+          FlightDetails(flight = flight, padding = padding) {
+            if (flight is ConfirmedFlight) {
+              ConfirmedFlightDetailBottom(
+                  { navController.popBackStack() },
+                  {},
+                  false,
+              )
+            } else if (flight is FinishedFlight) {
+              FinishedFlightDetailBottom(
+                  reportClick = { /*TODO*/},
+                  flightTraceClick = {
+                    inFlightViewModel.setCurrentFlight(flightId)
+                    inFlightViewModel.startDisplayFlightTrace()
+                    navController.navigate(Route.FLIGHT)
+                  })
+            }
+          }
         }
       }
 }

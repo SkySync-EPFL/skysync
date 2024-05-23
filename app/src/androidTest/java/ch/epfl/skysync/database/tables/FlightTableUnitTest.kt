@@ -1,5 +1,6 @@
 package ch.epfl.skysync.database.tables
 
+import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.DateUtility
@@ -105,9 +106,22 @@ class FlightTableUnitTest {
 
     val flights = flightTable.getAll(onError = { assertNull(it) })
 
-    assertEquals(7, flightMembers.size)
+    assertEquals(11, flightMembers.size)
+    Log.d(
+        "flights",
+        listOf(dbs.flight2, dbs.flight3, dbs.flight4, dbs.finishedFlight1, dbs.finishedFlight2)
+            .sortedBy { f -> f.id }
+            .toString())
+    Log.d("flights expected", flights.sortedBy { f -> f.id }.toString())
+
     assertEquals(
-        listOf(dbs.flight2, dbs.flight3, dbs.flight4).sortedBy { f -> f.id },
-        flights.sortedBy { f -> f.id })
+        listOf(
+                dbs.flight2.id,
+                dbs.flight3.id,
+                dbs.flight4.id,
+                dbs.finishedFlight1.id,
+                dbs.finishedFlight2.id)
+            .sortedBy { it },
+        flights.map { f -> f.id }.sortedBy { it })
   }
 }

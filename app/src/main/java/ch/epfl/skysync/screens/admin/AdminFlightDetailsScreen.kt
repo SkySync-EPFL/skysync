@@ -33,6 +33,7 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConfirmAlertDialog
 import ch.epfl.skysync.components.ConfirmedFlightDetailBottom
 import ch.epfl.skysync.components.CustomTopAppBar
+import ch.epfl.skysync.components.FinishedFlightDetailBottom
 import ch.epfl.skysync.components.FlightDetails
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.calendar.TimeSlot
@@ -40,6 +41,7 @@ import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
@@ -49,13 +51,15 @@ import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.*
 import ch.epfl.skysync.viewmodel.FlightsViewModel
+import ch.epfl.skysync.viewmodel.InFlightViewModel
 import java.time.LocalDate
 
 @Composable
 fun AdminFlightDetailScreen(
     navController: NavHostController,
     flightId: String,
-    viewModel: FlightsViewModel
+    viewModel: FlightsViewModel,
+    inFlightViewModel: InFlightViewModel
 ) {
 
   val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
@@ -86,13 +90,22 @@ fun AdminFlightDetailScreen(
             ConfirmedFlightDetailBottom(
                 { navController.popBackStack() }, { showConfirmDialog = true }, true)
           }
+          is FinishedFlight -> {
+            FinishedFlightDetailBottom(
+                reportClick = {},
+                flightTraceClick = {
+                  inFlightViewModel.setCurrentFlight(flightId)
+                  inFlightViewModel.startDisplayFlightTrace()
+                  navController.navigate(Route.FLIGHT)
+                })
+          }
         }
       },
       containerColor = lightGray) { padding ->
         if (flight == null) {
           LoadingComponent(isLoading = true, onRefresh = {}) {}
         } else {
-          FlightDetails(flight = flight, padding = padding)
+          FlightDetails(flight = flight, padding = padding) {}
         }
       }
 }
@@ -211,6 +224,6 @@ fun FlightDetailScreenPreview() {
         Text(text = "Bottom Bar")
       },
       containerColor = lightGray) { padding ->
-        FlightDetails(flight = plannedFlight, padding = padding)
+        FlightDetails(flight = plannedFlight, padding = padding) {}
       }
 }

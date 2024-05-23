@@ -9,20 +9,6 @@ import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.flight.BASE_ROLES
-import ch.epfl.skysync.models.flight.Balloon
-import ch.epfl.skysync.models.flight.BalloonQualification
-import ch.epfl.skysync.models.flight.Basket
-import ch.epfl.skysync.models.flight.FinishedFlight
-import ch.epfl.skysync.models.flight.FlightType
-import ch.epfl.skysync.models.flight.Role
-import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.flight.Team
-import ch.epfl.skysync.models.flight.Vehicle
-import ch.epfl.skysync.models.location.LocationPoint
-import ch.epfl.skysync.models.user.Crew
-import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.screens.crewpilot.ChatScreen
 import ch.epfl.skysync.screens.crewpilot.FlightDetailScreen
 import ch.epfl.skysync.screens.crewpilot.FlightScreen
@@ -32,11 +18,10 @@ import ch.epfl.skysync.screens.crewpilot.TextScreen
 import ch.epfl.skysync.screens.reports.CrewReportScreen
 import ch.epfl.skysync.screens.reports.PilotReportScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
+import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerViewModel
-import java.time.LocalDate
-import java.util.Date
 
 fun NavGraphBuilder.crewPilotGraph(
     repository: Repository,
@@ -54,8 +39,12 @@ fun NavGraphBuilder.crewPilotGraph(
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
           val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
+          inFlightViewModel!!.init(uid!!)
           FlightDetailScreen(
-              navController = navController, flightId = flightId, viewModel = flightsViewModel)
+              navController = navController,
+              flightId = flightId,
+              viewModel = flightsViewModel,
+              inFlightViewModel = inFlightViewModel)
         }
     composable(
         Route.CREW_TEXT + "/{Group ID}",
@@ -92,61 +81,22 @@ fun NavGraphBuilder.crewPilotGraph(
       ChatScreen(navController, chatViewModel)
     }
     composable(Route.FLIGHT) { FlightScreen(navController, inFlightViewModel!!, uid!!) }
-    composable(Route.PILOT_REPORT) {
-      // TODO remove when done with viewModel
-      val pilot =
-          Pilot("testID", "John", "Doe", "", setOf(RoleType.PILOT), BalloonQualification.MEDIUM)
-      val finishedFlight =
-          FinishedFlight(
-              UNSET_ID,
-              0,
-              Team(Role.initRoles(BASE_ROLES)),
-              FlightType.DISCOVERY,
-              Balloon("Balloon 1", BalloonQualification.MEDIUM),
-              Basket("Basket 1", true),
-              LocalDate.now(),
-              TimeSlot.AM,
-              listOf(),
-              takeOffTime = Date(),
-              takeOffLocation =
-                  LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),
-              landingTime = Date(),
-              landingLocation =
-                  LocationPoint(time = 50, latitude = 1.0, longitude = 1.0, name = "test2"),
-              flightTime = 0)
-
-      PilotReportScreen(finishedFlight, navController, pilot)
-    }
-    composable(Route.CREW_REPORT) {
-      // TODO remove when done with viewModel
-      val crew =
-          Crew(
-              "testID",
-              "John",
-              "Doe",
-              "",
-              setOf(RoleType.PILOT),
-          )
-      val finishedFlight =
-          FinishedFlight(
-              UNSET_ID,
-              0,
-              Team(Role.initRoles(BASE_ROLES)),
-              FlightType.DISCOVERY,
-              Balloon("Balloon 1", BalloonQualification.MEDIUM),
-              Basket("Basket 1", true),
-              LocalDate.now(),
-              TimeSlot.AM,
-              listOf(Vehicle("vehicle1"), Vehicle("vehicle2")),
-              takeOffTime = Date(),
-              takeOffLocation =
-                  LocationPoint(time = 0, latitude = 0.0, longitude = 0.0, name = "test1"),
-              landingTime = Date(),
-              landingLocation =
-                  LocationPoint(time = 50, latitude = 1.0, longitude = 1.0, name = "test2"),
-              flightTime = 0)
-      CrewReportScreen(navController, finishedFlight, crew)
-    }
+    composable(
+        Route.PILOT_REPORT + "/{flight ID}",
+        arguments = listOf(navArgument("flight ID") { type = NavType.StringType })) { entry ->
+          val flightId = entry.arguments?.getString("flight ID") ?: UNSET_ID
+          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
+          finishedFlightsViewModel.refresh()
+          PilotReportScreen(navController, finishedFlightsViewModel, flightId)
+        }
+    composable(
+        Route.CREW_REPORT + "/{flight ID}",
+        arguments = listOf(navArgument("flight ID") { type = NavType.StringType })) { entry ->
+          val flightId = entry.arguments?.getString("flight ID") ?: UNSET_ID
+          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
+          finishedFlightsViewModel.refresh()
+          CrewReportScreen(navController, finishedFlightsViewModel, flightId)
+        }
     composable(Route.LAUNCH_FLIGHT) {
       val viewModel = FlightsViewModel.createViewModel(repository, uid)
       viewModel.refresh()
