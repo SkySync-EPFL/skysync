@@ -302,13 +302,14 @@ fun FlightForm(
                 }
               }
               // Drop down menu for the balloon
+
               item {
-                val balloonTitle = "Balloon"
-                TitledDropDownMenu(
+                TitledIconDropDownMenu(
                     defaultPadding = defaultPadding,
-                    title = balloonTitle,
+                    title = "Balloon",
                     value = balloonValue,
                     onclickMenu = { item -> balloonValue = item },
+                    onDeletion = { balloonValue = null },
                     items = availableBalloons.value,
                     showString = { it?.name ?: "Choose the balloon" },
                     isError = !isSelectedBalloonAvailable,
@@ -316,12 +317,12 @@ fun FlightForm(
               }
               // Drop down menu for the basket
               item {
-                val basketTitle = "Basket"
-                TitledDropDownMenu(
+                TitledIconDropDownMenu(
                     defaultPadding = defaultPadding,
-                    title = basketTitle,
+                    title = "Basket",
                     value = basketValue,
                     onclickMenu = { item -> basketValue = item },
+                    onDeletion = { basketValue = null },
                     items = availableBaskets.value,
                     showString = { it?.name ?: "Choose the basket" },
                     isError = !isSelectedBasketAvailable,

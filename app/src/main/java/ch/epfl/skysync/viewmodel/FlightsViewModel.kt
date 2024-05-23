@@ -211,10 +211,11 @@ class FlightsViewModel(
       }
 
   fun getFlight(flightId: String): StateFlow<Flight?> {
-      val flight = _currentFlights
-          .map { flights -> flights?.find { it.id == flightId } }
-          .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
-      flight.value?.let { setDateAndTimeSlot(it.date, it.timeSlot) }
+    val flight =
+        _currentFlights
+            .map { flights -> flights?.find { it.id == flightId } }
+            .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
+    // flight.value?.let { setDateAndTimeSlot(it.date, it.timeSlot) }
     return flight
   }
 
