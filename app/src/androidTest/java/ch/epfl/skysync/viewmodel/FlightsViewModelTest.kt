@@ -3,20 +3,26 @@ package ch.epfl.skysync.viewmodel
 import androidx.compose.ui.test.junit4.createComposeRule
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
+import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.flight.FlightStatus
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.models.location.FlightTrace
+import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.models.reports.FlightReport
 import java.time.LocalDate
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.time.LocalTime
 
 class FlightsViewModelTest {
 
@@ -40,6 +46,69 @@ class FlightsViewModelTest {
     dbSetup.clearDatabase(db)
     dbSetup.fillDatabase(db)
   }
+
+    @Test
+    fun flightStatusOfFinishedFlightIsUpdatedForAdmin() = runTest {
+        var finishedFlight =
+            dbSetup.flight4.finishFlight(
+                takeOffTime = LocalTime.of(12, 0, 0),
+                landingTime = LocalTime.of(14, 0, 0),
+                takeOffLocation = LocationPoint(0, 0.1, 0.1, "TakeOffSpot"),
+                landingLocation = LocationPoint(0, 0.1, 0.1, "LandingSpot"),
+                flightTime = 2,
+                flightTrace = FlightTrace(dbSetup.flight4.id, listOf())
+            )
+        var report1 =
+            FlightReport(
+                author = dbSetup.crew1.id,
+                begin =
+                DateUtility.localDateAndTimeToDate(
+                    LocalDate.of(2021, 1, 1),
+                    LocalTime.of(12, 0, 0),
+                ),
+                end =
+                DateUtility.localDateAndTimeToDate(
+                    LocalDate.of(2021, 1, 1),
+                    LocalTime.of(12, 2, 0),
+                ),
+                pauseDuration = 10,
+                comments = "hola",
+            )
+        var report2 =
+            FlightReport(
+                author = dbSetup.pilot2.id,
+                begin =
+                DateUtility.localDateAndTimeToDate(
+                    LocalDate.of(2021, 1, 1),
+                    LocalTime.of(12, 0, 0),
+                ),
+                end =
+                DateUtility.localDateAndTimeToDate(
+                    LocalDate.of(2021, 1, 1),
+                    LocalTime.of(12, 2, 0),
+                ),
+                pauseDuration = 10,
+                comments = "hola",
+            )
+        finishedFlight = finishedFlight.copy(reportId = listOf(report1))
+        flightTable.update(dbSetup.flight4.id, finishedFlight, onError = { assertNull(it) })
+        composeTestRule.setContent {
+            viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
+        }
+        viewModelAdmin.refreshUserAndFlights().join()
+        var currentFlights = viewModelAdmin.currentFlights.value!!
+        assertTrue(currentFlights.any { it.id == dbSetup.flight4.id })
+        currentFlights.forEach{
+            if (it.id == dbSetup.flight4.id) {
+                assertEquals(it.getFlightStatus(), FlightStatus.MISSING_REPORT)
+            }
+        }
+        finishedFlight = finishedFlight.copy(reportId = listOf(report1, report2))
+        flightTable.update(dbSetup.flight4.id, finishedFlight, onError = { assertNull(it) })
+        viewModelAdmin.refreshUserAndFlights().join()
+        assertFalse(currentFlights.any { it.id == dbSetup.flight4.id })
+    }
+
 
   @Test
   fun setDate() {
