@@ -15,6 +15,7 @@ import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.models.flight.FlightStatus
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Vehicle
@@ -112,7 +113,7 @@ class FlightsViewModel(
           Log.d("FlightsViewModel", "Pilot or Crew user loaded")
         }
         _currentFlights.value =
-            FinishedFlight.filterCompletedFlights(fetchedFlights, _currentUser.value!!)
+            FlightStatus.filterCompletedFlights(fetchedFlights, _currentUser.value!!)
       }
 
   /** updates */

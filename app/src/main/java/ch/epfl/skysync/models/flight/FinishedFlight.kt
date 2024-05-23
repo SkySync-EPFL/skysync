@@ -77,24 +77,8 @@ data class FinishedFlight(
    */
   private fun updateFlightStatusForAdmin(): FinishedFlight {
     return updateFlightStatusForWithCondition {
-      val nReports = reportId.size
-      val teamSize = team.size()
-      val allReportsCompleted = nReports == teamSize
+      val allReportsCompleted = reportId.size == team.size()
       allReportsCompleted
-    }
-  }
-
-  companion object {
-    fun filterCompletedFlights(flights: List<Flight>, user: User): List<Flight> {
-      return flights
-          .map {
-            if (it is FinishedFlight) {
-              it.updateFlightStatus(user)
-            } else {
-              it
-            }
-          }
-          .filter { it.getFlightStatus() != FlightStatus.COMPLETED }
     }
   }
 }
