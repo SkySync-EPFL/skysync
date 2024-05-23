@@ -8,6 +8,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Date
+import java.util.Locale
 
 /**
  * Utility object for date, time objects
@@ -136,5 +137,9 @@ object DateUtility {
     val minutes = (secondsRounded % 3600) / 60
     val remainingSeconds = secondsRounded % 60
     return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
+  }
+
+  fun localDateToWeekdayMonthDay(localDate: LocalDate): String {
+    return localDate.format(DateTimeFormatter.ofPattern("E\nMMM dd").withLocale(Locale.ENGLISH))
   }
 }
