@@ -277,6 +277,28 @@ class DatabaseSetup {
           takeOffLocation = takeOffLocation1,
       )
 
+  var flight5 =
+      FinishedFlight(
+          "1234",
+          3,
+          Team(listOf(Role(RoleType.CREW), Role(RoleType.CREW))),
+          FlightType.DISCOVERY,
+          Balloon("Balloon Name", BalloonQualification.LARGE, "Ballon Name"),
+          Basket("Basket Name", true, "1234"),
+          LocalDate.now().plusDays(3),
+          TimeSlot.PM,
+          listOf(
+              Vehicle("Peugeot 308", "1234"),
+              Vehicle("Peugeot 308", "1234"),
+              Vehicle("Peugeot 308", "1234"),
+          ),
+          color = FlightColor.RED,
+          takeOffTime = Date.from(Instant.now().minusSeconds(12)),
+          takeOffLocation = LocationPoint(22, 46.217033, 6.084294, "Vernier, 1214"),
+          landingTime = Date.from(Instant.now()),
+          landingLocation = LocationPoint(21, 46.217030, 6.084290, "Vernier"),
+          flightTime = 2000000)
+
   var messageGroup1 =
       MessageGroup(
           name = "Group 1",
