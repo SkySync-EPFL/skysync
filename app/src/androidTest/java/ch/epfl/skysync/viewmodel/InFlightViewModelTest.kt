@@ -9,6 +9,7 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.location.LocationPoint
@@ -49,6 +50,16 @@ class InFlightViewModelTest {
   fun timerIsZeroBeforeStart() {
     val countString = inFlightViewModel.counter.value
     assertTrue(countString == "00:00:00")
+  }
+
+  @Test
+  fun finishedFlightIsSavedOnStop() = runTest {
+    inFlightViewModel.setCurrentFlight(dbs.flight4.id)
+    inFlightViewModel.startFlight().join()
+    inFlightViewModel.stopFlight().join()
+    val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) })
+    assertFalse(flight is ConfirmedFlight)
+    assertTrue(flight is FinishedFlight)
   }
 
   @Test
