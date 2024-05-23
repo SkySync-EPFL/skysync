@@ -100,7 +100,7 @@ class FlightsViewModel(
 
   fun refreshUserAndFlights() =
       viewModelScope.launch {
-        _currentUser.value = repository.userTable.get(userId ?: UNSET_ID, onError = { onError(it) })
+        _currentUser.value = repository.userTable.get(userId!!, onError = { onError(it) })
         lateinit var fetchedFlights: List<Flight>
         if (_currentUser.value!! is Admin) {
           Log.d("FlightsViewModel", "Admin user loaded")
@@ -108,7 +108,7 @@ class FlightsViewModel(
         } else {
           fetchedFlights =
               repository.userTable.retrieveAssignedFlights(
-                  repository.flightTable, userId ?: UNSET_ID, onError = { onError(it) })
+                  repository.flightTable, userId, onError = { onError(it) })
           Log.d("FlightsViewModel", "Pilot or Crew user loaded")
         }
         _currentFlights.value =
