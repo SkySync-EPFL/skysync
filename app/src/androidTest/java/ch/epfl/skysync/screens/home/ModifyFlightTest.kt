@@ -52,13 +52,13 @@ class ModifyFlightTest {
 
   @Test
   fun checkModifyPassengerCountWorks() = runTest {
-      composeTestRule.waitUntil(2000) {
-          val nodes = composeTestRule.onAllNodesWithText("Number of passengers")
-          nodes.fetchSemanticsNodes().isNotEmpty()
-      }
-      composeTestRule
-          .onNodeWithTag("Flight Lazy Column")
-          .performScrollToNode(hasTestTag("Number of passengers"))
+    composeTestRule.waitUntil(2000) {
+      val nodes = composeTestRule.onAllNodesWithText("Number of passengers")
+      nodes.fetchSemanticsNodes().isNotEmpty()
+    }
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Number of passengers"))
 
     composeTestRule.onNodeWithTag("Number of passengers").performClick()
     composeTestRule.onNodeWithTag("Number of passengers").performTextClearance()

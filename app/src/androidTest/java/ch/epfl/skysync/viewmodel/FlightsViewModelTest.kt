@@ -392,7 +392,8 @@ class FlightsViewModelTest {
       viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, dbSetup.date2TimeSlotInverse)
       viewModelAdmin.refreshUserAndFlights().join()
       val foundAvailableUsers = viewModelAdmin.availableUsers.value
-      val expectedAvailableUsers = listOf(dbSetup.admin1, dbSetup.crew1, dbSetup.crew2, dbSetup.pilot1)
+      val expectedAvailableUsers =
+          listOf(dbSetup.admin1, dbSetup.crew1, dbSetup.crew2, dbSetup.pilot1)
       assertEquals(expectedAvailableUsers.size, foundAvailableUsers.size)
       expectedAvailableUsers.forEach { outerUsr ->
         assertTrue(foundAvailableUsers.any { it.id == outerUsr.id })
