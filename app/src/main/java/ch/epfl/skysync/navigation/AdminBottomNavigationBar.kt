@@ -16,7 +16,7 @@ fun AdminBottomBar(navController: NavHostController) {
           BottomBarScreen.User,
           BottomBarScreen.AdminChat,
           BottomBarScreen.AdminCalendar,
-          BottomBarScreen.Stats)
+          BottomBarScreen.AdminStats)
   val navBackStackEntry by navController.currentBackStackEntryAsState()
   val currentDestination = navBackStackEntry?.destination
 

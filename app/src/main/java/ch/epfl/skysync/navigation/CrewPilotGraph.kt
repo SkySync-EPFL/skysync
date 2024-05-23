@@ -14,6 +14,7 @@ import ch.epfl.skysync.screens.crewpilot.FlightDetailScreen
 import ch.epfl.skysync.screens.crewpilot.FlightScreen
 import ch.epfl.skysync.screens.crewpilot.HomeScreen
 import ch.epfl.skysync.screens.crewpilot.LaunchFlight
+import ch.epfl.skysync.screens.crewpilot.StatsScreen
 import ch.epfl.skysync.screens.crewpilot.TextScreen
 import ch.epfl.skysync.screens.reports.CrewReportScreen
 import ch.epfl.skysync.screens.reports.PilotReportScreen
@@ -39,8 +40,12 @@ fun NavGraphBuilder.crewPilotGraph(
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
           val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
+          inFlightViewModel!!.init(uid!!)
           FlightDetailScreen(
-              navController = navController, flightId = flightId, viewModel = flightsViewModel)
+              navController = navController,
+              flightId = flightId,
+              viewModel = flightsViewModel,
+              inFlightViewModel = inFlightViewModel)
         }
     composable(
         Route.CREW_TEXT + "/{Group ID}",
@@ -101,6 +106,12 @@ fun NavGraphBuilder.crewPilotGraph(
           flightViewModel = viewModel,
           inFlightViewModel = inFlightViewModel!!,
           connectivityStatus)
+    }
+    composable(Route.STATS) {
+      val viewModel =
+          FinishedFlightsViewModel.createViewModel(repository = repository, userId = uid!!)
+      viewModel.refresh()
+      StatsScreen(navController, viewModel)
     }
   }
 }

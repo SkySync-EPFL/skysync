@@ -3,15 +3,21 @@ package ch.epfl.skysync.viewmodel
 import androidx.compose.ui.test.junit4.createComposeRule
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
+import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.tables.FlightTable
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.flight.FlightStatus
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
+import ch.epfl.skysync.models.location.FlightTrace
+import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.models.reports.FlightReport
 import java.time.LocalDate
+import java.time.LocalTime
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
@@ -39,6 +45,103 @@ class FlightsViewModelTest {
   fun setUp() = runTest {
     dbSetup.clearDatabase(db)
     dbSetup.fillDatabase(db)
+  }
+
+  @Test
+  fun flightStatusOfFinishedFlightIsUpdatedForAdmin() = runTest {
+    var finishedFlight =
+        dbSetup.flight4.finishFlight(
+            takeOffTime = LocalTime.of(12, 0, 0),
+            landingTime = LocalTime.of(14, 0, 0),
+            takeOffLocation = LocationPoint(0, 0.1, 0.1, "TakeOffSpot"),
+            landingLocation = LocationPoint(0, 0.1, 0.1, "LandingSpot"),
+            flightTime = 2,
+            flightTrace = FlightTrace(dbSetup.flight4.id, listOf()))
+    val report1 =
+        FlightReport(
+            author = dbSetup.crew1.id,
+            begin =
+                DateUtility.localDateAndTimeToDate(
+                    LocalDate.of(2021, 1, 1),
+                    LocalTime.of(12, 0, 0),
+                ),
+            end =
+                DateUtility.localDateAndTimeToDate(
+                    LocalDate.of(2021, 1, 1),
+                    LocalTime.of(12, 2, 0),
+                ),
+            pauseDuration = 10,
+            comments = "hola",
+        )
+    val report2 = report1.copy(author = dbSetup.pilot1.id)
+    val report3 = report1.copy(author = dbSetup.crew2.id)
+
+    finishedFlight = finishedFlight.copy(reportId = listOf(report1))
+    flightTable.update(dbSetup.flight4.id, finishedFlight, onError = { assertNull(it) })
+    composeTestRule.setContent {
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
+    }
+    viewModelAdmin.refreshUserAndFlights().join()
+    var currentFlights = viewModelAdmin.currentFlights.value!!
+    assertTrue(currentFlights.any { it.id == dbSetup.flight4.id })
+    currentFlights.forEach {
+      if (it.id == dbSetup.flight4.id) {
+        assertEquals(it.getFlightStatus(), FlightStatus.MISSING_REPORT)
+      }
+    }
+    repository.reportTable.addAll(listOf(report2, report3), finishedFlight.id)
+    val reports = repository.reportTable.retrieveReports(finishedFlight.id)
+    assertEquals(3, reports.size)
+    viewModelAdmin.refreshUserAndFlights().join()
+    currentFlights = viewModelAdmin.currentFlights.value!!
+    assertFalse(currentFlights.any { it.id == dbSetup.flight4.id })
+  }
+
+  @Test
+  fun flightStatusOfFinishedFlightIsUpdatedForCrew() = runTest {
+    var finishedFlight =
+        dbSetup.flight4.finishFlight(
+            takeOffTime = LocalTime.of(12, 0, 0),
+            landingTime = LocalTime.of(14, 0, 0),
+            takeOffLocation = LocationPoint(0, 0.1, 0.1, "TakeOffSpot"),
+            landingLocation = LocationPoint(0, 0.1, 0.1, "LandingSpot"),
+            flightTime = 2,
+            flightTrace = FlightTrace(dbSetup.flight4.id, listOf()))
+    val report1 =
+        FlightReport(
+            author = dbSetup.crew1.id,
+            begin =
+                DateUtility.localDateAndTimeToDate(
+                    LocalDate.of(2021, 1, 1),
+                    LocalTime.of(12, 0, 0),
+                ),
+            end =
+                DateUtility.localDateAndTimeToDate(
+                    LocalDate.of(2021, 1, 1),
+                    LocalTime.of(12, 2, 0),
+                ),
+            pauseDuration = 10,
+            comments = "hola",
+        )
+    val report2 = report1.copy(author = dbSetup.pilot1.id)
+
+    finishedFlight = finishedFlight.copy(reportId = listOf(report1))
+    flightTable.update(dbSetup.flight4.id, finishedFlight, onError = { assertNull(it) })
+    composeTestRule.setContent {
+      viewModelCrewPilot = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
+    }
+    viewModelCrewPilot.refreshUserAndFlights().join()
+    var currentFlights = viewModelCrewPilot.currentFlights.value!!
+    assertTrue(currentFlights.any { it.id == dbSetup.flight4.id })
+    currentFlights.forEach {
+      if (it.id == dbSetup.flight4.id) {
+        assertEquals(it.getFlightStatus(), FlightStatus.MISSING_REPORT)
+      }
+    }
+    repository.reportTable.add(report2, finishedFlight.id)
+    viewModelCrewPilot.refreshUserAndFlights().join()
+    currentFlights = viewModelCrewPilot.currentFlights.value!!
+    assertTrue(currentFlights.none { it.id == dbSetup.flight4.id })
   }
 
   @Test
@@ -83,7 +186,7 @@ class FlightsViewModelTest {
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
       val currentFlights = viewModelAdmin.currentFlights.value
-      assertEquals(4, currentFlights?.size)
+      assertEquals(5, currentFlights?.size)
     }
   }
 
@@ -211,7 +314,7 @@ class FlightsViewModelTest {
               id = flightTable.add(flightWithoutCrew, onError = { assertNull(it) }))
 
       viewModelAdmin.refreshUserAndFlights().join()
-      assertEquals(6, viewModelAdmin.currentFlights.value?.size)
+      assertEquals(7, viewModelAdmin.currentFlights.value?.size)
     }
   }
 
@@ -222,7 +325,7 @@ class FlightsViewModelTest {
     }
 
     runTest {
-      var flight1 =
+      val flight1 =
           PlannedFlight(
               nPassengers = 2,
               team =
@@ -243,7 +346,7 @@ class FlightsViewModelTest {
 
       viewModelAdmin.refreshUserAndFlights().join()
 
-      assertEquals(5, viewModelAdmin.currentFlights.value?.size)
+      assertEquals(6, viewModelAdmin.currentFlights.value?.size)
     }
   }
 
@@ -289,7 +392,7 @@ class FlightsViewModelTest {
               id = UNSET_ID)
       viewModelAdmin.refreshUserAndFlights().join()
       val initFlights = viewModelAdmin.currentFlights.value
-      assertEquals(4, initFlights?.size)
+      assertEquals(5, initFlights?.size)
 
       flight1 = flight1.copy(id = flightTable.add(flight1, onError = { assertNull(it) }))
 
@@ -298,7 +401,7 @@ class FlightsViewModelTest {
       viewModelAdmin.refreshUserAndFlights().join()
       val withFlightsAdded = viewModelAdmin.currentFlights.value
 
-      assertEquals(6, withFlightsAdded?.size)
+      assertEquals(7, withFlightsAdded?.size)
 
       viewModelAdmin.deleteFlight(flight1.id).join()
 
@@ -306,9 +409,7 @@ class FlightsViewModelTest {
 
       val withOneFlightDeleted = viewModelAdmin.currentFlights.value
 
-      var flight2StillAvailable = false
-
-      assertEquals(5, withOneFlightDeleted?.size)
+      assertEquals(6, withOneFlightDeleted?.size)
       assertTrue(withOneFlightDeleted?.contains(flight2) ?: false)
       assertFalse(withOneFlightDeleted?.contains(flight1) ?: true)
     }
@@ -352,7 +453,7 @@ class FlightsViewModelTest {
 
       viewModelAdmin.refreshUserAndFlights().join()
 
-      assertEquals(5, viewModelAdmin.currentFlights.value?.size)
+      assertEquals(6, viewModelAdmin.currentFlights.value?.size)
       assertTrue(viewModelAdmin.currentFlights.value?.contains(modifiedFlight) ?: false)
     }
   }

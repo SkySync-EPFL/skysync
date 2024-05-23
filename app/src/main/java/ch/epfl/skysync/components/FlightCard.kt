@@ -19,10 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ch.epfl.skysync.database.DateUtility.localDateToWeekdayMonthDay
 import ch.epfl.skysync.models.flight.Flight
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun FlightCard(flight: Flight, onFlightClick: (String) -> Unit) {
@@ -41,11 +41,10 @@ fun FlightCard(flight: Flight, onFlightClick: (String) -> Unit) {
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.Start) {
             Text(
-                text =
-                    flight.date.format(
-                        DateTimeFormatter.ofPattern("E\ndd").withLocale(Locale.ENGLISH)),
+                text = localDateToWeekdayMonthDay(flight.date),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.alignByBaseline(),
+                textAlign = TextAlign.Center,
                 color = Color.Black)
             // Spacer for horizontal separation
             Spacer(modifier = Modifier.width(16.dp))

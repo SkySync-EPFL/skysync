@@ -1,6 +1,7 @@
 package ch.epfl.skysync.models.flight
 
 import androidx.compose.ui.graphics.Color
+import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.ui.theme.lightBlue
 import ch.epfl.skysync.ui.theme.lightBrown
 import ch.epfl.skysync.ui.theme.lightGray
@@ -17,5 +18,20 @@ enum class FlightStatus(val text: String, val displayColor: Color) {
 
   override fun toString(): String {
     return text
+  }
+
+  companion object {
+    /** updates the status of all FinishedFlights and Filters out the flights that are completed */
+    fun filterCompletedFlights(flights: List<Flight>, user: User): List<Flight> {
+      return flights
+          .map {
+            if (it is FinishedFlight) {
+              it.updateFlightStatus(user)
+            } else {
+              it
+            }
+          }
+          .filter { it.getFlightStatus() != COMPLETED }
+    }
   }
 }

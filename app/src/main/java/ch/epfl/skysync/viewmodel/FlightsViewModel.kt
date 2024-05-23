@@ -13,15 +13,13 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
-import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.models.flight.FlightStatus
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.message.MessageGroup
 import ch.epfl.skysync.models.user.Admin
-import ch.epfl.skysync.models.user.Crew
-import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
 import java.time.LocalDate
@@ -33,7 +31,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 
 /** ViewModel for the user */
 class FlightsViewModel(val repository: Repository, val userId: String?, val flightId: String?) :
@@ -43,7 +40,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
     fun createViewModel(
         repository: Repository,
         userId: String?,
-        flightId: String? = null
+        flightId: String?
     ): FlightsViewModel {
       return viewModel<FlightsViewModel>(
           factory =
@@ -71,6 +68,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
   private val _currentUser = MutableStateFlow<User?>(null)
   private val _availableUsers = MutableStateFlow(emptyList<User>())
   private val _flight = MutableStateFlow<Flight?>(null)
+
   private val firstFill =
       mutableMapOf("balloon" to true, "basket" to true, "vehicles" to true, "users" to true)
 
@@ -101,35 +99,37 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
     refreshFilteredByDateAndTimeSlot()
   }
 
+  /**
+   * refreshes the user and the flights. Finished flights are filtered to contain only the
+   * uncompleted ones
+   */
   fun refreshUserAndFlights() =
       viewModelScope.launch {
-        _currentUser.value = repository.userTable.get(userId ?: UNSET_ID, onError = { onError(it) })
-        if (_currentUser.value is Admin) {
+        _currentUser.value = repository.userTable.get(userId!!, onError = { onError(it) })
+        lateinit var fetchedFlights: List<Flight>
+        if (_currentUser.value!! is Admin) {
           Log.d("FlightsViewModel", "Admin user loaded")
-          _currentFlights.value =
-              repository.flightTable.getAll(onError = { onError(it) }).filterNot {
-                it is FinishedFlight
-              }
-        } else if (_currentUser.value is Pilot || _currentUser.value is Crew) {
-          _currentFlights.value =
-              repository.userTable
-                  .retrieveAssignedFlights(
-                      repository.flightTable, userId ?: UNSET_ID, onError = { onError(it) })
-                  .filterNot { it is FinishedFlight }
+          fetchedFlights = repository.flightTable.getAll(onError = { onError(it) })
+        } else {
+          fetchedFlights =
+              repository.userTable.retrieveAssignedFlights(
+                  repository.flightTable, userId, onError = { onError(it) })
           Log.d("FlightsViewModel", "Pilot or Crew user loaded")
         }
+        _currentFlights.value =
+            FlightStatus.filterCompletedFlights(fetchedFlights, _currentUser.value!!)
         _flight.value = _currentFlights.value?.find { it.id == flightId }
         setDateAndTimeSlot(
             _flight.value?.date ?: LocalDate.now(), _flight.value?.timeSlot ?: defaultTimeSlot)
       }
 
+  /** updates */
   fun hasDateAndTimeSlot(): Boolean {
     return date != null && timeSlot != null
   }
 
   fun refreshAvailableBalloons() =
       viewModelScope.launch {
-        println("Refresh balloons")
         if (hasDateAndTimeSlot()) {
           _availableBalloons.value =
               repository.balloonTable.getBalloonsAvailableOn(
@@ -137,14 +137,12 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
-
           if (_flight.value?.balloon != null && firstFill.getOrDefault("balloon", true)) {
             val availableBalloons = _availableBalloons.value.filter { it != _flight.value?.balloon }
             _availableBalloons.value = availableBalloons.plus(_flight.value?.balloon!!)
             firstFill["balloon"] = false
           }
         } else {
-          println("to add  ${_flight.value?.date}")
           _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
         }
       }
@@ -158,7 +156,6 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
-
           if (flight.value?.team != null && firstFill.getOrDefault("users", true)) {
             val flightUsers = flight.value?.team!!.getUsers()
             val availableUsers = _availableUsers.value.filter { !flightUsers.contains(it) }
@@ -179,14 +176,6 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
-
-          if (flight.value?.vehicles != null && firstFill.getOrDefault("vehicles", true)) {
-            // Keep only the vehicles that are in availableVehicles and not in flight.value.vehicles
-            val availableVehicles =
-                _availableVehicles.value.filter { !flight.value?.vehicles!!.contains(it) }
-            _availableVehicles.value = availableVehicles.plus(flight.value?.vehicles!!)
-            firstFill["vehicles"] = false
-          }
         } else {
           _availableVehicles.value = repository.vehicleTable.getAll(onError = { onError(it) })
         }
@@ -201,11 +190,12 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
-
-          if (_flight.value?.basket != null && firstFill.getOrDefault("basket", true)) {
-            val availableBaskets = _availableBaskets.value.filter { it != _flight.value?.basket }
-            _availableBaskets.value = availableBaskets.plus(_flight.value?.basket!!)
-            firstFill["basket"] = false
+          if (flight.value?.vehicles != null && firstFill.getOrDefault("vehicles", true)) {
+            // Keep only the vehicles that are in availableVehicles and not in flight.value.vehicles
+            val availableVehicles =
+                _availableVehicles.value.filter { !flight.value?.vehicles!!.contains(it) }
+            _availableVehicles.value = availableVehicles.plus(flight.value?.vehicles!!)
+            firstFill["vehicles"] = false
           }
         } else {
           _availableBaskets.value = repository.basketTable.getAll(onError = { onError(it) })
@@ -250,11 +240,9 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
       }
 
   fun getFlight(flightId: String): StateFlow<Flight?> {
-    val flight =
-        _currentFlights
-            .map { flights -> flights?.find { it.id == flightId } }
-            .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
-    return flight
+    return _currentFlights
+        .map { flights -> flights?.find { it.id == flightId } }
+        .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
   }
 
   /** Callback executed when an error occurs on database-related operations */
