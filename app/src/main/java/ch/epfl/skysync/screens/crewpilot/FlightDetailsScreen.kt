@@ -50,11 +50,8 @@ fun FlightDetailScreen(
                 } else if (flight is FinishedFlight) {
                     FinishedFlightDetailBottom(
                         reportClick = {
-                            var reportFound = false
-                            flight.reportId.forEach { report ->
-                                if (report.id == user!!.id) {
-                                    reportFound = true
-                                }
+                            var reportFound =
+                            flight.reportId.any { report -> (report.author == user!!.id && report.id ==flightId) }
                                 if (reportFound) {
                                     navController.navigate(Route.REPORT + "/{$flightId}")
                                 } else if (user!! is Crew) {
@@ -62,7 +59,6 @@ fun FlightDetailScreen(
                                 } else {
                                     navController.navigate(Route.PILOT_REPORT + "/{$flightId}")
                                 }
-                            }
                         },
                         flightTraceClick = {
                             inFlightViewModel.setCurrentFlight(flightId)
