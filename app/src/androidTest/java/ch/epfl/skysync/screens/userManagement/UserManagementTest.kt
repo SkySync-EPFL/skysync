@@ -78,10 +78,12 @@ class UserManagementTest {
 
   @Test
   fun roleFilterDisplaysRoles() {
-    composeTestRule.setContent { RoleFilter(onRoleSelected = {}, roles = RoleType.entries) }
+    composeTestRule.setContent {
+      RoleFilter(onRoleSelected = {}, roles = RoleType.entries, count = 0)
+    }
 
     composeTestRule.onNodeWithText("Filter by role").performClick()
-    composeTestRule.onNodeWithText("PILOT").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Pilot").assertIsDisplayed()
   }
 
   @Test

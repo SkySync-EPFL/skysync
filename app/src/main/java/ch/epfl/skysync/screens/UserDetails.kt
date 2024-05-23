@@ -1,18 +1,27 @@
 package ch.epfl.skysync.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.CustomTopAppBar
-import ch.epfl.skysync.components.FlightsList
+import ch.epfl.skysync.components.FlightsListContent
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -35,9 +44,18 @@ fun UserDetailsScreen(navController: NavHostController, flightsViewModel: Flight
         bottomBar = { AdminBottomBar(navController = navController) },
         floatingActionButtonPosition = FabPosition.End,
     ) { paddingValues ->
-      FlightsList(userFlights.value, lightOrange, paddingValues, "Completed Flights") {
-          selectedFlight ->
-        navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/$selectedFlight")
+      Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Completed Flights",
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleLarge)
+        FlightsListContent(
+            flights = userFlights.value,
+            paddingValues = PaddingValues(horizontal = 16.dp, vertical = 16.dp)) { selectedFlight ->
+              navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/$selectedFlight")
+            }
       }
     }
   }
