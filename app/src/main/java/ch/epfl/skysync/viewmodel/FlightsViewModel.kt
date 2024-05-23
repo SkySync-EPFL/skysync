@@ -13,15 +13,13 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
-import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.models.flight.FlightStatus
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.message.MessageGroup
 import ch.epfl.skysync.models.user.Admin
-import ch.epfl.skysync.models.user.Crew
-import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
 import java.time.LocalDate
@@ -100,25 +98,28 @@ class FlightsViewModel(
     refreshFilteredByDateAndTimeSlot()
   }
 
+  /**
+   * refreshes the user and the flights. Finished flights are filtered to contain only the
+   * uncompleted ones
+   */
   fun refreshUserAndFlights() =
       viewModelScope.launch {
-        _currentUser.value = repository.userTable.get(userId ?: UNSET_ID, onError = { onError(it) })
-        if (_currentUser.value is Admin) {
+        _currentUser.value = repository.userTable.get(userId!!, onError = { onError(it) })
+        lateinit var fetchedFlights: List<Flight>
+        if (_currentUser.value!! is Admin) {
           Log.d("FlightsViewModel", "Admin user loaded")
-          _currentFlights.value =
-              repository.flightTable.getAll(onError = { onError(it) }).filterNot {
-                it is FinishedFlight
-              }
-        } else if (_currentUser.value is Pilot || _currentUser.value is Crew) {
-          _currentFlights.value =
-              repository.userTable
-                  .retrieveAssignedFlights(
-                      repository.flightTable, userId ?: UNSET_ID, onError = { onError(it) })
-                  .filterNot { it is FinishedFlight }
+          fetchedFlights = repository.flightTable.getAll(onError = { onError(it) })
+        } else {
+          fetchedFlights =
+              repository.userTable.retrieveAssignedFlights(
+                  repository.flightTable, userId, onError = { onError(it) })
           Log.d("FlightsViewModel", "Pilot or Crew user loaded")
         }
+        _currentFlights.value =
+            FlightStatus.filterCompletedFlights(fetchedFlights, _currentUser.value!!)
       }
 
+  /** updates */
   fun hasDateAndTimeSlot(): Boolean {
     return date != null && timeSlot != null
   }

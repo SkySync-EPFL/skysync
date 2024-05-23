@@ -82,7 +82,7 @@ class AdminBottomBarTest {
   fun routeIsRightIfClickOnStat() {
     composeTestRule.onNodeWithText("Stats").performClick()
     val route = navController.currentBackStackEntry?.destination?.route
-    Assert.assertEquals(route, Route.STATS)
+    Assert.assertEquals(route, Route.ADMIN_STATS)
   }
 
   @Test

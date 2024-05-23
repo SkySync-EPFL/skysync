@@ -31,6 +31,7 @@ object Route {
   const val ADMIN_TEXT = "Admin Text"
   const val ADMIN_AVAILABILITY_CALENDAR = "Admin Availability Calendar"
   const val ADMIN_FLIGHT_CALENDAR = "Admin Flight Calendar"
+  const val ADMIN_STATS = "Admin Stats"
 
   const val CREW_PILOT = "Crew Pilot"
   const val CREW_CHAT = "Chat"
