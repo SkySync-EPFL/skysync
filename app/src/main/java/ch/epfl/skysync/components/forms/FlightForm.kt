@@ -103,7 +103,7 @@ fun FlightForm(
           mutableStateOf(currentFlight?.timeSlot ?: defaultTimeSlot)
         }
         val selectedVehicles: MutableState<List<Vehicle?>> = remember {
-          mutableStateOf(currentFlight?.vehicles ?: listOf())
+          mutableStateOf(currentFlight?.vehicles ?: listOf(null))
         }
 
         var balloonValue: Balloon? by remember { mutableStateOf(currentFlight?.balloon) }

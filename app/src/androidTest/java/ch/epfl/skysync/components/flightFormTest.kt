@@ -304,7 +304,7 @@ class FlightFormTest {
         .onNodeWithTag("Flight Lazy Column")
         .performScrollToNode(hasTestTag("Vehicle 1 Menu"))
     composeTestRule.onNodeWithTag("Vehicle 1 Menu").performClick()
-    composeTestRule.onNodeWithTag("Vehicle 1 1").performClick()
+    composeTestRule.onNodeWithTag("Vehicle 1 0").performClick()
   }
 
   @Test

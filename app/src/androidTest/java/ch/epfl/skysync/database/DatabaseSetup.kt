@@ -123,7 +123,7 @@ class DatabaseSetup {
   // this the date of flight4, it needs to be today for the InFlightViewModel tests
   var date2 = LocalDate.now()
   var date2TimeSlot = getTimeSlot(LocalTime.now())
-  var date2TimeSlotAdmin1 = if (date2TimeSlot == TimeSlot.AM) TimeSlot.PM else TimeSlot.AM
+  var date2TimeSlotInverse = if (date2TimeSlot == TimeSlot.AM) TimeSlot.PM else TimeSlot.AM
   var dateNoFlight = LocalDate.of(2024, 8, 16)
 
   var availability1Crew1 =
@@ -133,7 +133,7 @@ class DatabaseSetup {
   var availability3Crew1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
   var availability4Crew1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotAdmin1, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotInverse, date = date2)
 
   var availability1Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -142,7 +142,7 @@ class DatabaseSetup {
   var availability3Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
   var availability4Crew2 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotAdmin1, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotInverse, date = date2)
 
   var availability1Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -151,7 +151,7 @@ class DatabaseSetup {
   var availability3Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
   var availability4Pilot1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotAdmin1, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotInverse, date = date2)
 
   var availability1Pilot2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -163,7 +163,7 @@ class DatabaseSetup {
   var availability1Admin1 =
       Availability(status = AvailabilityStatus.NO, timeSlot = TimeSlot.AM, date = date1)
   var availability2Admin1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotAdmin1, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotInverse, date = date2)
 
   var balloon1 = Balloon(name = "balloon-1", qualification = BalloonQualification.MEDIUM)
 
