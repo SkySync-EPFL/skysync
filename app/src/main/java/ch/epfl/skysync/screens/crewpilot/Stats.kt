@@ -27,8 +27,7 @@ fun StatsScreen(navController: NavHostController, viewModel: FinishedFlightsView
   ) { padding ->
     FlightsList(finishedFlights, Purple40, padding, "Flights History") { selectedFlight ->
       Log.d("StatsScreen", "Navigating to FinishFlightDetails with id $selectedFlight")
-      navController.navigate(Route.CREW_FLIGHT_DETAILS + "/${selectedFlight}")
-      "Route.CREW_FINISHED_FLIGHT_DETAILS"
+      navController.navigate(Route.CREW_FINISHED_FLIGHT_DETAILS + "/${selectedFlight}")
     }
   }
 }

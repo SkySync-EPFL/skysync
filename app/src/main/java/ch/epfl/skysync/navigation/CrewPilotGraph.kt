@@ -104,8 +104,9 @@ fun NavGraphBuilder.crewPilotGraph(
           connectivityStatus)
     }
     composable(Route.STATS) {
-        val viewModel = FinishedFlightsViewModel.createViewModel(repository = repository, userId = uid!! )
-        StatsScreen(navController, viewModel) }
-
+      val viewModel =
+          FinishedFlightsViewModel.createViewModel(repository = repository, userId = uid!!)
+      StatsScreen(navController, viewModel)
+    }
   }
 }
