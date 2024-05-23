@@ -28,42 +28,39 @@ fun FlightDetailScreen(
     inFlightViewModel: InFlightViewModel,
     finishedFlightsViewModel: FinishedFlightsViewModel
 ) {
+    val uncompletedFlight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
+    val finishedFlight by finishedFlightsViewModel.getFlight(flightId).collectAsStateWithLifecycle()
+    val flight = if (uncompletedFlight != null) uncompletedFlight else finishedFlight
 
-  val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
-    val finishedFlight = finishedFlightsViewModel.getFlight(flightId).collectAsStateWithLifecycle()
-
-  val user by viewModel.currentUser.collectAsStateWithLifecycle()
-  Scaffold(
-      topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
-      containerColor = lightGray) { padding ->
-        if ((flight == null || finishedFlight.value==null) || user == null) {
-          LoadingComponent(isLoading = true, onRefresh = {}) {}
+    val user by viewModel.currentUser.collectAsStateWithLifecycle()
+    Scaffold(
+        topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
+        containerColor = lightGray
+    ) { padding ->
+        if (flight == null || user == null) {
+            LoadingComponent(isLoading = true, onRefresh = {}) {}
         } else {
-          FlightDetails(flight = flight, padding = padding) {
-            if (flight is ConfirmedFlight) {
-              ConfirmedFlightDetailBottom(
-                  { navController.popBackStack() },
-                  {},
-                  false,
-              )
-            } else {
-                if (finishedFlight.value == null) {
+            FlightDetails(flight = flight, padding = padding) {
+                if (flight is ConfirmedFlight) {
+                    ConfirmedFlightDetailBottom(
+                        { navController.popBackStack() },
+                        {},
+                        false,
+                    )
+                } else if (flight is FinishedFlight) {
                     FinishedFlightDetailBottom(
-
                         reportClick = {
                             var reportFound = false
-                            finishedFlight.value!!.reportId.forEach { report ->
+                            flight.reportId.forEach { report ->
                                 if (report.id == user!!.id) {
                                     reportFound = true
                                 }
                                 if (reportFound) {
-                                    navController.navigate(Route.REPORT+"/{$flightId}")
-                                }
-                                else if(user!! is Crew){
-                                    navController.navigate(Route.CREW_REPORT+"/{$flightId}")
-                                }
-                                else{
-                                    navController.navigate(Route.PILOT_REPORT+"/{$flightId}")
+                                    navController.navigate(Route.REPORT + "/{$flightId}")
+                                } else if (user!! is Crew) {
+                                    navController.navigate(Route.CREW_REPORT + "/{$flightId}")
+                                } else {
+                                    navController.navigate(Route.PILOT_REPORT + "/{$flightId}")
                                 }
                             }
                         },
@@ -74,7 +71,7 @@ fun FlightDetailScreen(
                         })
                 }
             }
-          }
         }
-      }
+    }
 }
+
