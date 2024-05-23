@@ -145,6 +145,8 @@ class E2EPilotDuringFlight {
 
       // Stops the timer by clicking on the "Stop Button"
       composeTestRule.onNodeWithTag("Stop Button").performClick()
+      route = navController.currentBackStackEntry?.destination?.route
+      Assert.assertEquals(Route.CREW_HOME, route)
     }
   }
 }
