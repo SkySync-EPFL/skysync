@@ -29,11 +29,11 @@ data class FinishedFlight(
     val flightTime: Long, // time in milliseconds
     val reportId: List<Report> = emptyList(),
     val flightTrace: FlightTrace = FlightTrace(UNSET_ID, emptyList()),
-    val flightStatus: FlightStatus = FlightStatus.MISSING_REPORT,
+    private val thisFlightStatus: FlightStatus = FlightStatus.MISSING_REPORT,
 ) : Flight {
 
   override fun getFlightStatus(): FlightStatus {
-    return flightStatus
+    return thisFlightStatus
   }
 
     /**
@@ -56,12 +56,12 @@ data class FinishedFlight(
      */
     private fun updateFlightStatusForWithCondition(flightIsCompleted: () -> Boolean): FinishedFlight {
         if (flightIsCompleted()) {
-            if (flightStatus == FlightStatus.MISSING_REPORT) {
-                return copy(flightStatus = FlightStatus.COMPLETED)
+            if (thisFlightStatus == FlightStatus.MISSING_REPORT) {
+                return copy(thisFlightStatus = FlightStatus.COMPLETED)
             }
         } else {
-            if (flightStatus == FlightStatus.COMPLETED) {
-                return copy(flightStatus = FlightStatus.MISSING_REPORT)
+            if (thisFlightStatus == FlightStatus.COMPLETED) {
+                return copy(thisFlightStatus = FlightStatus.MISSING_REPORT)
             }
         }
         return this

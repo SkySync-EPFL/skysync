@@ -13,6 +13,7 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightType
 import ch.epfl.skysync.models.flight.PlannedFlight
@@ -106,9 +107,16 @@ class FlightsViewModel(
           Log.d("FlightsViewModel", "Admin user loaded")
           _currentFlights.value = repository.flightTable.getAll(onError = { onError(it) })
         } else if (_currentUser.value is Pilot || _currentUser.value is Crew) {
-          _currentFlights.value =
+          val fetchedFlights =
               repository.userTable.retrieveAssignedFlights(
                   repository.flightTable, userId ?: UNSET_ID, onError = { onError(it) })
+            _currentFlights.value = fetchedFlights.map {
+                if (it is FinishedFlight) {
+                    it.updateFlightStatus(_currentUser.value!!)
+                } else {
+                    it
+                }
+            }
           Log.d("FlightsViewModel", "Pilot or Crew user loaded")
         }
       }
