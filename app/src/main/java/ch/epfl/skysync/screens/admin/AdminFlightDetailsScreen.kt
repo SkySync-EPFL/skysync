@@ -92,7 +92,7 @@ fun AdminFlightDetailScreen(
           }
           is FinishedFlight -> {
             FinishedFlightDetailBottom(
-                reportClick = {navController.navigate(Route.REPORT+"/{$flightId}")},
+                reportClick = {navController.navigate(Route.REPORT+"/${flightId}")},
                 flightTraceClick = {
                   inFlightViewModel.setCurrentFlight(flightId)
                   inFlightViewModel.startDisplayFlightTrace()
