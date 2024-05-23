@@ -87,12 +87,9 @@ fun FlightForm(
   Scaffold(modifier = Modifier.fillMaxSize(), topBar = { CustomTopAppBar(navController, title) }) {
       padding ->
     // If there is a flight to be modified wait until it is not null
-    println("OUI")
     if (currentFlight == null && modifyFlight) {
-      println("LOADING")
       LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
     } else {
-      println("PATATE")
       Column {
         val defaultPadding = 16.dp
         val defaultTimeSlot = TimeSlot.AM

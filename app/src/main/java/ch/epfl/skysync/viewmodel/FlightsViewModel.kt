@@ -40,7 +40,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
     fun createViewModel(
         repository: Repository,
         userId: String?,
-        flightId: String?
+        flightId: String? = null
     ): FlightsViewModel {
       return viewModel<FlightsViewModel>(
           factory =
@@ -59,6 +59,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
   var timeSlot: TimeSlot? = null
     private set
 
+  private val flightTable = repository.flightTable
   private val _currentFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
   private val _availableBalloons: MutableStateFlow<List<Balloon>> = MutableStateFlow(emptyList())
   private val _availableBaskets: MutableStateFlow<List<Basket>> = MutableStateFlow(emptyList())
@@ -99,6 +100,11 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
     refreshFilteredByDateAndTimeSlot()
   }
 
+  fun setFlight(flight: Flight) {
+    _flight.value = flight
+    setDateAndTimeSlot(flight.date, flight.timeSlot)
+  }
+
   /**
    * refreshes the user and the flights. Finished flights are filtered to contain only the
    * uncompleted ones
@@ -118,9 +124,6 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         }
         _currentFlights.value =
             FlightStatus.filterCompletedFlights(fetchedFlights, _currentUser.value!!)
-        _flight.value = _currentFlights.value?.find { it.id == flightId }
-        setDateAndTimeSlot(
-            _flight.value?.date ?: LocalDate.now(), _flight.value?.timeSlot ?: defaultTimeSlot)
       }
 
   /** updates */
@@ -176,6 +179,13 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
+
+          if (flight.value?.vehicles != null && firstFill.getOrDefault("vehicles", true)) {
+            val availableVehicles =
+                _availableVehicles.value.filter { !flight.value?.vehicles!!.contains(it) }
+            _availableVehicles.value = availableVehicles.plus(flight.value?.vehicles!!)
+            firstFill["vehicles"] = false
+          }
         } else {
           _availableVehicles.value = repository.vehicleTable.getAll(onError = { onError(it) })
         }
@@ -190,12 +200,11 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
-          if (flight.value?.vehicles != null && firstFill.getOrDefault("vehicles", true)) {
-            // Keep only the vehicles that are in availableVehicles and not in flight.value.vehicles
-            val availableVehicles =
-                _availableVehicles.value.filter { !flight.value?.vehicles!!.contains(it) }
-            _availableVehicles.value = availableVehicles.plus(flight.value?.vehicles!!)
-            firstFill["vehicles"] = false
+
+          if (flight.value?.basket != null && firstFill.getOrDefault("basket", true)) {
+            val availableBaskets = _availableBaskets.value.filter { it != flight.value?.basket!! }
+            _availableBaskets.value = availableBaskets.plus(flight.value?.basket!!)
+            firstFill["basket"] = false
           }
         } else {
           _availableBaskets.value = repository.basketTable.getAll(onError = { onError(it) })

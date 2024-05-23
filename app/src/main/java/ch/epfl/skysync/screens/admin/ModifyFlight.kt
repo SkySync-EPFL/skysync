@@ -24,9 +24,10 @@ fun ModifyFlightScreen(
   val allVehicles = viewModel.currentVehicles.collectAsStateWithLifecycle()
   val availableUsers = viewModel.availableUsers.collectAsStateWithLifecycle()
   val allRoleTypes = RoleType.entries
-
-  if (flightToModify.value != null && viewModel.date == null && viewModel.timeSlot == null) {
-    viewModel.setDateAndTimeSlot(flightToModify.value!!.date, flightToModify.value!!.timeSlot)
+  println("${flightToModify.value} ${viewModel.date}")
+  if (flightToModify.value != null) {
+    println("ICI ICI")
+    viewModel.setFlight(flightToModify.value!!)
   }
   FlightForm(
       currentFlight = flightToModify.value,

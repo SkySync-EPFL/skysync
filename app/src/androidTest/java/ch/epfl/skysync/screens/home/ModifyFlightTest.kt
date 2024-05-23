@@ -52,7 +52,6 @@ class ModifyFlightTest {
 
   @Test
   fun checkModifyPassengerCountWorks() = runTest {
-    viewModelAdmin.refreshUserAndFlights().join()
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
         .performScrollToNode(hasTestTag("Number of passengers"))
