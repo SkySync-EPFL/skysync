@@ -37,7 +37,7 @@ fun FlightDetailScreen(
         topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
         containerColor = lightGray
     ) { padding ->
-        if (flight == null || user == null) {
+        if (flight == null) {
             LoadingComponent(isLoading = true, onRefresh = {}) {}
         } else {
             FlightDetails(flight = flight, padding = padding) {
