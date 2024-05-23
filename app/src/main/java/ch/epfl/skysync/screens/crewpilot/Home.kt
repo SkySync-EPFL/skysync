@@ -31,13 +31,3 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
     }
   }
 }
-
-// Preview provider for the Home Screen
-// @Composable
-// @Preview
-// fun HomeScreenPreview() {
-//  // Preview navigation controller
-//  val navController = rememberNavController()
-//  // Preview of Home Screen
-//  HomeScreen(navController = navController)
-// }
