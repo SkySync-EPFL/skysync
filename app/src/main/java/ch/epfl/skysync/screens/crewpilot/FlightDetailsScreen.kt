@@ -37,36 +37,42 @@ fun FlightDetailScreen(
         topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
         containerColor = lightGray
     ) { padding ->
+        when (flight) {
+
+            is ConfirmedFlight ->{
+                ConfirmedFlightDetailBottom(
+                    { navController.popBackStack() },
+                    {},
+                    false,
+                )
+            }
+
+            is FinishedFlight ->{
+                FinishedFlightDetailBottom(
+                    reportClick = {
+                        var reportFound =
+                            flight.reportId.any { report -> (report.author == user!!.id && report.id == flightId) }
+                        if (reportFound) {
+                            navController.navigate(Route.REPORT + "/${flightId}")
+                        } else if (user!! is Crew) {
+                            navController.navigate(Route.CREW_REPORT + "/${flightId}")
+                        } else {
+                            navController.navigate(Route.PILOT_REPORT + "/${flightId}")
+                        }
+                    },
+                    flightTraceClick = {
+                        inFlightViewModel.setCurrentFlight(flightId)
+                        inFlightViewModel.startDisplayFlightTrace()
+                        navController.navigate(Route.FLIGHT)
+                    })
+            }
+        }
+
         if (flight == null) {
             LoadingComponent(isLoading = true, onRefresh = {}) {}
-        } else {
-            FlightDetails(flight = flight, padding = padding) {
-                if (flight is ConfirmedFlight) {
-                    ConfirmedFlightDetailBottom(
-                        { navController.popBackStack() },
-                        {},
-                        false,
-                    )
-                } else if (flight is FinishedFlight) {
-                    FinishedFlightDetailBottom(
-                        reportClick = {
-                            var reportFound =
-                            flight.reportId.any { report -> (report.author == user!!.id && report.id ==flightId) }
-                                if (reportFound) {
-                                    navController.navigate(Route.REPORT + "/${flightId}")
-                                } else if (user!! is Crew) {
-                                    navController.navigate(Route.CREW_REPORT + "/${flightId}")
-                                } else {
-                                    navController.navigate(Route.PILOT_REPORT + "/${flightId}")
-                                }
-                        },
-                        flightTraceClick = {
-                            inFlightViewModel.setCurrentFlight(flightId)
-                            inFlightViewModel.startDisplayFlightTrace()
-                            navController.navigate(Route.FLIGHT)
-                        })
-                }
-            }
+        }
+        else{
+            FlightDetails(flight = flight, padding = padding){}
         }
     }
 }
