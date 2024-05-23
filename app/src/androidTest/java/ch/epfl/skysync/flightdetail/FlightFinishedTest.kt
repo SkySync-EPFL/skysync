@@ -1,6 +1,7 @@
 package ch.epfl.skysync.flightdetail
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -9,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.components.FinishedFlightDetailBottom
 import ch.epfl.skysync.components.FlightDetails
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.DateUtility
@@ -29,7 +31,11 @@ class FlightFinishedTest {
 
   @Before
   fun setUpNavHost() {
-    composeTestRule.setContent { FlightDetails(flight, PaddingValues(0.dp)) }
+    composeTestRule.setContent {
+      FlightDetails(flight, PaddingValues(0.dp)) {
+        FinishedFlightDetailBottom(reportClick = {}, flightTraceClick = {})
+      }
+    }
   }
 
   private fun helper(field: String, value: String) {
@@ -65,5 +71,11 @@ class FlightFinishedTest {
   fun teamAndColorsAreDisplayed() {
     composeTestRule.onNodeWithTag("FlightDetailLazyColumn").performScrollToNode(hasText("Team"))
     composeTestRule.onNodeWithText("COLOR ${flight.color}").assertIsDisplayed()
+  }
+
+  @Test
+  fun bottomButtonsAreDisplayed() {
+    composeTestRule.onNodeWithText("Report").assertExists().assertHasClickAction()
+    composeTestRule.onNodeWithText("Flight Trace").assertExists().assertHasClickAction()
   }
 }

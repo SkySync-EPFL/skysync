@@ -54,8 +54,8 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.flight.flightColorOptions
-import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.ui.theme.lightOrange
 import java.net.URLEncoder
 import java.time.Instant
 import java.time.LocalDate
@@ -394,7 +394,7 @@ fun ConfirmedFlightDetailBottom(okClick: () -> Unit, deleteClick: () -> Unit, is
         onClick = okClick,
         modifier = Modifier.fillMaxSize().padding(16.dp).testTag("OK Button"),
         colors = ButtonDefaults.buttonColors(containerColor = lightOrange)) {
-          Text(text = "View Report", overflow = TextOverflow.Clip)
+          Text(text = "Ok", overflow = TextOverflow.Clip)
         }
   }
 }
@@ -443,5 +443,7 @@ fun FlightDetailsPreview() {
           landingLocation = LocationPoint(21, 46.2, 6.1, "Vernier"),
           flightTime = 2000000)
 
-  FlightDetails(finishedFlight, PaddingValues(0.dp))
+  FlightDetails(finishedFlight, PaddingValues(0.dp)) {
+    FinishedFlightDetailBottom(reportClick = {}, flightTraceClick = {})
+  }
 }
