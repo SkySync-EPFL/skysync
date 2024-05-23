@@ -264,18 +264,6 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
     }
   }
 
-  private fun oui() {
-    println("FOUND ${_flight.value} ${_flight.value?.basket}")
-    if (_flight.value?.basket != null) {
-      println("Here ${_flight.value} ${_flight.value?.basket}")
-      val availableBaskets = _availableBaskets.value.filter { it != _flight.value?.basket }
-      println("Baskets ${_availableBaskets.value}")
-      _availableBaskets.value = availableBaskets.plus(_flight.value?.basket!!)
-    } else {
-      println("LA SAUVE")
-    }
-  }
-
   init {
     refresh()
   }

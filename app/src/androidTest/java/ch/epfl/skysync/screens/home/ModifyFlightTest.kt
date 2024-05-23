@@ -2,7 +2,6 @@ package ch.epfl.skysync.screens.home
 
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -46,16 +45,14 @@ class ModifyFlightTest {
 
     composeTestRule.setContent {
       viewModelAdmin = FlightsViewModel.createViewModel(repository, dbs.admin1.id)
-      ModifyFlightScreen(navController = navController, viewModel = viewModelAdmin)
+      ModifyFlightScreen(
+          navController = navController, viewModel = viewModelAdmin, flightId = dbs.admin1.id)
     }
   }
 
   @Test
   fun checkModifyPassengerCountWorks() = runTest {
-    composeTestRule.waitUntil(2000) {
-      val nodes = composeTestRule.onAllNodesWithText("Number of passengers")
-      nodes.fetchSemanticsNodes().isNotEmpty()
-    }
+    viewModelAdmin.refreshUserAndFlights().join()
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
         .performScrollToNode(hasTestTag("Number of passengers"))

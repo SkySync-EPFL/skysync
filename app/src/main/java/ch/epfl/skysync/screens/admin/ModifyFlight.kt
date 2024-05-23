@@ -14,9 +14,10 @@ import ch.epfl.skysync.viewmodel.FlightsViewModel
 fun ModifyFlightScreen(
     navController: NavHostController,
     viewModel: FlightsViewModel,
+    flightId: String
 ) {
 
-  val flightToModify = viewModel.flight.collectAsStateWithLifecycle()
+  val flightToModify = viewModel.getFlight(flightId).collectAsStateWithLifecycle()
   val allFlightTypes = viewModel.currentFlightTypes.collectAsStateWithLifecycle()
   val allBalloons = viewModel.currentBalloons.collectAsStateWithLifecycle()
   val allBaskets = viewModel.currentBaskets.collectAsStateWithLifecycle()
