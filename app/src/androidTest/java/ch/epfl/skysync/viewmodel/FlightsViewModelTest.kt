@@ -401,7 +401,7 @@ class FlightsViewModelTest {
       viewModelAdmin.refreshUserAndFlights().join()
       val withFlightsAdded = viewModelAdmin.currentFlights.value
 
-      assertEquals(6, withFlightsAdded?.size)
+      assertEquals(7, withFlightsAdded?.size)
 
       viewModelAdmin.deleteFlight(flight1.id).join()
 
@@ -409,9 +409,7 @@ class FlightsViewModelTest {
 
       val withOneFlightDeleted = viewModelAdmin.currentFlights.value
 
-      var flight2StillAvailable = false
-
-      assertEquals(5, withOneFlightDeleted?.size)
+      assertEquals(6, withOneFlightDeleted?.size)
       assertTrue(withOneFlightDeleted?.contains(flight2) ?: false)
       assertFalse(withOneFlightDeleted?.contains(flight1) ?: true)
     }
