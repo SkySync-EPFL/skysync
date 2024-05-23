@@ -50,22 +50,32 @@ fun FlightsList(
         textAlign = TextAlign.Center)
 
     Spacer(modifier = Modifier.height(16.dp))
-    if (flights == null) {
-      LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
-    } else if (flights.isEmpty()) {
-      Box(
-          modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f),
-          contentAlignment = Alignment.Center) {
-            Text(
-                text = "No flights",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                color = Color.Black)
-          }
-    } else {
-      // Display the flights in a LazyColumn if the list is not empty
-      LazyColumn(modifier = Modifier.testTag("HomeLazyList").padding(paddingValues)) {
-        items(flights) { flight -> FlightCard(flight, onFlightClick) }
-      }
+    FlightsListContent(
+        flights = flights, paddingValues = paddingValues, onFlightClick = onFlightClick)
+  }
+}
+
+@Composable
+fun FlightsListContent(
+    flights: List<Flight>?,
+    paddingValues: PaddingValues,
+    onFlightClick: (String) -> Unit
+) {
+  if (flights == null) {
+    LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
+  } else if (flights.isEmpty()) {
+    Box(
+        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f),
+        contentAlignment = Alignment.Center) {
+          Text(
+              text = "No flights",
+              style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+              color = Color.Black)
+        }
+  } else {
+    // Display the flights in a LazyColumn if the list is not empty
+    LazyColumn(modifier = Modifier.testTag("HomeLazyList").padding(paddingValues)) {
+      items(flights) { flight -> FlightCard(flight, onFlightClick) }
     }
   }
 }
