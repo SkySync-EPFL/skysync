@@ -76,7 +76,7 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
       }
 
   /** Refreshes the user logged in and its finished flights */
-  private fun refreshUserAndFlights() =
+  fun refreshUserAndFlights() =
       viewModelScope.launch {
         isLoading.value = true
         refreshUser().join()

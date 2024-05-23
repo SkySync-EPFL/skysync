@@ -41,6 +41,7 @@ class PilotReportScreenTest {
           finishedFlightsViewModel = finishedFlightsViewModel,
           flightId = dbs.finishedFlight1.id)
     }
+    finishedFlightsViewModel.refreshUserAndFlights().join()
   }
 
   @Test
