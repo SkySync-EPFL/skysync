@@ -2,6 +2,7 @@ package ch.epfl.skysync.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -84,5 +85,46 @@ class FlightListsTests {
     composeTestRule.onNodeWithText("Discovery - 1 pax").performClick()
 
     assertTrue("Flight click callback was not triggered with the correct flight", wasClicked)
+  }
+
+  @Test
+  fun flightsAreCorrectlySorted() {
+    val flight1 =
+        PlannedFlight(
+            nPassengers = 1,
+            date = LocalDate.of(2023, 1, 1),
+            timeSlot = TimeSlot.AM,
+            flightType = FlightType.DISCOVERY,
+            vehicles = emptyList(),
+            balloon = null,
+            basket = null,
+            id = "flight1")
+
+    val flight2 =
+        PlannedFlight(
+            nPassengers = 1,
+            date = LocalDate.of(2023, 1, 2),
+            timeSlot = TimeSlot.AM,
+            flightType = FlightType.DISCOVERY,
+            vehicles = emptyList(),
+            balloon = null,
+            basket = null,
+            id = "flight2")
+
+    val flights = listOf(flight2, flight1)
+
+    composeTestRule.setContent {
+      FlightsList(
+          flights = flights, color = lightOrange, padding, "Upcoming Flights", onFlightClick = {})
+    }
+
+    // Check if the flights are displayed in the correct order
+    val node1 = composeTestRule.onNode(hasTestTag("flightCardflight1"))
+    val node2 = composeTestRule.onNode(hasTestTag("flightCardflight2"))
+    node1.assertIsDisplayed()
+    node2.assertIsDisplayed()
+    val topNode1 = node1.fetchSemanticsNode().boundsInRoot.top
+    val topNode2 = node2.fetchSemanticsNode().boundsInRoot.top
+    assertTrue(topNode1 < topNode2)
   }
 }
