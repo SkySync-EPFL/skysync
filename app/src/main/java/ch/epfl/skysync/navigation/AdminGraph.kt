@@ -74,8 +74,8 @@ fun NavGraphBuilder.adminGraph(
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
-          val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
-          ModifyFlightScreen(navController, flightsViewModel, flightId)
+          val flightsViewModel = FlightsViewModel.createViewModel(repository, uid, flightId)
+          ModifyFlightScreen(navController, flightsViewModel)
         }
     composable(Route.USER) {
       val userManagementViewModel = UserManagementViewModel.createViewModel(repository, uid)
@@ -114,6 +114,7 @@ fun NavGraphBuilder.adminGraph(
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
           val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
+
           AdminFlightDetailScreen(
               navController = navController, flightId = flightId, viewModel = flightsViewModel)
         }

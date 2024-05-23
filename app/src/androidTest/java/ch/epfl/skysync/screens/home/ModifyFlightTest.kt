@@ -45,8 +45,7 @@ class ModifyFlightTest {
 
     composeTestRule.setContent {
       viewModelAdmin = FlightsViewModel.createViewModel(repository, dbs.admin1.id)
-      ModifyFlightScreen(
-          navController = navController, viewModel = viewModelAdmin, flightId = dbs.flight1.id)
+      ModifyFlightScreen(navController = navController, viewModel = viewModelAdmin)
     }
   }
 

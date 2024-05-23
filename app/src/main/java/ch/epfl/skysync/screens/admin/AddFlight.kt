@@ -21,7 +21,7 @@ fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewMode
   FlightForm(
       currentFlight = null,
       navController = navController,
-      modifyMode = false,
+      modifyFlight = false,
       title = "Add Flight",
       allFlightTypes = allFlightTypes,
       allRoleTypes = allRoleTypes,

@@ -92,7 +92,7 @@ class FlightFormTest {
       FlightForm(
           currentFlight = null,
           navController = navController,
-          modifyMode = false,
+          modifyFlight = false,
           title = title,
           allFlightTypes = allFlightsState,
           allRoleTypes = allRoleTypes,
