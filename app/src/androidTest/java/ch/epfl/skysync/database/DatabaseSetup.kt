@@ -317,7 +317,7 @@ class DatabaseSetup {
 
   var report1 =
       PilotReport(
-          id = UNSET_ID,
+          id = finishedFlight1.id,
           author = pilot1.id,
           effectivePax = 2,
           takeOffTime = takeOffTime2,
@@ -331,7 +331,7 @@ class DatabaseSetup {
       )
   var report2 =
       CrewReport(
-          id = UNSET_ID,
+          id = finishedFlight1.id,
           author = crew1.id,
           begin = takeOffTime2,
           end = landingTime2,

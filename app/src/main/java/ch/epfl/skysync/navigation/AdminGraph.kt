@@ -1,7 +1,5 @@
 package ch.epfl.skysync.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -124,22 +122,24 @@ fun NavGraphBuilder.adminGraph(
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
           val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
           inFlightViewModel!!.init(uid!!)
-        val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
-        finishedFlightsViewModel.refresh()
-        finishedFlightsViewModel.getAllReports(flightId)
+          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
+          finishedFlightsViewModel.refresh()
+          finishedFlightsViewModel.getAllReports(flightId)
           AdminFlightDetailScreen(
               navController = navController,
               flightId = flightId,
               viewModel = flightsViewModel,
-              inFlightViewModel = inFlightViewModel,finishedFlightsViewModel=finishedFlightsViewModel)
+              inFlightViewModel = inFlightViewModel,
+              finishedFlightsViewModel = finishedFlightsViewModel)
         }
-      composable(Route.REPORT+ "/{flight ID}",arguments = listOf(navArgument("flight ID") { type = NavType.StringType }))
-      { entry ->
+    composable(
+        Route.REPORT + "/{flight ID}",
+        arguments = listOf(navArgument("flight ID") { type = NavType.StringType })) { entry ->
           val flightId = entry.arguments?.getString("flight ID") ?: UNSET_ID
           val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
           finishedFlightsViewModel.refresh()
           finishedFlightsViewModel.getAllReports(flightId)
-          ReportDetailsScreen(flightId, finishedFlightsViewModel,false, uid ,navController)
-      }
+          ReportDetailsScreen(flightId, finishedFlightsViewModel, false, uid, navController)
+        }
   }
 }

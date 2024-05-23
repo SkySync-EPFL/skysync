@@ -65,8 +65,8 @@ fun AdminFlightDetailScreen(
 ) {
 
   val uncompletedFlight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
-    val finishedFlight by finishedFlightsViewModel.getFlight(flightId).collectAsStateWithLifecycle()
-    val flight = if(uncompletedFlight !=null) uncompletedFlight else finishedFlight
+  val finishedFlight by finishedFlightsViewModel.getFlight(flightId).collectAsStateWithLifecycle()
+  val flight = if (uncompletedFlight != null) uncompletedFlight else finishedFlight
   var showConfirmDialog by remember { mutableStateOf(false) }
   if (showConfirmDialog) {
     ConfirmAlertDialog(
@@ -96,7 +96,7 @@ fun AdminFlightDetailScreen(
           }
           is FinishedFlight -> {
             FinishedFlightDetailBottom(
-                reportClick = {navController.navigate(Route.REPORT+"/${flightId}")},
+                reportClick = { navController.navigate(Route.REPORT + "/${flightId}") },
                 flightTraceClick = {
                   inFlightViewModel.setCurrentFlight(flightId)
                   inFlightViewModel.startDisplayFlightTrace()
@@ -107,11 +107,9 @@ fun AdminFlightDetailScreen(
       },
       containerColor = lightGray) { padding ->
         if (flight == null) {
-            LoadingComponent(isLoading = true, onRefresh = {}) {}
-
-
+          LoadingComponent(isLoading = true, onRefresh = {}) {}
         } else {
-            FlightDetails(flight = flight, padding = padding) {}
+          FlightDetails(flight = flight, padding = padding) {}
         }
       }
 }
@@ -132,9 +130,7 @@ fun FlightDetailBottom(
   BottomAppBar(containerColor = lightGray) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
       Spacer(modifier = Modifier.fillMaxWidth(0.05f))
-      Row(modifier = Modifier
-          .fillMaxWidth(0.9f / 3 / (1 - 0.05f))
-          .testTag("DeleteButton")) {
+      Row(modifier = Modifier.fillMaxWidth(0.9f / 3 / (1 - 0.05f)).testTag("DeleteButton")) {
         TextButton(
             onClick = { deleteClick() },
             shape = leftCornerRounded,
@@ -150,9 +146,7 @@ fun FlightDetailBottom(
       }
       Row(
           modifier =
-          Modifier
-              .fillMaxWidth((0.9f) / 3 / (1 - 0.05f - (0.9f) / 3))
-              .testTag("EditButton")) {
+              Modifier.fillMaxWidth((0.9f) / 3 / (1 - 0.05f - (0.9f) / 3)).testTag("EditButton")) {
             TextButton(
                 onClick = { editClick() },
                 shape = RoundedCornerShape(0.dp),
@@ -169,9 +163,8 @@ fun FlightDetailBottom(
           }
       Row(
           modifier =
-          Modifier
-              .fillMaxWidth((0.9f) / 3 / (1f - 0.05f - 2 * (0.9f) / 3))
-              .testTag("ConfirmButton")) {
+              Modifier.fillMaxWidth((0.9f) / 3 / (1f - 0.05f - 2 * (0.9f) / 3))
+                  .testTag("ConfirmButton")) {
             TextButton(
                 onClick = { confirmClick() },
                 shape = rightCornerRounded,
