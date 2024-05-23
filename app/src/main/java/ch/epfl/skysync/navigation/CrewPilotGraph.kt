@@ -14,6 +14,7 @@ import ch.epfl.skysync.screens.crewpilot.FlightDetailScreen
 import ch.epfl.skysync.screens.crewpilot.FlightScreen
 import ch.epfl.skysync.screens.crewpilot.HomeScreen
 import ch.epfl.skysync.screens.crewpilot.LaunchFlight
+import ch.epfl.skysync.screens.crewpilot.StatsScreen
 import ch.epfl.skysync.screens.crewpilot.TextScreen
 import ch.epfl.skysync.screens.reports.CrewReportScreen
 import ch.epfl.skysync.screens.reports.PilotReportScreen
@@ -102,5 +103,9 @@ fun NavGraphBuilder.crewPilotGraph(
           inFlightViewModel = inFlightViewModel!!,
           connectivityStatus)
     }
+    composable(Route.STATS) {
+        val viewModel = FinishedFlightsViewModel.createViewModel(repository = repository, userId = uid!! )
+        StatsScreen(navController, viewModel) }
+
   }
 }

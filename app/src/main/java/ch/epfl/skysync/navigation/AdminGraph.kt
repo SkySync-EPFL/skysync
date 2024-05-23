@@ -56,7 +56,7 @@ fun NavGraphBuilder.adminGraph(
       val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
       AddFlightScreen(navController, flightsViewModel)
     }
-    composable(Route.STATS) { AdminStatsScreen(navController) }
+    composable(Route.ADMIN_STATS) { AdminStatsScreen(navController) }
     composable(Route.ADD_USER) {
       val userManagementViewModel = UserManagementViewModel.createViewModel(repository, uid)
       AddUserScreen(navController, userManagementViewModel)

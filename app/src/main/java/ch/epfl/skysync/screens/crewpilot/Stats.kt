@@ -13,13 +13,12 @@ import ch.epfl.skysync.components.FlightsList
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.Purple40
-import ch.epfl.skysync.viewmodel.FlightsViewModel
+import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 
 // Scaffold wrapper for the Stats Screen
 @Composable
-fun StatsScreen(navController: NavHostController, viewModel: FlightsViewModel) {
+fun StatsScreen(navController: NavHostController, viewModel: FinishedFlightsViewModel) {
   val finishedFlights by viewModel.currentFlights.collectAsStateWithLifecycle()
-  ".finishedFlights"
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       bottomBar = { BottomBar(navController) },
