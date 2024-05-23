@@ -73,8 +73,9 @@ fun UserLocationMarker(location: Location, user: User) {
 fun FlightScreen(
     navController: NavHostController,
     inFlightViewModel: InFlightViewModel,
-    uid: String
+    uid: String,
 ) {
+
   val loading by inFlightViewModel.loading.collectAsStateWithLifecycle()
   val rawTime by inFlightViewModel.rawCounter.collectAsStateWithLifecycle()
   val currentTime by inFlightViewModel.counter.collectAsStateWithLifecycle()

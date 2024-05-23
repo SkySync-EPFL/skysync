@@ -53,10 +53,15 @@ import ch.epfl.skysync.ui.theme.veryLightGreen
  * @param paddingValues Padding values to apply around the chat interface.
  */
 @Composable
-fun ChatText(messages: List<ChatMessage>, onSend: (String) -> Unit, paddingValues: PaddingValues) {
+fun ChatText(
+    messages: List<ChatMessage>,
+    onSend: (String) -> Unit,
+    paddingValues: PaddingValues,
+    connectivityStatus: ConnectivityStatus
+) {
   Column(modifier = Modifier.padding(paddingValues).imePadding()) {
     ChatTextBody(messages, modifier = Modifier.weight(1f))
-    ChatInput(onSend)
+    ChatInput(onSend, connectivityStatus)
   }
 }
 /**
@@ -158,7 +163,7 @@ fun Message(
  *   parameter.
  */
 @Composable
-fun ChatInput(onSend: (String) -> Unit) {
+fun ChatInput(onSend: (String) -> Unit, connectivityStatus: ConnectivityStatus) {
   var text by remember { mutableStateOf("") }
   val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -192,7 +197,7 @@ fun ChatInput(onSend: (String) -> Unit) {
                 keyboardController?.hide()
               }
             },
-            enabled = text.isNotEmpty(),
+            enabled = text.isNotEmpty() && connectivityStatus.isOnline(),
             modifier =
                 Modifier.padding(start = 8.dp)
                     .background(if (text.isNotEmpty()) lightOrange else Color.Gray, CircleShape)

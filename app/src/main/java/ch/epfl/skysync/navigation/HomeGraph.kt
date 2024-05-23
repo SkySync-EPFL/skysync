@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.models.message.Message
@@ -22,10 +23,23 @@ fun NavGraphBuilder.homeGraph(
     uid: String?,
     inFlightViewModel: InFlightViewModel? = null,
     messageListenerViewModel: MessageListenerViewModel? = null,
+    connectivityStatus: ConnectivityStatus
 ) {
   navigation(startDestination = Route.LOADING, route = Route.MAIN) {
-    adminGraph(repository, navController, uid, inFlightViewModel, messageListenerViewModel)
-    crewPilotGraph(repository, navController, uid, inFlightViewModel, messageListenerViewModel)
+    adminGraph(
+        repository,
+        navController,
+        uid,
+        inFlightViewModel,
+        messageListenerViewModel,
+        connectivityStatus)
+    crewPilotGraph(
+        repository,
+        navController,
+        uid,
+        inFlightViewModel,
+        messageListenerViewModel,
+        connectivityStatus)
     composable(Route.LOADING) {
       val flightsOverviewViewModel = FlightsViewModel.createViewModel(repository, uid)
       flightsOverviewViewModel.refresh()

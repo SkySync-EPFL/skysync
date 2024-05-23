@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.BASE_ROLES
@@ -43,6 +44,7 @@ fun NavGraphBuilder.crewPilotGraph(
     uid: String?,
     inFlightViewModel: InFlightViewModel? = null,
     messageListenerViewModel: MessageListenerViewModel? = null,
+    connectivityStatus: ConnectivityStatus
 ) {
   navigation(startDestination = Route.CREW_HOME, route = Route.CREW_PILOT) {
     personalCalendar(repository, navController, uid)
@@ -66,7 +68,7 @@ fun NavGraphBuilder.crewPilotGraph(
             navController.navigate(Route.CREW_HOME)
             return@composable
           }
-          TextScreen(navController, groupId, chatViewModel)
+          TextScreen(navController, groupId, chatViewModel, connectivityStatus)
         }
     composable(Route.CREW_HOME) { entry ->
 
@@ -151,7 +153,8 @@ fun NavGraphBuilder.crewPilotGraph(
       LaunchFlight(
           navController = navController,
           flightViewModel = viewModel,
-          inFlightViewModel = inFlightViewModel!!)
+          inFlightViewModel = inFlightViewModel!!,
+          connectivityStatus)
     }
   }
 }
