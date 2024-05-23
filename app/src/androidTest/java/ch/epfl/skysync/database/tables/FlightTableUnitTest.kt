@@ -1,13 +1,17 @@
 package ch.epfl.skysync.database.tables
 
+import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.skysync.database.DatabaseSetup
+import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.flight.Role
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.models.reports.FlightReport
+import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
@@ -20,6 +24,7 @@ class FlightTableUnitTest {
   private val db = FirestoreDatabase(useEmulator = true)
   private val dbs = DatabaseSetup()
   private val flightTable = FlightTable(db)
+  private val reportTable = ReportTable(db)
   private val flightMemberTable = FlightMemberTable(db)
 
   @Before
@@ -30,7 +35,7 @@ class FlightTableUnitTest {
 
   @Test
   fun addAndRetrieveFinishFlight() = runTest {
-    val finishedFlight =
+    var finishedFlight =
         dbs.flight4.finishFlight(
             takeOffTime = LocalTime.of(12, 0, 0),
             landingTime = LocalTime.of(14, 0, 0),
@@ -38,7 +43,29 @@ class FlightTableUnitTest {
             landingLocation = LocationPoint(0, 0.1, 0.1, "LandingSpot"),
             flightTime = 2,
             flightTrace = FlightTrace(dbs.flight4.id, listOf()))
+    var report1 =
+        FlightReport(
+            author = "ME",
+            begin =
+                DateUtility.localDateAndTimeToDate(
+                    LocalDate.of(2021, 1, 1),
+                    LocalTime.of(12, 0, 0),
+                ),
+            end =
+                DateUtility.localDateAndTimeToDate(
+                    LocalDate.of(2021, 1, 1),
+                    LocalTime.of(12, 2, 0),
+                ),
+            pauseDuration = 10,
+            comments = "hola",
+        )
+    finishedFlight = finishedFlight.copy(reportId = listOf(report1))
     flightTable.update(dbs.flight4.id, finishedFlight, onError = { assertNull(it) })
+    val foundReports = reportTable.retrieveReports(dbs.flight4.id)
+    assertEquals(1, foundReports.size)
+    val reportId = foundReports[0].id
+    report1 = report1.copy(id = reportId)
+    finishedFlight = finishedFlight.copy(reportId = listOf(report1))
     val retrievedFlight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) })
     assertEquals(finishedFlight, retrievedFlight)
   }
@@ -79,9 +106,22 @@ class FlightTableUnitTest {
 
     val flights = flightTable.getAll(onError = { assertNull(it) })
 
-    assertEquals(7, flightMembers.size)
+    assertEquals(11, flightMembers.size)
+    Log.d(
+        "flights",
+        listOf(dbs.flight2, dbs.flight3, dbs.flight4, dbs.finishedFlight1, dbs.finishedFlight2)
+            .sortedBy { f -> f.id }
+            .toString())
+    Log.d("flights expected", flights.sortedBy { f -> f.id }.toString())
+
     assertEquals(
-        listOf(dbs.flight2, dbs.flight3, dbs.flight4).sortedBy { f -> f.id },
-        flights.sortedBy { f -> f.id })
+        listOf(
+                dbs.flight2.id,
+                dbs.flight3.id,
+                dbs.flight4.id,
+                dbs.finishedFlight1.id,
+                dbs.finishedFlight2.id)
+            .sortedBy { it },
+        flights.map { f -> f.id }.sortedBy { it })
   }
 }
