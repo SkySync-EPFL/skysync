@@ -20,8 +20,6 @@ import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.message.MessageGroup
 import ch.epfl.skysync.models.user.Admin
-import ch.epfl.skysync.models.user.Crew
-import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
 import java.time.LocalDate
@@ -103,24 +101,21 @@ class FlightsViewModel(
   fun refreshUserAndFlights() =
       viewModelScope.launch {
         _currentUser.value = repository.userTable.get(userId ?: UNSET_ID, onError = { onError(it) })
-        if (_currentUser.value is Admin) {
+        lateinit var fetchedFlights: List<Flight>
+        if (_currentUser.value!! is Admin) {
           Log.d("FlightsViewModel", "Admin user loaded")
-          _currentFlights.value = repository.flightTable.getAll(onError = { onError(it) })
-        } else if (_currentUser.value is Pilot || _currentUser.value is Crew) {
-          val fetchedFlights =
+          fetchedFlights = repository.flightTable.getAll(onError = { onError(it) })
+        } else {
+          fetchedFlights =
               repository.userTable.retrieveAssignedFlights(
                   repository.flightTable, userId ?: UNSET_ID, onError = { onError(it) })
-            _currentFlights.value = fetchedFlights.map {
-                if (it is FinishedFlight) {
-                    it.updateFlightStatus(_currentUser.value!!)
-                } else {
-                    it
-                }
-            }
           Log.d("FlightsViewModel", "Pilot or Crew user loaded")
         }
+        _currentFlights.value =
+            FinishedFlight.filterCompletedFlights(fetchedFlights, _currentUser.value!!)
       }
 
+  /** updates */
   fun hasDateAndTimeSlot(): Boolean {
     return date != null && timeSlot != null
   }
