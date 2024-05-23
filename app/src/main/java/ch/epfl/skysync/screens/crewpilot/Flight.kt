@@ -38,6 +38,7 @@ import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.location.UserMetrics
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -72,8 +73,9 @@ fun UserLocationMarker(location: Location, user: User) {
 fun FlightScreen(
     navController: NavHostController,
     inFlightViewModel: InFlightViewModel,
-    uid: String
+    uid: String,
 ) {
+
   val loading by inFlightViewModel.loading.collectAsStateWithLifecycle()
   val rawTime by inFlightViewModel.rawCounter.collectAsStateWithLifecycle()
   val currentTime by inFlightViewModel.counter.collectAsStateWithLifecycle()
@@ -159,7 +161,10 @@ fun FlightScreen(
                       isPilot = inFlightViewModel.isPilot(),
                       onStart = { inFlightViewModel.startFlight() },
                       onStop = { inFlightViewModel.stopFlight() },
-                      onClear = { inFlightViewModel.clearFlight() },
+                      onClear = {
+                        inFlightViewModel.clearFlight()
+                        navController.navigate(Route.CREW_HOME)
+                      },
                       onQuitDisplay = {
                         inFlightViewModel.quitDisplayFlightTrace()
                         navController.popBackStack()

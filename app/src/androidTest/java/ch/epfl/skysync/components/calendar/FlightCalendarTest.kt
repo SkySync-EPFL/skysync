@@ -1,5 +1,6 @@
 package ch.epfl.skysync.screens.calendar
 
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
@@ -13,6 +14,7 @@ import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
+import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.components.getStartOfWeek
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
@@ -44,10 +46,16 @@ class FlightCalendarTest {
       navController.navigatorProvider.addNavigator(ComposeNavigator())
       val inFlightViewModel = InFlightViewModel.createViewModel(repository)
       val messageListenerViewModel = MessageListenerViewModel.createViewModel()
-
+      val context = LocalContext.current
+      val connectivityStatus = remember { ContextConnectivityStatus(context) }
       NavHost(navController = navController, startDestination = Route.MAIN) {
         homeGraph(
-            repository, navController, dbs.crew1.id, inFlightViewModel, messageListenerViewModel)
+            repository,
+            navController,
+            dbs.crew1.id,
+            inFlightViewModel,
+            messageListenerViewModel,
+            connectivityStatus)
       }
     }
     composeTestRule.waitUntil {

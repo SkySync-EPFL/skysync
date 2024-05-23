@@ -1,7 +1,9 @@
 package ch.epfl.skysync.components
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
@@ -38,7 +40,10 @@ class ChatTextUiTest {
   @Before
   fun setUpNavHost() {
     composeTestRule.setContent {
-      ChatText(messages = list, onSend = {}, paddingValues = PaddingValues(0.dp))
+      val context = LocalContext.current
+      val connectivityStatus = remember { ContextConnectivityStatus(context) }
+      ChatText(
+          messages = list, onSend = {}, paddingValues = PaddingValues(0.dp), connectivityStatus)
     }
   }
 

@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.AdminBottomBar
@@ -185,7 +186,8 @@ fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>, count
 @Composable
 fun UserManagementScreen(
     navController: NavHostController,
-    userManagementViewModel: UserManagementViewModel
+    userManagementViewModel: UserManagementViewModel,
+    connectivityStatus: ConnectivityStatus
 ) {
   var searchQuery by remember { mutableStateOf("") }
   var selectedRole by remember { mutableStateOf<RoleType?>(null) }
@@ -203,18 +205,20 @@ fun UserManagementScreen(
       modifier = Modifier.fillMaxSize(),
       bottomBar = { AdminBottomBar(navController) },
       floatingActionButton = {
-        Surface(
-            modifier = Modifier.size(56.dp),
-            shape = CircleShape,
-            color = Color.Transparent,
-            border = BorderStroke(2.dp, Color.Black)) {
-              FloatingActionButton(
-                  modifier = Modifier.fillMaxSize(1f),
-                  onClick = { navController.navigate(Route.ADD_USER) },
-                  containerColor = Color.White) {
-                    Icon(imageVector = Icons.Filled.Add, contentDescription = "Add User")
-                  }
-            }
+        if (connectivityStatus.isOnline()) {
+          Surface(
+              modifier = Modifier.size(56.dp),
+              shape = CircleShape,
+              color = Color.Transparent,
+              border = BorderStroke(2.dp, Color.Black)) {
+                FloatingActionButton(
+                    modifier = Modifier.fillMaxSize(1f),
+                    onClick = { navController.navigate(Route.ADD_USER) },
+                    containerColor = Color.White) {
+                      Icon(imageVector = Icons.Filled.Add, contentDescription = "Add User")
+                    }
+              }
+        }
       },
       floatingActionButtonPosition = FabPosition.Center) { padding ->
         Column(modifier = Modifier.fillMaxSize()) {

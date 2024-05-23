@@ -19,6 +19,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.models.reports.Report
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
@@ -40,6 +41,7 @@ class FlightTable(db: FirestoreDatabase) :
   private val vehicleTable = VehicleTable(db)
   private val flightMemberTable = FlightMemberTable(db)
   private val userTable = UserTable(db)
+  private val reportTable = ReportTable(db)
 
   /** Create a [Flight] instance from the flight schema and the retrieved entities */
   private fun makeFlight(
@@ -49,7 +51,8 @@ class FlightTable(db: FirestoreDatabase) :
       basket: Basket?,
       vehicles: List<Vehicle>,
       team: Team,
-      flightTrace: FlightTrace?
+      flightTrace: FlightTrace?,
+      reports: List<Report>? = emptyList(),
   ): Flight {
     return when (schema.status!!) {
       FlightStatus.PLANNED ->
@@ -113,7 +116,7 @@ class FlightTable(db: FirestoreDatabase) :
                   LocationPoint(
                       0, schema.landingLocationLat!!, schema.landingLocationLong!!, "LandingSpot"),
               flightTime = schema.flightTime!!,
-              reportId = listOf(), // Todo: retrieve reports
+              reportId = reports!!,
               flightTrace = flightTrace!!)
     }
   }
@@ -238,6 +241,7 @@ class FlightTable(db: FirestoreDatabase) :
     var basket: Basket? = null
     var vehicles: List<Vehicle>? = null
     var team: Team? = null
+    var reports: List<Report>? = null
     val jobs =
         listOf(
             launch {
@@ -260,17 +264,22 @@ class FlightTable(db: FirestoreDatabase) :
                 // report
               }
             },
+            launch {
+              if (flightSchema.id == null) return@launch
+              reports = reportTable.retrieveReports(flightSchema.id)
+            },
             launch { vehicles = retrieveVehicles(flightSchema) },
             launch { team = retrieveTeam(flightSchema) })
     jobs.forEach { it.join() }
     makeFlight(
-        flightSchema,
-        flightType!!,
-        balloon,
-        basket,
-        vehicles!!,
-        team!!,
-        FlightTrace(flightSchema.id!!, emptyList()))
+        schema = flightSchema,
+        flightType = flightType!!,
+        balloon = balloon,
+        basket = basket,
+        vehicles = vehicles!!,
+        team = team!!,
+        reports = reports,
+        flightTrace = FlightTrace(flightSchema.id!!, emptyList()))
   }
 
   override suspend fun get(id: String, onError: ((Exception) -> Unit)?): Flight? {
@@ -333,6 +342,9 @@ class FlightTable(db: FirestoreDatabase) :
     return withErrorCallback(onError) {
       val flightId = db.addItem(path, FlightSchema.fromModel(item))
       addTeam(flightId, item.team)
+      if (item is FinishedFlight && item.reportId.isNotEmpty()) {
+        reportTable.addAll(item.reportId, flightId)
+      }
       flightId
     }
   }
@@ -351,7 +363,12 @@ class FlightTable(db: FirestoreDatabase) :
         withErrorCallback(onError) {
           listOf(
                   launch { db.setItem(path, id, FlightSchema.fromModel(item)) },
-                  launch { setTeam(id, item.team) })
+                  launch { setTeam(id, item.team) },
+                  launch {
+                    if (item is FinishedFlight && item.reportId.isNotEmpty()) {
+                      reportTable.addAll(item.reportId, id)
+                    }
+                  })
               .forEach { it.join() }
         }
       }
