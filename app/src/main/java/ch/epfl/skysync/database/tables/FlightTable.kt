@@ -19,7 +19,6 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.LocationPoint
-import ch.epfl.skysync.models.reports.FlightReport
 import ch.epfl.skysync.models.reports.Report
 import ch.epfl.skysync.models.user.User
 import com.google.firebase.firestore.FieldPath
@@ -52,7 +51,8 @@ class FlightTable(db: FirestoreDatabase) :
       basket: Basket?,
       vehicles: List<Vehicle>,
       team: Team,
-      flightTrace: FlightTrace?
+      flightTrace: FlightTrace?,
+      reports: List<Report>? = emptyList(),
   ): Flight {
     return when (schema.status!!) {
       FlightStatus.PLANNED ->
@@ -116,7 +116,7 @@ class FlightTable(db: FirestoreDatabase) :
                   LocationPoint(
                       0, schema.landingLocationLat!!, schema.landingLocationLong!!, "LandingSpot"),
               flightTime = schema.flightTime!!,
-              reportId = listOf(), // Todo: retrieve reports
+              reportId = reports!!,
               flightTrace = flightTrace!!)
     }
   }
@@ -272,13 +272,14 @@ class FlightTable(db: FirestoreDatabase) :
             launch { team = retrieveTeam(flightSchema) })
     jobs.forEach { it.join() }
     makeFlight(
-        flightSchema,
-        flightType!!,
-        balloon,
-        basket,
-        vehicles!!,
-        team!!,
-        FlightTrace(flightSchema.id!!, emptyList()))
+        schema = flightSchema,
+        flightType = flightType!!,
+        balloon = balloon,
+        basket = basket,
+        vehicles = vehicles!!,
+        team = team!!,
+        reports = reports,
+        flightTrace = FlightTrace(flightSchema.id!!, emptyList()))
   }
 
   override suspend fun get(id: String, onError: ((Exception) -> Unit)?): Flight? {
@@ -342,7 +343,7 @@ class FlightTable(db: FirestoreDatabase) :
       val flightId = db.addItem(path, FlightSchema.fromModel(item))
       addTeam(flightId, item.team)
       if (item is FinishedFlight && item.reportId.isNotEmpty()) {
-        reportTable.addAll(item.reportId as List<FlightReport>, flightId)
+        reportTable.addAll(item.reportId, flightId)
       }
       flightId
     }
@@ -362,7 +363,12 @@ class FlightTable(db: FirestoreDatabase) :
         withErrorCallback(onError) {
           listOf(
                   launch { db.setItem(path, id, FlightSchema.fromModel(item)) },
-                  launch { setTeam(id, item.team) })
+                  launch { setTeam(id, item.team) },
+                  launch {
+                    if (item is FinishedFlight && item.reportId.isNotEmpty()) {
+                      reportTable.addAll(item.reportId, id)
+                    }
+                  })
               .forEach { it.join() }
         }
       }
