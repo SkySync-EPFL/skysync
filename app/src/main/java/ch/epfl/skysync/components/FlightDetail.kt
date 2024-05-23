@@ -37,10 +37,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.database.DateUtility
-import ch.epfl.skysync.database.DateUtility.dateToLocalDate
 import ch.epfl.skysync.database.DateUtility.formatTime
-import ch.epfl.skysync.database.DateUtility.localDateAndTimeToDate
-import ch.epfl.skysync.database.DateUtility.stringToLocalTime
 import ch.epfl.skysync.database.FlightStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
@@ -237,19 +234,17 @@ fun ConfirmFlightTimes(confirmedFlight: ConfirmedFlight, padding: Dp, cardColor:
 fun FinishedFlightTimes(finishedFlight: FinishedFlight, padding: Dp, cardColor: Color) {
   val times =
       mapOf(
-          "Takeoff time" to finishedFlight.takeOffTime,
-          "Landing time" to finishedFlight.landingTime,
-          "Flight duration" to
-              localDateAndTimeToDate(
-                  dateToLocalDate(finishedFlight.flightTime),
-                  stringToLocalTime(formatTime(finishedFlight.flightTime))))
+          "Takeoff time" to
+              DateUtility.localTimeToString(
+                  DateUtility.dateToLocalTime(finishedFlight.takeOffTime)),
+          "Landing time" to
+              DateUtility.localTimeToString(
+                  DateUtility.dateToLocalTime(finishedFlight.landingTime)),
+          "Flight duration" to formatTime(finishedFlight.flightTime))
 
   Card(colors = CardDefaults.cardColors(cardColor)) {
     LargeTitle(title = "Operational times", padding = padding, color = Color.Black)
-    times.forEach { (label, time) ->
-      DisplaySingleMetric(
-          metric = label, value = DateUtility.localTimeToString(DateUtility.dateToLocalTime(time)))
-    }
+    times.forEach { (label, time) -> DisplaySingleMetric(metric = label, value = time) }
   }
 }
 
