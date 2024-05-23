@@ -1,6 +1,5 @@
 package ch.epfl.skysync.components.forms
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,23 +8,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -62,14 +53,12 @@ import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.hasError
 import ch.epfl.skysync.util.inputNonNullValidation
 import ch.epfl.skysync.util.nbPassengerInputValidation
-import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FlightForm(
+fun FlightForm2(
     navController: NavHostController,
     currentFlight: Flight?,
     modifyFlight: Boolean,
@@ -353,55 +342,8 @@ fun FlightForm(
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerField(
-    dateValue: LocalDate,
-    defaultPadding: Dp,
-    openDatePicker: Boolean,
-    onclickConfirm: () -> Unit,
-    onclickDismiss: () -> Unit,
-    onclickField: () -> Unit,
-    datePickerState: DatePickerState,
-    today: Long
-) {
-  Text(
-      modifier = Modifier.padding(horizontal = defaultPadding),
-      text = "Date",
-      style = MaterialTheme.typography.headlineSmall)
-  if (openDatePicker) {
-
-    DatePickerDialog(
-        onDismissRequest = {},
-        confirmButton = { TextButton(onClick = onclickConfirm) { Text("OK") } },
-        dismissButton = { TextButton(onClick = onclickDismiss) { Text("Cancel") } }) {
-          // The date picker is only available for the current date and later
-          val todayDate =
-              Instant.ofEpochMilli(today)
-                  .atZone(ZoneId.of("GMT"))
-                  .toLocalDate()
-                  .atStartOfDay(ZoneId.of("GMT"))
-                  .toInstant()
-                  .toEpochMilli()
-          DatePicker(state = datePickerState, dateValidator = { it >= todayDate })
-        }
-  }
-
-  OutlinedTextField(
-      modifier =
-          Modifier.fillMaxWidth()
-              .padding(defaultPadding)
-              .clickable(onClick = onclickField)
-              .testTag("Date Field"),
-      enabled = false,
-      value =
-          String.format(
-              "%02d/%02d/%04d", dateValue.dayOfMonth, dateValue.monthValue, dateValue.year),
-      onValueChange = {})
-}
-
-@Composable
-fun RoleField(
+fun RoleField2(
     defaultPadding: Dp,
     role: Role,
     index: Int,
@@ -437,133 +379,5 @@ fun RoleField(
                   imageVector = Icons.Default.Delete,
                   contentDescription = "Delete $specialName Crew Member")
             }
-      }
-}
-
-@Composable
-fun EnterPassengerNumber(
-    defaultPadding: Dp,
-    nbPassengersValue: MutableState<String>,
-    nbPassengersValueError: Boolean
-) {
-  TitledInputTextField(
-      padding = defaultPadding,
-      title = "Number of passengers",
-      value = nbPassengersValue.value,
-      onValueChange = { value -> nbPassengersValue.value = value.filter { it.isDigit() } },
-      isError = nbPassengersValueError,
-      messageError = if (nbPassengersValueError) "Please enter a valid number" else "",
-      keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-  )
-}
-
-@Composable
-fun AddRole(
-    showAddMemberDialog: Boolean,
-    onclickDismiss: () -> Unit,
-    defaultPadding: Dp,
-    allRoleTypes: List<RoleType>,
-    allAvailableUsers: List<User>,
-    onConfirm: (RoleType, User?) -> Unit,
-) {
-  var addNewRole: RoleType? by remember { mutableStateOf(null) }
-  var roleNotChosenError: Boolean by remember { mutableStateOf(false) }
-  var addNewAssignee: User? by remember { mutableStateOf(null) }
-  if (showAddMemberDialog) {
-    AlertDialog(
-        modifier = Modifier.testTag("User Dialog Field"),
-        onDismissRequest = {
-          onclickDismiss()
-          addNewRole = null
-          roleNotChosenError = false
-          addNewAssignee = null
-        },
-        title = { Text("Add New Member") },
-        text = {
-          Column {
-            CustomDropDownMenu(
-                defaultPadding = defaultPadding,
-                title = "Role Type",
-                value = addNewRole,
-                onclickMenu = { item ->
-                  addNewRole = item
-                  roleNotChosenError = false
-                },
-                items = allRoleTypes,
-                showString = { it?.description ?: "choose a role *" },
-                isError = roleNotChosenError,
-                messageError = "Please choose a role type")
-            CustomDropDownMenu(
-                defaultPadding = defaultPadding,
-                title = "Assigned User",
-                value = addNewAssignee,
-                onclickMenu = { item -> addNewAssignee = item },
-                items = allAvailableUsers,
-                showString = { it?.name() ?: "choose a user" },
-            )
-          }
-        },
-        confirmButton = {
-          Button(
-              modifier = Modifier.testTag("Add Role Button"),
-              onClick = {
-                roleNotChosenError = addNewRole == null
-                if (!roleNotChosenError) {
-                  onConfirm(addNewRole!!, addNewAssignee)
-                  addNewRole = null
-                  roleNotChosenError = false
-                  addNewAssignee = null
-                }
-              }) {
-                Text("Add")
-              }
-        },
-        dismissButton = {
-          Button(
-              onClick = {
-                onclickDismiss()
-                addNewRole = null
-                roleNotChosenError = false
-                addNewAssignee = null
-              }) {
-                Text("Cancel")
-              }
-        })
-  }
-}
-
-@Composable
-fun TeamHeader(
-    defaultPadding: Dp,
-    crewMembers: MutableList<Role>,
-    allRoleTypes: List<RoleType>,
-    availableUsers: List<User>,
-) {
-  var showAddMemberDialog by remember { mutableStateOf(false) }
-  Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            modifier = Modifier.padding(horizontal = defaultPadding),
-            text = "Team",
-            style = MaterialTheme.typography.headlineSmall,
-        )
-        IconButton(
-            modifier = Modifier.padding(horizontal = defaultPadding).testTag("Add Crew Button"),
-            onClick = { showAddMemberDialog = true },
-        ) {
-          Icon(Icons.Default.Add, contentDescription = "Add Crew Member")
-        }
-        AddRole(
-            showAddMemberDialog = showAddMemberDialog,
-            onclickDismiss = { showAddMemberDialog = false },
-            defaultPadding = defaultPadding,
-            allRoleTypes = allRoleTypes,
-            allAvailableUsers = availableUsers,
-            onConfirm = { roleType, user ->
-              crewMembers.add(Role(roleType, user))
-              showAddMemberDialog = false
-            })
       }
 }

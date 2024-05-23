@@ -1,5 +1,7 @@
 package ch.epfl.skysync.components
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
@@ -79,20 +81,24 @@ class FlightFormTest {
               email = "user@gmail.com",
           )
 
-      val availableUsers = listOf(user1, user2)
       val allRoleTypes = RoleType.entries
+      val allFlightsState = remember { mutableStateOf(allFlights) }
+      val allVehiclesState = remember { mutableStateOf(allVehicles) }
+      val allBalloonsState = remember { mutableStateOf(allBalloons) }
+      val allBasketsState = remember { mutableStateOf(allBaskets) }
+      val availableUsersState = remember { mutableStateOf(listOf(user1, user2)) }
       navController = TestNavHostController(LocalContext.current)
       FlightForm(
           currentFlight = null,
           navController = navController,
-          modifyMode = false,
+          modifyFlight = false,
           title = title,
-          allFlightTypes = allFlights,
+          allFlightTypes = allFlightsState,
           allRoleTypes = allRoleTypes,
-          availableVehicles = allVehicles,
-          availableBalloons = allBalloons,
-          availableBaskets = allBaskets,
-          availableUsers = availableUsers,
+          availableVehicles = allVehiclesState,
+          availableBalloons = allBalloonsState,
+          availableBaskets = allBasketsState,
+          availableUsers = availableUsersState,
           onSaveFlight = { _ -> },
           refreshDate = { _, _ -> },
       )
