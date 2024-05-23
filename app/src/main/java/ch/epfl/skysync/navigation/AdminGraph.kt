@@ -1,5 +1,7 @@
 package ch.epfl.skysync.navigation
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -19,8 +21,10 @@ import ch.epfl.skysync.screens.admin.AdminStatsScreen
 import ch.epfl.skysync.screens.admin.AdminTextScreen
 import ch.epfl.skysync.screens.admin.ConfirmationScreen
 import ch.epfl.skysync.screens.admin.ModifyFlightScreen
+import ch.epfl.skysync.screens.admin.ReportDetailsScreen
 import ch.epfl.skysync.screens.admin.UserManagementScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
+import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerViewModel
@@ -121,5 +125,13 @@ fun NavGraphBuilder.adminGraph(
               viewModel = flightsViewModel,
               inFlightViewModel = inFlightViewModel)
         }
+      composable(Route.REPORT+ "/{flight ID}",arguments = listOf(navArgument("flight ID") { type = NavType.StringType }))
+      { entry ->
+          val flightId = entry.arguments?.getString("flight ID") ?: UNSET_ID
+          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
+          finishedFlightsViewModel.refresh()
+          finishedFlightsViewModel.getAllReports(flightId)
+          ReportDetailsScreen(flightId, finishedFlightsViewModel,false, uid ,navController)
+      }
   }
 }

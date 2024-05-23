@@ -327,7 +327,7 @@ class DatabaseSetup {
           begin = takeOffTime2,
           end = landingTime2,
           pauseDuration = 0,
-          comments = "Some comments",
+          comments = "Some comments 1",
       )
   var report2 =
       CrewReport(
@@ -336,7 +336,7 @@ class DatabaseSetup {
           begin = takeOffTime2,
           end = landingTime2,
           pauseDuration = 0,
-          comments = "Some comments",
+          comments = "Some comments 2",
       )
 
   /**

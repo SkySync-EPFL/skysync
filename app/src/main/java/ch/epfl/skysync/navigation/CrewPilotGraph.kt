@@ -1,5 +1,7 @@
 package ch.epfl.skysync.navigation
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -9,6 +11,7 @@ import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.models.UNSET_ID
+import ch.epfl.skysync.screens.admin.ReportDetailsScreen
 import ch.epfl.skysync.screens.crewpilot.ChatScreen
 import ch.epfl.skysync.screens.crewpilot.FlightDetailScreen
 import ch.epfl.skysync.screens.crewpilot.FlightScreen
@@ -39,12 +42,14 @@ fun NavGraphBuilder.crewPilotGraph(
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
           val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
+        val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository,uid!!)
           inFlightViewModel!!.init(uid!!)
           FlightDetailScreen(
               navController = navController,
               flightId = flightId,
               viewModel = flightsViewModel,
-              inFlightViewModel = inFlightViewModel)
+              inFlightViewModel = inFlightViewModel,
+              finishedFlightsViewModel = finishedFlightsViewModel)
         }
     composable(
         Route.CREW_TEXT + "/{Group ID}",
@@ -80,6 +85,14 @@ fun NavGraphBuilder.crewPilotGraph(
           ChatViewModel.createViewModel(uid!!, messageListenerViewModel!!, repository)
       ChatScreen(navController, chatViewModel)
     }
+      composable(Route.REPORT+ "/{flight ID}",arguments = listOf(navArgument("flight ID") { type = NavType.StringType }))
+           { entry ->
+          val flightId = entry.arguments?.getString("flight ID") ?: UNSET_ID
+               val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
+               finishedFlightsViewModel.refresh()
+               finishedFlightsViewModel.getAllReports(flightId)
+               ReportDetailsScreen(flightId, finishedFlightsViewModel,false, uid ,navController)
+      }
     composable(Route.FLIGHT) { FlightScreen(navController, inFlightViewModel!!, uid!!) }
     composable(
         Route.PILOT_REPORT + "/{flight ID}",

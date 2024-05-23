@@ -13,8 +13,10 @@ import ch.epfl.skysync.components.FlightDetails
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FinishedFlight
+import ch.epfl.skysync.models.user.Crew
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
+import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 
@@ -23,15 +25,18 @@ fun FlightDetailScreen(
     navController: NavHostController,
     flightId: String,
     viewModel: FlightsViewModel,
-    inFlightViewModel: InFlightViewModel
+    inFlightViewModel: InFlightViewModel,
+    finishedFlightsViewModel: FinishedFlightsViewModel
 ) {
 
   val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
+    val finishedFlight = finishedFlightsViewModel.getFlight(flightId).collectAsStateWithLifecycle()
+
   val user by viewModel.currentUser.collectAsStateWithLifecycle()
   Scaffold(
       topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
       containerColor = lightGray) { padding ->
-        if (flight == null || user == null) {
+        if ((flight == null || finishedFlight.value==null) || user == null) {
           LoadingComponent(isLoading = true, onRefresh = {}) {}
         } else {
           FlightDetails(flight = flight, padding = padding) {
@@ -41,14 +46,33 @@ fun FlightDetailScreen(
                   {},
                   false,
               )
-            } else if (flight is FinishedFlight) {
-              FinishedFlightDetailBottom(
-                  reportClick = { /*TODO*/},
-                  flightTraceClick = {
-                    inFlightViewModel.setCurrentFlight(flightId)
-                    inFlightViewModel.startDisplayFlightTrace()
-                    navController.navigate(Route.FLIGHT)
-                  })
+            } else {
+                if (finishedFlight.value == null) {
+                    FinishedFlightDetailBottom(
+
+                        reportClick = {
+                            var reportFound = false
+                            finishedFlight.value!!.reportId.forEach { report ->
+                                if (report.id == user!!.id) {
+                                    reportFound = true
+                                }
+                                if (reportFound) {
+                                    navController.navigate(Route.REPORT+"/{$flightId}")
+                                }
+                                else if(user!! is Crew){
+                                    navController.navigate(Route.CREW_REPORT+"/{$flightId}")
+                                }
+                                else{
+                                    navController.navigate(Route.PILOT_REPORT+"/{$flightId}")
+                                }
+                            }
+                        },
+                        flightTraceClick = {
+                            inFlightViewModel.setCurrentFlight(flightId)
+                            inFlightViewModel.startDisplayFlightTrace()
+                            navController.navigate(Route.FLIGHT)
+                        })
+                }
             }
           }
         }
