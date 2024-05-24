@@ -20,6 +20,7 @@ import ch.epfl.skysync.screens.admin.AdminTextScreen
 import ch.epfl.skysync.screens.admin.ConfirmationScreen
 import ch.epfl.skysync.screens.admin.ModifyFlightScreen
 import ch.epfl.skysync.screens.admin.UserManagementScreen
+import ch.epfl.skysync.screens.reports.ReportDetailsScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
@@ -121,11 +122,24 @@ fun NavGraphBuilder.adminGraph(
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
           val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
           inFlightViewModel!!.init(uid!!)
+          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
+          finishedFlightsViewModel.refresh()
+          finishedFlightsViewModel.getAllReports(flightId)
           AdminFlightDetailScreen(
               navController = navController,
               flightId = flightId,
               viewModel = flightsViewModel,
-              inFlightViewModel = inFlightViewModel)
+              inFlightViewModel = inFlightViewModel,
+              finishedFlightsViewModel = finishedFlightsViewModel)
+        }
+    composable(
+        Route.REPORT + "/{flight ID}",
+        arguments = listOf(navArgument("flight ID") { type = NavType.StringType })) { entry ->
+          val flightId = entry.arguments?.getString("flight ID") ?: UNSET_ID
+          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
+          finishedFlightsViewModel.refresh()
+          finishedFlightsViewModel.getAllReports(flightId)
+          ReportDetailsScreen(flightId, finishedFlightsViewModel, true, uid, navController)
         }
   }
 }
