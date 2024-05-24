@@ -225,6 +225,7 @@ fun FlightForm(
                           isSelectedUserAvailable.getOrDefault(role.assignedUser, true))
                 }
               }
+
               item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
