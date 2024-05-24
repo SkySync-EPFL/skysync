@@ -36,7 +36,6 @@ fun ReportDetail(
       verticalArrangement = Arrangement.spacedBy(defaultPadding)) {
         items(reportId!!) { report ->
           if (isAdmin || report.author == userId) {
-
             users
                 ?.filter { user -> (user.id == report.author) }
                 ?.forEach { user ->
@@ -86,6 +85,19 @@ fun ReportDetail(
                           value =
                               DateUtility.localDateToString(
                                   DateUtility.dateToLocalDate(report.landingTime)))
+                    }
+                    else -> {
+                      DisplaySingleMetric("Comments", report.comments)
+                      DisplaySingleMetric(
+                          metric = "Begin",
+                          value =
+                              DateUtility.localDateToString(
+                                  DateUtility.dateToLocalDate(report.begin)))
+                      DisplaySingleMetric(
+                          metric = "End",
+                          value =
+                              DateUtility.localDateToString(
+                                  DateUtility.dateToLocalDate(report.end)))
                     }
                   }
                 }

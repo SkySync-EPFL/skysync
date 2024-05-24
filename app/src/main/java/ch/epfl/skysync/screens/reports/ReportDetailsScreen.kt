@@ -1,4 +1,4 @@
-package ch.epfl.skysync.screens.admin
+package ch.epfl.skysync.screens.reports
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +17,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.LoadingComponent
-import ch.epfl.skysync.screens.reports.ReportDetail
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 
 @Composable

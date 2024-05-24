@@ -9,7 +9,6 @@ import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.screens.admin.ReportDetailsScreen
 import ch.epfl.skysync.screens.crewpilot.ChatScreen
 import ch.epfl.skysync.screens.crewpilot.FlightDetailScreen
 import ch.epfl.skysync.screens.crewpilot.FlightScreen
@@ -19,6 +18,7 @@ import ch.epfl.skysync.screens.crewpilot.StatsScreen
 import ch.epfl.skysync.screens.crewpilot.TextScreen
 import ch.epfl.skysync.screens.reports.CrewReportScreen
 import ch.epfl.skysync.screens.reports.PilotReportScreen
+import ch.epfl.skysync.screens.reports.ReportDetailsScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
@@ -41,8 +41,10 @@ fun NavGraphBuilder.crewPilotGraph(
           ->
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
           val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
-          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
           inFlightViewModel!!.init(uid!!)
+          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
+          finishedFlightsViewModel.refresh()
+          finishedFlightsViewModel.getAllReports(flightId)
           FlightDetailScreen(
               navController = navController,
               flightId = flightId,

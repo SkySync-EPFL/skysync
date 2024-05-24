@@ -19,8 +19,8 @@ import ch.epfl.skysync.screens.admin.AdminStatsScreen
 import ch.epfl.skysync.screens.admin.AdminTextScreen
 import ch.epfl.skysync.screens.admin.ConfirmationScreen
 import ch.epfl.skysync.screens.admin.ModifyFlightScreen
-import ch.epfl.skysync.screens.admin.ReportDetailsScreen
 import ch.epfl.skysync.screens.admin.UserManagementScreen
+import ch.epfl.skysync.screens.reports.ReportDetailsScreen
 import ch.epfl.skysync.viewmodel.ChatViewModel
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
@@ -139,7 +139,7 @@ fun NavGraphBuilder.adminGraph(
           val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
           finishedFlightsViewModel.refresh()
           finishedFlightsViewModel.getAllReports(flightId)
-          ReportDetailsScreen(flightId, finishedFlightsViewModel, false, uid, navController)
+          ReportDetailsScreen(flightId, finishedFlightsViewModel, true, uid, navController)
         }
   }
 }
