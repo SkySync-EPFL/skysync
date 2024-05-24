@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.forms.FlightForm
-import ch.epfl.skysync.components.forms.FlightForm2
 import ch.epfl.skysync.models.flight.PlannedFlight
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.navigation.Route

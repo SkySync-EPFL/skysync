@@ -24,11 +24,10 @@ fun ModifyFlightScreen(
   val availableUsers = viewModel.availableUsers.collectAsStateWithLifecycle()
   val allRoleTypes = RoleType.entries
 
-
   if (flightToModify.value != null) {
     viewModel.setFlight(flightToModify.value!!)
-      println(flightToModify)
-      println(allBaskets)
+    println(flightToModify)
+    println(allBaskets)
   }
 
   FlightForm(
