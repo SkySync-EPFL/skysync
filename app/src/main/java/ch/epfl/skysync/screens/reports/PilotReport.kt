@@ -143,7 +143,6 @@ fun PilotReportScreen(
               if (!hasError(errorPax)) {
                 val report =
                     PilotReport(
-                        // todo : add flight id to connect fully
                         author = pilot.value!!.id,
                         effectivePax = pax.toInt(),
                         takeOffTime = takeoffTime,

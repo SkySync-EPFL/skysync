@@ -56,13 +56,6 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
     refreshUserAndFlights()
   }
 
-  fun getUserWithId(id: String) {
-    viewModelScope.launch {
-      _currentUser.value = repository.userTable.get(id ?: UNSET_ID, onError = { onError(it) })
-      refreshUserAndFlights().join()
-    }
-  }
-
   private fun refreshUser() =
       viewModelScope.launch {
         _currentUser.value = repository.userTable.get(userId ?: UNSET_ID, onError = { onError(it) })
@@ -116,7 +109,7 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
             repository.reportTable.retrieveReports(flightId, onError = { onError(it) })
         _flightReportsUsers.value =
             _flightReports.value!!.map { report ->
-              repository.userTable.get(report.author ?: UNSET_ID, onError = { onError(it) })!!
+              repository.userTable.get(report.author, onError = { onError(it) })!!
             }
       }
 

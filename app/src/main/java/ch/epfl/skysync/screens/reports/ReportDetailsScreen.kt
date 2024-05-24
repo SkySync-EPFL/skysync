@@ -28,17 +28,17 @@ fun ReportDetailsScreen(
     navController: NavHostController
 ) {
   val flight by finishedFlightsViewModel.getFlight(flightId).collectAsStateWithLifecycle()
-  val reportId by finishedFlightsViewModel.flightReports.collectAsStateWithLifecycle()
+  val reportIds by finishedFlightsViewModel.flightReports.collectAsStateWithLifecycle()
   val users by finishedFlightsViewModel.flightReportsUsers.collectAsStateWithLifecycle()
-  if ((flight == null) || reportId == null) {
+  if ((flight == null) || reportIds == null) {
     LoadingComponent(isLoading = true, onRefresh = {}) {}
   } else {
 
-    val display = (isAdmin && reportId!!.isNotEmpty()) || reportId!!.any { (it.author == userId) }
+    val display = (isAdmin && reportIds!!.isNotEmpty()) || reportIds!!.any { (it.author == userId) }
     Column() {
       CustomTopAppBar(navController, "Report")
       if (display) {
-        ReportDetail(users, reportId, isAdmin, userId)
+        ReportDetail(users, reportIds, isAdmin, userId)
       } else {
         Column(
             modifier = Modifier.fillMaxSize().padding(PaddingValues(0.dp)).testTag("NoReports"),

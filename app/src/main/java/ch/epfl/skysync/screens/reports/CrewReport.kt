@@ -142,7 +142,6 @@ fun CrewReportScreen(
               if (!hasError(errorLittleChampagne, errorBigChampagne, errorPrestigeChampagne)) {
                 val report =
                     CrewReport(
-                        // todo setup flight id
                         author = crew.value!!.id,
                         begin = beginTime,
                         end = endTime,
