@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,7 +42,7 @@ fun ReportDetailsScreen(
         ReportDetail(users, reportId, isAdmin, userId, flightId)
       } else {
         Column(
-            modifier = Modifier.fillMaxSize().padding(PaddingValues(0.dp)),
+            modifier = Modifier.fillMaxSize().padding(PaddingValues(0.dp)).testTag("NoReports"),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally) {
               Text(text = "No reports to see right now", fontSize = 24.sp)

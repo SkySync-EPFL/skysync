@@ -1,6 +1,7 @@
 package ch.epfl.skysync.screens.reports
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.Repository
@@ -40,6 +41,6 @@ class ReportDetailsScreenTest {
   @Test
   fun showTitleAndMessageWhenEmpty() {
     composeTestRule.onNodeWithText("Report").assertExists()
-    composeTestRule.onNodeWithText("No reports done right now").assertExists()
+    composeTestRule.onNodeWithTag("NoReports").assertExists()
   }
 }
