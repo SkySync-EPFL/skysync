@@ -35,7 +35,7 @@ fun ReportDetailsScreen(
     LoadingComponent(isLoading = true, onRefresh = {}) {}
   } else {
 
-    val display = isAdmin || reportId!!.any { (it.author == userId && it.id == flightId) }
+    val display = isAdmin || reportId!!.any { (it.author == userId) }
     Column() {
       CustomTopAppBar(navController, "Report")
       if (display) {

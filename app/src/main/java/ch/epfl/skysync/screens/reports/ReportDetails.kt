@@ -38,7 +38,7 @@ fun ReportDetail(
           if (isAdmin || report.author == userId) {
 
             users
-                ?.filter { user -> (user.id == report.author && report.id == flightId) }
+                ?.filter { user -> (user.id == report.author) }
                 ?.forEach { user ->
                   Row(verticalAlignment = Alignment.CenterVertically) {
                     HeaderTitle(title = user.name(), padding = defaultPadding, color = Color.Black)
