@@ -1,12 +1,10 @@
 package ch.epfl.skysync.screens.admin
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -133,7 +131,7 @@ fun FlightDetailBottom(
       Row(modifier = Modifier.fillMaxWidth(0.9f / 3 / (1 - 0.05f)).testTag("DeleteButton")) {
         TextButton(
             onClick = { deleteClick() },
-            shape = leftCornerRounded,
+            shape = LEFT_CORNER_ROUNDED,
             border = BorderStroke(1.dp, Color.Black)) {
               Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                 Text(
@@ -167,7 +165,7 @@ fun FlightDetailBottom(
                   .testTag("ConfirmButton")) {
             TextButton(
                 onClick = { confirmClick() },
-                shape = rightCornerRounded,
+                shape = RIGHT_CORNER_ROUNDED,
                 border = BorderStroke(1.dp, Color.Black)) {
                   Row(
                       horizontalArrangement = Arrangement.Center,

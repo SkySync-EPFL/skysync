@@ -23,47 +23,86 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ch.epfl.skysync.database.DateUtility.localDateToWeekdayMonthDay
 import ch.epfl.skysync.models.flight.Flight
+import ch.epfl.skysync.models.flight.FlightStatus
+import java.time.LocalDate
 
+
+/**
+ * represents a card for a flight*
+ * @param flight the flight to display
+ * @param onFlightClick the action to perform when the card is clicked
+ **/
 @Composable
 fun FlightCard(flight: Flight, onFlightClick: (String) -> Unit) {
-  // Card for an individual flight, clickable to navigate to details
   Card(
       modifier =
-          Modifier.fillMaxWidth()
-              .clickable { onFlightClick(flight.id) }
-              .padding(vertical = 4.dp)
-              .testTag("flightCard${flight.id}"),
+      Modifier
+          .fillMaxWidth()
+          .clickable { onFlightClick(flight.id) }
+          .padding(vertical = 4.dp)
+          .testTag("flightCard${flight.id}"),
       elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
   ) {
     Surface(modifier = Modifier.fillMaxWidth(), color = flight.getFlightStatus().displayColor) {
       Row(
-          modifier = Modifier.fillMaxWidth().padding(16.dp),
+          modifier = Modifier
+              .fillMaxWidth()
+              .padding(16.dp),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.Start) {
-            Text(
-                text = localDateToWeekdayMonthDay(flight.date),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.alignByBaseline(),
-                textAlign = TextAlign.Center,
-                color = Color.Black)
-            // Spacer for horizontal separation
-            Spacer(modifier = Modifier.width(16.dp))
-            // Column for flight details
-            Column(modifier = Modifier.weight(0.7f).padding(start = 16.dp)) {
-              // Text for flight type and passenger count
-              Text(
-                  text = "${flight.flightType.name} - ${flight.nPassengers} pax",
-                  fontWeight = FontWeight.Bold,
-                  color = Color.Black)
-              // Text for flight time slot
-              Text(text = flight.timeSlot.toString(), color = Color.Gray)
-            }
-            Text(
-                text = flight.getFlightStatus().toString(),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.alignByBaseline(),
-                color = Color.Gray)
+          FlightDateText(date = flight.date, modifier = Modifier.alignByBaseline())
+          Spacer(modifier = Modifier.width(16.dp))
+          FlightDetailsColumn(flight = flight, modifier = Modifier
+              .weight(0.7f)
+              .padding(start = 16.dp))
+          FlightStatusText(status = flight.getFlightStatus(), Modifier.alignByBaseline())
           }
     }
   }
+}
+
+/**
+ * displays the date of a flight
+ */
+@Composable
+fun FlightDateText(date: LocalDate, modifier: Modifier) {
+    Text(
+        text = localDateToWeekdayMonthDay(date),
+        style = MaterialTheme.typography.titleMedium,
+        modifier = modifier, //modifier.alignByBaseline(),
+        textAlign = TextAlign.Center,
+        color = Color.Black
+    )
+}
+
+/**
+ * displays the flight details consisting of the flight type, passenger count and time slot
+
+ */
+@Composable
+fun FlightDetailsColumn(flight: Flight, modifier: Modifier) {
+    Column(modifier = modifier) {//Modifier.weight(0.7f).padding(start = 16.dp)
+        Text(
+            text = "${flight.flightType.name} - ${flight.nPassengers} pax",
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
+        Text(
+            text = flight.timeSlot.toString(),
+            color = Color.Gray
+        )
+    }
+}
+
+/**
+ * displays the flight status
+ */
+@Composable
+fun FlightStatusText(status: FlightStatus, modifier: Modifier) {
+    Text(
+        text = status.text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = Color.Gray,
+        modifier = modifier
+    )
 }

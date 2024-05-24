@@ -12,21 +12,21 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.FlightsList
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
+import ch.epfl.skysync.ui.theme.HOME_SCREEN_TITLE
 import ch.epfl.skysync.ui.theme.Purple40
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
-// Scaffold wrapper for the Home Screen
+/***
+ * represents the home screen of the crew/pilot
+ */
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
   val currentFlights by viewModel.currentFlights.collectAsStateWithLifecycle()
   Scaffold(
       modifier = Modifier.fillMaxSize(),
       bottomBar = { BottomBar(navController) },
-      floatingActionButton = {},
-      floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
-    FlightsList(currentFlights, Purple40, padding, "Upcoming flights") { selectedFlight ->
-      Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
+    FlightsList(currentFlights, Purple40, padding, HOME_SCREEN_TITLE) { selectedFlight ->
       navController.navigate(Route.CREW_FLIGHT_DETAILS + "/${selectedFlight}")
     }
   }
