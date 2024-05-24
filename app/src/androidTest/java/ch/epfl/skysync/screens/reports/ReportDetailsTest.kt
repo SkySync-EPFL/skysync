@@ -37,12 +37,12 @@ class ReportDetailsTest {
           id = "1234",
           author = pilot.id,
           effectivePax = 2,
-          takeOffTime = DateUtility.localDateToDate(LocalDate.of(2024, 5, 24)),
-          landingTime = DateUtility.localDateToDate(LocalDate.of(2024, 2, 22)),
+          takeOffTime = DateUtility.createDate(2002, 2, 2, 20, 21),
+          landingTime = DateUtility.createDate(2002, 2, 2, 23, 33),
           takeOffLocation = LocationPoint(21, 46.0, 6.0, "Lignon"),
           landingLocation = LocationPoint(21, 46.2, 6.1, "Libelules"),
-          begin = DateUtility.localDateToDate(LocalDate.of(2024, 1, 11)),
-          end = DateUtility.localDateToDate(LocalDate.of(2024, 11, 26)),
+          begin = DateUtility.createDate(2004, 2, 2, 12, 47),
+          end = DateUtility.createDate(2002, 2, 2, 9, 12),
           pauseDuration = 0,
           comments = "Some comments that is interesting",
       )
@@ -74,24 +74,18 @@ class ReportDetailsTest {
 
   @Before
   fun setUp() = runTest {
-    composeTestRule.setContent {
-      ReportDetail(listOf(pilot), listOf(report), false, pilot.id, flight.id)
-    }
+    composeTestRule.setContent { ReportDetail(listOf(pilot), listOf(report), false, pilot.id) }
   }
 
   @Test
   fun showPilotReportStats() {
     helper("Comments", report.comments)
-    helper("Begin", DateUtility.localDateToString(DateUtility.dateToLocalDate(report.begin)))
-    helper("End", DateUtility.localDateToString(DateUtility.dateToLocalDate(report.end)))
+    helper("Begin", DateUtility.dateToHourMinuteString(report.begin))
+    helper("End", DateUtility.dateToHourMinuteString(report.end))
     helper("Number of passengers on board", report.effectivePax.toString())
     helper("Takeoff location", report.takeOffLocation.name)
-    helper(
-        "Takeoff time",
-        DateUtility.localDateToString(DateUtility.dateToLocalDate(report.takeOffTime)))
+    helper("Takeoff time", DateUtility.dateToHourMinuteString(report.takeOffTime))
     helper("Landing location", report.landingLocation.name)
-    helper(
-        "Landing time",
-        DateUtility.localDateToString(DateUtility.dateToLocalDate(report.landingTime)))
+    helper("Landing time", DateUtility.dateToHourMinuteString(report.landingTime))
   }
 }

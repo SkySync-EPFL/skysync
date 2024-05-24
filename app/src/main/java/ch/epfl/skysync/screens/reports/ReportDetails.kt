@@ -17,19 +17,12 @@ import androidx.compose.ui.unit.dp
 import ch.epfl.skysync.components.DisplaySingleMetric
 import ch.epfl.skysync.components.HeaderTitle
 import ch.epfl.skysync.database.DateUtility
-import ch.epfl.skysync.models.reports.CrewReport
 import ch.epfl.skysync.models.reports.PilotReport
 import ch.epfl.skysync.models.reports.Report
 import ch.epfl.skysync.models.user.User
 
 @Composable
-fun ReportDetail(
-    users: List<User>?,
-    reportId: List<Report>?,
-    isAdmin: Boolean,
-    userId: String,
-    flightId: String
-) {
+fun ReportDetail(users: List<User>?, reportId: List<Report>?, isAdmin: Boolean, userId: String) {
   val defaultPadding = 16.dp
   LazyColumn(
       modifier = Modifier.padding(8.dp).testTag("FlightDetailLazyColumn").fillMaxSize(),
@@ -42,32 +35,13 @@ fun ReportDetail(
                   Row(verticalAlignment = Alignment.CenterVertically) {
                     HeaderTitle(title = user.name(), padding = defaultPadding, color = Color.Black)
                   }
+                  DisplaySingleMetric("Comments", report.comments)
+                  DisplaySingleMetric(
+                      metric = "Begin", value = DateUtility.dateToHourMinuteString(report.begin))
+                  DisplaySingleMetric(
+                      metric = "End", value = DateUtility.dateToHourMinuteString(report.end))
                   when (report) {
-                    is CrewReport -> {
-                      DisplaySingleMetric("Comments", report.comments)
-                      DisplaySingleMetric(
-                          metric = "Begin",
-                          value =
-                              DateUtility.localDateToString(
-                                  DateUtility.dateToLocalDate(report.begin)))
-                      DisplaySingleMetric(
-                          metric = "End",
-                          value =
-                              DateUtility.localDateToString(
-                                  DateUtility.dateToLocalDate(report.end)))
-                    }
                     is PilotReport -> {
-                      DisplaySingleMetric("Comments", report.comments)
-                      DisplaySingleMetric(
-                          metric = "Begin",
-                          value =
-                              DateUtility.localDateToString(
-                                  DateUtility.dateToLocalDate(report.begin)))
-                      DisplaySingleMetric(
-                          metric = "End",
-                          value =
-                              DateUtility.localDateToString(
-                                  DateUtility.dateToLocalDate(report.end)))
                       DisplaySingleMetric(
                           metric = "Number of passengers on board",
                           value = report.effectivePax.toString())
@@ -75,29 +49,12 @@ fun ReportDetail(
                           metric = "Takeoff location", value = report.takeOffLocation.name)
                       DisplaySingleMetric(
                           metric = "Takeoff time",
-                          value =
-                              DateUtility.localDateToString(
-                                  DateUtility.dateToLocalDate(report.takeOffTime)))
+                          value = DateUtility.dateToHourMinuteString(report.takeOffTime))
                       DisplaySingleMetric(
                           metric = "Landing location", value = report.landingLocation.name)
                       DisplaySingleMetric(
                           metric = "Landing time",
-                          value =
-                              DateUtility.localDateToString(
-                                  DateUtility.dateToLocalDate(report.landingTime)))
-                    }
-                    else -> {
-                      DisplaySingleMetric("Comments", report.comments)
-                      DisplaySingleMetric(
-                          metric = "Begin",
-                          value =
-                              DateUtility.localDateToString(
-                                  DateUtility.dateToLocalDate(report.begin)))
-                      DisplaySingleMetric(
-                          metric = "End",
-                          value =
-                              DateUtility.localDateToString(
-                                  DateUtility.dateToLocalDate(report.end)))
+                          value = DateUtility.dateToHourMinuteString(report.landingTime))
                     }
                   }
                 }

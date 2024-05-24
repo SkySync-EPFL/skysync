@@ -34,11 +34,11 @@ fun ReportDetailsScreen(
     LoadingComponent(isLoading = true, onRefresh = {}) {}
   } else {
 
-    val display = isAdmin || reportId!!.any { (it.author == userId) }
+    val display = (isAdmin && reportId!!.isNotEmpty()) || reportId!!.any { (it.author == userId) }
     Column() {
       CustomTopAppBar(navController, "Report")
       if (display) {
-        ReportDetail(users, reportId, isAdmin, userId, flightId)
+        ReportDetail(users, reportId, isAdmin, userId)
       } else {
         Column(
             modifier = Modifier.fillMaxSize().padding(PaddingValues(0.dp)).testTag("NoReports"),
