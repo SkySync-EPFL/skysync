@@ -579,7 +579,6 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   private suspend fun loadFlightTrace() {
     val flightTrace = flightTraceTable.get(_currentFlight.value!!.id, onError = { onError(it) })
-    println("LOAD FLIGHT TRACE: ${flightTrace?.trace?.size}")
     if (flightTrace == null) {
       onError(Exception("Flight trace not found."))
       return
