@@ -151,10 +151,13 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
           }
           .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
 
-  private val _currentFlight = MutableStateFlow<ConfirmedFlight?>(null)
+  private val _currentFlight = MutableStateFlow<Flight?>(null)
 
-  /** The ID of the current flight (might not yet be ongoing) */
-  val currentFlight: StateFlow<ConfirmedFlight?> = _currentFlight.asStateFlow()
+  /**
+   * The current flight, might be null if no current flight is set, a confirmed flight (might be
+   * inactive, ongoing or finished). Or a past flight, in case of display flight trace.
+   */
+  val currentFlight: StateFlow<Flight?> = _currentFlight.asStateFlow()
 
   /**
    * Initialize the view model.
@@ -280,7 +283,9 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
    * started (through the listener).
    */
   private suspend fun startFlightUpdateDatabase() {
-    val flight = _currentFlight.value!!.copy(isOngoing = true, startTimestamp = startTimestamp)
+    var flight = _currentFlight.value
+    if (flight !is ConfirmedFlight) return
+    flight = flight.copy(isOngoing = true, startTimestamp = startTimestamp)
     flightTable.update(flight.id, flight, onError = { onError(it) })
     _currentFlight.value = flight
   }
@@ -291,7 +296,9 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
    * flight as stopped (through the listener).
    */
   private suspend fun stopFlightUpdateDatabase() {
-    val flight = _currentFlight.value!!.copy(isOngoing = false, startTimestamp = null)
+    var flight = _currentFlight.value
+    if (flight !is ConfirmedFlight) return
+    flight = flight.copy(isOngoing = false, startTimestamp = null)
     flightTable.update(flight.id, flight, onError = { onError(it) })
     _currentFlight.value = flight
   }
@@ -380,18 +387,15 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
   /**
    * Set the [flightStage] to [FlightStage.DISPLAY].
    *
-   * Must set the current flight first ([setCurrentFlight]). Load the flight trace.
+   * Load the flight trace.
    */
-  fun startDisplayFlightTrace() =
+  fun startDisplayFlightTrace(flight: FinishedFlight) =
       viewModelScope.launch {
         if (isOngoingFlight() || isPostFlight()) {
           onError(Exception("There is already a flight ongoing."))
           return@launch
         }
-        if (_currentFlight.value == null) {
-          onError(Exception("Missing the flight to start."))
-          return@launch
-        }
+        _currentFlight.value = flight
         _flightStage.value = FlightStage.DISPLAY
         loadFlightTrace()
       }
@@ -411,10 +415,10 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   /** Save the finished flight to the database */
   private suspend fun saveFinishedFlight() {
-
-    val flightToSave = _currentFlight.value ?: return
+    val flight = _currentFlight.value
+    if (flight !is ConfirmedFlight) return
     val finishedFlight =
-        flightToSave.finishFlight(
+        flight.finishFlight(
             takeOffTime = takeOffTime!!,
             landingTime = landingTime!!,
             flightTime = _counter.value,
@@ -575,6 +579,7 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   private suspend fun loadFlightTrace() {
     val flightTrace = flightTraceTable.get(_currentFlight.value!!.id, onError = { onError(it) })
+    println("LOAD FLIGHT TRACE: ${flightTrace?.trace?.size}")
     if (flightTrace == null) {
       onError(Exception("Flight trace not found."))
       return
