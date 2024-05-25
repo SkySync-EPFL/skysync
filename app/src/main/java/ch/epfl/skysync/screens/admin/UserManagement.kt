@@ -21,14 +21,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -37,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -58,52 +58,41 @@ fun UserCard(user: User, onUserClick: (String) -> Unit) {
           Modifier.fillMaxWidth()
               .padding(vertical = 1.dp)
               .clickable { onUserClick(user.id) }
+              .border(
+                  border = BorderStroke(1.dp, Color.Black),
+                  shape =
+                      RoundedCornerShape(
+                          topStart = 12.dp, topEnd = 12.dp, bottomEnd = 12.dp, bottomStart = 12.dp))
               .testTag("userCard"),
+      colors = CardDefaults.cardColors(lightGray),
       elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
   ) {
-    Surface(
-        modifier =
-            Modifier.fillMaxWidth()
-                .border(
-                    border = BorderStroke(1.dp, Color.Black),
-                    shape =
-                        RoundedCornerShape(
-                            topStart = 12.dp,
-                            topEnd = 12.dp,
-                            bottomEnd = 12.dp,
-                            bottomStart = 12.dp)),
-        color = lightGray) {
-          Row(
-              modifier = Modifier.fillMaxWidth().padding(16.dp),
-              verticalAlignment = Alignment.CenterVertically,
-              horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(
-                    "${user.firstname} ${user.lastname}",
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyLarge)
-                Text(user.roleTypes.joinToString { it.name })
-              }
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween) {
+          Text(
+              "${user.firstname} ${user.lastname}",
+              fontWeight = FontWeight.Bold,
+              style = MaterialTheme.typography.bodyLarge)
+          Text(user.roleTypes.joinToString { it.name })
         }
   }
 }
 
 // Composable function to display the top bar title with user count.
 @Composable
-fun TopBarTitle(paddingValues: PaddingValues) {
-  Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+fun TopBarTitle(paddingValues: Dp) {
+  Column(modifier = Modifier.fillMaxWidth().padding(paddingValues)) {
     Text(
         text = "Users",
         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
         modifier =
             Modifier.background(
                     color = lightOrange,
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                    shape = RoundedCornerShape(topStart = paddingValues, topEnd = paddingValues))
                 .fillMaxWidth()
-                .padding(
-                    top = paddingValues.calculateTopPadding() + 16.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp),
+                .padding(paddingValues),
         color = Color.White,
         textAlign = TextAlign.Center)
   }
@@ -168,14 +157,11 @@ fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>, count
         }
       }
     }
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.background(color = lightTurquoise, shape = CircleShape).padding(8.dp)) {
-          Text(
-              text = count.toString(),
-              style = MaterialTheme.typography.titleLarge,
-          )
-        }
+
+    Text(
+        text = "$count",
+        style = MaterialTheme.typography.titleLarge,
+        modifier = Modifier.background(color = lightTurquoise, shape = CircleShape).padding(8.dp))
   }
 }
 
@@ -193,6 +179,7 @@ fun UserManagementScreen(
   var selectedRole by remember { mutableStateOf<RoleType?>(null) }
   val roles = RoleType.entries
   val users = userManagementViewModel.allUsers.collectAsStateWithLifecycle()
+  val defaultPadding = 16.dp
   // Filter users based on search query and selected role.
   val filteredUsers =
       users.value.filter {
@@ -206,47 +193,38 @@ fun UserManagementScreen(
       bottomBar = { AdminBottomBar(navController) },
       floatingActionButton = {
         if (connectivityStatus.isOnline()) {
-          Surface(
-              modifier = Modifier.size(56.dp),
-              shape = CircleShape,
-              color = Color.Transparent,
-              border = BorderStroke(2.dp, Color.Black)) {
-                FloatingActionButton(
-                    modifier = Modifier.fillMaxSize(1f),
-                    onClick = { navController.navigate(Route.ADD_USER) },
-                    containerColor = Color.White) {
-                      Icon(imageVector = Icons.Filled.Add, contentDescription = "Add User")
-                    }
-              }
-        }
-      },
-      floatingActionButtonPosition = FabPosition.Center) { padding ->
-        Column(modifier = Modifier.fillMaxSize()) {
-          TopBarTitle(padding)
-          SearchBar(query = searchQuery, onQueryChanged = { searchQuery = it })
-          RoleFilter(
-              onRoleSelected = { selectedRole = it }, roles = roles, count = filteredUsers.size)
-          Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            if (filteredUsers.isEmpty()) {
-              // Display a message when no users are found
-              Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No such user exists", style = MaterialTheme.typography.titleLarge)
-              }
-            } else {
-              LazyColumn(
-                  modifier =
-                      Modifier.align(Alignment.TopCenter)
-                          .padding(horizontal = 16.dp)
-                          .testTag("UserManagementLazyColumn")) {
-                    items(filteredUsers) { user ->
-                      UserCard(user) {
-                        navController.navigate(Route.ADMIN_USER_DETAILS + "/${user.id}")
-                      }
-                      Spacer(modifier = Modifier.height(8.dp))
-                    }
-                  }
-            }
+          FloatingActionButton(
+              containerColor = lightOrange,
+              onClick = { navController.navigate(Route.ADD_USER) },
+              elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 1.dp),
+          ) {
+            Icon(imageVector = Icons.Filled.Add, contentDescription = "Add User")
           }
         }
+      },
+  ) { padding ->
+    Column(modifier = Modifier.padding(padding)) {
+      TopBarTitle(defaultPadding)
+      SearchBar(query = searchQuery, onQueryChanged = { searchQuery = it })
+      RoleFilter(onRoleSelected = { selectedRole = it }, roles = roles, count = filteredUsers.size)
+
+      if (filteredUsers.isEmpty()) {
+        // Display a message when no users are found
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          Text("No such user exists", style = MaterialTheme.typography.titleLarge)
+        }
+      } else {
+        LazyColumn(
+            modifier =
+                Modifier.padding(horizontal = 16.dp)
+                    .testTag("UserManagementLazyColumn")
+                    .fillMaxSize()) {
+              items(filteredUsers) { user ->
+                UserCard(user) { navController.navigate(Route.ADMIN_USER_DETAILS + "/${user.id}") }
+                Spacer(modifier = Modifier.height(8.dp))
+              }
+            }
       }
+    }
+  }
 }

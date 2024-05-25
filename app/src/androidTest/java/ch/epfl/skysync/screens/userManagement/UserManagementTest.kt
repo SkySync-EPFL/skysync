@@ -83,7 +83,39 @@ class UserManagementTest {
     }
 
     composeTestRule.onNodeWithText("Filter by role").performClick()
-    composeTestRule.onNodeWithText("Pilot").assertIsDisplayed()
+    RoleType.entries.forEach { roleType ->
+      composeTestRule.onNodeWithText(roleType.description).assertIsDisplayed()
+    }
+  }
+
+  @Test
+  fun roleFilterWorks() {
+    composeTestRule.setContent {
+      userManagementViewModel =
+          UserManagementViewModel.createViewModel(repository, dbSetup.admin1.id)
+      userManagementViewModel.refresh()
+      val context = LocalContext.current
+      val connectivityStatus = remember { ContextConnectivityStatus(context) }
+      UserManagementScreen(rememberNavController(), userManagementViewModel, connectivityStatus)
+    }
+    composeTestRule.onNodeWithText("Filter by role").performClick()
+    composeTestRule.onNodeWithText("Pilot").performClick()
+    dbSetup.allPilots.forEach {
+      composeTestRule
+          .onNodeWithTag("UserManagementLazyColumn")
+          .performScrollToNode(hasText("${it.firstname} ${it.lastname}"))
+      composeTestRule.onNodeWithText("${it.firstname} ${it.lastname}").assertIsDisplayed()
+    }
+
+    dbSetup.allCrews.forEach {
+      composeTestRule.onNodeWithText("${it.firstname} ${it.lastname}").assertDoesNotExist()
+    }
+    dbSetup.allAdmins.forEach {
+      composeTestRule.onNodeWithText("${it.firstname} ${it.lastname}").assertDoesNotExist()
+    }
+    composeTestRule.onNodeWithText("Pilot").performClick()
+    composeTestRule.onNodeWithText(RoleType.MAITRE_FONDUE.description).performClick()
+    composeTestRule.onNodeWithText("No such user exists").assertIsDisplayed()
   }
 
   @Test
