@@ -96,21 +96,3 @@ fun TimerButton(
 fun TimerPreview() {
   Timer(Modifier.padding(16.dp), "0:0:0", FlightStage.ONGOING)
 }
-
-@Preview
-@Composable
-fun TimerButtonPreview() {
-  Box(modifier = Modifier.fillMaxSize()) {
-    TimerButton(
-        modifier =
-            Modifier.fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(vertical = 10.dp, horizontal = 20.dp),
-        flightStage = FlightStage.IDLE,
-        isPilot = true,
-        onStart = {},
-        onStop = {},
-        onClear = {},
-        onQuitDisplay = {})
-  }
-}
