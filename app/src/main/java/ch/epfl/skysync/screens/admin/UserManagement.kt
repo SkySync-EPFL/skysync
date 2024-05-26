@@ -84,9 +84,7 @@ fun UserCard(user: User, onUserClick: (String) -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween) {
           Text(
-              "${user.firstname} ${user.lastname}",
-              fontWeight = FontWeight.Bold,
-              style = MaterialTheme.typography.bodyLarge)
+              user.name(), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge)
           Text(displayMainRole(user))
         }
   }

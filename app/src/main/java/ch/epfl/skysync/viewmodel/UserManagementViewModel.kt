@@ -92,8 +92,7 @@ class UserManagementViewModel(
   fun filterByQueryAndRole(query: String, selectedRole: RoleType?) {
     _filteredUsers.value =
         _allUsers.value.filter {
-          (query.isEmpty() ||
-              "${it.firstname} ${it.lastname}".contains(query, ignoreCase = true)) &&
+          (query.isEmpty() || it.name().contains(query, ignoreCase = true)) &&
               (selectedRole == null || it.roleTypes.contains(selectedRole))
         }
   }
