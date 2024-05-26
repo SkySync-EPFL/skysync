@@ -164,9 +164,7 @@ fun FlightScreen(
 
                   Row(
                       horizontalArrangement = Arrangement.SpaceBetween,
-                      modifier =
-                          Modifier.fillMaxWidth( // 0.5f
-                              )) {
+                      modifier = Modifier.fillMaxWidth()) {
                         // actions disabled on flight trace display
                         if (inFlightViewModel.isDisplayTrace()) return@Row
                         FloatingActionButton(
