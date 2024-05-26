@@ -1,6 +1,7 @@
 package ch.epfl.skysync.models.flight
 
 enum class RoleType(val description: String) {
+  ADMIN("Admin"),
   PILOT("Pilot"),
   CREW("Crew"),
   SERVICE_ON_BOARD("Service on board"),
