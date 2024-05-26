@@ -34,7 +34,7 @@ fun NavGraphBuilder.crewPilotGraph(
     connectivityStatus: ConnectivityStatus
 ) {
   navigation(startDestination = Route.CREW_HOME, route = Route.CREW_PILOT) {
-    personalCalendar(repository, navController, uid)
+    personalCalendar(repository, navController, uid, connectivityStatus)
     composable(
         route = Route.CREW_FLIGHT_DETAILS + "/{Flight ID}",
         arguments = listOf(navArgument("Flight ID") { type = NavType.StringType })) { backStackEntry

@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConnectivityStatus
+import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.AdminBottomBar
@@ -226,13 +227,15 @@ fun UserManagementScreen(
           SearchBar(query = searchQuery, onQueryChanged = { searchQuery = it })
           RoleFilter(
               onRoleSelected = { selectedRole = it }, roles = roles, count = filteredUsers.size)
-          Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            if (filteredUsers.isEmpty()) {
-              // Display a message when no users are found
-              Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No such user exists", style = MaterialTheme.typography.titleLarge)
-              }
-            } else {
+          if (filteredUsers.isEmpty() && searchQuery.isEmpty()) {
+            LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
+          } else if (filteredUsers.isEmpty()) {
+            // Display a message when no users are found
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+              Text("No such user exists", style = MaterialTheme.typography.titleLarge)
+            }
+          } else {
+            Box(modifier = Modifier.fillMaxSize().padding(padding)) {
               LazyColumn(
                   modifier =
                       Modifier.align(Alignment.TopCenter)
