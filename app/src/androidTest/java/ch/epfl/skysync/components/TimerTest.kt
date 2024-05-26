@@ -17,15 +17,21 @@ class TimerTest {
   @Test
   fun timerIsDisplayedWithWithButton() {
     composeTestRule.setContent {
-      Timer(
-          modifier = Modifier,
-          currentTimer = "0:0:0",
-          flightStage = InFlightViewModel.FlightStage.IDLE,
-          isPilot = true,
-          onStart = {},
-          onStop = {},
-          onClear = {},
-          onQuitDisplay = {})
+        val flightStage = InFlightViewModel.FlightStage.IDLE
+        Timer(
+            modifier = Modifier,
+            currentTimer = "0:0:0",
+            flightStage = flightStage
+        )
+        TimerButton(
+            modifier = Modifier,
+            flightStage = flightStage,
+            isPilot = true,
+            onStart = {},
+            onStop = {},
+            onClear = {},
+            onQuitDisplay = {}
+        )
     }
     composeTestRule.onNodeWithTag("Timer").assertExists()
     composeTestRule.onNodeWithTag("Timer Value").assertIsDisplayed()
@@ -38,15 +44,21 @@ class TimerTest {
     var controlVariableOnStart = false
     var controlVariableOnStop = false
     composeTestRule.setContent {
-      Timer(
-          modifier = Modifier,
-          currentTimer = "0:0:0",
-          flightStage = InFlightViewModel.FlightStage.IDLE,
-          isPilot = true,
-          onStart = { controlVariableOnStart = true },
-          onStop = { controlVariableOnStop = true },
-          onClear = {},
-          onQuitDisplay = {})
+        val flightStage = InFlightViewModel.FlightStage.IDLE
+        Timer(
+            modifier = Modifier,
+            currentTimer = "0:0:0",
+            flightStage = flightStage
+        )
+        TimerButton(
+            modifier = Modifier,
+            flightStage = flightStage,
+            isPilot = true,
+            onStart = { controlVariableOnStart = true },
+            onStop = { controlVariableOnStop = true },
+            onClear = {},
+            onQuitDisplay = {}
+        )
     }
     composeTestRule.onNodeWithTag("Start Button").performClick()
     assert(controlVariableOnStart)
@@ -58,15 +70,21 @@ class TimerTest {
     var controlVariableOnStart = false
     var controlVariableOnStop = false
     composeTestRule.setContent {
-      Timer(
-          modifier = Modifier,
-          currentTimer = "0:0:0",
-          flightStage = InFlightViewModel.FlightStage.ONGOING,
-          isPilot = true,
-          onStart = { controlVariableOnStart = true },
-          onStop = { controlVariableOnStop = true },
-          onClear = {},
-          onQuitDisplay = {})
+        val flightStage = InFlightViewModel.FlightStage.IDLE
+        Timer(
+            modifier = Modifier,
+            currentTimer = "0:0:0",
+            flightStage = flightStage
+        )
+        TimerButton(
+            modifier = Modifier,
+            flightStage = flightStage,
+            isPilot = true,
+            onStart = { controlVariableOnStart = true },
+            onStop = { controlVariableOnStop = true },
+            onClear = {},
+            onQuitDisplay = {}
+        )
     }
     composeTestRule.onNodeWithTag("Stop Button").performClick()
     assert(controlVariableOnStop)
@@ -80,15 +98,21 @@ class TimerTest {
     var controlVariableOnClear = false
     var controlVariableOnQuitDisplay = false
     composeTestRule.setContent {
-      Timer(
-          modifier = Modifier,
-          currentTimer = "0:0:0",
-          flightStage = InFlightViewModel.FlightStage.DISPLAY,
-          isPilot = true,
-          onStart = { controlVariableOnStart = true },
-          onStop = { controlVariableOnStop = true },
-          onClear = { controlVariableOnClear = true },
-          onQuitDisplay = { controlVariableOnQuitDisplay = true })
+        val flightStage = InFlightViewModel.FlightStage.IDLE
+        Timer(
+            modifier = Modifier,
+            currentTimer = "0:0:0",
+            flightStage = flightStage
+        )
+        TimerButton(
+            modifier = Modifier,
+            flightStage = flightStage,
+            isPilot = true,
+            onStart = { controlVariableOnStart = true },
+            onStop = { controlVariableOnStop = true },
+            onClear = { controlVariableOnClear = true },
+            onQuitDisplay = { controlVariableOnQuitDisplay = true }
+        )
     }
     composeTestRule.onNodeWithTag("Quit Button").performClick()
 
