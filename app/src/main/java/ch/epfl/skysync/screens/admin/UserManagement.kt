@@ -42,6 +42,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.models.flight.RoleType
+import ch.epfl.skysync.models.user.Admin
+import ch.epfl.skysync.models.user.Crew
+import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
@@ -49,6 +52,15 @@ import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.ui.theme.lightTurquoise
 import ch.epfl.skysync.viewmodel.UserManagementViewModel
+
+fun displayMainRole(user: User): String {
+  return when (user) {
+    is Admin -> "Admin"
+    is Pilot -> "Pilot"
+    is Crew -> "Crew"
+    else -> "Unknown"
+  }
+}
 
 // Composable function to display a card for a User object.
 @Composable
@@ -75,7 +87,7 @@ fun UserCard(user: User, onUserClick: (String) -> Unit) {
               "${user.firstname} ${user.lastname}",
               fontWeight = FontWeight.Bold,
               style = MaterialTheme.typography.bodyLarge)
-          Text(user.roleTypes.joinToString { it.name })
+          Text(displayMainRole(user))
         }
   }
 }
@@ -127,6 +139,7 @@ fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>, count
   ) {
     Column(modifier = Modifier.padding(16.dp)) {
       Button(
+          modifier = Modifier.testTag("UserManagementRoleFilterButton"),
           onClick = { expanded = true },
           colors =
               ButtonDefaults.buttonColors(
@@ -148,6 +161,7 @@ fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>, count
             text = { Text("All Roles") })
         roles.forEach { role ->
           DropdownMenuItem(
+              modifier = Modifier.testTag("RoleTag${role.description}"),
               onClick = {
                 displayText = role.description
                 onRoleSelected(role)
@@ -178,15 +192,9 @@ fun UserManagementScreen(
   var searchQuery by remember { mutableStateOf("") }
   var selectedRole by remember { mutableStateOf<RoleType?>(null) }
   val roles = RoleType.entries
-  val users = userManagementViewModel.allUsers.collectAsStateWithLifecycle()
+  val filteredUsers = userManagementViewModel.filteredUsers.collectAsStateWithLifecycle()
   val defaultPadding = 16.dp
   // Filter users based on search query and selected role.
-  val filteredUsers =
-      users.value.filter {
-        (searchQuery.isEmpty() ||
-            "${it.firstname} ${it.lastname}".contains(searchQuery, ignoreCase = true)) &&
-            (selectedRole == null || it.roleTypes.contains(selectedRole))
-      }
 
   Scaffold(
       modifier = Modifier.fillMaxSize(),
@@ -205,10 +213,21 @@ fun UserManagementScreen(
   ) { padding ->
     Column(modifier = Modifier.padding(padding)) {
       TopBarTitle(defaultPadding)
-      SearchBar(query = searchQuery, onQueryChanged = { searchQuery = it })
-      RoleFilter(onRoleSelected = { selectedRole = it }, roles = roles, count = filteredUsers.size)
+      SearchBar(
+          query = searchQuery,
+          onQueryChanged = {
+            searchQuery = it
+            userManagementViewModel.filterByQueryAndRole(searchQuery, selectedRole)
+          })
+      RoleFilter(
+          onRoleSelected = {
+            selectedRole = it
+            userManagementViewModel.filterByQueryAndRole(searchQuery, selectedRole)
+          },
+          roles = roles,
+          count = filteredUsers.value.size)
 
-      if (filteredUsers.isEmpty()) {
+      if (filteredUsers.value.isEmpty()) {
         // Display a message when no users are found
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text("No such user exists", style = MaterialTheme.typography.titleLarge)
@@ -219,7 +238,7 @@ fun UserManagementScreen(
                 Modifier.padding(horizontal = 16.dp)
                     .testTag("UserManagementLazyColumn")
                     .fillMaxSize()) {
-              items(filteredUsers) { user ->
+              items(filteredUsers.value) { user ->
                 UserCard(user) { navController.navigate(Route.ADMIN_USER_DETAILS + "/${user.id}") }
                 Spacer(modifier = Modifier.height(8.dp))
               }

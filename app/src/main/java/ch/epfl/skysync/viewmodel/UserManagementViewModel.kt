@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
+import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.TempUser
 import ch.epfl.skysync.models.user.User
 import kotlin.coroutines.cancellation.CancellationException
@@ -36,9 +37,11 @@ class UserManagementViewModel(
   }
 
   private val _allUsers: MutableStateFlow<List<User>> = MutableStateFlow(emptyList())
+  private val _filteredUsers: MutableStateFlow<List<User>> = MutableStateFlow(emptyList())
   private val _selectedUser: MutableStateFlow<User?> = MutableStateFlow(null)
 
   val allUsers = _allUsers.asStateFlow()
+  val filteredUsers = _filteredUsers.asStateFlow()
 
   /** Refreshes the data of the viewmodel */
   fun refresh() {
@@ -49,6 +52,7 @@ class UserManagementViewModel(
   private fun refreshAllUsers() {
     viewModelScope.launch {
       _allUsers.value = repository.userTable.getAll(onError = { onError(it) })
+      _filteredUsers.value = _allUsers.value
     }
   }
 
@@ -70,6 +74,28 @@ class UserManagementViewModel(
       repository.userTable.delete(user.id, onError = { onError(it) })
       refreshAllUsers()
     }
+  }
+
+  /**
+   * Filters the list of users based on a search query and a role.
+   *
+   * The function updates the value of `_filteredUsers` by filtering `_allUsers` according to the
+   * following criteria:
+   * - If `query` is not empty, the user's full name (concatenation of `firstname` and `lastname`)
+   *   should contain the query string, ignoring case.
+   * - If `selectedRole` is not null, the user should have a role that matches `selectedRole`.
+   *
+   * @param query A string to search for in the user's full name. If empty, this criterion is
+   *   ignored.
+   * @param selectedRole An optional role to filter users by. If null, this criterion is ignored.
+   */
+  fun filterByQueryAndRole(query: String, selectedRole: RoleType?) {
+    _filteredUsers.value =
+        _allUsers.value.filter {
+          (query.isEmpty() ||
+              "${it.firstname} ${it.lastname}".contains(query, ignoreCase = true)) &&
+              (selectedRole == null || it.roleTypes.contains(selectedRole))
+        }
   }
 
   /** Callback executed when an error occurs on database-related operations */
