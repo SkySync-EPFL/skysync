@@ -60,7 +60,7 @@ class TimerTest {
     var controlVariableOnStart = false
     var controlVariableOnStop = false
     composeTestRule.setContent {
-      val flightStage = InFlightViewModel.FlightStage.IDLE
+      val flightStage = InFlightViewModel.FlightStage.ONGOING
       Timer(modifier = Modifier, currentTimer = "0:0:0", flightStage = flightStage)
       TimerButton(
           modifier = Modifier,
@@ -83,7 +83,7 @@ class TimerTest {
     var controlVariableOnClear = false
     var controlVariableOnQuitDisplay = false
     composeTestRule.setContent {
-      val flightStage = InFlightViewModel.FlightStage.IDLE
+      val flightStage = InFlightViewModel.FlightStage.DISPLAY
       Timer(modifier = Modifier, currentTimer = "0:0:0", flightStage = flightStage)
       TimerButton(
           modifier = Modifier,
