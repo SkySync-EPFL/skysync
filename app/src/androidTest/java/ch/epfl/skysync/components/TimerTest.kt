@@ -17,10 +17,11 @@ class TimerTest {
   @Test
   fun timerIsDisplayedWithWithButton() {
     composeTestRule.setContent {
-      Timer(
+      val flightStage = InFlightViewModel.FlightStage.IDLE
+      Timer(modifier = Modifier, currentTimer = "0:0:0", flightStage = flightStage)
+      TimerButton(
           modifier = Modifier,
-          currentTimer = "0:0:0",
-          flightStage = InFlightViewModel.FlightStage.IDLE,
+          flightStage = flightStage,
           isPilot = true,
           onStart = {},
           onStop = {},
@@ -38,10 +39,11 @@ class TimerTest {
     var controlVariableOnStart = false
     var controlVariableOnStop = false
     composeTestRule.setContent {
-      Timer(
+      val flightStage = InFlightViewModel.FlightStage.IDLE
+      Timer(modifier = Modifier, currentTimer = "0:0:0", flightStage = flightStage)
+      TimerButton(
           modifier = Modifier,
-          currentTimer = "0:0:0",
-          flightStage = InFlightViewModel.FlightStage.IDLE,
+          flightStage = flightStage,
           isPilot = true,
           onStart = { controlVariableOnStart = true },
           onStop = { controlVariableOnStop = true },
@@ -58,10 +60,11 @@ class TimerTest {
     var controlVariableOnStart = false
     var controlVariableOnStop = false
     composeTestRule.setContent {
-      Timer(
+      val flightStage = InFlightViewModel.FlightStage.ONGOING
+      Timer(modifier = Modifier, currentTimer = "0:0:0", flightStage = flightStage)
+      TimerButton(
           modifier = Modifier,
-          currentTimer = "0:0:0",
-          flightStage = InFlightViewModel.FlightStage.ONGOING,
+          flightStage = flightStage,
           isPilot = true,
           onStart = { controlVariableOnStart = true },
           onStop = { controlVariableOnStop = true },
@@ -80,10 +83,11 @@ class TimerTest {
     var controlVariableOnClear = false
     var controlVariableOnQuitDisplay = false
     composeTestRule.setContent {
-      Timer(
+      val flightStage = InFlightViewModel.FlightStage.DISPLAY
+      Timer(modifier = Modifier, currentTimer = "0:0:0", flightStage = flightStage)
+      TimerButton(
           modifier = Modifier,
-          currentTimer = "0:0:0",
-          flightStage = InFlightViewModel.FlightStage.DISPLAY,
+          flightStage = flightStage,
           isPilot = true,
           onStart = { controlVariableOnStart = true },
           onStop = { controlVariableOnStop = true },
