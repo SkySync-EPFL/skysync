@@ -205,7 +205,6 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
         flights.filterIsInstance<ConfirmedFlight>().filter { flight ->
           flight.date.isEqual(LocalDate.now())
         }
-
     Log.d("InFlightViewModel", "Personal Flights are loaded")
     _loading.value = false
   }
@@ -291,19 +290,6 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
   }
 
   /**
-   * Update the confirmed flight on the database to set [ConfirmedFlight.isOngoing] to false and set
-   * the [ConfirmedFlight.startTimestamp] to null. This will notify other flight member that the
-   * flight as stopped (through the listener).
-   */
-  private suspend fun stopFlightUpdateDatabase() {
-    var flight = _currentFlight.value
-    if (flight !is ConfirmedFlight) return
-    flight = flight.copy(isOngoing = false, startTimestamp = null)
-    flightTable.update(flight.id, flight, onError = { onError(it) })
-    _currentFlight.value = flight
-  }
-
-  /**
    * Set in-flight, starts the timer and location tracking.
    *
    * Assumes the necessary assumptions (i.e. do not check anything).
@@ -356,16 +342,17 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
   fun stopFlight() =
       viewModelScope.launch {
         if (!isOngoingFlight()) return@launch
+        _loading.value = true
         _flightStage.value = FlightStage.POST
         landingTime = LocalTime.now()
         stopTimer()
         stopLocationTracking()
 
         if (_userId == pilotId) {
-          stopFlightUpdateDatabase()
           saveFinishedFlight()
           saveFlightTrace()
         }
+        _loading.value = false
       }
 
   /**
@@ -376,6 +363,10 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
   fun clearFlight() =
       viewModelScope.launch {
         if (!isPostFlight()) return@launch
+        // do not clear the flight on loading
+        // it may be that the flight is being stopped
+        // then _currentFlight is still required and can't be cleared
+        if (_loading.value) return@launch
         _flightStage.value = FlightStage.IDLE
         pilotId = null
         _currentFlight.value = null
