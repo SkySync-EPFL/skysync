@@ -99,6 +99,8 @@ fun FlightScreen(
 
   var metrics by remember { mutableStateOf(UserMetrics(0.0f, 0.0, 0.0f, 0.0, defaultLocation)) }
 
+  var showConfirmationDialog by remember { mutableStateOf(false) }
+
   val locationCallback =
       object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
@@ -219,7 +221,6 @@ fun FlightScreen(
                           .background(color = Color.White, shape = RoundedCornerShape(8.dp))
                           .padding(6.dp))
             }
-            var showConfirmationDialog by remember { mutableStateOf(false) }
             if (showConfirmationDialog) {
               ConfirmAlertDialog(
                   onDismissRequest = { showConfirmationDialog = false },
