@@ -226,7 +226,7 @@ fun UserManagementScreen(
           roles = roles,
           count = filteredUsers.value.size)
 
-      if (filteredUsers.value.isEmpty() && searchQuery.isEmpty()) {
+      if (filteredUsers.value.isEmpty() && searchQuery.isEmpty() && selectedRole == null) {
         LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
       } else if (filteredUsers.value.isEmpty()) {
         // Display a message when no users are found
