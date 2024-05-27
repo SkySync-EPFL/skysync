@@ -1,7 +1,6 @@
 package ch.epfl.skysync.screens.admin
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,6 +10,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import ch.epfl.skysync.components.AvailabilityCalendar
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.FlightCalendar
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
@@ -21,7 +21,8 @@ import ch.epfl.skysync.viewmodel.CalendarViewModel
 fun AdminCalendarScreen(
     navController: NavHostController,
     calendarType: String,
-    viewModel: CalendarViewModel
+    viewModel: CalendarViewModel,
+    connectivityStatus: ConnectivityStatus
 ) {
   val tabs = mapOf(Route.ADMIN_FLIGHT_CALENDAR to 0, Route.ADMIN_AVAILABILITY_CALENDAR to 1)
   val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -54,7 +55,8 @@ fun AdminCalendarScreen(
                 viewModel.setToNextAvailabilityStatus(date, time)
               },
               onSave = { viewModel.saveAvailabilities() },
-              onCancel = { viewModel.cancelAvailabilities() })
+              onCancel = { viewModel.cancelAvailabilities() },
+              connectivityStatus)
         } else if (calendarType == Route.ADMIN_FLIGHT_CALENDAR) {
           val flightCalendar by viewModel.currentFlightGroupCalendar.collectAsStateWithLifecycle()
           FlightCalendar(
