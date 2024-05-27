@@ -112,8 +112,7 @@ class E2EPilotDuringFlight {
       composeTestRule.onNodeWithContentDescription("Locate Me").isDisplayed()
     }
 
-    // Opens flight information and asserts the display of navigation information
-    composeTestRule.onNodeWithContentDescription("Flight infos").performClick()
+    // Asserts the display of navigation information
     composeTestRule
         .onNodeWithText(
             "Horizontal Speed: 0.00 m/s\nVertical Speed: 0.00 m/s\nAltitude: 0 m\nBearing: 0.00 °")
