@@ -118,7 +118,7 @@ fun FlightScreen(
         }
       }
 
-  DisposableEffect(locationPermission) {
+  DisposableEffect(locationPermission.status.isGranted) {
     // Defines the location request parameters.
     val locationRequest =
         LocationRequest.create().apply {
