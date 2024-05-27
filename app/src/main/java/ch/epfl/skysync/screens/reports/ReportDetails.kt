@@ -40,6 +40,8 @@ fun ReportDetail(users: List<User>?, reportId: List<Report>?, isAdmin: Boolean, 
                       metric = "Begin", value = DateUtility.dateToHourMinuteString(report.begin))
                   DisplaySingleMetric(
                       metric = "End", value = DateUtility.dateToHourMinuteString(report.end))
+                    DisplaySingleMetric(
+                        metric = "Pause duration", value = DateUtility.formatTime(report.pauseDuration.toLong()))
                   when (report) {
                     is PilotReport -> {
                       DisplaySingleMetric(
