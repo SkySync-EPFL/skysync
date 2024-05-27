@@ -86,22 +86,24 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
     refreshAvailableUsers()
   }
 
-  private fun refreshFilteredByDateAndTimeSlot(firstFill: Boolean) {
-    refreshAvailableBalloons(firstFill)
-    refreshAvailableBaskets(firstFill)
-    refreshAvailableVehicles(firstFill)
-    refreshAvailableUsers(firstFill)
+  private fun refreshFilteredByDateAndTimeSlot() {
+    if (_flight.value != null) {
+      refreshAvailableBalloons()
+      refreshAvailableBaskets()
+      refreshAvailableVehicles()
+      refreshAvailableUsers()
+    }
   }
 
-  fun setDateAndTimeSlot(date: LocalDate, timeSlot: TimeSlot, firstFill: Boolean = false) {
+  fun setDateAndTimeSlot(date: LocalDate, timeSlot: TimeSlot) {
     this.date = date
     this.timeSlot = timeSlot
-    refreshFilteredByDateAndTimeSlot(firstFill)
+    refreshFilteredByDateAndTimeSlot()
   }
 
   fun setFlight(flight: Flight) {
     _flight.value = flight
-    setDateAndTimeSlot(flight.date, flight.timeSlot, true)
+    setDateAndTimeSlot(flight.date, flight.timeSlot)
   }
 
   /**
@@ -126,11 +128,15 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
       }
 
   /** updates */
-  fun hasDateAndTimeSlot(): Boolean {
+  private fun hasDateAndTimeSlot(): Boolean {
     return date != null && timeSlot != null
   }
 
-  fun refreshAvailableBalloons(firstFill: Boolean = false) =
+  private fun isFlightOnSameDate(): Boolean {
+    return _flight.value?.date == date && _flight.value?.timeSlot == timeSlot
+  }
+
+  private fun refreshAvailableBalloons(firstFill: Boolean = false) =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
           _availableBalloons.value =
@@ -140,17 +146,16 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
 
-          if (_flight.value?.balloon != null && firstFill) {
+          if (isFlightOnSameDate()) {
             val availableBalloons = _availableBalloons.value.filter { it != _flight.value?.balloon }
             _availableBalloons.value = availableBalloons.plus(_flight.value?.balloon!!)
-            println(_availableBalloons.value)
           }
         } else {
           _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
         }
       }
 
-  fun refreshAvailableUsers(firstFill: Boolean = false) =
+  private fun refreshAvailableUsers() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
           _availableUsers.value =
@@ -159,7 +164,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
-          if (flight.value?.team != null && firstFill) {
+          if (isFlightOnSameDate()) {
             val flightUsers = flight.value?.team!!.getUsers()
             val availableUsers = _availableUsers.value.filter { !flightUsers.contains(it) }
             _availableUsers.value = availableUsers.plus(flight.value?.team!!.getUsers())
@@ -169,9 +174,8 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         }
       }
 
-  fun refreshAvailableVehicles(firstFill: Boolean = false) =
+  private fun refreshAvailableVehicles() =
       viewModelScope.launch {
-        println("REFRESH VEHICLES")
         if (hasDateAndTimeSlot()) {
           _availableVehicles.value =
               repository.vehicleTable.getVehiclesAvailableOn(
@@ -180,7 +184,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
 
-          if (flight.value?.vehicles != null && firstFill) {
+          if (isFlightOnSameDate()) {
             val availableVehicles =
                 _availableVehicles.value.filter { !flight.value?.vehicles!!.contains(it) }
             _availableVehicles.value = availableVehicles.plus(flight.value?.vehicles!!)
@@ -190,7 +194,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         }
       }
 
-  fun refreshAvailableBaskets(firstFill: Boolean = false) =
+  private fun refreshAvailableBaskets() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
           _availableBaskets.value =
@@ -200,7 +204,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
 
-          if (flight.value?.basket != null && firstFill) {
+          if (isFlightOnSameDate()) {
             val availableBaskets = _availableBaskets.value.filter { it != flight.value?.basket!! }
             _availableBaskets.value = availableBaskets.plus(flight.value?.basket!!)
           }
@@ -209,7 +213,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         }
       }
 
-  fun refreshCurrentFlightTypes() =
+  private fun refreshCurrentFlightTypes() =
       viewModelScope.launch {
         _currentFlightTypes.value = repository.flightTypeTable.getAll(onError = { onError(it) })
       }

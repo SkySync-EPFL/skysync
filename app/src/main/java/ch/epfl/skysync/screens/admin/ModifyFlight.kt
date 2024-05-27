@@ -26,8 +26,6 @@ fun ModifyFlightScreen(
 
   if (flightToModify.value != null) {
     viewModel.setFlight(flightToModify.value!!)
-    println(flightToModify)
-    println(allBaskets)
   }
 
   FlightForm(
