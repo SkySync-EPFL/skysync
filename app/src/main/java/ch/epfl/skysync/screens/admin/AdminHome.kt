@@ -51,7 +51,6 @@ fun AdminHomeScreen(
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
     FlightsList(currentFlights, lightOrange, padding, "Upcoming flights") { selectedFlight ->
-      Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
       navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/${selectedFlight}")
     }
   }
