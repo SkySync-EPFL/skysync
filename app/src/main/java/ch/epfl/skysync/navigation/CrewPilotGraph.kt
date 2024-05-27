@@ -10,7 +10,7 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.screens.crewpilot.ChatScreen
-import ch.epfl.skysync.screens.crewpilot.FlightDetailScreen
+import ch.epfl.skysync.screens.crewpilot.CrewFlightDetailScreen
 import ch.epfl.skysync.screens.crewpilot.FlightScreen
 import ch.epfl.skysync.screens.crewpilot.HomeScreen
 import ch.epfl.skysync.screens.crewpilot.LaunchFlight
@@ -45,7 +45,7 @@ fun NavGraphBuilder.crewPilotGraph(
           val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
           finishedFlightsViewModel.refresh()
           finishedFlightsViewModel.getAllReports(flightId)
-          FlightDetailScreen(
+          CrewFlightDetailScreen(
               navController = navController,
               flightId = flightId,
               viewModel = flightsViewModel,

@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConfirmAlertDialog
-import ch.epfl.skysync.components.ConfirmedFlightDetailBottom
+import ch.epfl.skysync.components.AdminConfirmedFlightDetailBottom
 import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.FinishedFlightDetailBottom
@@ -95,8 +95,8 @@ fun AdminFlightDetailScreen(
             }
           }
           is ConfirmedFlight -> {
-            ConfirmedFlightDetailBottom(
-                { navController.popBackStack() }, { showConfirmDialog = true }, true)
+            AdminConfirmedFlightDetailBottom(
+                { navController.popBackStack() }, { showConfirmDialog = true })
           }
           is FinishedFlight -> {
             FinishedFlightDetailBottom(

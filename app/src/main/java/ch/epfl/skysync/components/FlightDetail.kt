@@ -19,8 +19,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.DateUtility.formatTime
-import ch.epfl.skysync.database.FlightStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.BalloonQualification
@@ -77,7 +74,10 @@ fun FlightDetails(flight: Flight?, padding: PaddingValues, bottomButton: @Compos
     val defaultPadding = 16.dp
     Column(modifier = Modifier.padding(padding)) {
       LazyColumn(
-          modifier = Modifier.padding(8.dp).weight(1f).testTag("FlightDetailLazyColumn"),
+          modifier = Modifier
+              .padding(8.dp)
+              .weight(1f)
+              .testTag("FlightDetailLazyColumn"),
           verticalArrangement = Arrangement.spacedBy(defaultPadding)) {
             item { GlobalFlightMetricsDetails(flight = flight, cardColor) }
             item { FlightTeamMembersDetails(flight = flight, padding = defaultPadding, cardColor) }
@@ -131,18 +131,9 @@ fun FlightDetails(flight: Flight?, padding: PaddingValues, bottomButton: @Compos
  */
 @Composable
 fun GlobalFlightMetricsDetails(flight: Flight, cardColor: Color) {
-  var flightStatus = FlightStatus.PLANNED
-  when (flight) {
-    is ConfirmedFlight -> {
-      flightStatus = FlightStatus.CONFIRMED
-    }
-    is FinishedFlight -> {
-      flightStatus = FlightStatus.FINISHED
-    }
-  }
   val metrics =
       mapOf(
-          "Flight status" to flightStatus.toString(),
+          "Flight status" to flight.getFlightStatus().text,
           "Day of flight" to DateUtility.localDateToString(flight.date),
           "Time slot" to flight.timeSlot.toString(),
           "Number of Passengers" to "${flight.nPassengers}",
@@ -311,7 +302,9 @@ fun HyperLinkText(location: String, padding: Dp) {
   }
   ClickableText(
       text = string,
-      modifier = Modifier.padding(padding).testTag(location),
+      modifier = Modifier
+          .padding(padding)
+          .testTag(location),
       style = MaterialTheme.typography.bodyLarge,
       onClick = { offset ->
         string.getStringAnnotations(tag = "URL", start = offset, end = offset).firstOrNull()?.let {
@@ -350,15 +343,22 @@ fun DisplayListOfMetrics(metric: String, values: List<String>) {
   Row(modifier = Modifier.padding(8.dp)) {
     Text(
         text = metric,
-        modifier = Modifier.fillMaxWidth().weight(1f),
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Left)
-    Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .weight(1f)) {
       values.forEach { value ->
         Text(
             text = value,
-            modifier = Modifier.fillMaxWidth().padding(1.dp).testTag("Metric$metric$value"),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(1.dp)
+                .testTag("Metric$metric$value"),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center)
@@ -380,29 +380,50 @@ fun DisplaySingleMetric(metric: String, value: String) {
 }
 
 /**
- * Composable function for displaying the bottom section of the confirmed flight details UI.
+ * Composable function for displaying the bottom section of the confirmed flight details UI of an
+ * admin.
  *
  * @param okClick Lambda function to handle the click event for confirming the flight details.
  */
 @Composable
-fun ConfirmedFlightDetailBottom(okClick: () -> Unit, deleteClick: () -> Unit, isAdmin: Boolean) {
+fun AdminConfirmedFlightDetailBottom(okClick: () -> Unit, deleteClick: () -> Unit) {
   BottomAppBar {
-    if (isAdmin) {
-      Button(
-          onClick = deleteClick,
-          modifier =
-              Modifier.fillMaxHeight().fillMaxWidth(0.5f).padding(16.dp).testTag("OK Button")) {
-            Text(text = "Delete", color = Color.White, overflow = TextOverflow.Clip)
-          }
-    }
-    Button(
-        onClick = okClick,
-        modifier = Modifier.fillMaxSize().padding(16.dp).testTag("OK Button"),
-        colors = ButtonDefaults.buttonColors(containerColor = lightOrange)) {
-          Text(text = "Ok", overflow = TextOverflow.Clip)
-        }
+            BottomButton(onClick = {deleteClick() }, title = "Delete", fraction = 0.5f)
+            BottomButton(onClick = {okClick() }, title = "Ok" )
   }
 }
+
+/**
+ * Composable function for displaying the bottom section of the confirmed flight details UI for
+ * a crew/pilot.
+ *
+ * @param okClick  onClick function to handle the click event for confirming the flight details.
+ */
+@Composable
+fun CrewConfirmedFlightDetailBottom(okClick: () -> Unit) {
+    BottomAppBar {
+        BottomButton(onClick = {okClick()}, title = "Ok")
+    }
+}
+
+@Composable
+fun BottomButton(onClick: () -> Unit, title: String, fraction: Float = 1f, buttonColor: Color = lightOrange){
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth(fraction = fraction)
+            .padding(16.dp)
+            .testTag(title),
+        colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+    ) {
+        Text(text = title, color = Color.White, overflow = TextOverflow.Clip)
+    }
+
+}
+
+
+
 
 /**
  * Composable function for displaying the bottom section of the confirmed flight details UI.
@@ -412,18 +433,12 @@ fun ConfirmedFlightDetailBottom(okClick: () -> Unit, deleteClick: () -> Unit, is
 @Composable
 fun FinishedFlightDetailBottom(reportClick: () -> Unit, flightTraceClick: () -> Unit) {
   BottomAppBar {
-    Button(
-        onClick = reportClick,
-        modifier = Modifier.fillMaxHeight().fillMaxWidth(0.5f).padding(16.dp).testTag("Report")) {
-          Text(text = "Report", color = Color.White, overflow = TextOverflow.Clip)
-        }
-    Button(
-        onClick = flightTraceClick,
-        modifier = Modifier.fillMaxSize().padding(16.dp).testTag("Flight Trace")) {
-          Text(text = "Flight Trace", color = Color.White, overflow = TextOverflow.Clip)
-        }
+      BottomButton(onClick = {reportClick() }, title = "Report", fraction = 0.5f)
+      BottomButton(onClick = {flightTraceClick() }, title = "Flight Trace" )
   }
 }
+
+
 
 @Preview
 @Composable

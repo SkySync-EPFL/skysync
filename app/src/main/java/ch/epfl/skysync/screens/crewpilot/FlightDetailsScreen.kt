@@ -1,13 +1,11 @@
 package ch.epfl.skysync.screens.crewpilot
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import ch.epfl.skysync.components.ConfirmedFlightDetailBottom
+import ch.epfl.skysync.components.CrewConfirmedFlightDetailBottom
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.FinishedFlightDetailBottom
 import ch.epfl.skysync.components.FlightDetails
@@ -21,7 +19,7 @@ import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 
 @Composable
-fun FlightDetailScreen(
+fun CrewFlightDetailScreen(
     navController: NavHostController,
     flightId: String,
     viewModel: FlightsViewModel,
@@ -37,7 +35,7 @@ fun FlightDetailScreen(
       bottomBar = {
         when (flight) {
           is ConfirmedFlight -> {
-            ConfirmedFlightDetailBottom({ navController.popBackStack() }, {}, false)
+              CrewConfirmedFlightDetailBottom(okClick = { navController.popBackStack() })
           }
           is FinishedFlight -> {
             FinishedFlightDetailBottom(
