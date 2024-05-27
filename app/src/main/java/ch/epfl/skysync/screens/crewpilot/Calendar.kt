@@ -16,6 +16,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import ch.epfl.skysync.components.AvailabilityCalendar
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.FlightCalendar
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
@@ -26,7 +27,8 @@ import ch.epfl.skysync.viewmodel.CalendarViewModel
 fun CalendarScreen(
     navController: NavHostController,
     calendarType: String,
-    viewModel: CalendarViewModel
+    viewModel: CalendarViewModel,
+    connectivityStatus: ConnectivityStatus
 ) {
   val tabs = mapOf(Route.CREW_FLIGHT_CALENDAR to 0, Route.CREW_AVAILABILITY_CALENDAR to 1)
   val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -61,7 +63,8 @@ fun CalendarScreen(
                 viewModel.setToNextAvailabilityStatus(date, time)
               },
               onSave = { viewModel.saveAvailabilities() },
-              onCancel = { viewModel.cancelAvailabilities() })
+              onCancel = { viewModel.cancelAvailabilities() },
+              connectivityStatus)
         } else if (calendarType == Route.CREW_FLIGHT_CALENDAR) {
           FlightCalendar(
               padding = padding,

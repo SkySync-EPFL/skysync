@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConfirmAlertDialog
 import ch.epfl.skysync.components.ConfirmedFlightDetailBottom
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.FinishedFlightDetailBottom
 import ch.epfl.skysync.components.FlightDetails
@@ -47,7 +48,9 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.ui.theme.*
+import ch.epfl.skysync.ui.theme.leftCornerRounded
+import ch.epfl.skysync.ui.theme.lightGray
+import ch.epfl.skysync.ui.theme.rightCornerRounded
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
@@ -59,7 +62,8 @@ fun AdminFlightDetailScreen(
     flightId: String,
     viewModel: FlightsViewModel,
     inFlightViewModel: InFlightViewModel,
-    finishedFlightsViewModel: FinishedFlightsViewModel
+    finishedFlightsViewModel: FinishedFlightsViewModel,
+    connectivityStatus: ConnectivityStatus
 ) {
 
   val uncompletedFlight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
@@ -83,10 +87,12 @@ fun AdminFlightDetailScreen(
       bottomBar = {
         when (flight) {
           is PlannedFlight -> {
-            FlightDetailBottom(
-                editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
-                confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
-                deleteClick = { showConfirmDialog = true })
+            if (connectivityStatus.isOnline()) {
+              FlightDetailBottom(
+                  editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
+                  confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
+                  deleteClick = { showConfirmDialog = true })
+            }
           }
           is ConfirmedFlight -> {
             ConfirmedFlightDetailBottom(
@@ -96,8 +102,7 @@ fun AdminFlightDetailScreen(
             FinishedFlightDetailBottom(
                 reportClick = { navController.navigate(Route.REPORT + "/${flightId}") },
                 flightTraceClick = {
-                  inFlightViewModel.setCurrentFlight(flightId)
-                  inFlightViewModel.startDisplayFlightTrace()
+                  inFlightViewModel.startDisplayFlightTrace(flight)
                   navController.navigate(Route.FLIGHT)
                 })
           }
