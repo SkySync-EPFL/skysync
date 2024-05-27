@@ -1,12 +1,10 @@
 package ch.epfl.skysync.screens.admin
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -32,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConfirmAlertDialog
 import ch.epfl.skysync.components.ConfirmedFlightDetailBottom
+import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.FinishedFlightDetailBottom
 import ch.epfl.skysync.components.FlightDetails
@@ -49,7 +48,10 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.ui.theme.*
+import ch.epfl.skysync.ui.theme.leftCornerRounded
+import ch.epfl.skysync.ui.theme.lightGray
+import ch.epfl.skysync.ui.theme.rightCornerRounded
+import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 import java.time.LocalDate
@@ -59,10 +61,14 @@ fun AdminFlightDetailScreen(
     navController: NavHostController,
     flightId: String,
     viewModel: FlightsViewModel,
-    inFlightViewModel: InFlightViewModel
+    inFlightViewModel: InFlightViewModel,
+    finishedFlightsViewModel: FinishedFlightsViewModel,
+    connectivityStatus: ConnectivityStatus
 ) {
 
-  val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
+  val uncompletedFlight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
+  val finishedFlight by finishedFlightsViewModel.getFlight(flightId).collectAsStateWithLifecycle()
+  val flight = if (uncompletedFlight != null) uncompletedFlight else finishedFlight
   var showConfirmDialog by remember { mutableStateOf(false) }
   if (showConfirmDialog) {
     ConfirmAlertDialog(
@@ -81,10 +87,12 @@ fun AdminFlightDetailScreen(
       bottomBar = {
         when (flight) {
           is PlannedFlight -> {
-            FlightDetailBottom(
-                editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
-                confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
-                deleteClick = { showConfirmDialog = true })
+            if (connectivityStatus.isOnline()) {
+              FlightDetailBottom(
+                  editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
+                  confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
+                  deleteClick = { showConfirmDialog = true })
+            }
           }
           is ConfirmedFlight -> {
             ConfirmedFlightDetailBottom(
@@ -92,10 +100,9 @@ fun AdminFlightDetailScreen(
           }
           is FinishedFlight -> {
             FinishedFlightDetailBottom(
-                reportClick = {},
+                reportClick = { navController.navigate(Route.REPORT + "/${flightId}") },
                 flightTraceClick = {
-                  inFlightViewModel.setCurrentFlight(flightId)
-                  inFlightViewModel.startDisplayFlightTrace()
+                  inFlightViewModel.startDisplayFlightTrace(flight)
                   navController.navigate(Route.FLIGHT)
                 })
           }

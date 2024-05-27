@@ -118,6 +118,11 @@ class DatabaseSetup {
           email = "pilot3.pilot@skysnc.ch",
           qualification = BalloonQualification.SMALL)
 
+  var allUsers = listOf(crew1, crew2, pilot1, pilot2, pilot3, admin1, admin2)
+  val allCrews = allUsers.filterIsInstance<Crew>()
+  val allPilots = allUsers.filterIsInstance<Pilot>()
+  val allAdmins = allUsers.filterIsInstance<Admin>()
+
   var date1 = LocalDate.of(2024, 8, 14)
 
   // this the date of flight4, it needs to be today for the InFlightViewModel tests
@@ -323,7 +328,7 @@ class DatabaseSetup {
 
   var report1 =
       PilotReport(
-          id = UNSET_ID,
+          id = finishedFlight1.id,
           author = pilot1.id,
           effectivePax = 2,
           takeOffTime = takeOffTime2,
@@ -333,16 +338,16 @@ class DatabaseSetup {
           begin = takeOffTime2,
           end = landingTime2,
           pauseDuration = 0,
-          comments = "Some comments",
+          comments = "Some comments 1",
       )
   var report2 =
       CrewReport(
-          id = UNSET_ID,
+          id = finishedFlight1.id,
           author = crew1.id,
           begin = takeOffTime2,
           end = landingTime2,
           pauseDuration = 0,
-          comments = "Some comments",
+          comments = "Some comments 2",
       )
 
   /**

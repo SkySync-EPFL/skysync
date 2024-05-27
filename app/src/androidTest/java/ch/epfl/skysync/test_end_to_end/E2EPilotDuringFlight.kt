@@ -80,7 +80,7 @@ class E2EPilotDuringFlight {
     // Refreshes chat and user data asynchronously
     chatViewModel.refresh().join()
     chatViewModel.refreshUser().join()
-    inFlightViewModel.init(dbs.pilot1.id).join()
+    composeTestRule.waitUntil(3000) { !inFlightViewModel.loading.value }
 
     // Clicks on the "Flight" button to navigate to the flight screen
     composeTestRule.onNodeWithText("Flight").performClick()
@@ -150,7 +150,11 @@ class E2EPilotDuringFlight {
 
     // Stops the timer by clicking on the "Stop Button"
     composeTestRule.onNodeWithTag("Stop Button").performClick()
+    composeTestRule.onNodeWithText("Confirm", true).performClick()
     composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Clear Button").isDisplayed() }
+
+    // Wait for the stop flight operation to finish
+    composeTestRule.waitUntil(3000) { !inFlightViewModel.loading.value }
     composeTestRule.onNodeWithTag("Clear Button").performClick()
     composeTestRule.waitUntil(3000) {
       composeTestRule.onNodeWithText("Upcoming flights").isDisplayed()

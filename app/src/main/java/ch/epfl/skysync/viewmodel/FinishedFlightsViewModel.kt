@@ -45,10 +45,12 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
   private val _currentUser: MutableStateFlow<User?> = MutableStateFlow(null)
   private val isLoading = MutableStateFlow(false)
   private val _flightReports: MutableStateFlow<List<Report>?> = MutableStateFlow(null)
+  private val _flightReportsUsers: MutableStateFlow<List<User>?> = MutableStateFlow(null)
 
   val currentFlights = _currentFlights.asStateFlow()
   val currentUser = _currentUser.asStateFlow()
   val flightReports = _flightReports.asStateFlow()
+  val flightReportsUsers = _flightReportsUsers.asStateFlow()
 
   fun refresh() {
     refreshUserAndFlights()
@@ -105,6 +107,10 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
       viewModelScope.launch {
         _flightReports.value =
             repository.reportTable.retrieveReports(flightId, onError = { onError(it) })
+        _flightReportsUsers.value =
+            _flightReports.value!!.map { report ->
+              repository.userTable.get(report.author, onError = { onError(it) })!!
+            }
       }
 
   /** Callback executed when an error occurs on database-related operations */
