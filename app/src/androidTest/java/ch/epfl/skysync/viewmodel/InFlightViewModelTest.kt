@@ -68,7 +68,7 @@ class InFlightViewModelTest {
     inFlightViewModel.startFlight().join()
 
     // we should not be able to start display flight trace
-    inFlightViewModel.startDisplayFlightTrace()
+    inFlightViewModel.startDisplayFlightTrace(dbs.finishedFlight1)
     assert(!inFlightViewModel.isDisplayTrace())
 
     composeTestRule.waitUntil(timeoutMillis = 1500) {
@@ -97,8 +97,6 @@ class InFlightViewModelTest {
     inFlightViewModel.stopFlight().join()
     assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
     inFlightViewModel.clearFlight().join()
-    assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
-    inFlightViewModel.startDisplayFlightTrace().join()
     assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
     inFlightViewModel.quitDisplayFlightTrace()
     assertEquals(InFlightViewModel.FlightStage.IDLE, inFlightViewModel.flightStage.value)
@@ -260,13 +258,11 @@ class InFlightViewModelTest {
                     LocationPoint(2, 2.0, 0.0),
                     LocationPoint(3, 3.0, 0.0),
                 ))
-    flightTraceTable.set(dbs.flight4.id, flightTrace, onError = { assertNull(it) })
+    flightTraceTable.set(dbs.finishedFlight1.id, flightTrace, onError = { assertNull(it) })
 
     assertEquals(0, inFlightViewModel.flightLocations.value.size)
 
-    inFlightViewModel.setCurrentFlight(dbs.flight4.id)
-
-    inFlightViewModel.startDisplayFlightTrace().join()
+    inFlightViewModel.startDisplayFlightTrace(dbs.finishedFlight1).join()
 
     assertEquals(InFlightViewModel.FlightStage.DISPLAY, inFlightViewModel.flightStage.value)
 

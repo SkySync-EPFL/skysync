@@ -2,13 +2,24 @@ package ch.epfl.skysync.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.ui.theme.*
+import ch.epfl.skysync.ui.theme.darkOrange
 import java.time.LocalDate
 
 // Define custom colors to represent availability status
@@ -115,16 +126,17 @@ fun AvailabilityTile(
  */
 @Composable
 fun SaveCancelButton(
+    connectivityStatus: ConnectivityStatus,
     isDraft: Boolean,
     onSave: () -> Unit,
-    onCancel: () -> Unit,
+    onCancel: () -> Unit
 ) {
   Row(
       modifier = Modifier.padding(8.dp),
   ) {
     Button(
         onClick = onCancel,
-        enabled = isDraft,
+        enabled = isDraft && connectivityStatus.isOnline(),
         colors = ButtonDefaults.buttonColors(containerColor = darkOrange),
         shape = RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp),
         modifier = Modifier.weight(1f).testTag("CancelButton"),
@@ -133,7 +145,7 @@ fun SaveCancelButton(
     }
     Button(
         onClick = onSave,
-        enabled = isDraft,
+        enabled = isDraft && connectivityStatus.isOnline(),
         shape = RoundedCornerShape(topEnd = 10.dp, bottomEnd = 10.dp),
         modifier = Modifier.weight(1f).testTag("SaveButton"),
     ) {
@@ -166,7 +178,8 @@ fun AvailabilityCalendar(
     getAvailabilityStatus: (LocalDate, TimeSlot) -> AvailabilityStatus,
     nextAvailabilityStatus: (LocalDate, TimeSlot) -> Unit,
     onSave: () -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    connectivityStatus: ConnectivityStatus
 ) {
   var isDraft by remember { mutableStateOf(false) }
 
@@ -174,11 +187,14 @@ fun AvailabilityCalendar(
     ModularCalendar(modifier = Modifier.weight(1f), isDraft = isDraft) { date, time ->
       val availabilityStatus = getAvailabilityStatus(date, time)
       AvailabilityTile(date = date, time = time, availabilityStatus = availabilityStatus) {
-        nextAvailabilityStatus(date, time)
-        isDraft = true
+        if (connectivityStatus.isOnline()) {
+          nextAvailabilityStatus(date, time)
+          isDraft = true
+        }
       }
     }
     SaveCancelButton(
+        connectivityStatus,
         isDraft = isDraft,
         onSave = {
           onSave()

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.ui.theme.lightOrange
 
 @Composable
 fun ConnectivityWrapper(
@@ -45,8 +47,8 @@ fun ConnectivityWrapper(
         Box(modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center)) {
           Text(
               text = "Feature not available offline",
-              color = Color.Red,
-              fontSize = 18.sp,
+              color = lightOrange,
+              fontSize = 20.sp,
               modifier = Modifier.padding(16.dp))
         }
       } else {
@@ -56,7 +58,16 @@ fun ConnectivityWrapper(
               Text(text = "No Internet Connection", fontSize = 20.sp, fontWeight = FontWeight.Bold)
             },
             text = { Text(text = "Feature not available offline", fontSize = 18.sp) },
-            confirmButton = { Button(onClick = { showOfflineMessage = true }) { Text("OK") } },
+            confirmButton = {
+              Button(
+                  onClick = { showOfflineMessage = true },
+                  colors =
+                      ButtonDefaults.buttonColors(
+                          containerColor = lightOrange, // Change this to your desired color
+                          contentColor = Color.White)) {
+                    Text("OK")
+                  }
+            },
             containerColor = Color.White,
             titleContentColor = Color.Black,
             textContentColor = Color.Black,

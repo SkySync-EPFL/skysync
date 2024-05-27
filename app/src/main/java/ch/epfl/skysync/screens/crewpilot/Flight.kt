@@ -117,7 +117,7 @@ fun FlightScreen(
         }
       }
 
-  DisposableEffect(locationPermission) {
+  DisposableEffect(locationPermission.status.isGranted) {
     // Defines the location request parameters.
     val locationRequest =
         LocationRequest.create().apply {
@@ -220,7 +220,7 @@ fun FlightScreen(
                   modifier =
                       Modifier.align(Alignment.BottomCenter)
                           .fillMaxWidth()
-                          .padding(bottom = 20.dp, start = 40.dp, end = 40.dp),
+                          .padding(bottom = 20.dp, start = 60.dp, end = 60.dp),
                   flightStage = flightStage,
                   isPilot = inFlightViewModel.isPilot(),
                   onStart = { inFlightViewModel.startFlight() },
