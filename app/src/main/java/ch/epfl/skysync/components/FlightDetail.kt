@@ -165,16 +165,21 @@ fun FlightTeamMembersDetails(
     flightColor: @Composable () -> Unit = { DisplayFlightColor(flight, padding) }
 ) {
   Card(colors = CardDefaults.cardColors(cardColor)) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
       HeaderTitle(title = "Team", padding = padding, color = Color.Black)
       flightColor()
     }
-    flight.team.roles.forEach { role ->
-      var values = listOf("Unset")
-      if (role.assignedUser != null) {
-        values = listOf(role.assignedUser!!.firstname, role.assignedUser!!.lastname)
+    if (flight.team.roles.isNotEmpty()) {
+
+      flight.team.roles.forEach { role ->
+        var values = listOf("Unset")
+        if (role.assignedUser != null) {
+          values = listOf(role.assignedUser!!.firstname, role.assignedUser!!.lastname)
+        }
+        DisplayListOfMetrics(metric = role.roleType.description, values = values)
       }
-      DisplayListOfMetrics(metric = role.roleType.description, values = values)
+    } else {
+      SmallTitle(title = "No team assigned yet", padding = padding)
     }
   }
 }

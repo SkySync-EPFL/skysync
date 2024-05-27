@@ -419,6 +419,7 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
                 _flightLocations.value.lastOrNull()?.point ?: LocationPoint.UNKNONWN_POINT,
             flightTrace = FlightTrace(trace = _flightLocations.value.map { it.point }))
     flightTable.update(finishedFlight.id, finishedFlight, onError = { onError(it) })
+    refreshFlights()
     Log.d("InFlightViewModel", "Saving finished flight")
   }
 
