@@ -177,6 +177,9 @@ class ChatViewModel(
         messageTable.add(groupId, message, onError = { onError(it) })
       }
 
+  fun deleteGroup(groupId: String) =
+      viewModelScope.launch { messageGroupTable.delete(groupId, onError = { onError(it) }) }
+
   init {
     messageListenerViewModel.pushCallback(this::onMessageGroupChange)
     println("Debug ChatViewModel PUSH")
