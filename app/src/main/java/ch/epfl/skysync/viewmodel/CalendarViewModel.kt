@@ -1,5 +1,6 @@
 package ch.epfl.skysync.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -7,10 +8,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
+import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
+import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.CalendarDifferenceType
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.user.User
 import java.time.LocalDate
 import kotlin.coroutines.cancellation.CancellationException
@@ -79,12 +83,23 @@ class CalendarViewModel(
    */
   private suspend fun refreshUserAndCalendars() {
     _user.value = userTable.get(uid, this::onError)!!
-    val currentAvCal = AvailabilityCalendar(userTable.retrieveAvailabilities(uid, this::onError))
+    var currentAvCal = AvailabilityCalendar(userTable.retrieveAvailabilities(uid, this::onError))
+    val flights = userTable.retrieveAssignedFlights(flightTable, uid, this::onError)
+    flights.forEach { flight ->
+      if (flight !is FinishedFlight) {
+        Log.d("ici siu", DateUtility.localDateToString(flight.date))
+        currentAvCal =
+            AvailabilityCalendar(
+                currentAvCal
+                    .setAvailabilityByDate(
+                        flight.date, flight.timeSlot, AvailabilityStatus.ASSIGNED)
+                    .cells)
+      }
+    }
     _currentAvailabilityCalendar.value = currentAvCal
     originalAvailabilityCalendar = currentAvCal
-    _currentFlightGroupCalendar.value =
-        FlightGroupCalendar.fromFlightList(
-            userTable.retrieveAssignedFlights(flightTable, uid, this::onError))
+
+    _currentFlightGroupCalendar.value = FlightGroupCalendar.fromFlightList(flights)
   }
 
   /** Callback executed when an error occurs on database-related operations */
