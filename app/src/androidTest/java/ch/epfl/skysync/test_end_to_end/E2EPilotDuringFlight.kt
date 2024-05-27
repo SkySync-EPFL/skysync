@@ -150,6 +150,7 @@ class E2EPilotDuringFlight {
 
     // Stops the timer by clicking on the "Stop Button"
     composeTestRule.onNodeWithTag("Stop Button").performClick()
+    composeTestRule.onNodeWithText("Confirm", true).performClick()
     composeTestRule.waitUntil(3000) { composeTestRule.onNodeWithTag("Clear Button").isDisplayed() }
 
     // Wait for the stop flight operation to finish
