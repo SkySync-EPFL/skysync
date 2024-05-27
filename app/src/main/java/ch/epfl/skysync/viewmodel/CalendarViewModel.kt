@@ -1,6 +1,5 @@
 package ch.epfl.skysync.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -8,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
-import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
 import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.CalendarDifferenceType
@@ -87,7 +85,6 @@ class CalendarViewModel(
     val flights = userTable.retrieveAssignedFlights(flightTable, uid, this::onError)
     flights.forEach { flight ->
       if (flight !is FinishedFlight) {
-        Log.d("ici siu", DateUtility.localDateToString(flight.date))
         currentAvCal =
             AvailabilityCalendar(
                 currentAvCal
