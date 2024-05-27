@@ -52,7 +52,11 @@ class GroupChatTest {
   fun setUpNavHost() {
     composeTestRule.setContent {
       GroupChat(
-          groupList = groups, onClick = {}, paddingValues = PaddingValues(0.dp), isAdmin = false)
+          groupList = groups,
+          onClick = {},
+          onDelete = {},
+          paddingValues = PaddingValues(0.dp),
+          isAdmin = false)
     }
   }
 
