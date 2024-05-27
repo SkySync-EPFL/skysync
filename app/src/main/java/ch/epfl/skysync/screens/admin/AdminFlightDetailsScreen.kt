@@ -48,9 +48,9 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.ui.theme.leftCornerRounded
+import ch.epfl.skysync.ui.theme.LEFT_CORNER_ROUNDED
+import ch.epfl.skysync.ui.theme.RIGHT_CORNER_ROUNDED
 import ch.epfl.skysync.ui.theme.lightGray
-import ch.epfl.skysync.ui.theme.rightCornerRounded
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel

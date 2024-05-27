@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,9 +25,7 @@ import androidx.compose.ui.unit.dp
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.ui.theme.TOP_CORNER_ROUNDED
 
-/**
- * shows a list of flights with a given title on the top and a banner color
- */
+/** shows a list of flights with a given title on the top and a banner color */
 @Composable
 fun FlightsList(
     flights: List<Flight>?,
@@ -37,31 +34,30 @@ fun FlightsList(
     topTitle: String,
     onFlightCardClick: (String) -> Unit
 ) {
-  Column(modifier = Modifier
-      .fillMaxSize()
-      .padding(16.dp)) {
-    Text(
-        text = topTitle,
-        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-        modifier =
-        Modifier
-            .background(
-                color = topBannerColor, shape = TOP_CORNER_ROUNDED
-            )
-            .fillMaxWidth()
-            .padding(
-                top = paddingValues.calculateTopPadding() + 16.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 16.dp
-            ),
-        color = Color.White,
-        textAlign = TextAlign.Center)
-
+  Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    TopBanner(topTitle, topBannerColor, paddingValues)
     Spacer(modifier = Modifier.height(16.dp))
     FlightsListContent(
         flights = flights, paddingValues = paddingValues, onFlightClick = onFlightCardClick)
   }
+}
+
+/** displays the top banner */
+@Composable
+fun TopBanner(topTitle: String, topBannerColor: Color, paddingValues: PaddingValues) {
+  Text(
+      text = topTitle,
+      style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+      modifier =
+          Modifier.background(color = topBannerColor, shape = TOP_CORNER_ROUNDED)
+              .fillMaxWidth()
+              .padding(
+                  top = paddingValues.calculateTopPadding() + 16.dp,
+                  start = 16.dp,
+                  end = 16.dp,
+                  bottom = 16.dp),
+      color = Color.White,
+      textAlign = TextAlign.Center)
 }
 
 /**
@@ -83,27 +79,19 @@ fun FlightsListContent(
   } else {
     // Display the flights in a LazyColumn if the list is not empty
     val sortedFlights = flights.sortedBy { it.date }
-    LazyColumn(modifier = Modifier
-        .testTag("HomeLazyList")
-        .padding(paddingValues)) {
+    LazyColumn(modifier = Modifier.testTag("HomeLazyList").padding(paddingValues)) {
       items(sortedFlights) { flight -> FlightCard(flight, onFlightClick) }
     }
   }
 }
 
-/**
- * shows a text "No flights"
- */
+/** shows a text "No flights" */
 @Composable
 fun NoAvailableFlights() {
-  Box(
-      modifier = Modifier
-          .fillMaxWidth()
-          .fillMaxHeight(0.3f),
-      contentAlignment = Alignment.Center) {
-        Text(
-            text = "No flights",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = Color.Black)
-      }
+  Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f), contentAlignment = Alignment.Center) {
+    Text(
+        text = "No flights",
+        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+        color = Color.Black)
+  }
 }

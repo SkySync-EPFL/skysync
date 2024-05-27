@@ -1,7 +1,6 @@
 package ch.epfl.skysync.screens.admin
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add

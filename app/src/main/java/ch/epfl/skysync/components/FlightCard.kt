@@ -26,83 +26,66 @@ import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightStatus
 import java.time.LocalDate
 
-
 /**
  * represents a card for a flight*
+ *
  * @param flight the flight to display
  * @param onFlightClick the action to perform when the card is clicked
- **/
+ */
 @Composable
 fun FlightCard(flight: Flight, onFlightClick: (String) -> Unit) {
   Card(
       modifier =
-      Modifier
-          .fillMaxWidth()
-          .clickable { onFlightClick(flight.id) }
-          .padding(vertical = 4.dp)
-          .testTag("flightCard${flight.id}"),
+          Modifier.fillMaxWidth()
+              .clickable { onFlightClick(flight.id) }
+              .padding(vertical = 4.dp)
+              .testTag("flightCard${flight.id}"),
       elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
   ) {
     Surface(modifier = Modifier.fillMaxWidth(), color = flight.getFlightStatus().displayColor) {
       Row(
-          modifier = Modifier
-              .fillMaxWidth()
-              .padding(16.dp),
+          modifier = Modifier.fillMaxWidth().padding(16.dp),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.Start) {
-          FlightDateText(date = flight.date, modifier = Modifier.alignByBaseline())
-          Spacer(modifier = Modifier.width(16.dp))
-          FlightDetailsColumn(flight = flight, modifier = Modifier
-              .weight(0.7f)
-              .padding(start = 16.dp))
-          FlightStatusText(status = flight.getFlightStatus(), Modifier.alignByBaseline())
+            FlightDateText(date = flight.date, modifier = Modifier.alignByBaseline())
+            Spacer(modifier = Modifier.width(16.dp))
+            FlightDetailsColumn(
+                flight = flight, modifier = Modifier.weight(0.7f).padding(start = 16.dp))
+            FlightStatusText(status = flight.getFlightStatus(), Modifier.alignByBaseline())
           }
     }
   }
 }
 
-/**
- * displays the date of a flight
- */
+/** displays the date of a flight */
 @Composable
 fun FlightDateText(date: LocalDate, modifier: Modifier) {
-    Text(
-        text = localDateToWeekdayMonthDay(date),
-        style = MaterialTheme.typography.titleMedium,
-        modifier = modifier, //modifier.alignByBaseline(),
-        textAlign = TextAlign.Center,
-        color = Color.Black
-    )
+  Text(
+      text = localDateToWeekdayMonthDay(date),
+      style = MaterialTheme.typography.titleMedium,
+      modifier = modifier, // modifier.alignByBaseline(),
+      textAlign = TextAlign.Center,
+      color = Color.Black)
 }
 
-/**
- * displays the flight details consisting of the flight type, passenger count and time slot
-
- */
+/** displays the flight details consisting of the flight type, passenger count and time slot */
 @Composable
 fun FlightDetailsColumn(flight: Flight, modifier: Modifier) {
-    Column(modifier = modifier) {//Modifier.weight(0.7f).padding(start = 16.dp)
-        Text(
-            text = "${flight.flightType.name} - ${flight.nPassengers} pax",
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-        Text(
-            text = flight.timeSlot.toString(),
-            color = Color.Gray
-        )
-    }
+  Column(modifier = modifier) { // Modifier.weight(0.7f).padding(start = 16.dp)
+    Text(
+        text = "${flight.flightType.name} - ${flight.nPassengers} pax",
+        fontWeight = FontWeight.Bold,
+        color = Color.Black)
+    Text(text = flight.timeSlot.toString(), color = Color.Gray)
+  }
 }
 
-/**
- * displays the flight status
- */
+/** displays the flight status */
 @Composable
 fun FlightStatusText(status: FlightStatus, modifier: Modifier) {
-    Text(
-        text = status.text,
-        style = MaterialTheme.typography.bodyMedium,
-        color = Color.Gray,
-        modifier = modifier
-    )
+  Text(
+      text = status.text,
+      style = MaterialTheme.typography.bodyMedium,
+      color = Color.Gray,
+      modifier = modifier)
 }
