@@ -118,6 +118,11 @@ class DatabaseSetup {
           email = "pilot3.pilot@skysnc.ch",
           qualification = BalloonQualification.SMALL)
 
+  var allUsers = listOf(crew1, crew2, pilot1, pilot2, pilot3, admin1, admin2)
+  val allCrews = allUsers.filterIsInstance<Crew>()
+  val allPilots = allUsers.filterIsInstance<Pilot>()
+  val allAdmins = allUsers.filterIsInstance<Admin>()
+
   var date1 = LocalDate.of(2024, 8, 14)
 
   // this the date of flight4, it needs to be today for the InFlightViewModel tests
