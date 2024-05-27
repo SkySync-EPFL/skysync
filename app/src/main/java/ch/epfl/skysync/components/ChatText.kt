@@ -181,6 +181,7 @@ fun ChatInput(onSend: (String) -> Unit, connectivityStatus: ConnectivityStatus) 
                     focusedBorderColor = Color.Gray, focusedLabelColor = lightGray),
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
+            enabled = connectivityStatus.isOnline(),
             keyboardActions =
                 KeyboardActions(
                     onSend = {
@@ -197,7 +198,7 @@ fun ChatInput(onSend: (String) -> Unit, connectivityStatus: ConnectivityStatus) 
                 keyboardController?.hide()
               }
             },
-            enabled = text.isNotEmpty() && connectivityStatus.isOnline(),
+            enabled = text.isNotEmpty(),
             modifier =
                 Modifier.padding(start = 8.dp)
                     .background(if (text.isNotEmpty()) lightOrange else Color.Gray, CircleShape)
