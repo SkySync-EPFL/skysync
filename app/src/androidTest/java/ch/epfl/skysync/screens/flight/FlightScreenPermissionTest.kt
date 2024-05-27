@@ -7,7 +7,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.rememberNavController
 import androidx.test.rule.GrantPermissionRule
 import ch.epfl.skysync.Repository
@@ -55,7 +54,6 @@ class FlightScreenPermissionTest {
     }
     composeTestRule.onNodeWithTag("Map").assertExists()
     composeTestRule.onNodeWithContentDescription("Locate Me").assertIsDisplayed()
-    composeTestRule.onNodeWithContentDescription("Flight infos").performClick()
     composeTestRule
         .onNodeWithText(
             "Horizontal Speed: 0.00 m/s\nVertical Speed: 0.00 m/s\nAltitude: 0 m\nBearing: 0.00 °")
