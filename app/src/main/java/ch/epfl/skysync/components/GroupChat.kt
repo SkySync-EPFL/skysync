@@ -141,7 +141,7 @@ fun GroupCard(
                   onClick = { onClick(groupDetails) }, onLongClick = { onActivate() })
               .fillMaxWidth()
               .padding(vertical = 4.dp)
-              .testTag(testTag),
+              .testTag("GroupCard$testTag"),
       shape = RoundedCornerShape(8.dp),
       colors = CardDefaults.cardColors(containerColor = lightGray)) {
         Row(modifier = Modifier.padding(8.dp)) {
@@ -179,7 +179,7 @@ fun GroupCard(
         if (isActive && isAdmin) {
           Button(
               onClick = { onDelete(groupDetails) },
-              modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+              modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("DeleteButton$testTag")) {
                 Text("Delete Group")
               }
         }
@@ -212,7 +212,7 @@ fun GroupChatBody(
             onDelete(group)
             onSetActiveGroupId(null)
           },
-          testTag = "GroupCard$index",
+          testTag = "$index",
           isActive = activeGroupId == group.id,
           onActivate = { onSetActiveGroupId(group.id) },
           isAdmin)

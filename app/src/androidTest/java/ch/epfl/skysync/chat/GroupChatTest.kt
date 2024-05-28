@@ -1,6 +1,7 @@
 package ch.epfl.skysync.chat
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
@@ -10,6 +11,8 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeWithVelocity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.components.GroupChat
@@ -56,7 +59,7 @@ class GroupChatTest {
           onClick = {},
           onDelete = {},
           paddingValues = PaddingValues(0.dp),
-          isAdmin = false)
+          isAdmin = true)
     }
   }
 
@@ -85,5 +88,19 @@ class GroupChatTest {
   fun testGroupCardIsDisplayedAfterSearch() {
     composeTestRule.onNodeWithTag("Search").performTextInput("Search")
     composeTestRule.onNodeWithText("GroupSearch").assertIsDisplayed()
+  }
+
+  @Test
+  fun testDeleteButtonIsDisplayed() {
+    for (i in groups.indices) {
+      composeTestRule.onNodeWithTag("GroupChatBody").performScrollToNode(hasTestTag("GroupCard$i"))
+      composeTestRule.onNodeWithTag("GroupCard$i").performTouchInput {
+        swipeWithVelocity(Offset.Zero, Offset.Zero, 0f, 2000)
+      }
+      composeTestRule
+          .onNodeWithTag("GroupChatBody")
+          .performScrollToNode(hasTestTag("DeleteButton$i"))
+      composeTestRule.onNodeWithTag("DeleteButton$i").assertIsDisplayed()
+    }
   }
 }
