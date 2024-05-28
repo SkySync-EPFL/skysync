@@ -1,7 +1,6 @@
 package ch.epfl.skysync.screens.admin
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -51,7 +50,6 @@ fun AdminHomeScreen(
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
     FlightsList(currentFlights, lightOrange, padding, "Upcoming flights") { selectedFlight ->
-      Log.d("HomeScreen", "Navigating to FlightDetails with id $selectedFlight")
       navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/${selectedFlight}")
     }
   }
