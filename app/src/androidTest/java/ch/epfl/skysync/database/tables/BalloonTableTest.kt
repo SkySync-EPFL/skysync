@@ -40,7 +40,7 @@ class BalloonTableTest {
             flightTable = flightTable, dbs.date1, TimeSlot.PM, onError = { Assert.assertNull(it) })
 
     Assert.assertEquals(
-        listOf(dbs.balloon2, dbs.balloon3).sortedBy { balloon: Balloon -> balloon.id },
+        listOf(dbs.balloon2, dbs.balloon1).sortedBy { balloon: Balloon -> balloon.id },
         availabilityBalloons.sortedBy { balloon: Balloon -> balloon.id })
 
     availabilityBalloons =
