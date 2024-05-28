@@ -9,6 +9,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.models.UNSET_ID
+import ch.epfl.skysync.models.calendar.Availability
+import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
@@ -190,18 +192,65 @@ class FlightsViewModel(
    */
   fun modifyFlight(
       newFlight: Flight,
-  ) = viewModelScope.launch { repository.flightTable.update(newFlight.id, newFlight) }
+  ) =
+      viewModelScope.launch {
+        repository.flightTable.update(newFlight.id, newFlight)
+        setUsersToAssigned(newFlight)
+      }
 
-  fun deleteFlight(flightId: String) =
-      viewModelScope.launch { repository.flightTable.delete(flightId, onError = { onError(it) }) }
+  fun deleteFlight(flight: Flight) =
+      viewModelScope.launch {
+        repository.flightTable.delete(flight.id, onError = { onError(it) })
+        setUsersToOK(flight)
+      }
 
   /** adds the given flight to the db and the viewmodel */
   fun addFlight(
       flight: PlannedFlight,
-  ) = viewModelScope.launch { repository.flightTable.add(flight, onError = { onError(it) }) }
+  ) =
+      viewModelScope.launch {
+        repository.flightTable.add(flight, onError = { onError(it) })
+        setUsersToAssigned(flight)
+      }
 
   private fun groupName(date: LocalDate, timeSlot: TimeSlot): String {
     return "Flight: ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} $timeSlot"
+  }
+
+  private fun setUsersToAssigned(flight: Flight) {
+    viewModelScope.launch {
+      flight.team.getUsers().forEach { user ->
+        val availability =
+            repository.availabilityTable.queryByDateAndUserId(
+                user.id, flight.date, flight.timeSlot, onError = { onError(it) })
+        repository.availabilityTable.update(
+            user.id,
+            availability.id,
+            Availability(
+                status = AvailabilityStatus.ASSIGNED,
+                timeSlot = flight.timeSlot,
+                date = flight.date,
+                id = availability.id))
+      }
+    }
+  }
+
+  private fun setUsersToOK(flight: Flight) {
+    viewModelScope.launch {
+      flight.team.getUsers().forEach { user ->
+        val availability =
+            repository.availabilityTable.queryByDateAndUserId(
+                user.id, flight.date, flight.timeSlot, onError = { onError(it) })
+        repository.availabilityTable.update(
+            user.id,
+            availability.id,
+            Availability(
+                status = AvailabilityStatus.OK,
+                timeSlot = flight.timeSlot,
+                date = flight.date,
+                id = availability.id))
+      }
+    }
   }
 
   /** updates the planned flight to a confirmed flight */

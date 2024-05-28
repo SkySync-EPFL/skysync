@@ -1,9 +1,14 @@
 package ch.epfl.skysync.database.tables
 
+import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.AvailabilitySchema
 import ch.epfl.skysync.models.calendar.Availability
+import ch.epfl.skysync.models.calendar.TimeSlot
+import com.google.firebase.firestore.Filter
+import java.time.LocalDate
+import kotlinx.coroutines.coroutineScope
 
 /** Represent the "availability" table */
 class AvailabilityTable(db: FirestoreDatabase) :
@@ -46,6 +51,23 @@ class AvailabilityTable(db: FirestoreDatabase) :
   ) {
     return withErrorCallback(onError) {
       db.setItem(path, availabilityId, AvailabilitySchema.fromModel(userId, item))
+    }
+  }
+
+  suspend fun queryByDateAndUserId(
+      userId: String,
+      localDate: LocalDate,
+      timeslot: TimeSlot,
+      onError: ((Exception) -> Unit)? = null
+  ): Availability = coroutineScope {
+    withErrorCallback(onError) {
+      val dateFilter = Filter.equalTo("date", DateUtility.localDateToDate(localDate))
+      val timeslotFilter = Filter.equalTo("timeSlot", timeslot)
+      val userFilter = Filter.equalTo("userId", userId)
+      val availabilityFilter = Filter.and(dateFilter, timeslotFilter, userFilter)
+
+      val availabilities = query(availabilityFilter)
+      availabilities[0]
     }
   }
 

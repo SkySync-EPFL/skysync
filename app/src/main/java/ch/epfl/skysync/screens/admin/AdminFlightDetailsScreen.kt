@@ -75,7 +75,7 @@ fun AdminFlightDetailScreen(
         onDismissRequest = { showConfirmDialog = false },
         onConfirmation = {
           showConfirmDialog = false
-          viewModel.deleteFlight(flightId)
+          viewModel.deleteFlight(flight!!)
           navController.navigate(Route.ADMIN_HOME)
         },
         dialogTitle = "Delete Flight",
