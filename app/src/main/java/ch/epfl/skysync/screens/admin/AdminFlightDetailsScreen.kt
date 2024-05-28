@@ -118,29 +118,3 @@ fun FlightDetailBottom(
     BottomButton(onClick = { confirmClick() }, title = "confirm", modifier = Modifier.weight(1f))
   }
 }
-
-@Composable
-@Preview
-fun FlightDetailScreenPreview() {
-  val plannedFlight =
-      PlannedFlight(
-          "1234",
-          3,
-          FlightType.DISCOVERY,
-          Team(listOf(Role(RoleType.CREW), Role(RoleType.CREW))),
-          Balloon("Balloon Name", BalloonQualification.LARGE, "Ballon Name"),
-          Basket("Basket Name", true, "1234"),
-          LocalDate.now().plusDays(3),
-          TimeSlot.PM,
-          listOf(
-              Vehicle("Peugeot 308", "1234"),
-              Vehicle("Peugeot 308", "1234"),
-              Vehicle("Peugeot 308", "1234")))
-
-  Scaffold(
-      topBar = { Text("Flight Details") },
-      bottomBar = { Text(text = "Bottom Bar") },
-      containerColor = lightGray) { padding ->
-        FlightDetails(flight = plannedFlight, padding = padding)
-      }
-}

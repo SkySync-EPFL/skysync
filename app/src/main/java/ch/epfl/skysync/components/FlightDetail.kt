@@ -427,29 +427,3 @@ fun FinishedFlightDetailBottom(reportClick: () -> Unit, flightTraceClick: () -> 
     }
   }
 }
-
-@Preview
-@Composable
-fun FlightDetailsPreview() {
-  val finishedFlight =
-      FinishedFlight(
-          "1234",
-          3,
-          Team(listOf(Role(RoleType.CREW), Role(RoleType.CREW))),
-          FlightType.DISCOVERY,
-          Balloon("Balloon Name", BalloonQualification.LARGE, "Ballon Name"),
-          Basket("Basket Name", true, "1234"),
-          LocalDate.now().plusDays(3),
-          TimeSlot.PM,
-          listOf(
-              Vehicle("Peugeot 308", "1234"),
-          ),
-          color = FlightColor.RED,
-          takeOffTime = Date.from(Instant.now()),
-          takeOffLocation = LocationPoint(21, 46.0, 6.0, "Vernier"),
-          landingTime = Date.from(Instant.now()),
-          landingLocation = LocationPoint(21, 46.2, 6.1, "Vernier"),
-          flightTime = 2000000)
-
-  FlightDetails(finishedFlight, PaddingValues(0.dp))
-}

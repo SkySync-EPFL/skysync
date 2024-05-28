@@ -40,47 +40,20 @@ class FlightDetailTest {
   }
 
   @Test
-  fun statusIsDisplayed() {
+  fun detailsAreCorrectlyDisplayed() {
     verifyDisplay("Flight status", FlightStatus.CONFIRMED.text)
-  }
-
-  @Test
-  fun dateValueIsDisplayed() {
     verifyDisplay("Day of flight", DateUtility.localDateToString(flight.date))
-  }
-
-  @Test
-  fun timeSlotIsDisplayed() {
     verifyDisplay("Time slot", DateUtility.localDateToString(flight.date))
-  }
-
-  @Test
-  fun numberOfPaxValueIsDisplayed() {
     verifyDisplay("Number of Passengers", flight.nPassengers.toString())
-  }
-
-  @Test
-  fun flightTypeValueIsDisplayed() {
     verifyDisplay("Flight type", flight.flightType.name)
-  }
-
-  @Test
-  fun balloonAndValueIsDisplayed() {
     verifyDisplay("Balloon", flight.balloon.name)
-  }
-
-  @Test
-  fun basketAndValueIsDisplayed() {
     verifyDisplay("Basket", flight.basket.name)
-  }
-
-  @Test
-  fun vehiclesAndValuesAreDisplayed() {
     composeTestRule.onNodeWithText("Vehicles").assertIsDisplayed()
     for (v in flight.vehicles) {
       composeTestRule.onNodeWithText(v.name).assertIsDisplayed()
     }
   }
+
 
   @Test
   fun teamAndValuesAreDisplayed() {
