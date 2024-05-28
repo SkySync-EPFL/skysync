@@ -2,7 +2,7 @@ package ch.epfl.skysync.database.schemas
 
 import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.DateUtility.dateToHourMinuteString
-import ch.epfl.skysync.database.FlightStatus
+import ch.epfl.skysync.database.DbFlightStatus
 import ch.epfl.skysync.database.Schema
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.ConfirmedFlight
@@ -26,7 +26,7 @@ data class FlightSchema(
     /** Nullable */
     val basketId: String? = null,
     val vehicleIds: List<String>? = null,
-    val status: FlightStatus? = null,
+    val status: DbFlightStatus? = null,
     @get:PropertyName("nPassengers") val nPassengers: Int? = null,
     val timeSlot: TimeSlot? = null,
     /** We use the Date class instead of the LocalDate for Firestore see [DateUtility] */
@@ -86,7 +86,7 @@ data class FlightSchema(
           balloonId = flight.balloon?.id,
           basketId = flight.basket?.id,
           vehicleIds = flight.vehicles.map { it.id },
-          status = FlightStatus.PLANNED,
+          status = DbFlightStatus.PLANNED,
           nPassengers = flight.nPassengers,
           timeSlot = flight.timeSlot,
           date = DateUtility.localDateToDate(flight.date),
@@ -100,7 +100,7 @@ data class FlightSchema(
           balloonId = flight.balloon.id,
           basketId = flight.basket.id,
           vehicleIds = flight.vehicles.map { it.id },
-          status = FlightStatus.CONFIRMED,
+          status = DbFlightStatus.CONFIRMED,
           nPassengers = flight.nPassengers,
           timeSlot = flight.timeSlot,
           date = DateUtility.localDateToDate(flight.date),
@@ -123,7 +123,7 @@ data class FlightSchema(
             balloonId = flight.balloon.id,
             basketId = flight.basket.id,
             vehicleIds = flight.vehicles.map { it.id },
-            status = FlightStatus.FINISHED,
+            status = DbFlightStatus.FINISHED,
             nPassengers = flight.nPassengers,
             timeSlot = flight.timeSlot,
             date = DateUtility.localDateToDate(flight.date),
