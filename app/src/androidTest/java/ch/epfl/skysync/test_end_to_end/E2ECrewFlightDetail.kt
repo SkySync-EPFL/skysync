@@ -101,16 +101,7 @@ class E2ECrewFlightDetail {
       composeTestRule.waitUntil(2500) {
         composeTestRule.onAllNodesWithText("Balloon").fetchSemanticsNodes().isNotEmpty()
       }
-      var flightStatus = DbFlightStatus.PLANNED
-      when (flight) {
-        is ConfirmedFlight -> {
-          flightStatus = DbFlightStatus.CONFIRMED
-        }
-        is FinishedFlight -> {
-          flightStatus = DbFlightStatus.FINISHED
-        }
-      }
-      helper("Flight status", flightStatus.toString())
+      helper("Flight status", flight.getFlightStatus().text)
       helper("Day of flight", DateUtility.localDateToString(flight.date))
       helper("Time slot", DateUtility.localDateToString(flight.date))
       helper("Number of Passengers", flight.nPassengers.toString())
