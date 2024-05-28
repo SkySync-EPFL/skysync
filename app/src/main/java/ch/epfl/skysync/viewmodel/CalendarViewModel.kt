@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
+import ch.epfl.skysync.models.calendar.Availability
 import ch.epfl.skysync.models.calendar.AvailabilityCalendar
+import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.CalendarDifferenceType
 import ch.epfl.skysync.models.calendar.FlightGroupCalendar
 import ch.epfl.skysync.models.calendar.TimeSlot
@@ -64,18 +66,17 @@ class CalendarViewModel(
   }
 
   /**
-   * Fetch the user from the database.
+   * Fetches the user, its availabilities and assigned flights from the database.
    *
-   * Update asynchronously the [CalendarUiState.user] reference
-   *
-   * (Starts a new coroutine)
+   * Updates [CalendarViewModel.user], [CalendarViewModel.currentAvailabilityCalendar],
+   * [CalendarViewModel.currentFlightGroupCalendar].
    */
   fun refresh() = viewModelScope.launch { refreshUserAndCalendars() }
 
   /**
-   * Fetch the user from the database.
+   * Fetches the user, its availabilities and assigned flights from the database.
    *
-   * Update asynchronously the [CalendarUiState.user] reference
+   * Updates the user, current availabilities and original availabilities
    */
   private suspend fun refreshUserAndCalendars() {
     _user.value = userTable.get(uid, this::onError)!!
@@ -94,10 +95,14 @@ class CalendarViewModel(
     }
   }
 
+  /**
+   * Changes the [AvailabilityStatus] of the [Availability] for the given date and timeSlot to the
+   * next [AvailabilityStatus]
+   */
   fun setToNextAvailabilityStatus(date: LocalDate, time: TimeSlot) {
     val oldCalendar = _currentAvailabilityCalendar.value
     val newCalendar = oldCalendar.setToNextAvailabilityStatus(date, time)
-    _currentAvailabilityCalendar.value = newCalendar as AvailabilityCalendar
+    _currentAvailabilityCalendar.value = newCalendar
   }
 
   /**

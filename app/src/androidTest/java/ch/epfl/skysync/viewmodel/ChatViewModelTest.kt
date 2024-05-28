@@ -45,7 +45,7 @@ class ChatViewModelTest {
 
   @Test
   fun uiStateTest() = runTest {
-    chatViewModel.refresh().join()
+    chatViewModel.refreshGroups().join()
     chatViewModel.refreshUser().join()
     val groupDetails = chatViewModel.getGroupDetails().value
     // the getGroupDetails() stateflow returns the initialValue

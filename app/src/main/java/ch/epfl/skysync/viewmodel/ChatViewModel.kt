@@ -83,7 +83,7 @@ class ChatViewModel(
         .map { groups ->
           groups
               .map { group ->
-                GroupDetails(group.id, group.name, group.color, null, group.messages.getOrNull(0))
+                GroupDetails(group.id, group.name, group.color, group.messages.getOrNull(0))
               }
               .sortedByDescending { it.lastMessage?.date ?: Date.from(Instant.now()) }
         }
@@ -101,13 +101,17 @@ class ChatViewModel(
                     ChatMessage(
                         message,
                         if (message.user.id == uid) MessageType.SENT else MessageType.RECEIVED,
-                        null)
+                    )
                   } ?: listOf())
               .reversed()
         }
         .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = listOf())
   }
 
+  /**
+   * Update the [ChatViewModel.messageGroups] flow with a new reference that has the [messageGroup]
+   * updated.
+   */
   private fun updateMessageGroupState(messageGroup: MessageGroup) {
     messageGroups.value =
         (messageGroups.value.filter { it.id != messageGroup.id } + messageGroup).sortedBy { it.id }
@@ -131,7 +135,7 @@ class ChatViewModel(
   }
 
   /** Fetch all message groups the user is part of, as well as the messages of these groups. */
-  fun refresh() =
+  fun refreshGroups() =
       viewModelScope.launch {
         isLoading.value = true
         val groups =
@@ -179,15 +183,12 @@ class ChatViewModel(
 
   init {
     messageListenerViewModel.pushCallback(this::onMessageGroupChange)
-    println("Debug ChatViewModel PUSH")
     refreshUser()
-    refresh()
+    refreshGroups()
   }
 
   override fun onCleared() {
     messageListenerViewModel.popCallback()
-    println("Debug ChatViewModel POP")
-
     super.onCleared()
   }
 

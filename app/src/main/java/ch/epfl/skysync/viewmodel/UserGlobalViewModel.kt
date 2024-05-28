@@ -45,8 +45,8 @@ class UserGlobalViewModel(
    *   fetch it from the temp user table
    * - If the user doesn't exists, connect with a default admin account for testing purposes
    *
-   *     @param uid The Firebase authentication uid of the user
-   *     @param email The email address of the user
+   * @param uid The Firebase authentication uid of the user
+   * @param email The email address of the user
    */
   fun loadUser(uid: String, email: String) =
       viewModelScope.launch {
