@@ -26,10 +26,10 @@ class FlightListsTests {
     composeTestRule.setContent {
       FlightsList(
           flights = emptyList(),
-          color = lightOrange,
+          topBannerColor = lightOrange,
           padding,
           "Upcoming Flights",
-          onFlightClick = {})
+          onFlightCardClick = {})
     }
 
     composeTestRule.onNodeWithText("No flights").assertIsDisplayed()
@@ -52,10 +52,10 @@ class FlightListsTests {
     composeTestRule.setContent {
       FlightsList(
           flights = listOf(testFlight),
-          color = lightOrange,
+          topBannerColor = lightOrange,
           padding,
           "Upcoming Flights",
-          onFlightClick = {})
+          onFlightCardClick = {})
     }
 
     composeTestRule.onNodeWithText("Discovery - 1 pax").assertIsDisplayed()
@@ -77,9 +77,10 @@ class FlightListsTests {
             id = "testFlightId")
 
     composeTestRule.setContent {
-      FlightsList(flights = listOf(testFlight), color = lightOrange, padding, "Upcoming Flights") {
-        wasClicked = it == testFlight.id
-      }
+      FlightsList(
+          flights = listOf(testFlight), topBannerColor = lightOrange, padding, "Upcoming Flights") {
+            wasClicked = it == testFlight.id
+          }
     }
 
     composeTestRule.onNodeWithText("Discovery - 1 pax").performClick()
@@ -115,7 +116,11 @@ class FlightListsTests {
 
     composeTestRule.setContent {
       FlightsList(
-          flights = flights, color = lightOrange, padding, "Upcoming Flights", onFlightClick = {})
+          flights = flights,
+          topBannerColor = lightOrange,
+          padding,
+          "Upcoming Flights",
+          onFlightCardClick = {})
     }
 
     // Check if the flights are displayed in the correct order

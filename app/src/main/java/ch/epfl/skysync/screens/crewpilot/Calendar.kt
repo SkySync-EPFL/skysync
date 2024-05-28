@@ -72,7 +72,7 @@ fun CalendarScreen(
                 flightGroupCalendar.getFirstFlightByDate(date, time)
               },
               onFlightClick = { selectedFlight ->
-                navController.navigate(Route.CREW_FLIGHT_DETAILS + "/${selectedFlight}")
+                navController.navigate(Route.CREW_FLIGHT_DETAILS + "/${selectedFlight.id}")
               })
         }
       }
