@@ -14,7 +14,6 @@ import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
-import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 
@@ -32,7 +31,7 @@ fun CrewFlightDetailScreen(
       bottomBar = {
         when (flight) {
           is ConfirmedFlight -> {
-              CrewConfirmedFlightDetailBottom(okClick = { navController.popBackStack() })
+            CrewConfirmedFlightDetailBottom(okClick = { navController.popBackStack() })
           }
           is FinishedFlight -> {
             FinishedFlightDetailBottom(

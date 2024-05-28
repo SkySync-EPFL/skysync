@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -67,55 +65,52 @@ import java.util.Date
  */
 @Composable
 fun FlightDetails(flight: Flight, padding: PaddingValues) {
-    val cardColor = Color.White
-    val defaultPadding = 16.dp
-    Column(modifier = Modifier.padding(padding)) {
-      LazyColumn(
-          modifier = Modifier
-              .padding(8.dp)
-              .weight(1f)
-              .testTag("FlightDetailLazyColumn"),
-          verticalArrangement = Arrangement.spacedBy(defaultPadding)) {
-            item { GlobalFlightMetricsDetails(flight = flight, cardColor) }
-            item { FlightTeamMembersDetails(flight = flight, padding = defaultPadding, cardColor) }
-            when (flight) {
-              is ConfirmedFlight -> {
-                item {
-                  ConfirmFlightTimes(
-                      confirmedFlight = flight, padding = defaultPadding, cardColor = cardColor)
-                }
-                item {
-                  ConfirmFlightLocation(
-                      confirmedFlight = flight, padding = defaultPadding, cardColor = cardColor)
-                }
-                item {
-                  ConfirmFlightRemarks(
-                      confirmedFlight = flight, padding = defaultPadding, cardColor = cardColor)
-                }
+  val cardColor = Color.White
+  val defaultPadding = 16.dp
+  Column(modifier = Modifier.padding(padding)) {
+    LazyColumn(
+        modifier = Modifier.padding(8.dp).weight(1f).testTag("FlightDetailLazyColumn"),
+        verticalArrangement = Arrangement.spacedBy(defaultPadding)) {
+          item { GlobalFlightMetricsDetails(flight = flight, cardColor) }
+          item { FlightTeamMembersDetails(flight = flight, padding = defaultPadding, cardColor) }
+          when (flight) {
+            is ConfirmedFlight -> {
+              item {
+                ConfirmFlightTimes(
+                    confirmedFlight = flight, padding = defaultPadding, cardColor = cardColor)
               }
-              is FinishedFlight -> {
-                item {
-                  FinishedFlightTimes(
-                      finishedFlight = flight, padding = defaultPadding, cardColor = cardColor)
-                }
-                item {
-                  FinishedFlightLocation(
-                      title = "Takeoff location",
-                      locationName = flight.takeOffLocation.name,
-                      padding = defaultPadding,
-                      cardColor = cardColor)
-                }
-                item {
-                  FinishedFlightLocation(
-                      title = "Landing location",
-                      locationName = flight.landingLocation.name,
-                      padding = defaultPadding,
-                      cardColor = cardColor)
-                }
+              item {
+                ConfirmFlightLocation(
+                    confirmedFlight = flight, padding = defaultPadding, cardColor = cardColor)
+              }
+              item {
+                ConfirmFlightRemarks(
+                    confirmedFlight = flight, padding = defaultPadding, cardColor = cardColor)
+              }
+            }
+            is FinishedFlight -> {
+              item {
+                FinishedFlightTimes(
+                    finishedFlight = flight, padding = defaultPadding, cardColor = cardColor)
+              }
+              item {
+                FinishedFlightLocation(
+                    title = "Takeoff location",
+                    locationName = flight.takeOffLocation.name,
+                    padding = defaultPadding,
+                    cardColor = cardColor)
+              }
+              item {
+                FinishedFlightLocation(
+                    title = "Landing location",
+                    locationName = flight.landingLocation.name,
+                    padding = defaultPadding,
+                    cardColor = cardColor)
               }
             }
           }
-    }
+        }
+  }
 }
 
 /**
@@ -297,9 +292,7 @@ fun HyperLinkText(location: String, padding: Dp) {
   }
   ClickableText(
       text = string,
-      modifier = Modifier
-          .padding(padding)
-          .testTag(location),
+      modifier = Modifier.padding(padding).testTag(location),
       style = MaterialTheme.typography.bodyLarge,
       onClick = { offset ->
         string.getStringAnnotations(tag = "URL", start = offset, end = offset).firstOrNull()?.let {
@@ -338,22 +331,15 @@ fun DisplayListOfMetrics(metric: String, values: List<String>) {
   Row(modifier = Modifier.padding(8.dp)) {
     Text(
         text = metric,
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f),
+        modifier = Modifier.fillMaxWidth().weight(1f),
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Left)
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .weight(1f)) {
+    Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
       values.forEach { value ->
         Text(
             text = value,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(1.dp)
-                .testTag("Metric$metric$value"),
+            modifier = Modifier.fillMaxWidth().padding(1.dp).testTag("Metric$metric$value"),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center)
@@ -376,23 +362,25 @@ fun DisplaySingleMetric(metric: String, value: String) {
 
 /**
  * displays a clickable button with the given title
+ *
  * @param title the title of the button
  * @param onClick the lambda function to be executed when the button is clicked
  * @param fraction the fraction of the available space given by parent to occupy
  */
 @Composable
-fun BottomButton(onClick: () -> Unit, title: String, modifier: Modifier, buttonColor: Color = lightOrange) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-            .padding(16.dp)
-            .testTag(title),
-        colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
-    ) {
+fun BottomButton(
+    onClick: () -> Unit,
+    title: String,
+    modifier: Modifier,
+    buttonColor: Color = lightOrange
+) {
+  Button(
+      onClick = onClick,
+      modifier = modifier.padding(16.dp).testTag(title),
+      colors = ButtonDefaults.buttonColors(containerColor = buttonColor)) {
         Text(text = title, color = Color.White, overflow = TextOverflow.Clip)
-    }
+      }
 }
-
 
 /**
  * Composable function for displaying the bottom section of the confirmed flight details UI of an
@@ -402,34 +390,26 @@ fun BottomButton(onClick: () -> Unit, title: String, modifier: Modifier, buttonC
  */
 @Composable
 fun AdminConfirmedFlightDetailBottom(okClick: () -> Unit, deleteClick: () -> Unit) {
-    BottomAppBar {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            BottomButton(
-                onClick = { deleteClick() },
-                title = "Delete",
-                modifier = Modifier.weight(1f)
-            )
-            BottomButton(onClick = { okClick() }, title = "Ok", modifier = Modifier.weight(1f))
-        }
+  BottomAppBar {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+      BottomButton(onClick = { deleteClick() }, title = "Delete", modifier = Modifier.weight(1f))
+      BottomButton(onClick = { okClick() }, title = "Ok", modifier = Modifier.weight(1f))
     }
+  }
 }
 
 /**
- * Composable function for displaying the bottom section of the confirmed flight details UI for
- * a crew/pilot.
+ * Composable function for displaying the bottom section of the confirmed flight details UI for a
+ * crew/pilot.
  *
- * @param okClick  onClick function to handle the click event for confirming the flight details.
+ * @param okClick onClick function to handle the click event for confirming the flight details.
  */
 @Composable
 fun CrewConfirmedFlightDetailBottom(okClick: () -> Unit) {
-    BottomAppBar {
-        BottomButton(onClick = {okClick()}, title = "Ok", modifier = Modifier.fillMaxWidth())
-    }
+  BottomAppBar {
+    BottomButton(onClick = { okClick() }, title = "Ok", modifier = Modifier.fillMaxWidth())
+  }
 }
-
 
 /**
  * Composable function for displaying the bottom section of the confirmed flight details UI.
@@ -439,23 +419,13 @@ fun CrewConfirmedFlightDetailBottom(okClick: () -> Unit) {
  */
 @Composable
 fun FinishedFlightDetailBottom(reportClick: () -> Unit, flightTraceClick: () -> Unit) {
-    BottomAppBar {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            BottomButton(
-                onClick = { reportClick() },
-                title = "Report",
-                modifier = Modifier.weight(1f)
-            )
-            BottomButton(
-                onClick = { flightTraceClick() },
-                title = "Flight Trace",
-                modifier = Modifier.weight(1f)
-            )
-        }
+  BottomAppBar {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+      BottomButton(onClick = { reportClick() }, title = "Report", modifier = Modifier.weight(1f))
+      BottomButton(
+          onClick = { flightTraceClick() }, title = "Flight Trace", modifier = Modifier.weight(1f))
     }
+  }
 }
 
 @Preview
