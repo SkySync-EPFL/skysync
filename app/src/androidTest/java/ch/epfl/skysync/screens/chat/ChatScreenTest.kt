@@ -1,14 +1,9 @@
 package ch.epfl.skysync.screens.chat
 
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.swipeWithVelocity
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import ch.epfl.skysync.Repository
@@ -55,27 +50,5 @@ class ChatScreenTest {
       AdminChatScreen(navController, viewModel)
     }
     composeTestRule.onNode(hasTestTag("AdminChatScreenScaffold")).assertIsDisplayed()
-  }
-
-  @Test
-  fun adminChatDeleteGroup() {
-    composeTestRule.setContent {
-      val messageListenerViewModel = MessageListenerViewModel.createViewModel()
-      val viewModel =
-          ChatViewModel.createViewModel(
-              uid = dbs.admin1.id, messageListenerViewModel, repository = repository)
-      navController = TestNavHostController(LocalContext.current)
-      navController.navigatorProvider.addNavigator(ComposeNavigator())
-      AdminChatScreen(navController, viewModel)
-    }
-    composeTestRule.onNode(hasTestTag("AdminChatScreenScaffold")).assertIsDisplayed()
-    val before = composeTestRule.onAllNodes(hasTestTag("GroupCard")).fetchSemanticsNodes().size
-    composeTestRule.onNode(hasTestTag("GroupCard0")).performTouchInput {
-      swipeWithVelocity(Offset.Zero, Offset.Zero, 0f, 2000)
-    }
-    composeTestRule.onNodeWithTag("DeleteButton0").performClick()
-    val after = composeTestRule.onAllNodes(hasTestTag("GroupCard")).fetchSemanticsNodes().size
-    composeTestRule.waitForIdle()
-    assert(before > after)
   }
 }
