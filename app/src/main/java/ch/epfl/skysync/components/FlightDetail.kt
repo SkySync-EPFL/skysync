@@ -66,10 +66,7 @@ import java.util.Date
  * @param padding PaddingValues that specify the padding for the layout.
  */
 @Composable
-fun FlightDetails(flight: Flight?, padding: PaddingValues, bottomButton: @Composable () -> Unit) {
-  if (flight == null) {
-    LoadingComponent(isLoading = true, onRefresh = {}) {}
-  } else {
+fun FlightDetails(flight: Flight, padding: PaddingValues) {
     val cardColor = Color.White
     val defaultPadding = 16.dp
     Column(modifier = Modifier.padding(padding)) {
@@ -118,9 +115,7 @@ fun FlightDetails(flight: Flight?, padding: PaddingValues, bottomButton: @Compos
               }
             }
           }
-      bottomButton()
     }
-  }
 }
 
 /**
@@ -380,6 +375,26 @@ fun DisplaySingleMetric(metric: String, value: String) {
 }
 
 /**
+ * displays a clickable button with the given title
+ * @param title the title of the button
+ * @param onClick the lambda function to be executed when the button is clicked
+ * @param fraction the fraction of the available space given by parent to occupy
+ */
+@Composable
+fun BottomButton(onClick: () -> Unit, title: String, modifier: Modifier, buttonColor: Color = lightOrange) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .padding(16.dp)
+            .testTag(title),
+        colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+    ) {
+        Text(text = title, color = Color.White, overflow = TextOverflow.Clip)
+    }
+}
+
+
+/**
  * Composable function for displaying the bottom section of the confirmed flight details UI of an
  * admin.
  *
@@ -387,10 +402,19 @@ fun DisplaySingleMetric(metric: String, value: String) {
  */
 @Composable
 fun AdminConfirmedFlightDetailBottom(okClick: () -> Unit, deleteClick: () -> Unit) {
-  BottomAppBar {
-            BottomButton(onClick = {deleteClick() }, title = "Delete", fraction = 0.5f)
-            BottomButton(onClick = {okClick() }, title = "Ok" )
-  }
+    BottomAppBar {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            BottomButton(
+                onClick = { deleteClick() },
+                title = "Delete",
+                modifier = Modifier.weight(1f)
+            )
+            BottomButton(onClick = { okClick() }, title = "Ok", modifier = Modifier.weight(1f))
+        }
+    }
 }
 
 /**
@@ -402,43 +426,37 @@ fun AdminConfirmedFlightDetailBottom(okClick: () -> Unit, deleteClick: () -> Uni
 @Composable
 fun CrewConfirmedFlightDetailBottom(okClick: () -> Unit) {
     BottomAppBar {
-        BottomButton(onClick = {okClick()}, title = "Ok")
+        BottomButton(onClick = {okClick()}, title = "Ok", modifier = Modifier.fillMaxWidth())
     }
 }
-
-@Composable
-fun BottomButton(onClick: () -> Unit, title: String, fraction: Float = 1f, buttonColor: Color = lightOrange){
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(fraction = fraction)
-            .padding(16.dp)
-            .testTag(title),
-        colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
-    ) {
-        Text(text = title, color = Color.White, overflow = TextOverflow.Clip)
-    }
-
-}
-
-
 
 
 /**
  * Composable function for displaying the bottom section of the confirmed flight details UI.
  *
- * @param reportClick Lambda function to handle the click event for confirming the flight details.
+ * @param reportClick handle the click event to navigate to the report
+ * @param flightTraceClick handles the click event to display the flight trace.
  */
 @Composable
 fun FinishedFlightDetailBottom(reportClick: () -> Unit, flightTraceClick: () -> Unit) {
-  BottomAppBar {
-      BottomButton(onClick = {reportClick() }, title = "Report", fraction = 0.5f)
-      BottomButton(onClick = {flightTraceClick() }, title = "Flight Trace" )
-  }
+    BottomAppBar {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            BottomButton(
+                onClick = { reportClick() },
+                title = "Report",
+                modifier = Modifier.weight(1f)
+            )
+            BottomButton(
+                onClick = { flightTraceClick() },
+                title = "Flight Trace",
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
 }
-
-
 
 @Preview
 @Composable
@@ -463,7 +481,5 @@ fun FlightDetailsPreview() {
           landingLocation = LocationPoint(21, 46.2, 6.1, "Vernier"),
           flightTime = 2000000)
 
-  FlightDetails(finishedFlight, PaddingValues(0.dp)) {
-    FinishedFlightDetailBottom(reportClick = {}, flightTraceClick = {})
-  }
+  FlightDetails(finishedFlight, PaddingValues(0.dp))
 }

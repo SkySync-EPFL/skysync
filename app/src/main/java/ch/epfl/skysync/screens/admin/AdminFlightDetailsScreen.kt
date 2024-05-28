@@ -4,7 +4,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -30,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConfirmAlertDialog
 import ch.epfl.skysync.components.AdminConfirmedFlightDetailBottom
+import ch.epfl.skysync.components.BottomButton
 import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.FinishedFlightDetailBottom
@@ -50,6 +53,7 @@ import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.leftCornerRounded
 import ch.epfl.skysync.ui.theme.lightGray
+import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.ui.theme.rightCornerRounded
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
@@ -62,13 +66,10 @@ fun AdminFlightDetailScreen(
     flightId: String,
     viewModel: FlightsViewModel,
     inFlightViewModel: InFlightViewModel,
-    finishedFlightsViewModel: FinishedFlightsViewModel,
     connectivityStatus: ConnectivityStatus
 ) {
 
-  val uncompletedFlight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
-  val finishedFlight by finishedFlightsViewModel.getFlight(flightId).collectAsStateWithLifecycle()
-  val flight = if (uncompletedFlight != null) uncompletedFlight else finishedFlight
+  val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
   var showConfirmDialog by remember { mutableStateOf(false) }
   if (showConfirmDialog) {
     ConfirmAlertDialog(
@@ -88,21 +89,23 @@ fun AdminFlightDetailScreen(
         when (flight) {
           is PlannedFlight -> {
             if (connectivityStatus.isOnline()) {
-              FlightDetailBottom(
-                  editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
-                  confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
-                  deleteClick = { showConfirmDialog = true })
+                FlightDetailBottom2(
+                    editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
+                    confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
+                    deleteClick = { showConfirmDialog = true })
             }
           }
           is ConfirmedFlight -> {
             AdminConfirmedFlightDetailBottom(
-                { navController.popBackStack() }, { showConfirmDialog = true })
+                okClick = { navController.popBackStack() },
+                deleteClick = { showConfirmDialog = true }
+            )
           }
           is FinishedFlight -> {
             FinishedFlightDetailBottom(
                 reportClick = { navController.navigate(Route.REPORT + "/${flightId}") },
                 flightTraceClick = {
-                  inFlightViewModel.startDisplayFlightTrace(flight)
+                  inFlightViewModel.startDisplayFlightTrace(flight as FinishedFlight)
                   navController.navigate(Route.FLIGHT)
                 })
           }
@@ -112,7 +115,7 @@ fun AdminFlightDetailScreen(
         if (flight == null) {
           LoadingComponent(isLoading = true, onRefresh = {}) {}
         } else {
-          FlightDetails(flight = flight, padding = padding) {}
+          FlightDetails(flight = flight!!, padding = padding)
         }
       }
 }
@@ -125,86 +128,22 @@ fun AdminFlightDetailScreen(
  * @param deleteClick Callback function invoked when the delete button is clicked.
  */
 @Composable
-fun FlightDetailBottom(
+fun FlightDetailBottom2(
     editClick: () -> Unit,
     confirmClick: () -> Unit,
-    deleteClick: () -> Unit,
-) {
-  BottomAppBar(containerColor = lightGray) {
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-      Spacer(modifier = Modifier.fillMaxWidth(0.05f))
-      Row(modifier = Modifier.fillMaxWidth(0.9f / 3 / (1 - 0.05f)).testTag("DeleteButton")) {
-        TextButton(
-            onClick = { deleteClick() },
-            shape = leftCornerRounded,
-            border = BorderStroke(1.dp, Color.Black)) {
-              Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Delete",
-                    color = Color.Black,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Normal)
-              }
-            }
-      }
-      Row(
-          modifier =
-              Modifier.fillMaxWidth((0.9f) / 3 / (1 - 0.05f - (0.9f) / 3)).testTag("EditButton")) {
-            TextButton(
-                onClick = { editClick() },
-                shape = RoundedCornerShape(0.dp),
-                border = BorderStroke(1.dp, Color.Black),
-            ) {
-              Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Edit",
-                    color = Color.Black,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Normal)
-              }
-            }
-          }
-      Row(
-          modifier =
-              Modifier.fillMaxWidth((0.9f) / 3 / (1f - 0.05f - 2 * (0.9f) / 3))
-                  .testTag("ConfirmButton")) {
-            TextButton(
-                onClick = { confirmClick() },
-                shape = rightCornerRounded,
-                border = BorderStroke(1.dp, Color.Black)) {
-                  Row(
-                      horizontalArrangement = Arrangement.Center,
-                      modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "Confirm",
-                            color = Color.Black,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Normal)
-                      }
-                }
-          }
-      Spacer(modifier = Modifier.fillMaxWidth())
+    deleteClick: () -> Unit, ){
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        BottomButton(onClick = { deleteClick()}, title = "delete", modifier = Modifier.weight(1f))
+        BottomButton(onClick = { editClick()}, title = "edit", modifier = Modifier.weight(1f))
+        BottomButton(onClick = { confirmClick()}, title = "confirm", modifier = Modifier.weight(1f))
     }
-  }
 }
 
-/**
- * Composable function to create a custom clickable button.
- *
- * @param text The text to be displayed on the button.
- * @param onClick The lambda function to be executed when the button is clicked.
- * @param modifier The modifier for the button layout.
- * @param color The color for the button background.
- */
-@Composable
-fun ClickButton(text: String, onClick: () -> Unit, modifier: Modifier, color: Color) {
-  Button(
-      onClick = onClick,
-      modifier = modifier,
-      colors = ButtonDefaults.buttonColors(containerColor = color)) {
-        Text(text = text, color = Color.Black, overflow = TextOverflow.Clip)
-      }
-}
+
+
 
 @Composable
 @Preview
@@ -227,10 +166,9 @@ fun FlightDetailScreenPreview() {
   Scaffold(
       topBar = { Text("Flight Details") },
       bottomBar = {
-        FlightDetailBottom(editClick = {}, confirmClick = {}, deleteClick = {})
         Text(text = "Bottom Bar")
       },
       containerColor = lightGray) { padding ->
-        FlightDetails(flight = plannedFlight, padding = padding) {}
+        FlightDetails(flight = plannedFlight, padding = padding)
       }
 }

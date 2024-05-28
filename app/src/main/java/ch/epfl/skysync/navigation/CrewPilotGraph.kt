@@ -42,15 +42,12 @@ fun NavGraphBuilder.crewPilotGraph(
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
           val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
           inFlightViewModel!!.init(uid!!)
-          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
-          finishedFlightsViewModel.refresh()
-          finishedFlightsViewModel.getAllReports(flightId)
+
           CrewFlightDetailScreen(
               navController = navController,
               flightId = flightId,
               viewModel = flightsViewModel,
-              inFlightViewModel = inFlightViewModel,
-              finishedFlightsViewModel = finishedFlightsViewModel)
+              inFlightViewModel = inFlightViewModel)
         }
     composable(
         Route.CREW_TEXT + "/{Group ID}",

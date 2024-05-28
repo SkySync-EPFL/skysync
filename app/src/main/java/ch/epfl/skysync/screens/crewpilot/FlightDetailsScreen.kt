@@ -24,12 +24,9 @@ fun CrewFlightDetailScreen(
     flightId: String,
     viewModel: FlightsViewModel,
     inFlightViewModel: InFlightViewModel,
-    finishedFlightsViewModel: FinishedFlightsViewModel
 ) {
 
-  val uncompletedFlight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
-  val finishedFlight by finishedFlightsViewModel.getFlight(flightId).collectAsStateWithLifecycle()
-  val flight = if (uncompletedFlight != null) uncompletedFlight else finishedFlight
+  val flight by viewModel.getFlight(flightId).collectAsStateWithLifecycle()
   Scaffold(
       topBar = { CustomTopAppBar(navController = navController, title = "Flight Detail") },
       bottomBar = {
@@ -41,7 +38,7 @@ fun CrewFlightDetailScreen(
             FinishedFlightDetailBottom(
                 reportClick = { navController.navigate(Route.REPORT + "/${flightId}") },
                 flightTraceClick = {
-                  inFlightViewModel.startDisplayFlightTrace(flight)
+                  inFlightViewModel.startDisplayFlightTrace(flight as FinishedFlight)
                   navController.navigate(Route.FLIGHT)
                 })
           }
@@ -49,9 +46,9 @@ fun CrewFlightDetailScreen(
       },
       containerColor = lightGray) { padding ->
         if (flight == null) {
-          LoadingComponent(isLoading = true, onRefresh = {}) {}
+          LoadingComponent(isLoading = true) {}
         } else {
-          FlightDetails(flight = flight, padding = padding) {}
+          FlightDetails(flight = flight!!, padding = padding)
         }
       }
 }
