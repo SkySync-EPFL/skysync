@@ -9,6 +9,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
@@ -101,6 +102,7 @@ class GroupChatTest {
           .onNodeWithTag("GroupChatBody")
           .performScrollToNode(hasTestTag("DeleteButton$i"))
       composeTestRule.onNodeWithTag("DeleteButton$i").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("DeleteButton$i").performClick()
     }
   }
 }
