@@ -18,7 +18,6 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.DateUtility
-import ch.epfl.skysync.database.DbFlightStatus
 import ch.epfl.skysync.database.FirestoreDatabase
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FinishedFlight

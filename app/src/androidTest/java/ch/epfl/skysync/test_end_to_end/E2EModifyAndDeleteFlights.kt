@@ -91,11 +91,11 @@ class E2EModifyAndDeleteFlights {
 
     clickOnFlight(flight = flight)
 
-    composeTestRule.onNodeWithTag("DeleteButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("EditButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("ConfirmButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("delete").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("edit").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirm").assertIsDisplayed()
 
-    composeTestRule.onNodeWithTag("EditButton").performClick()
+    composeTestRule.onNodeWithTag("edit").performClick()
 
     var route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.MODIFY_FLIGHT + "/{Flight ID}", route)
@@ -137,7 +137,7 @@ class E2EModifyAndDeleteFlights {
 
     clickOnFlight(flight = flight)
 
-    composeTestRule.onNodeWithTag("DeleteButton").performClick()
+    composeTestRule.onNodeWithTag("delete").performClick()
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
     route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.ADMIN_HOME, route)

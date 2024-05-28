@@ -3,7 +3,6 @@ package ch.epfl.skysync.screens.admin
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -70,7 +69,7 @@ fun AdminFlightDetailScreen(
         when (flight) {
           is PlannedFlight -> {
             if (connectivityStatus.isOnline()) {
-              FlightDetailBottom2(
+              FlightDetailBottom(
                   editClick = { navController.navigate(Route.MODIFY_FLIGHT + "/${flightId}") },
                   confirmClick = { navController.navigate(Route.CONFIRM_FLIGHT + "/${flightId}") },
                   deleteClick = { showConfirmDialog = true })
@@ -108,7 +107,7 @@ fun AdminFlightDetailScreen(
  * @param deleteClick Callback function invoked when the delete button is clicked.
  */
 @Composable
-fun FlightDetailBottom2(
+fun FlightDetailBottom(
     editClick: () -> Unit,
     confirmClick: () -> Unit,
     deleteClick: () -> Unit,
