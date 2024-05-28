@@ -58,7 +58,7 @@ class ChatScreenTest {
   }
 
   @Test
-  fun AdminChatDeleteGroup() {
+  fun adminChatDeleteGroup() {
     composeTestRule.setContent {
       val messageListenerViewModel = MessageListenerViewModel.createViewModel()
       val viewModel =
@@ -73,7 +73,7 @@ class ChatScreenTest {
     composeTestRule.onNode(hasTestTag("GroupCard0")).performTouchInput {
       swipeWithVelocity(Offset.Zero, Offset.Zero, 0f, 2000)
     }
-    composeTestRule.onNodeWithTag("DeleteButton").performClick()
+    composeTestRule.onNodeWithTag("DeleteButton0").performClick()
     val after = composeTestRule.onAllNodes(hasTestTag("GroupCard")).fetchSemanticsNodes().size
     assert(before > after)
   }
