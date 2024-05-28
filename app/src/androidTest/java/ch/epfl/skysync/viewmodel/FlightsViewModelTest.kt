@@ -403,7 +403,7 @@ class FlightsViewModelTest {
 
       assertEquals(7, withFlightsAdded?.size)
 
-      viewModelAdmin.deleteFlight(flight1.id).join()
+      viewModelAdmin.deleteFlight(flight1).join()
 
       viewModelAdmin.refreshUserAndFlights().join()
 
