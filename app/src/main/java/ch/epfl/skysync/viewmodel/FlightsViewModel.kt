@@ -59,10 +59,10 @@ class FlightsViewModel(
   var timeSlot: TimeSlot? = null
     private set
 
-    //flights relevant to exist for the home screen
+  // flights relevant to exist for the home screen
   private val _currentFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
-    //all flights a user has ever been affected to
-    private val _allAffectedFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
+  // all flights a user has ever been affected to
+  private val _allAffectedFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
 
   private val _availableBalloons: MutableStateFlow<List<Balloon>> = MutableStateFlow(emptyList())
   private val _availableBaskets: MutableStateFlow<List<Basket>> = MutableStateFlow(emptyList())
@@ -120,7 +120,7 @@ class FlightsViewModel(
                   repository.flightTable, userId, onError = { onError(it) })
           Log.d("FlightsViewModel", "Pilot or Crew user loaded")
         }
-          _allAffectedFlights.value = fetchedFlights
+        _allAffectedFlights.value = fetchedFlights
         _currentFlights.value =
             FlightStatus.filterCompletedFlights(fetchedFlights, _currentUser.value!!)
       }
