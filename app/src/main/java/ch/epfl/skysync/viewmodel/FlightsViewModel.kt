@@ -195,12 +195,12 @@ class FlightsViewModel(
   ) =
       viewModelScope.launch {
         repository.flightTable.update(newFlight.id, newFlight)
-          setUsersToNewStatus(newFlight,AvailabilityStatus.ASSIGNED)
+        setUsersToNewStatus(newFlight, AvailabilityStatus.ASSIGNED)
       }
 
-    fun deleteFlight(flight: Flight) =
+  fun deleteFlight(flight: Flight) =
       viewModelScope.launch {
-          setUsersToNewStatus(flight,AvailabilityStatus.OK)
+        setUsersToNewStatus(flight, AvailabilityStatus.OK)
         repository.flightTable.delete(flight.id, onError = { onError(it) })
       }
 
@@ -210,29 +210,28 @@ class FlightsViewModel(
   ) =
       viewModelScope.launch {
         repository.flightTable.add(flight, onError = { onError(it) })
-          setUsersToNewStatus(flight,AvailabilityStatus.ASSIGNED)
+        setUsersToNewStatus(flight, AvailabilityStatus.ASSIGNED)
       }
 
   private fun groupName(date: LocalDate, timeSlot: TimeSlot): String {
     return "Flight: ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} $timeSlot"
   }
 
-  private suspend fun setUsersToNewStatus(flight: Flight, status : AvailabilityStatus) {
-      flight.team.getUsers().forEach { user ->
-        val availability =
-            repository.availabilityTable.queryByDateAndUserId(
-                user.id, flight.date, flight.timeSlot, onError = { onError(it) })
-        repository.availabilityTable.update(
-            user.id,
-            availability.id,
-            Availability(
-                status = status,
-                timeSlot = flight.timeSlot,
-                date = flight.date,
-                id = availability.id))
+  private suspend fun setUsersToNewStatus(flight: Flight, status: AvailabilityStatus) {
+    flight.team.getUsers().forEach { user ->
+      val availability =
+          repository.availabilityTable.queryByDateAndUserId(
+              user.id, flight.date, flight.timeSlot, onError = { onError(it) })
+      repository.availabilityTable.update(
+          user.id,
+          availability.id,
+          Availability(
+              status = status,
+              timeSlot = flight.timeSlot,
+              date = flight.date,
+              id = availability.id))
     }
   }
-
 
   /** updates the planned flight to a confirmed flight */
   fun addConfirmedFlight(flight: ConfirmedFlight) =
