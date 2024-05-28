@@ -65,7 +65,7 @@ fun AdminCalendarScreen(
                 flightCalendar.getFirstFlightByDate(date, time)
               },
               onFlightClick = { selectedFlight ->
-                navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/${selectedFlight}")
+                navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/${selectedFlight.id}")
               })
         }
       }
