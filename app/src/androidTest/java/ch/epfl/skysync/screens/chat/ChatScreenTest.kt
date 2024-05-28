@@ -75,6 +75,7 @@ class ChatScreenTest {
     }
     composeTestRule.onNodeWithTag("DeleteButton0").performClick()
     val after = composeTestRule.onAllNodes(hasTestTag("GroupCard")).fetchSemanticsNodes().size
+    composeTestRule.waitForIdle()
     assert(before > after)
   }
 }

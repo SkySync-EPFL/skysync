@@ -181,6 +181,7 @@ class ChatViewModel(
       viewModelScope.launch {
         messageGroupTable.delete(groupId, onError = { onError(it) })
         messageGroups.value = messageGroups.value.filter { it.id != groupId }
+        refresh()
       }
 
   init {
