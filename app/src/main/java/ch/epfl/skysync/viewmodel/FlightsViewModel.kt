@@ -130,8 +130,11 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
     return date != null && timeSlot != null
   }
 
-  private fun isFlightOnSameDate(): Boolean {
-    return _flight.value?.date == date && _flight.value?.timeSlot == timeSlot
+  private fun needsToAddCurrentlyAffected(notNull: Any?): Boolean {
+    return notNull != null &&
+        _flight.value != null &&
+        _flight.value!!.date == date &&
+        _flight.value!!.timeSlot == timeSlot
   }
 
   private fun refreshAvailableBalloons() =
@@ -144,7 +147,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
 
-          if (isFlightOnSameDate()) {
+          if (needsToAddCurrentlyAffected(_flight.value?.balloon)) {
             val availableBalloons = _availableBalloons.value.filter { it != _flight.value?.balloon }
             _availableBalloons.value = availableBalloons.plus(_flight.value?.balloon!!)
           }
@@ -162,7 +165,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
-          if (isFlightOnSameDate()) {
+          if (needsToAddCurrentlyAffected(flight.value?.team)) {
             val flightUsers = flight.value?.team!!.getUsers()
             val availableUsers = _availableUsers.value.filter { !flightUsers.contains(it) }
             _availableUsers.value = availableUsers.plus(flight.value?.team!!.getUsers())
@@ -182,7 +185,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
 
-          if (isFlightOnSameDate()) {
+          if (needsToAddCurrentlyAffected(flight.value?.vehicles)) {
             val availableVehicles =
                 _availableVehicles.value.filter { !flight.value?.vehicles!!.contains(it) }
             _availableVehicles.value = availableVehicles.plus(flight.value?.vehicles!!)
@@ -202,7 +205,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
 
-          if (isFlightOnSameDate()) {
+          if (needsToAddCurrentlyAffected(flight.value?.basket)) {
             val availableBaskets = _availableBaskets.value.filter { it != flight.value?.basket!! }
             _availableBaskets.value = availableBaskets.plus(flight.value?.basket!!)
           }
