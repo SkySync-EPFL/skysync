@@ -87,12 +87,10 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
   }
 
   private fun refreshFilteredByDateAndTimeSlot() {
-    if (_flight.value != null) {
-      refreshAvailableBalloons()
-      refreshAvailableBaskets()
-      refreshAvailableVehicles()
-      refreshAvailableUsers()
-    }
+    refreshAvailableBalloons()
+    refreshAvailableBaskets()
+    refreshAvailableVehicles()
+    refreshAvailableUsers()
   }
 
   fun setDateAndTimeSlot(date: LocalDate, timeSlot: TimeSlot) {
@@ -136,7 +134,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
     return _flight.value?.date == date && _flight.value?.timeSlot == timeSlot
   }
 
-  private fun refreshAvailableBalloons(firstFill: Boolean = false) =
+  private fun refreshAvailableBalloons() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
           _availableBalloons.value =
