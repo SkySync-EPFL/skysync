@@ -48,9 +48,9 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.ui.theme.leftCornerRounded
+import ch.epfl.skysync.ui.theme.LEFT_CORNER_ROUNDED
+import ch.epfl.skysync.ui.theme.RIGHT_CORNER_ROUNDED
 import ch.epfl.skysync.ui.theme.lightGray
-import ch.epfl.skysync.ui.theme.rightCornerRounded
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
@@ -136,7 +136,7 @@ fun FlightDetailBottom(
       Row(modifier = Modifier.fillMaxWidth(0.9f / 3 / (1 - 0.05f)).testTag("DeleteButton")) {
         TextButton(
             onClick = { deleteClick() },
-            shape = leftCornerRounded,
+            shape = LEFT_CORNER_ROUNDED,
             border = BorderStroke(1.dp, Color.Black)) {
               Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                 Text(
@@ -170,7 +170,7 @@ fun FlightDetailBottom(
                   .testTag("ConfirmButton")) {
             TextButton(
                 onClick = { confirmClick() },
-                shape = rightCornerRounded,
+                shape = RIGHT_CORNER_ROUNDED,
                 border = BorderStroke(1.dp, Color.Black)) {
                   Row(
                       horizontalArrangement = Arrangement.Center,
