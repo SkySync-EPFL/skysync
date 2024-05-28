@@ -358,6 +358,8 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
           stopFlightUpdateDatabase()
           saveFinishedFlight()
           saveFlightTrace()
+        } else {
+          SnackbarManager.showMessage("Flight stopped")
         }
       }
 
