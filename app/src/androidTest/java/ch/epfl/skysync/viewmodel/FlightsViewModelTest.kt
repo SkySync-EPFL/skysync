@@ -337,8 +337,8 @@ class FlightsViewModelTest {
               flightType = dbSetup.flightType2,
               balloon = dbSetup.balloon1,
               basket = dbSetup.basket2,
-              date = LocalDate.of(2024, 8, 12),
-              timeSlot = TimeSlot.AM,
+              date = dbSetup.date2,
+              timeSlot = dbSetup.date2TimeSlot,
               vehicles = listOf(dbSetup.vehicle1),
               id = UNSET_ID)
 
@@ -369,8 +369,8 @@ class FlightsViewModelTest {
               flightType = dbSetup.flightType2,
               balloon = dbSetup.balloon1,
               basket = dbSetup.basket2,
-              date = LocalDate.of(2024, 8, 12),
-              timeSlot = TimeSlot.AM,
+              date = dbSetup.date2,
+              timeSlot = dbSetup.date2TimeSlot,
               vehicles = listOf(dbSetup.vehicle1),
               id = UNSET_ID)
 
@@ -434,8 +434,8 @@ class FlightsViewModelTest {
               flightType = dbSetup.flightType2,
               balloon = dbSetup.balloon1,
               basket = dbSetup.basket2,
-              date = LocalDate.of(2024, 8, 12),
-              timeSlot = TimeSlot.AM,
+              date = dbSetup.date2,
+              timeSlot = dbSetup.date2TimeSlot,
               vehicles = listOf(dbSetup.vehicle1),
               id = UNSET_ID)
 
