@@ -21,6 +21,8 @@ val veryLightBlue = Color(0xFFE7F1FA)
 val veryLightYellow = Color(0xFFFCF9DA)
 val veryLightRed = Color(0xFFFEEFEC)
 
+val middleLightRed = Color(0xFFFFB3B0)
+
 val lightGray = Color(0xFFF5F5F5)
 val lightRed = Color(0xFFEF5350)
 val lightBlue = Color(0xFFB0E0E6)
