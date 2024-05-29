@@ -84,12 +84,11 @@ class E2EModifyAndDeleteFlights {
    */
   @Test
   fun modifyAndDeleteFlight() = runTest {
-    val flight = dbs.flight1
+    val flight = dbs.flight6
 
     composeTestRule.waitUntil(2500) {
       composeTestRule.onAllNodesWithTag("flightCard${flight.id}").fetchSemanticsNodes().isNotEmpty()
     }
-
     clickOnFlight(flight = flight)
 
     composeTestRule.onNodeWithTag("delete").assertIsDisplayed()
