@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
 import ch.epfl.skysync.navigation.Route
 
+/** Custom top app bar with back button and title */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTopAppBar(navController: NavController, title: String) {

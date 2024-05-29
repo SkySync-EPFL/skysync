@@ -58,7 +58,11 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
   var timeSlot: TimeSlot? = null
     private set
 
+  // flights relevant to exist for the home screen
   private val _currentFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
+  // all flights a user has ever been affected to
+  private val _allAffectedFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
+
   private val _availableBalloons: MutableStateFlow<List<Balloon>> = MutableStateFlow(emptyList())
   private val _availableBaskets: MutableStateFlow<List<Basket>> = MutableStateFlow(emptyList())
   private val _currentFlightTypes: MutableStateFlow<List<FlightType>> =
@@ -69,6 +73,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
   private val _flight = MutableStateFlow<Flight?>(null)
 
   val currentFlights = _currentFlights.asStateFlow()
+  val affectedFlights = _allAffectedFlights.asStateFlow()
   val currentBalloons = _availableBalloons.asStateFlow()
   val currentBaskets = _availableBaskets.asStateFlow()
   val currentFlightTypes = _currentFlightTypes.asStateFlow()
@@ -121,6 +126,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
                   repository.flightTable, userId, onError = { onError(it) })
           Log.d("FlightsViewModel", "Pilot or Crew user loaded")
         }
+        _allAffectedFlights.value = fetchedFlights
         _currentFlights.value =
             FlightStatus.filterCompletedFlights(fetchedFlights, _currentUser.value!!)
       }
@@ -252,7 +258,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
       }
 
   fun getFlight(flightId: String): StateFlow<Flight?> {
-    return _currentFlights
+    return _allAffectedFlights
         .map { flights -> flights?.find { it.id == flightId } }
         .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
   }

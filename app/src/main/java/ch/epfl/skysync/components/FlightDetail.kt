@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,8 +17,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,33 +29,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.DateUtility.formatTime
-import ch.epfl.skysync.database.FlightStatus
-import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.flight.Balloon
-import ch.epfl.skysync.models.flight.BalloonQualification
-import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
-import ch.epfl.skysync.models.flight.FlightColor
-import ch.epfl.skysync.models.flight.FlightType
-import ch.epfl.skysync.models.flight.Role
-import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.flight.Team
-import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.flight.flightColorOptions
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.ui.theme.lightOrange
 import java.net.URLEncoder
-import java.time.Instant
-import java.time.LocalDate
-import java.util.Date
 
 /**
  * Composable function for displaying flight details in a UI.
@@ -69,57 +50,52 @@ import java.util.Date
  * @param padding PaddingValues that specify the padding for the layout.
  */
 @Composable
-fun FlightDetails(flight: Flight?, padding: PaddingValues, bottomButton: @Composable () -> Unit) {
-  if (flight == null) {
-    LoadingComponent(isLoading = true, onRefresh = {}) {}
-  } else {
-    val cardColor = Color.White
-    val defaultPadding = 16.dp
-    Column(modifier = Modifier.padding(padding)) {
-      LazyColumn(
-          modifier = Modifier.padding(8.dp).weight(1f).testTag("FlightDetailLazyColumn"),
-          verticalArrangement = Arrangement.spacedBy(defaultPadding)) {
-            item { GlobalFlightMetricsDetails(flight = flight, cardColor) }
-            item { FlightTeamMembersDetails(flight = flight, padding = defaultPadding, cardColor) }
-            when (flight) {
-              is ConfirmedFlight -> {
-                item {
-                  ConfirmFlightTimes(
-                      confirmedFlight = flight, padding = defaultPadding, cardColor = cardColor)
-                }
-                item {
-                  ConfirmFlightLocation(
-                      confirmedFlight = flight, padding = defaultPadding, cardColor = cardColor)
-                }
-                item {
-                  ConfirmFlightRemarks(
-                      confirmedFlight = flight, padding = defaultPadding, cardColor = cardColor)
-                }
+fun FlightDetails(flight: Flight, padding: PaddingValues) {
+  val cardColor = Color.White
+  val defaultPadding = 16.dp
+  Column(modifier = Modifier.padding(padding)) {
+    LazyColumn(
+        modifier = Modifier.padding(8.dp).weight(1f).testTag("FlightDetailLazyColumn"),
+        verticalArrangement = Arrangement.spacedBy(defaultPadding)) {
+          item { GlobalFlightMetricsDetails(flight = flight, cardColor) }
+          item { FlightTeamMembersDetails(flight = flight, padding = defaultPadding, cardColor) }
+          when (flight) {
+            is ConfirmedFlight -> {
+              item {
+                ConfirmFlightTimes(
+                    confirmedFlight = flight, padding = defaultPadding, cardColor = cardColor)
               }
-              is FinishedFlight -> {
-                item {
-                  FinishedFlightTimes(
-                      finishedFlight = flight, padding = defaultPadding, cardColor = cardColor)
-                }
-                item {
-                  FinishedFlightLocation(
-                      title = "Takeoff location",
-                      locationName = flight.takeOffLocation.name,
-                      padding = defaultPadding,
-                      cardColor = cardColor)
-                }
-                item {
-                  FinishedFlightLocation(
-                      title = "Landing location",
-                      locationName = flight.landingLocation.name,
-                      padding = defaultPadding,
-                      cardColor = cardColor)
-                }
+              item {
+                ConfirmFlightLocation(
+                    confirmedFlight = flight, padding = defaultPadding, cardColor = cardColor)
+              }
+              item {
+                ConfirmFlightRemarks(
+                    confirmedFlight = flight, padding = defaultPadding, cardColor = cardColor)
+              }
+            }
+            is FinishedFlight -> {
+              item {
+                FinishedFlightTimes(
+                    finishedFlight = flight, padding = defaultPadding, cardColor = cardColor)
+              }
+              item {
+                FinishedFlightLocation(
+                    title = "Takeoff location",
+                    location = flight.takeOffLocation,
+                    padding = defaultPadding,
+                    cardColor = cardColor)
+              }
+              item {
+                FinishedFlightLocation(
+                    title = "Landing location",
+                    location = flight.landingLocation,
+                    padding = defaultPadding,
+                    cardColor = cardColor)
               }
             }
           }
-      bottomButton()
-    }
+        }
   }
 }
 
@@ -131,18 +107,9 @@ fun FlightDetails(flight: Flight?, padding: PaddingValues, bottomButton: @Compos
  */
 @Composable
 fun GlobalFlightMetricsDetails(flight: Flight, cardColor: Color) {
-  var flightStatus = FlightStatus.PLANNED
-  when (flight) {
-    is ConfirmedFlight -> {
-      flightStatus = FlightStatus.CONFIRMED
-    }
-    is FinishedFlight -> {
-      flightStatus = FlightStatus.FINISHED
-    }
-  }
   val metrics =
       mapOf(
-          "Flight status" to flightStatus.toString(),
+          "Flight status" to flight.getFlightStatus().text,
           "Day of flight" to DateUtility.localDateToString(flight.date),
           "Time slot" to flight.timeSlot.toString(),
           "Number of Passengers" to "${flight.nPassengers}",
@@ -280,10 +247,17 @@ fun ConfirmFlightLocation(confirmedFlight: ConfirmedFlight, padding: Dp, cardCol
  * @param cardColor The color to be used for the card background.
  */
 @Composable
-fun FinishedFlightLocation(title: String, locationName: String, padding: Dp, cardColor: Color) {
+fun FinishedFlightLocation(title: String, location: LocationPoint, padding: Dp, cardColor: Color) {
   Card(colors = CardDefaults.cardColors(cardColor), modifier = Modifier.fillMaxWidth()) {
     LargeTitle(title = title, padding = padding, color = Color.Black)
-    HyperLinkText(location = locationName, padding = padding)
+    HyperLinkText(
+        location =
+            "(" +
+                location.latlng().latitude.toString() +
+                "," +
+                location.latlng().longitude.toString() +
+                ")",
+        padding = padding)
   }
 }
 
@@ -380,75 +354,69 @@ fun DisplaySingleMetric(metric: String, value: String) {
 }
 
 /**
- * Composable function for displaying the bottom section of the confirmed flight details UI.
+ * displays a clickable button with the given title
+ *
+ * @param title the title of the button
+ * @param onClick the lambda function to be executed when the button is clicked
+ * @param fraction the fraction of the available space given by parent to occupy
+ */
+@Composable
+fun BottomButton(
+    onClick: () -> Unit,
+    title: String,
+    modifier: Modifier,
+    buttonColor: Color = lightOrange
+) {
+  Button(
+      onClick = onClick,
+      modifier = modifier.padding(16.dp).testTag(title),
+      colors = ButtonDefaults.buttonColors(containerColor = buttonColor)) {
+        Text(text = title, color = Color.White, overflow = TextOverflow.Clip)
+      }
+}
+
+/**
+ * Composable function for displaying the bottom section of the confirmed flight details UI of an
+ * admin.
  *
  * @param okClick Lambda function to handle the click event for confirming the flight details.
  */
 @Composable
-fun ConfirmedFlightDetailBottom(okClick: () -> Unit, deleteClick: () -> Unit, isAdmin: Boolean) {
+fun AdminConfirmedFlightDetailBottom(okClick: () -> Unit, deleteClick: () -> Unit) {
   BottomAppBar {
-    if (isAdmin) {
-      Button(
-          onClick = deleteClick,
-          modifier =
-              Modifier.fillMaxHeight().fillMaxWidth(0.5f).padding(16.dp).testTag("OK Button")) {
-            Text(text = "Delete", color = Color.White, overflow = TextOverflow.Clip)
-          }
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+      BottomButton(onClick = { deleteClick() }, title = "Delete", modifier = Modifier.weight(1f))
+      BottomButton(onClick = { okClick() }, title = "Ok", modifier = Modifier.weight(1f))
     }
-    Button(
-        onClick = okClick,
-        modifier = Modifier.fillMaxSize().padding(16.dp).testTag("OK Button"),
-        colors = ButtonDefaults.buttonColors(containerColor = lightOrange)) {
-          Text(text = "Ok", overflow = TextOverflow.Clip)
-        }
+  }
+}
+
+/**
+ * Composable function for displaying the bottom section of the confirmed flight details UI for a
+ * crew/pilot.
+ *
+ * @param okClick onClick function to handle the click event for confirming the flight details.
+ */
+@Composable
+fun CrewConfirmedFlightDetailBottom(okClick: () -> Unit) {
+  BottomAppBar {
+    BottomButton(onClick = { okClick() }, title = "Ok", modifier = Modifier.fillMaxWidth())
   }
 }
 
 /**
  * Composable function for displaying the bottom section of the confirmed flight details UI.
  *
- * @param reportClick Lambda function to handle the click event for confirming the flight details.
+ * @param reportClick handle the click event to navigate to the report
+ * @param flightTraceClick handles the click event to display the flight trace.
  */
 @Composable
 fun FinishedFlightDetailBottom(reportClick: () -> Unit, flightTraceClick: () -> Unit) {
   BottomAppBar {
-    Button(
-        onClick = reportClick,
-        modifier = Modifier.fillMaxHeight().fillMaxWidth(0.5f).padding(16.dp).testTag("Report")) {
-          Text(text = "Report", color = Color.White, overflow = TextOverflow.Clip)
-        }
-    Button(
-        onClick = flightTraceClick,
-        modifier = Modifier.fillMaxSize().padding(16.dp).testTag("Flight Trace")) {
-          Text(text = "Flight Trace", color = Color.White, overflow = TextOverflow.Clip)
-        }
-  }
-}
-
-@Preview
-@Composable
-fun FlightDetailsPreview() {
-  val finishedFlight =
-      FinishedFlight(
-          "1234",
-          3,
-          Team(listOf(Role(RoleType.CREW), Role(RoleType.CREW))),
-          FlightType.DISCOVERY,
-          Balloon("Balloon Name", BalloonQualification.LARGE, "Ballon Name"),
-          Basket("Basket Name", true, "1234"),
-          LocalDate.now().plusDays(3),
-          TimeSlot.PM,
-          listOf(
-              Vehicle("Peugeot 308", "1234"),
-          ),
-          color = FlightColor.RED,
-          takeOffTime = Date.from(Instant.now()),
-          takeOffLocation = LocationPoint(21, 46.0, 6.0, "Vernier"),
-          landingTime = Date.from(Instant.now()),
-          landingLocation = LocationPoint(21, 46.2, 6.1, "Vernier"),
-          flightTime = 2000000)
-
-  FlightDetails(finishedFlight, PaddingValues(0.dp)) {
-    FinishedFlightDetailBottom(reportClick = {}, flightTraceClick = {})
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+      BottomButton(onClick = { reportClick() }, title = "Report", modifier = Modifier.weight(1f))
+      BottomButton(
+          onClick = { flightTraceClick() }, title = "Flight Trace", modifier = Modifier.weight(1f))
+    }
   }
 }
