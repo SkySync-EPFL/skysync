@@ -6,6 +6,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.rememberNavController
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject
+import androidx.test.uiautomator.UiScrollable
 import androidx.test.uiautomator.UiSelector
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.database.DatabaseSetup
@@ -37,9 +39,20 @@ class FlightScreenNoPermissionTest {
 
     val uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
-    val denyButton = uiDevice.findObject(UiSelector().text("Don’t allow"))
-    if (denyButton.exists() && denyButton.isEnabled) {
-      denyButton.click()
+    // First, try to find the button directly
+    var denyButton: UiObject? = uiDevice.findObject(UiSelector().text("Don’t allow"))
+
+    // If the button is not found, try scrolling to find it
+    if (denyButton == null || !denyButton.exists()) {
+      val scrollable = UiScrollable(UiSelector().scrollable(true))
+      scrollable.scrollIntoView(UiSelector().text("Don’t allow"))
+      denyButton = uiDevice.findObject(UiSelector().text("Don’t allow"))
+    }
+
+    if (denyButton != null) {
+      if (denyButton.exists() && denyButton.isEnabled) {
+        denyButton.click()
+      }
     }
 
     composeTestRule
