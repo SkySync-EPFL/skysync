@@ -12,7 +12,7 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.FlightDetails
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.DateUtility
-import ch.epfl.skysync.database.FlightStatus
+import ch.epfl.skysync.models.flight.FlightStatus
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import org.junit.Before
@@ -30,51 +30,24 @@ class FlightDetailTest {
 
   @Before
   fun setUpNavHost() {
-    composeTestRule.setContent { FlightDetails(flight, PaddingValues(0.dp)) {} }
+    composeTestRule.setContent { FlightDetails(flight, PaddingValues(0.dp)) }
   }
 
-  private fun helper(field: String, value: String) {
+  /** Helper function to verify that a given field and its corresponding value is displayed */
+  private fun verifyDisplay(field: String, value: String) {
     composeTestRule.onNodeWithText(field).assertIsDisplayed()
     composeTestRule.onNodeWithText(value).assertIsDisplayed()
   }
 
   @Test
-  fun statusIsDisplayed() {
-    helper("Flight status", FlightStatus.CONFIRMED.toString())
-  }
-
-  @Test
-  fun dateValueIsDisplayed() {
-    helper("Day of flight", DateUtility.localDateToString(flight.date))
-  }
-
-  @Test
-  fun timeSlotIsDisplayed() {
-    helper("Time slot", DateUtility.localDateToString(flight.date))
-  }
-
-  @Test
-  fun numberOfPaxValueIsDisplayed() {
-    helper("Number of Passengers", flight.nPassengers.toString())
-  }
-
-  @Test
-  fun flightTypeValueIsDisplayed() {
-    helper("Flight type", flight.flightType.name)
-  }
-
-  @Test
-  fun balloonAndValueIsDisplayed() {
-    helper("Balloon", flight.balloon.name)
-  }
-
-  @Test
-  fun basketAndValueIsDisplayed() {
-    helper("Basket", flight.basket.name)
-  }
-
-  @Test
-  fun vehiclesAndValuesAreDisplayed() {
+  fun detailsAreCorrectlyDisplayed() {
+    verifyDisplay("Flight status", FlightStatus.CONFIRMED.text)
+    verifyDisplay("Day of flight", DateUtility.localDateToString(flight.date))
+    verifyDisplay("Time slot", DateUtility.localDateToString(flight.date))
+    verifyDisplay("Number of Passengers", flight.nPassengers.toString())
+    verifyDisplay("Flight type", flight.flightType.name)
+    verifyDisplay("Balloon", flight.balloon.name)
+    verifyDisplay("Basket", flight.basket.name)
     composeTestRule.onNodeWithText("Vehicles").assertIsDisplayed()
     for (v in flight.vehicles) {
       composeTestRule.onNodeWithText(v.name).assertIsDisplayed()
