@@ -37,23 +37,22 @@ fun CrewFlightDetailScreen(
           is FinishedFlight -> {
             FinishedFlightDetailBottom(
                 reportClick = {
-                    val reportDone = (flight as FinishedFlight).reportId.any { report ->
+                  val reportDone =
+                      (flight as FinishedFlight).reportId.any { report ->
                         report.author == viewModel.userId
+                      }
+                  if (reportDone) {
+                    navController.navigate(Route.REPORT + "/${flightId}")
+                  } else {
+                    if ((flight as FinishedFlight)
+                        .team
+                        .hasUserRole(RoleType.PILOT, viewModel.userId!!)) {
+                      navController.navigate(Route.PILOT_REPORT + "/${flightId}")
+                    } else {
+                      navController.navigate(Route.CREW_REPORT + "/${flightId}")
                     }
-                    if (reportDone) {
-                        navController.navigate(Route.REPORT + "/${flightId}")
-                    }
-                    else{
-                        if ((flight as FinishedFlight).team.hasUserRole(RoleType.PILOT,viewModel.userId!!)){
-                            navController.navigate(Route.PILOT_REPORT + "/${flightId}")
-                        }
-                        else{
-
-                            navController.navigate(Route.CREW_REPORT + "/${flightId}")
-                        }
-                    }
-                }
-                ,
+                  }
+                },
                 flightTraceClick = {
                   inFlightViewModel.startDisplayFlightTrace(flight as FinishedFlight)
                   navController.navigate(Route.FLIGHT)
