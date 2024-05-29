@@ -121,8 +121,8 @@ fun FlightScreen(
     // Defines the location request parameters.
     val locationRequest =
         LocationRequest.create().apply {
-          interval = 2000
-          fastestInterval = 2000
+          interval = 1000
+          fastestInterval = 1000
         }
 
     // Requests location updates if permission is granted.
