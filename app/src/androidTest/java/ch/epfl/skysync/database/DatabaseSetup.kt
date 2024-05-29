@@ -131,6 +131,7 @@ class DatabaseSetup {
   var date3 = LocalDate.now().plusDays(2)
   var date3TimeSlot = getTimeSlot(LocalTime.now().plusHours(48))
   var date2TimeSlotAdmin1 = if (date2TimeSlot == TimeSlot.AM) TimeSlot.PM else TimeSlot.AM
+  var date2TimeSlotInverse = if (date2TimeSlot == TimeSlot.AM) TimeSlot.PM else TimeSlot.AM
   var dateNoFlight = LocalDate.of(2024, 8, 16)
 
   var availability1Crew1 =
@@ -141,6 +142,8 @@ class DatabaseSetup {
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
   var availability4Crew1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date3TimeSlot, date = date3)
+  var availability4Crew1 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotInverse, date = date2)
 
   var availability1Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -148,6 +151,8 @@ class DatabaseSetup {
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
+  var availability4Crew2 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotInverse, date = date2)
 
   var availability1Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -155,6 +160,8 @@ class DatabaseSetup {
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
+  var availability4Pilot1 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotInverse, date = date2)
 
   var availability1Pilot2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -166,7 +173,7 @@ class DatabaseSetup {
   var availability1Admin1 =
       Availability(status = AvailabilityStatus.NO, timeSlot = TimeSlot.AM, date = date1)
   var availability2Admin1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotAdmin1, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotInverse, date = date2)
 
   var balloon1 = Balloon(name = "balloon-1", qualification = BalloonQualification.MEDIUM)
 
@@ -441,6 +448,9 @@ class DatabaseSetup {
               availability3Pilot1 =
                   availability3Pilot1.copy(
                       id = availabilityTable.add(pilot1.id, availability3Pilot1))
+              availability4Pilot1 =
+                  availability4Pilot1.copy(
+                      id = availabilityTable.add(pilot1.id, availability4Pilot1))
             },
             launch {
               userTable.set(crew2.id, crew2)
@@ -450,6 +460,8 @@ class DatabaseSetup {
                   availability2Crew2.copy(id = availabilityTable.add(crew2.id, availability2Crew2))
               availability3Crew2 =
                   availability3Crew2.copy(id = availabilityTable.add(crew2.id, availability3Crew2))
+              availability4Crew2 =
+                  availability4Crew2.copy(id = availabilityTable.add(crew2.id, availability4Crew2))
             },
             launch {
               userTable.set(pilot2.id, pilot2)
@@ -489,7 +501,7 @@ class DatabaseSetup {
         flight3.copy(
             team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
             flightType = flightType1,
-            balloon = balloon1,
+            balloon = balloon3,
             basket = basket3,
             vehicles = listOf(vehicle1, vehicle2),
         )
