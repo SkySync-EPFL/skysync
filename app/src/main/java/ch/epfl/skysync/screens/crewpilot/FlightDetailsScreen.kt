@@ -35,7 +35,9 @@ fun CrewFlightDetailScreen(
           }
           is FinishedFlight -> {
             FinishedFlightDetailBottom(
-                reportClick = { navController.navigate(Route.REPORT + "/${flightId}") },
+                reportClick = {
+                    if(viewModel.)
+                    navController.navigate(Route.REPORT + "/${flightId}") },
                 flightTraceClick = {
                   inFlightViewModel.startDisplayFlightTrace(flight as FinishedFlight)
                   navController.navigate(Route.FLIGHT)
