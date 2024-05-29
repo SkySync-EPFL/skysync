@@ -41,7 +41,8 @@ fun ReportDetailsScreen(
       reportIds!!.forEach { report -> Log.d("report", report.author) }
       if (display) {
 
-        ReportDetail(users, finishedFlightsViewModel.reportList(reportIds,isAdmin), isAdmin, userId)
+        ReportDetail(
+            users, finishedFlightsViewModel.reportList(reportIds, isAdmin), isAdmin, userId)
       } else {
         Column(
             modifier = Modifier.fillMaxSize().padding(PaddingValues(0.dp)).testTag("NoReports"),
