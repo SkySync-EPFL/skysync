@@ -128,9 +128,6 @@ class DatabaseSetup {
   // this the date of flight4, it needs to be today for the InFlightViewModel tests
   var date2 = LocalDate.now()
   var date2TimeSlot = getTimeSlot(LocalTime.now())
-  var date3 = LocalDate.now().plusDays(2)
-  var date3TimeSlot = getTimeSlot(LocalTime.now().plusHours(48))
-  var date2TimeSlotAdmin1 = if (date2TimeSlot == TimeSlot.AM) TimeSlot.PM else TimeSlot.AM
   var date2TimeSlotInverse = if (date2TimeSlot == TimeSlot.AM) TimeSlot.PM else TimeSlot.AM
   var dateNoFlight = LocalDate.of(2024, 8, 16)
 
@@ -140,8 +137,6 @@ class DatabaseSetup {
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Crew1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
-  var availability4Crew1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = date3TimeSlot, date = date3)
   var availability4Crew1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotInverse, date = date2)
 
@@ -223,7 +218,7 @@ class DatabaseSetup {
           nPassengers = 3,
           team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
           flightType = flightType1,
-          balloon = balloon1,
+          balloon = balloon3,
           basket = basket3,
           date = date1,
           timeSlot = TimeSlot.PM,
