@@ -54,7 +54,6 @@ class FlightDetailTest {
     }
   }
 
-
   @Test
   fun teamAndValuesAreDisplayed() {
     composeTestRule.onNodeWithTag("FlightDetailLazyColumn").performScrollToNode(hasText("Team"))

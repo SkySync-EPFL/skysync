@@ -29,32 +29,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.DateUtility.formatTime
-import ch.epfl.skysync.models.calendar.TimeSlot
-import ch.epfl.skysync.models.flight.Balloon
-import ch.epfl.skysync.models.flight.BalloonQualification
-import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
-import ch.epfl.skysync.models.flight.FlightColor
-import ch.epfl.skysync.models.flight.FlightType
-import ch.epfl.skysync.models.flight.Role
-import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.flight.Team
-import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.flight.flightColorOptions
-import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.ui.theme.lightOrange
 import java.net.URLEncoder
-import java.time.Instant
-import java.time.LocalDate
-import java.util.Date
 
 /**
  * Composable function for displaying flight details in a UI.
