@@ -116,8 +116,8 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
             }
       }
 
-  fun reportList(reportIds: List<Report>?): List<Report>? {
-    return if (_currentUser.value!!.canAssumeRole(RoleType.ADMIN)) reportIds
+  fun reportList(reportIds: List<Report>?,isAdmin:Boolean): List<Report>? {
+    return if (isAdmin) reportIds
     else reportIds!!.filter { (it.author == userId) }
   }
 
