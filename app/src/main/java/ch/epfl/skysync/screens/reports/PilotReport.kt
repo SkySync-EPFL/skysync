@@ -99,7 +99,11 @@ fun PilotReportScreen(
 
               item {
                 val takeoffLocationTitle = "Takeoff location"
-                LocationPickerField(takeoffLocation, defaultPadding, takeoffLocationTitle) {
+                LocationPickerField(location = takeoffLocation,
+                    defaultPadding = defaultPadding,
+                    title = takeoffLocationTitle,
+                    viewModel = finishedFlightsViewModel
+                ) {
                   takeoffLocation = it
                 }
               }
@@ -111,9 +115,12 @@ fun PilotReportScreen(
 
               item {
                 val landingLocationTitle = "Landing location"
-                LocationPickerField(landingLocation, defaultPadding, landingLocationTitle) {
-                  landingLocation = it
-                }
+                  LocationPickerField(location = takeoffLocation,
+                      defaultPadding = defaultPadding,
+                      title = landingLocationTitle,
+                      viewModel = finishedFlightsViewModel) {
+                      takeoffLocation = it
+                  }
               }
 
               baseReportFields(
