@@ -26,11 +26,14 @@ data class LocationPoint(
 }
 
 
+/**
+ * computes the distance between two points on the earth's surface using the haversine formula
+ */
 fun haversine(
     lat1: Double, lon1: Double,
     lat2: Double, lon2: Double
 ): Double {
-    // distance between latitudes and longitudes
+
 
     val dLat = Math.toRadians(lat2 - lat1)
     val dLon = Math.toRadians(lon2 - lon1)
