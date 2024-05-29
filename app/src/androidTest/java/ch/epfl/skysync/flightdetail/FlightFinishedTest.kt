@@ -58,8 +58,20 @@ class FlightFinishedTest {
     composeTestRule
         .onNodeWithTag("FlightDetailLazyColumn")
         .performScrollToNode(hasText("Landing location"))
-    fieldAndValueAreDisplayed("Takeoff location", flight.takeOffLocation.name)
-    fieldAndValueAreDisplayed("Landing location", flight.landingLocation.name)
+    fieldAndValueAreDisplayed(
+        "Takeoff location",
+        "(" +
+            flight.takeOffLocation.latlng().latitude.toString() +
+            "," +
+            flight.takeOffLocation.latlng().longitude.toString() +
+            ")")
+    fieldAndValueAreDisplayed(
+        "Landing location",
+        "(" +
+            flight.takeOffLocation.latlng().latitude.toString() +
+            "," +
+            flight.takeOffLocation.latlng().longitude.toString() +
+            ")")
   }
 
   @Test

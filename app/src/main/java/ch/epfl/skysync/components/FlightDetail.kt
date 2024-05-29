@@ -38,6 +38,7 @@ import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.flightColorOptions
+import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.ui.theme.lightOrange
 import java.net.URLEncoder
 
@@ -81,14 +82,14 @@ fun FlightDetails(flight: Flight, padding: PaddingValues) {
               item {
                 FinishedFlightLocation(
                     title = "Takeoff location",
-                    locationName = flight.takeOffLocation.name,
+                    location = flight.takeOffLocation,
                     padding = defaultPadding,
                     cardColor = cardColor)
               }
               item {
                 FinishedFlightLocation(
                     title = "Landing location",
-                    locationName = flight.landingLocation.name,
+                    location = flight.landingLocation,
                     padding = defaultPadding,
                     cardColor = cardColor)
               }
@@ -246,10 +247,17 @@ fun ConfirmFlightLocation(confirmedFlight: ConfirmedFlight, padding: Dp, cardCol
  * @param cardColor The color to be used for the card background.
  */
 @Composable
-fun FinishedFlightLocation(title: String, locationName: String, padding: Dp, cardColor: Color) {
+fun FinishedFlightLocation(title: String, location: LocationPoint, padding: Dp, cardColor: Color) {
   Card(colors = CardDefaults.cardColors(cardColor), modifier = Modifier.fillMaxWidth()) {
     LargeTitle(title = title, padding = padding, color = Color.Black)
-    HyperLinkText(location = locationName, padding = padding)
+    HyperLinkText(
+        location =
+            "(" +
+                location.latlng().latitude.toString() +
+                "," +
+                location.latlng().longitude.toString() +
+                ")",
+        padding = padding)
   }
 }
 
