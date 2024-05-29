@@ -28,7 +28,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 @Composable
 fun LoadingComponent(
     isLoading: Boolean,
-    onRefresh: () -> Unit, // Added onRefresh as a parameter to handle reload logic ,
+    onRefresh: () -> Unit = {}, // Added onRefresh as a parameter to handle reload logic ,
     content: @Composable () -> Unit
 ) {
   // The SwipeRefresh component is used to wrap the content. It provides pull-to-refresh
