@@ -9,12 +9,25 @@ data class FlightTrace(
   /** removes points that are exceptionally far away */
 }
 
-fun computeCorrectedTrace(trace: List<Location>): List<Location> {
-  val numberOfNeighbors = 4
+/**
+ * tries to identify and remove points that are exceptionally far away from the preceding points of
+ * the trace
+ *
+ * @param trace the trace to be corrected
+ * @param numberOfNeighbors the number of preceding points to be considered for the correction of
+ *   each point
+ * @param allowedIncreasedDistanceFactor the factor by which the distance between a given point and
+ *   its predecessor is allowed to increment with respect to the mean distance between the other
+ *   predecessors
+ */
+fun computeCorrectedTrace(
+    trace: List<Location>,
+    numberOfNeighbors: Int = 4,
+    allowedIncreasedDistanceFactor: Double = 1.3
+): List<Location> {
   if (trace.size < numberOfNeighbors) {
     return trace
   }
-  val allowedFailFactor = 1.3
   val correctedTrace = mutableListOf<Location>()
   for (j in 0 until numberOfNeighbors) {
     correctedTrace.add(trace[j])
@@ -28,7 +41,7 @@ fun computeCorrectedTrace(trace: List<Location>): List<Location> {
       distances.add(distance)
     }
     val meanDistance = distances.average()
-    if (currentDistance <= meanDistance * allowedFailFactor) {
+    if (currentDistance <= meanDistance * allowedIncreasedDistanceFactor) {
       correctedTrace.add(trace[i])
     }
   }
