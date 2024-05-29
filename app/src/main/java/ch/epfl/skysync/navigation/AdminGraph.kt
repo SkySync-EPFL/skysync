@@ -37,7 +37,7 @@ fun NavGraphBuilder.adminGraph(
     connectivityStatus: ConnectivityStatus
 ) {
   navigation(startDestination = Route.ADMIN_HOME, route = Route.ADMIN) {
-    adminpersonalCalendar(repository, navController, uid)
+    adminpersonalCalendar(repository, navController, uid, connectivityStatus)
     composable(Route.ADMIN_HOME) {
       // initiate in flight view model here, so that we can notify
       // the user when a flight is started by someone else
@@ -122,15 +122,12 @@ fun NavGraphBuilder.adminGraph(
           val flightId = backStackEntry.arguments?.getString("Flight ID") ?: UNSET_ID
           val flightsViewModel = FlightsViewModel.createViewModel(repository, uid)
           inFlightViewModel!!.init(uid!!)
-          val finishedFlightsViewModel = FinishedFlightsViewModel.createViewModel(repository, uid!!)
-          finishedFlightsViewModel.refresh()
-          finishedFlightsViewModel.getAllReports(flightId)
           AdminFlightDetailScreen(
               navController = navController,
               flightId = flightId,
               viewModel = flightsViewModel,
               inFlightViewModel = inFlightViewModel,
-              finishedFlightsViewModel = finishedFlightsViewModel)
+              connectivityStatus)
         }
     composable(
         Route.REPORT + "/{flight ID}",

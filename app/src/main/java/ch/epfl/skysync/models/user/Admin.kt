@@ -8,7 +8,7 @@ data class Admin(
     override val firstname: String,
     override val lastname: String,
     override val email: String,
-    override val roleTypes: Set<RoleType> = setOf(),
+    override val roleTypes: Set<RoleType> = setOf(RoleType.ADMIN),
 ) : User {
   override fun addRoleType(roleType: RoleType): Admin {
     return this.copy(roleTypes = roleTypes + roleType)

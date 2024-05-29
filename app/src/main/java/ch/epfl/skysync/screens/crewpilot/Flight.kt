@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -32,7 +31,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import ch.epfl.skysync.components.ConfirmAlertDialog
 import ch.epfl.skysync.components.Timer
+import ch.epfl.skysync.components.TimerButton
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.location.UserMetrics
@@ -97,6 +98,8 @@ fun FlightScreen(
 
   var metrics by remember { mutableStateOf(UserMetrics(0.0f, 0.0, 0.0f, 0.0, defaultLocation)) }
 
+  var showConfirmationDialog by remember { mutableStateOf(false) }
+
   val locationCallback =
       object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
@@ -114,7 +117,7 @@ fun FlightScreen(
         }
       }
 
-  DisposableEffect(locationPermission) {
+  DisposableEffect(locationPermission.status.isGranted) {
     // Defines the location request parameters.
     val locationRequest =
         LocationRequest.create().apply {
@@ -157,18 +160,7 @@ fun FlightScreen(
                   Timer(
                       Modifier.align(Alignment.TopEnd).testTag("Timer"),
                       currentTimer = currentTime,
-                      flightStage = flightStage,
-                      isPilot = inFlightViewModel.isPilot(),
-                      onStart = { inFlightViewModel.startFlight() },
-                      onStop = { inFlightViewModel.stopFlight() },
-                      onClear = {
-                        inFlightViewModel.clearFlight()
-                        navController.navigate(Route.CREW_HOME)
-                      },
-                      onQuitDisplay = {
-                        inFlightViewModel.quitDisplayFlightTrace()
-                        navController.popBackStack()
-                      })
+                      flightStage = flightStage)
 
                   Row(
                       horizontalArrangement = Arrangement.SpaceBetween,
@@ -186,21 +178,6 @@ fun FlightScreen(
                             },
                             containerColor = lightOrange) {
                               Icon(Icons.Default.LocationOn, contentDescription = "Locate Me")
-                            }
-                        FloatingActionButton(
-                            onClick = {
-                              // Here is where you'd navigate to a new screen. For now, just log a
-                              // message.
-                              Log.d(
-                                  "FlightScreen",
-                                  "FloatingActionButton clicked. Implement navigation here.")
-                              // Example navigation call: navController.navigate("FlightInfos")
-                            },
-                            containerColor = lightOrange) {
-                              Icon(
-                                  imageVector = Icons.Default.Info,
-                                  contentDescription = "Flight infos",
-                                  tint = Color.White)
                             }
                       }
                 }
@@ -227,6 +204,35 @@ fun FlightScreen(
                       Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp)
                           .background(color = Color.White, shape = RoundedCornerShape(8.dp))
                           .padding(6.dp))
+            }
+            if (showConfirmationDialog) {
+              ConfirmAlertDialog(
+                  onDismissRequest = { showConfirmationDialog = false },
+                  onConfirmation = {
+                    showConfirmationDialog = false
+                    inFlightViewModel.stopFlight()
+                  },
+                  dialogTitle = "Stop Flight",
+                  dialogText = "Are you sure you want to stop this flight?")
+            }
+            Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+              TimerButton(
+                  modifier =
+                      Modifier.align(Alignment.BottomCenter)
+                          .fillMaxWidth()
+                          .padding(bottom = 20.dp, start = 60.dp, end = 60.dp),
+                  flightStage = flightStage,
+                  isPilot = inFlightViewModel.isPilot(),
+                  onStart = { inFlightViewModel.startFlight() },
+                  onStop = { showConfirmationDialog = true },
+                  onClear = {
+                    inFlightViewModel.clearFlight()
+                    navController.navigate(Route.CREW_HOME)
+                  },
+                  onQuitDisplay = {
+                    inFlightViewModel.quitDisplayFlightTrace()
+                    navController.popBackStack()
+                  })
             }
           }
         }

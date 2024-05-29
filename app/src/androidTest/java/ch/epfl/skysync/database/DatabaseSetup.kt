@@ -118,12 +118,17 @@ class DatabaseSetup {
           email = "pilot3.pilot@skysnc.ch",
           qualification = BalloonQualification.SMALL)
 
+  var allUsers = listOf(crew1, crew2, pilot1, pilot2, pilot3, admin1, admin2)
+  val allCrews = allUsers.filterIsInstance<Crew>()
+  val allPilots = allUsers.filterIsInstance<Pilot>()
+  val allAdmins = allUsers.filterIsInstance<Admin>()
+
   var date1 = LocalDate.of(2024, 8, 14)
 
   // this the date of flight4, it needs to be today for the InFlightViewModel tests
   var date2 = LocalDate.now()
   var date2TimeSlot = getTimeSlot(LocalTime.now())
-  var date2TimeSlotAdmin1 = if (date2TimeSlot == TimeSlot.AM) TimeSlot.PM else TimeSlot.AM
+  var date2TimeSlotInverse = if (date2TimeSlot == TimeSlot.AM) TimeSlot.PM else TimeSlot.AM
   var dateNoFlight = LocalDate.of(2024, 8, 16)
 
   var availability1Crew1 =
@@ -132,6 +137,8 @@ class DatabaseSetup {
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Crew1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
+  var availability4Crew1 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotInverse, date = date2)
 
   var availability1Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -139,6 +146,8 @@ class DatabaseSetup {
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Crew2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
+  var availability4Crew2 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotInverse, date = date2)
 
   var availability1Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -146,6 +155,8 @@ class DatabaseSetup {
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.PM, date = date1)
   var availability3Pilot1 =
       Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlot, date = date2)
+  var availability4Pilot1 =
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotInverse, date = date2)
 
   var availability1Pilot2 =
       Availability(status = AvailabilityStatus.OK, timeSlot = TimeSlot.AM, date = date1)
@@ -157,7 +168,7 @@ class DatabaseSetup {
   var availability1Admin1 =
       Availability(status = AvailabilityStatus.NO, timeSlot = TimeSlot.AM, date = date1)
   var availability2Admin1 =
-      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotAdmin1, date = date2)
+      Availability(status = AvailabilityStatus.OK, timeSlot = date2TimeSlotInverse, date = date2)
 
   var balloon1 = Balloon(name = "balloon-1", qualification = BalloonQualification.MEDIUM)
 
@@ -207,7 +218,7 @@ class DatabaseSetup {
           nPassengers = 3,
           team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
           flightType = flightType1,
-          balloon = balloon1,
+          balloon = balloon3,
           basket = basket3,
           date = date1,
           timeSlot = TimeSlot.PM,
@@ -418,6 +429,8 @@ class DatabaseSetup {
                   availability2Crew1.copy(id = availabilityTable.add(crew1.id, availability2Crew1))
               availability3Crew1 =
                   availability3Crew1.copy(id = availabilityTable.add(crew1.id, availability3Crew1))
+              availability4Crew1 =
+                  availability4Crew1.copy(id = availabilityTable.add(crew1.id, availability4Crew1))
             },
             launch {
               userTable.set(pilot1.id, pilot1)
@@ -430,6 +443,9 @@ class DatabaseSetup {
               availability3Pilot1 =
                   availability3Pilot1.copy(
                       id = availabilityTable.add(pilot1.id, availability3Pilot1))
+              availability4Pilot1 =
+                  availability4Pilot1.copy(
+                      id = availabilityTable.add(pilot1.id, availability4Pilot1))
             },
             launch {
               userTable.set(crew2.id, crew2)
@@ -439,6 +455,8 @@ class DatabaseSetup {
                   availability2Crew2.copy(id = availabilityTable.add(crew2.id, availability2Crew2))
               availability3Crew2 =
                   availability3Crew2.copy(id = availabilityTable.add(crew2.id, availability3Crew2))
+              availability4Crew2 =
+                  availability4Crew2.copy(id = availabilityTable.add(crew2.id, availability4Crew2))
             },
             launch {
               userTable.set(pilot2.id, pilot2)
@@ -478,7 +496,7 @@ class DatabaseSetup {
         flight3.copy(
             team = Team(roles = listOf(Role(RoleType.PILOT, pilot1), Role(RoleType.CREW, crew1))),
             flightType = flightType1,
-            balloon = balloon1,
+            balloon = balloon3,
             basket = basket3,
             vehicles = listOf(vehicle1, vehicle2),
         )

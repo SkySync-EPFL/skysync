@@ -63,18 +63,20 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
 
   private fun refreshFlights() =
       viewModelScope.launch {
+        lateinit var fetchedFlights: List<FinishedFlight>
         if (_currentUser.value is Admin) {
-          _currentFlights.value =
+          fetchedFlights =
               repository.flightTable
                   .getAll(onError = { onError(it) })
                   .filterIsInstance<FinishedFlight>()
         } else if (_currentUser.value is Pilot || _currentUser.value is Crew) {
-          _currentFlights.value =
+          fetchedFlights =
               repository.userTable
                   .retrieveAssignedFlights(
                       repository.flightTable, userId ?: UNSET_ID, onError = { onError(it) })
                   .filterIsInstance<FinishedFlight>()
         }
+        _currentFlights.value = fetchedFlights.map { it.updateFlightStatus(_currentUser.value!!) }
       }
 
   /** Refreshes the user logged in and its finished flights */

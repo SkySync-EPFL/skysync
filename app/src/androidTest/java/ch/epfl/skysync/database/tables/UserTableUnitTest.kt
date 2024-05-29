@@ -41,9 +41,13 @@ class UserTableUnitTest {
 
     availabilities = userTable.retrieveAvailabilities(dbs.pilot1.id, onError = { assertNull(it) })
     assertEquals(
-        listOf(dbs.availability1Pilot1, dbs.availability2Pilot1, dbs.availability3Pilot1).sortedBy {
-          it.id
-        },
+        listOf(
+                dbs.availability1Pilot1,
+                dbs.availability2Pilot1,
+                dbs.availability3Pilot1,
+                dbs.availability4Pilot1)
+            .sortedBy { it.id }
+            .sortedBy { it.id },
         availabilities.sortedBy { it.id })
 
     user = userTable.get(dbs.crew1.id, onError = { assertNull(it) })
@@ -81,12 +85,15 @@ class UserTableUnitTest {
                 dbs.availability1Crew1,
                 dbs.availability2Crew1,
                 dbs.availability3Crew1,
+                dbs.availability4Crew1,
                 dbs.availability1Crew2,
                 dbs.availability2Crew2,
                 dbs.availability3Crew2,
+                dbs.availability4Crew2,
                 dbs.availability1Pilot1,
                 dbs.availability2Pilot1,
                 dbs.availability3Pilot1,
+                dbs.availability4Pilot1,
                 dbs.availability1Pilot2,
                 dbs.availability2Pilot2,
                 dbs.availability3Pilot2,

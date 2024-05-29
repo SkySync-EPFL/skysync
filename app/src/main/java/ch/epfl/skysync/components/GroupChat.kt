@@ -79,7 +79,11 @@ fun GroupChat(
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done))
     val filteredGroups = groupList.filter { it.name.contains(searchQuery, ignoreCase = true) }
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
-    GroupChatBody(groupList = filteredGroups, onClick = onClick)
+    if (filteredGroups.isEmpty() && searchQuery.isEmpty()) {
+      LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
+    } else {
+      GroupChatBody(groupList = filteredGroups, onClick = onClick)
+    }
   }
 }
 /** Composable function to display the top bar of the group chat UI. */

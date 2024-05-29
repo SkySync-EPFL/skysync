@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.FlightsList
-import ch.epfl.skysync.navigation.BottomBar
+import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
@@ -19,7 +19,7 @@ fun AdminStatsScreen(navController: NavHostController, viewModel: FinishedFlight
   val finishedFlights by viewModel.currentFlights.collectAsStateWithLifecycle()
   Scaffold(
       modifier = Modifier.fillMaxSize(),
-      bottomBar = { BottomBar(navController) },
+      bottomBar = { AdminBottomBar(navController) },
       floatingActionButton = {},
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
