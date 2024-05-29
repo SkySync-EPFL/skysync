@@ -88,7 +88,8 @@ fun AdminFlightScreen(
             modifier =
                 Modifier.align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(bottom = 20.dp, start = 60.dp, end = 60.dp),
+                    .padding(bottom = 20.dp, start = 60.dp, end = 60.dp)
+                    .testTag("Quit display"),
             onClick = {
               inFlightViewModel.quitDisplayFlightTrace()
               navController.popBackStack()
