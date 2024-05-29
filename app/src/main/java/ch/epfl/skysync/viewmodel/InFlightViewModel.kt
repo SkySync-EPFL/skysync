@@ -137,8 +137,8 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
   private val _flightLocations = MutableStateFlow<List<Location>>(emptyList())
 
   /** List of the successive locations through which the balloon (pilot) has passed */
-  //  val flightLocations: StateFlow<List<Location>> = _flightLocations.asStateFlow()
-  val flightLocations: StateFlow<List<Location>> =
+  val flightLocations: StateFlow<List<Location>> = _flightLocations.asStateFlow()
+  val flightLocationsCorrected: StateFlow<List<Location>> =
       _flightLocations
           .map { computeCorrectedTrace(it) }
           .stateIn(viewModelScope, started = WhileUiSubscribed, initialValue = emptyList())

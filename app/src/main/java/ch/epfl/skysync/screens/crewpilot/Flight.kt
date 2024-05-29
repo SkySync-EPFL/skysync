@@ -85,7 +85,7 @@ fun FlightScreen(
   val currentFlight by inFlightViewModel.currentFlight.collectAsStateWithLifecycle()
 
   val currentLocations by inFlightViewModel.currentLocations.collectAsStateWithLifecycle()
-  val flightLocations by inFlightViewModel.flightLocations.collectAsStateWithLifecycle()
+  val flightLocations by inFlightViewModel.flightLocationsCorrected.collectAsStateWithLifecycle()
   val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
   val fusedLocationClient = LocationServices.getFusedLocationProviderClient(LocalContext.current)
 
