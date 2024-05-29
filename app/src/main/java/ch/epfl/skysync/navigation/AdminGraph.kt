@@ -14,6 +14,7 @@ import ch.epfl.skysync.screens.UserDetailsScreen
 import ch.epfl.skysync.screens.admin.AddUserScreen
 import ch.epfl.skysync.screens.admin.AdminChatScreen
 import ch.epfl.skysync.screens.admin.AdminFlightDetailScreen
+import ch.epfl.skysync.screens.admin.AdminFlightScreen
 import ch.epfl.skysync.screens.admin.AdminHomeScreen
 import ch.epfl.skysync.screens.admin.AdminStatsScreen
 import ch.epfl.skysync.screens.admin.AdminTextScreen
@@ -138,5 +139,6 @@ fun NavGraphBuilder.adminGraph(
           finishedFlightsViewModel.getAllReports(flightId)
           ReportDetailsScreen(flightId, finishedFlightsViewModel, true, uid, navController)
         }
+    composable(Route.ADMIN_FLIGHT) { AdminFlightScreen(navController, inFlightViewModel!!) }
   }
 }
