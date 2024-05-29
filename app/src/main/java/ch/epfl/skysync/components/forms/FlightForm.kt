@@ -30,6 +30,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,12 +40,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import ch.epfl.skysync.components.CustomTopAppBar
+import ch.epfl.skysync.components.LoadingComponent
+import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.BASE_ROLES
@@ -71,73 +72,65 @@ import java.util.Calendar
 fun FlightForm(
     navController: NavHostController,
     currentFlight: Flight?,
-    modifyMode: Boolean,
+    modifyFlight: Boolean,
     title: String,
-    allFlightTypes: List<FlightType>,
+    allFlightTypes: State<List<FlightType>>,
     allRoleTypes: List<RoleType>,
-    availableVehicles: List<Vehicle>,
-    availableBalloons: List<Balloon>,
-    availableBaskets: List<Basket>,
-    availableUsers: List<User>,
+    availableVehicles: State<List<Vehicle>>,
+    availableBalloons: State<List<Balloon>>,
+    availableBaskets: State<List<Basket>>,
+    availableUsers: State<List<User>>,
     onSaveFlight: (PlannedFlight) -> Unit,
     refreshDate: (LocalDate, TimeSlot) -> Unit,
 ) {
   Scaffold(modifier = Modifier.fillMaxSize(), topBar = { CustomTopAppBar(navController, title) }) {
       padding ->
-    if (currentFlight == null && modifyMode) {
-      Text("Flight is loading...")
+    // If there is a flight to be modified wait until it is not null
+    if (currentFlight == null && modifyFlight) {
+      LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
     } else {
       Column {
         val defaultPadding = 16.dp
-        val smallPadding = 8.dp
-
         val defaultTimeSlot = TimeSlot.AM
 
         var nbPassengersValue = remember {
           mutableStateOf(currentFlight?.nPassengers?.toString() ?: "")
         }
-        var nbPassengersValueError by remember { mutableStateOf(false) }
-
-        var openDatePicker by remember { mutableStateOf(false) }
-        var dateValue by remember {
-          mutableStateOf(
-              if (currentFlight != null) {
-                // in order to refresh date & timeslot once on init of FlightForm
-                refreshDate(currentFlight.date, currentFlight.timeSlot)
-                currentFlight.date
-              } else {
-                refreshDate(LocalDate.now(), defaultTimeSlot)
-                LocalDate.now()
-              })
-        }
-
         var flightTypeValue: FlightType? by remember { mutableStateOf(currentFlight?.flightType) }
-        var flightTypeValueError by remember { mutableStateOf(false) }
-
-        val chosenVehicles: MutableState<List<Vehicle?>> = remember {
-          if (currentFlight?.vehicles == null) {
-            mutableStateOf(listOf(null))
-          } else {
-            mutableStateOf(currentFlight.vehicles)
-          }
-        }
-
+        var dateValue by remember { mutableStateOf(currentFlight?.date ?: LocalDate.now()) }
         var timeSlotValue: TimeSlot by remember {
           mutableStateOf(currentFlight?.timeSlot ?: defaultTimeSlot)
         }
+        val selectedVehicles: MutableState<List<Vehicle?>> = remember {
+          mutableStateOf(currentFlight?.vehicles ?: listOf(null))
+        }
 
         var balloonValue: Balloon? by remember { mutableStateOf(currentFlight?.balloon) }
-
         var basketValue: Basket? by remember { mutableStateOf(currentFlight?.basket) }
 
-        val teamMembers = remember {
+        val selectedTeamMembers = remember {
           mutableStateListOf(
               *currentFlight?.team?.roles?.toTypedArray()
                   ?: Role.initRoles(BASE_ROLES).toTypedArray())
         }
-        val specialRoles: MutableList<Role> = remember { mutableStateListOf() }
 
+        var openDatePicker by remember { mutableStateOf(false) }
         val lazyListState = rememberLazyListState()
+
+        var nbPassengersValueError by remember { mutableStateOf(false) }
+        var flightTypeValueError by remember { mutableStateOf(false) }
+
+        val isSelectedBalloonAvailable =
+            balloonValue == null || availableBalloons.value.contains(balloonValue)
+        val isSelectedBasketAvailable =
+            basketValue == null || availableBaskets.value.contains(basketValue)
+
+        val isSelectedVehicleAvailable =
+            selectedVehicles.value.filterNotNull().associateWith {
+              availableVehicles.value.contains(it)
+            }
+        val isSelectedUserAvailable =
+            Team(selectedTeamMembers).getUsers().associateWith { availableUsers.value.contains(it) }
 
         var isError by remember { mutableStateOf(false) }
 
@@ -169,10 +162,7 @@ fun FlightForm(
                       openDatePicker = false
                       Calendar.getInstance().apply {
                         timeInMillis = datePickerState.selectedDateMillis!!
-                        dateValue =
-                            Instant.ofEpochMilli(timeInMillis)
-                                .atZone(ZoneId.of("GMT"))
-                                .toLocalDate()
+                        dateValue = DateUtility.dateToLocalDate(timeInMillis)
                         refreshDate(dateValue, timeSlotValue)
                       }
                     },
@@ -190,19 +180,18 @@ fun FlightForm(
                     value = timeSlotValue,
                     onclickMenu = { item ->
                       timeSlotValue = item
-                      refreshDate(dateValue, item)
+                      refreshDate(dateValue, timeSlotValue)
                     },
                     items = TimeSlot.entries)
               }
               // Drop down menu for the flight type
               item {
-                val flightTypeTitle = "Flight Type"
                 TitledDropDownMenu(
                     defaultPadding = defaultPadding,
-                    title = flightTypeTitle,
+                    title = "Flight Type",
                     value = flightTypeValue,
                     onclickMenu = { item -> flightTypeValue = item },
-                    items = allFlightTypes,
+                    items = allFlightTypes.value,
                     showString = { it?.name ?: "Choose the flightType" },
                     isError = flightTypeValueError,
                     messageError = "Please choose a flight type")
@@ -211,24 +200,32 @@ fun FlightForm(
               item {
                 TeamHeader(
                     defaultPadding = defaultPadding,
-                    crewMembers = teamMembers,
+                    crewMembers = selectedTeamMembers,
                     allRoleTypes = allRoleTypes,
                     availableUsers =
-                        availableUsers.filterNot { Team(teamMembers).getUsers().contains(it) })
+                        availableUsers.value.filterNot {
+                          Team(selectedTeamMembers).getUsers().contains(it)
+                        })
               }
-              teamMembers.withIndex().forEach() { (id, role) ->
+              selectedTeamMembers.withIndex().forEach { (index, role) ->
                 item {
                   RoleField(
                       defaultPadding = defaultPadding,
                       role = role,
-                      id = id,
-                      onDelete = { teamMembers.removeAt(id) },
-                      onReassign = { user -> teamMembers[id] = Role(role.roleType, user) },
+                      index = index,
+                      onDelete = { selectedTeamMembers.removeAt(index) },
+                      onReassign = { user ->
+                        selectedTeamMembers[index] = Role(role.roleType, user)
+                      },
                       availableUsers =
-                          availableUsers.filterNot { Team(teamMembers).getUsers().contains(it) },
-                  )
+                          availableUsers.value.filter {
+                            !Team(selectedTeamMembers).getUsers().contains(it)
+                          },
+                      isSelectedUserAvailable =
+                          isSelectedUserAvailable.getOrDefault(role.assignedUser, true))
                 }
               }
+
               item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -243,16 +240,16 @@ fun FlightForm(
                               Modifier.padding(horizontal = defaultPadding)
                                   .testTag("Add Vehicle Button"),
                           onClick = {
-                            val tempMutableList = chosenVehicles.value.toMutableList()
+                            val tempMutableList = selectedVehicles.value.toMutableList()
                             tempMutableList.add(null)
-                            chosenVehicles.value = tempMutableList.toList()
+                            selectedVehicles.value = tempMutableList.toList()
                           },
                       ) {
                         Icon(Icons.Default.Add, contentDescription = "Add Vehicle")
                       }
                     }
               }
-              chosenVehicles.value.withIndex().forEach() { (idList, car) ->
+              selectedVehicles.value.withIndex().forEach() { (index, vehicle) ->
                 item {
                   Row(
                       modifier = Modifier.fillMaxWidth(),
@@ -261,60 +258,80 @@ fun FlightForm(
                         CustomDropDownMenu(
                             modifier = Modifier.weight(1f),
                             defaultPadding = defaultPadding,
-                            title = "Vehicle $idList",
-                            value = car,
+                            title = "Vehicle $index",
+                            value = vehicle,
                             onclickMenu = { item ->
-                              val tempMutableList = chosenVehicles.value.toMutableList()
-                              tempMutableList[idList] = item
-                              chosenVehicles.value = tempMutableList.toList()
+                              val tempMutableList = selectedVehicles.value.toMutableList()
+                              tempMutableList[index] = item
+                              selectedVehicles.value = tempMutableList.toList()
                             },
-                            items = availableVehicles,
-                            showString = { it?.name ?: "choose vehicle" })
+                            items =
+                                availableVehicles.value.filter {
+                                  !selectedVehicles.value.contains(it)
+                                },
+                            showString = { it?.name ?: "choose vehicle" },
+                            isError = !isSelectedVehicleAvailable.getOrDefault(vehicle, true),
+                            messageError = "Vehicle not available")
+
                         IconButton(
-                            modifier = Modifier.testTag("Delete Vehicle $idList Button"),
+                            modifier = Modifier.testTag("Delete Vehicle $index Button"),
                             onClick = {
-                              val tempMutableList = chosenVehicles.value.toMutableList()
-                              tempMutableList.removeAt(idList)
-                              chosenVehicles.value = tempMutableList.toList()
+                              val tempMutableList = selectedVehicles.value.toMutableList()
+                              tempMutableList.removeAt(index)
+                              selectedVehicles.value = tempMutableList.toList()
                             },
                         ) {
-                          Icon(Icons.Default.Delete, contentDescription = "Delete Vehicle $idList")
+                          Icon(Icons.Default.Delete, contentDescription = "Delete Vehicle $index")
                         }
                       }
                 }
               }
               // Drop down menu for the balloon
+
               item {
-                val balloonTitle = "Balloon"
-                TitledDropDownMenu(
+                TitledIconDropDownMenu(
                     defaultPadding = defaultPadding,
-                    title = balloonTitle,
+                    title = "Balloon",
                     value = balloonValue,
                     onclickMenu = { item -> balloonValue = item },
-                    items = availableBalloons,
-                    showString = { it?.name ?: "Choose the balloon" })
+                    onDeletion = { balloonValue = null },
+                    items = availableBalloons.value.filter { it != balloonValue },
+                    showString = { it?.name ?: "Choose the balloon" },
+                    isError = !isSelectedBalloonAvailable,
+                    messageError = "Balloon not available")
               }
               // Drop down menu for the basket
               item {
-                val basketTitle = "Basket"
-                TitledDropDownMenu(
+                TitledIconDropDownMenu(
                     defaultPadding = defaultPadding,
-                    title = basketTitle,
+                    title = "Basket",
                     value = basketValue,
                     onclickMenu = { item -> basketValue = item },
-                    items = availableBaskets,
-                    showString = { it?.name ?: "Choose the basket" })
+                    onDeletion = { basketValue = null },
+                    items = availableBaskets.value.filter { it != basketValue },
+                    showString = { it?.name ?: "Choose the basket" },
+                    isError = !isSelectedBasketAvailable,
+                    messageError = "Basket not available")
               }
             }
-        // Button to add the flight to the list of flights
+        // Button to add/modify the flight to the list of flights
         Button(
             modifier = Modifier.fillMaxWidth().padding(defaultPadding).testTag("$title Button"),
             onClick = {
               nbPassengersValueError = !nbPassengerInputValidation(nbPassengersValue.value)
               flightTypeValueError = !inputNonNullValidation(flightTypeValue)
-              isError = hasError(nbPassengersValueError, flightTypeValueError)
+              val vehiclesError = isSelectedVehicleAvailable.values.any { !it }
+              val usersError = isSelectedUserAvailable.values.any { !it }
+              isError =
+                  hasError(
+                      nbPassengersValueError,
+                      flightTypeValueError,
+                      !isSelectedBalloonAvailable,
+                      !isSelectedBasketAvailable,
+                      vehiclesError,
+                      usersError)
               if (!isError) {
-                val allRoles = teamMembers.toList() + specialRoles
+                val allRoles = selectedTeamMembers.toList()
                 val team = Team(allRoles)
                 val newFlight =
                     PlannedFlight(
@@ -324,7 +341,7 @@ fun FlightForm(
                         timeSlot = timeSlotValue,
                         balloon = balloonValue,
                         basket = basketValue,
-                        vehicles = chosenVehicles.value.filterNotNull(),
+                        vehicles = selectedVehicles.value.filterNotNull(),
                         team = team,
                         id = currentFlight?.id ?: UNSET_ID)
                 onSaveFlight(newFlight)
@@ -388,15 +405,16 @@ fun DatePickerField(
 fun RoleField(
     defaultPadding: Dp,
     role: Role,
-    id: Int,
+    index: Int,
     onDelete: () -> Unit,
     onReassign: (User?) -> Unit,
     specialName: String = "",
     availableUsers: List<User>,
+    isSelectedUserAvailable: Boolean
 ) {
   Text(
       modifier =
-          Modifier.fillMaxWidth().padding(horizontal = defaultPadding).testTag("RoleField $id"),
+          Modifier.fillMaxWidth().padding(horizontal = defaultPadding).testTag("RoleField $index"),
       text = role.roleType.description,
   )
   Row(
@@ -405,17 +423,17 @@ fun RoleField(
       verticalAlignment = Alignment.CenterVertically) {
         CustomDropDownMenu(
             modifier = Modifier.weight(1f),
+            isError = !isSelectedUserAvailable,
             defaultPadding = defaultPadding,
             title = "overview:${role.roleType.description}",
             value = role.assignedUser,
             onclickMenu = { item -> onReassign(item) },
             items = availableUsers,
             showString = { it?.name() ?: "choose a user" },
-            isError = false,
-            messageError = "no message")
+            messageError = "User not available")
 
         IconButton(
-            modifier = Modifier.testTag("Delete Crew Member $id"), onClick = { onDelete() }) {
+            modifier = Modifier.testTag("Delete Crew Member $index"), onClick = { onDelete() }) {
               Icon(
                   imageVector = Icons.Default.Delete,
                   contentDescription = "Delete $specialName Crew Member")
@@ -549,33 +567,4 @@ fun TeamHeader(
               showAddMemberDialog = false
             })
       }
-}
-
-@Composable
-@Preview
-fun FlightFormPreview() {
-  val navController = rememberNavController()
-  val currentFlight =
-      PlannedFlight(
-          nPassengers = 1,
-          date = LocalDate.now(),
-          flightType = FlightType.PREMIUM,
-          timeSlot = TimeSlot.AM,
-          vehicles = listOf(),
-          balloon = null,
-          basket = null,
-          id = "testId")
-  FlightForm(
-      navController = navController,
-      currentFlight,
-      modifyMode = false,
-      "Flight Form",
-      emptyList(),
-      emptyList(),
-      emptyList(),
-      emptyList(),
-      emptyList(),
-      emptyList(),
-      onSaveFlight = {},
-      refreshDate = { _, _ -> })
 }
