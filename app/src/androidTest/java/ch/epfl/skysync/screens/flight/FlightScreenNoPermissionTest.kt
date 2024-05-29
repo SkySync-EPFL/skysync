@@ -6,7 +6,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.rememberNavController
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiObject
+import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiScrollable
 import androidx.test.uiautomator.UiSelector
 import ch.epfl.skysync.Repository
@@ -39,20 +39,32 @@ class FlightScreenNoPermissionTest {
 
     val uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
-    // First, try to find the button directly
-    var denyButton: UiObject? = uiDevice.findObject(UiSelector().text("Don’t allow"))
+    try {
+      // First, try to find the button directly
+      var denyButton = uiDevice.findObject(UiSelector().text("Don’t allow"))
 
-    // If the button is not found, try scrolling to find it
-    if (denyButton == null || !denyButton.exists()) {
-      val scrollable = UiScrollable(UiSelector().scrollable(true))
-      scrollable.scrollIntoView(UiSelector().text("Don’t allow"))
-      denyButton = uiDevice.findObject(UiSelector().text("Don’t allow"))
-    }
+      // If the button is not found, try scrolling to find it
+      if (!denyButton.exists()) {
+        val scrollable = UiScrollable(UiSelector().scrollable(true))
 
-    if (denyButton != null) {
+        if (scrollable.exists()) {
+          scrollable.scrollIntoView(UiSelector().text("Don’t allow"))
+        }
+
+        // Attempt to find the button again after scrolling
+        denyButton = uiDevice.findObject(UiSelector().text("Don’t allow"))
+      }
+
+      // Click the button if found
       if (denyButton.exists() && denyButton.isEnabled) {
         denyButton.click()
+      } else {
+        // Handle the case where the button is not found or not enabled
+        println("Deny button not found or not enabled.")
       }
+    } catch (e: UiObjectNotFoundException) {
+      // Handle the exception as needed
+      e.printStackTrace()
     }
 
     composeTestRule
