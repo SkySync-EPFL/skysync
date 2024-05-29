@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
-
 plugins {
     id ("com.android.application")
     id ("org.jetbrains.kotlin.android")
@@ -26,6 +24,15 @@ sonar {
 android {
     namespace = "ch.epfl.skysync"
     compileSdk = 34
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("C:/Users/mmogn/Desktop/demoKeyStore.jks")
+            storePassword = "demoKeyStore"
+            keyAlias = "demoKeyStore"
+            keyPassword = "demoKeyStore"
+        }
+    }
 
     defaultConfig {
         applicationId = "ch.epfl.skysync"
