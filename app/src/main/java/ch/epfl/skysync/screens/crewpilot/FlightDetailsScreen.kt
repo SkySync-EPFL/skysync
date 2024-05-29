@@ -37,10 +37,7 @@ fun CrewFlightDetailScreen(
           is FinishedFlight -> {
             FinishedFlightDetailBottom(
                 reportClick = {
-                  val reportDone =
-                      (flight as FinishedFlight).reportId.any { report ->
-                        report.author == viewModel.userId
-                      }
+                  val reportDone = viewModel.reportDone(flight as FinishedFlight)
                   if (reportDone) {
                     navController.navigate(Route.REPORT + "/${flightId}")
                   } else {

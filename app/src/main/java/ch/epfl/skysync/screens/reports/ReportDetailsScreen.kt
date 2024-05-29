@@ -40,8 +40,8 @@ fun ReportDetailsScreen(
       CustomTopAppBar(navController, "Report")
       reportIds!!.forEach { report -> Log.d("report", report.author) }
       if (display) {
-        val reportLists = if (isAdmin) reportIds else reportIds!!.filter { (it.author == userId) }
-        ReportDetail(users, reportLists, isAdmin, userId)
+
+        ReportDetail(users, finishedFlightsViewModel.reportList(reportIds), isAdmin, userId)
       } else {
         Column(
             modifier = Modifier.fillMaxSize().padding(PaddingValues(0.dp)).testTag("NoReports"),
