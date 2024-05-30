@@ -232,7 +232,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
    * modifies the flight by deleting the old flight and adding a new one in the db and the viewmodel
    */
   fun modifyFlight(
-      newFlight: Flight,
+      newFlight: Flight, oldFlight: Flight
   ) =
       viewModelScope.launch {
         repository.flightTable.update(newFlight.id, newFlight)
@@ -273,6 +273,10 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
               id = availability.id))
     }
   }
+
+    fun reportDone(flight: FinishedFlight): Boolean {
+        return (flight).reportId.any { report -> report.author == userId }
+    }
 
   /** updates the planned flight to a confirmed flight */
   fun addConfirmedFlight(flight: ConfirmedFlight) =

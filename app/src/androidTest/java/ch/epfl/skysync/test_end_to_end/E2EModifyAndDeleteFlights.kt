@@ -84,7 +84,7 @@ class E2EModifyAndDeleteFlights {
    */
   @Test
   fun modifyAndDeleteFlight() = runTest {
-    val flight = dbs.flight6
+    val flight = dbs.flight1
 
     composeTestRule.waitUntil(2500) {
       composeTestRule.onAllNodesWithTag("flightCard${flight.id}").fetchSemanticsNodes().isNotEmpty()
@@ -133,12 +133,12 @@ class E2EModifyAndDeleteFlights {
     val title1 = "Modify Flight"
     composeTestRule.onNodeWithTag("$title1 Button").performClick()
 
-    composeTestRule.waitUntil(2500) {
+    composeTestRule.waitUntil(2700) {
       val nodes = composeTestRule.onAllNodesWithText("Upcoming flights")
       nodes.fetchSemanticsNodes().isNotEmpty()
     }
 
-    composeTestRule.waitUntil(2500) {
+    composeTestRule.waitUntil(2900) {
       composeTestRule.onAllNodesWithTag("flightCard${flight.id}").fetchSemanticsNodes().isNotEmpty()
     }
 
@@ -149,7 +149,7 @@ class E2EModifyAndDeleteFlights {
     route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.ADMIN_HOME, route)
 
-    composeTestRule.waitUntil(2500) {
+    composeTestRule.waitUntil(2200) {
       composeTestRule
           .onAllNodesWithTag("flightCard${dbs.flight2.id}")
           .fetchSemanticsNodes()

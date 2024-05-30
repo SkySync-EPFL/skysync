@@ -39,8 +39,8 @@ fun ModifyFlightScreen(
       availableBalloons = allBalloons,
       availableBaskets = allBaskets,
       availableUsers = availableUsers,
-      onSaveFlight = { flight: PlannedFlight ->
-        viewModel.modifyFlight(flight)
+      onSaveFlight = { (flight,oldFlight) : PlannedFlight ->
+        viewModel.modifyFlight(flight,oldFlight)
         navController.navigate(Route.ADMIN_HOME)
       },
       refreshDate = { date, timeSlot -> viewModel.setDateAndTimeSlot(date, timeSlot) },
