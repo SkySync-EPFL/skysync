@@ -103,7 +103,7 @@ class E2EAddFlights {
         .onNodeWithTag("Flight Lazy Column")
         .performScrollToNode(hasTestTag("Vehicle 0 Menu"))
     composeTestRule.onNodeWithTag("Vehicle 0 Menu").performClick()
-    composeTestRule.onNodeWithTag("Vehicle 0 1").performClick()
+    composeTestRule.onNodeWithTag("Vehicle 0 2").performClick()
 
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
