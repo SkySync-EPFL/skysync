@@ -12,6 +12,7 @@ import ch.epfl.skysync.components.FlightDetails
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FinishedFlight
+import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.viewmodel.FlightsViewModel
@@ -35,7 +36,20 @@ fun CrewFlightDetailScreen(
           }
           is FinishedFlight -> {
             FinishedFlightDetailBottom(
-                reportClick = { navController.navigate(Route.REPORT + "/${flightId}") },
+                reportClick = {
+                  val reportDone = viewModel.reportDone(flight as FinishedFlight)
+                  if (reportDone) {
+                    navController.navigate(Route.REPORT + "/${flightId}")
+                  } else {
+                    if ((flight as FinishedFlight)
+                        .team
+                        .hasUserRole(RoleType.PILOT, viewModel.userId!!)) {
+                      navController.navigate(Route.PILOT_REPORT + "/${flightId}")
+                    } else {
+                      navController.navigate(Route.CREW_REPORT + "/${flightId}")
+                    }
+                  }
+                },
                 flightTraceClick = {
                   inFlightViewModel.startDisplayFlightTrace(flight as FinishedFlight)
                   navController.navigate(Route.FLIGHT)

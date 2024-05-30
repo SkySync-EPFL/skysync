@@ -73,7 +73,7 @@ fun AdminFlightDetailScreen(
                 reportClick = { navController.navigate(Route.REPORT + "/${flightId}") },
                 flightTraceClick = {
                   inFlightViewModel.startDisplayFlightTrace(flight as FinishedFlight)
-                  navController.navigate(Route.FLIGHT)
+                  navController.navigate(Route.ADMIN_FLIGHT)
                 })
           }
         }

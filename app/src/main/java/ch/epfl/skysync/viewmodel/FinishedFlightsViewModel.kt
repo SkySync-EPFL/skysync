@@ -115,6 +115,10 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
             }
       }
 
+  fun reportList(reportIds: List<Report>?, isAdmin: Boolean): List<Report>? {
+    return if (isAdmin) reportIds else reportIds!!.filter { (it.author == userId) }
+  }
+
   /** Callback executed when an error occurs on database-related operations */
   private fun onError(e: Exception) {
     if (e !is CancellationException) {

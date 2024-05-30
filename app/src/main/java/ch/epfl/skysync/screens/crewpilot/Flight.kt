@@ -85,7 +85,7 @@ fun FlightScreen(
   val currentFlight by inFlightViewModel.currentFlight.collectAsStateWithLifecycle()
 
   val currentLocations by inFlightViewModel.currentLocations.collectAsStateWithLifecycle()
-  val flightLocations by inFlightViewModel.flightLocations.collectAsStateWithLifecycle()
+  val flightLocations by inFlightViewModel.flightLocationsCorrected.collectAsStateWithLifecycle()
   val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
   val fusedLocationClient = LocationServices.getFusedLocationProviderClient(LocalContext.current)
 
@@ -121,8 +121,8 @@ fun FlightScreen(
     // Defines the location request parameters.
     val locationRequest =
         LocationRequest.create().apply {
-          interval = 2000
-          fastestInterval = 2000
+          interval = 1000
+          fastestInterval = 1000
         }
 
     // Requests location updates if permission is granted.

@@ -12,6 +12,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -105,5 +106,21 @@ class FinishedFlightsViewModelTest {
     val reports = finishedFlightsViewModel.flightReports.value
     assertNotEquals(null, reports)
     assertEquals(2, reports!!.size)
+  }
+
+  @Test
+  fun reportFilterWorks() = runTest {
+    finishedFlightsViewModel = FinishedFlightsViewModel(repository, dbSetup.pilot1.id)
+    val flight = dbSetup.finishedFlight1
+    finishedFlightsViewModel.refresh()
+    finishedFlightsViewModel.getAllReports(flight.id).join()
+    val reports = finishedFlightsViewModel.flightReports.value
+
+    val reportFiltered =
+        finishedFlightsViewModel.reportList(finishedFlightsViewModel.flightReports.value, false)
+    assertNotNull(reportFiltered)
+    if (reportFiltered != null) {
+      assertEquals(1, reportFiltered.size)
+    }
   }
 }
