@@ -19,7 +19,6 @@ import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.database.FlightStatus
 import ch.epfl.skysync.models.flight.ConfirmedFlight
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
@@ -101,16 +100,7 @@ class E2ECrewFlightDetail {
       composeTestRule.waitUntil(2500) {
         composeTestRule.onAllNodesWithText("Balloon").fetchSemanticsNodes().isNotEmpty()
       }
-      var flightStatus = FlightStatus.PLANNED
-      when (flight) {
-        is ConfirmedFlight -> {
-          flightStatus = FlightStatus.CONFIRMED
-        }
-        is FinishedFlight -> {
-          flightStatus = FlightStatus.FINISHED
-        }
-      }
-      helper("Flight status", flightStatus.toString())
+      helper("Flight status", flight.getFlightStatus().text)
       helper("Day of flight", DateUtility.localDateToString(flight.date))
       helper("Time slot", DateUtility.localDateToString(flight.date))
       helper("Number of Passengers", flight.nPassengers.toString())

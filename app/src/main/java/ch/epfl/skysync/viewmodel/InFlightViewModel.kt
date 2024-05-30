@@ -19,6 +19,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.models.location.computeCorrectedTrace
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
 import com.google.firebase.firestore.Filter
@@ -137,6 +138,10 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   /** List of the successive locations through which the balloon (pilot) has passed */
   val flightLocations: StateFlow<List<Location>> = _flightLocations.asStateFlow()
+  val flightLocationsCorrected: StateFlow<List<Location>> =
+      _flightLocations
+          .map { computeCorrectedTrace(it) }
+          .stateIn(viewModelScope, started = WhileUiSubscribed, initialValue = emptyList())
 
   /** List of confirmed flights scheduled today where the user is assigned */
   private val _confirmedFlights: MutableStateFlow<List<ConfirmedFlight>> =
@@ -351,6 +356,8 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
         if (_userId == pilotId) {
           saveFinishedFlight()
           saveFlightTrace()
+        } else {
+          SnackbarManager.showMessage("Flight stopped")
         }
         _loading.value = false
       }

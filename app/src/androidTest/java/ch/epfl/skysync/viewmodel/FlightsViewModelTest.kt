@@ -490,14 +490,23 @@ class FlightsViewModelTest {
     }
     runTest {
       viewModelAdmin.refreshUserAndFlights().join()
-      viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, dbSetup.date2TimeSlotAdmin1)
+      viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, dbSetup.date2TimeSlotInverse)
       viewModelAdmin.refreshUserAndFlights().join()
       val foundAvailableUsers = viewModelAdmin.availableUsers.value
-      val expectedAvailableUsers = listOf(dbSetup.admin1)
+      val expectedAvailableUsers =
+          listOf(dbSetup.admin1, dbSetup.crew1, dbSetup.crew2, dbSetup.pilot1)
       assertEquals(expectedAvailableUsers.size, foundAvailableUsers.size)
       expectedAvailableUsers.forEach { outerUsr ->
         assertTrue(foundAvailableUsers.any { it.id == outerUsr.id })
       }
     }
+  }
+
+  @Test
+  fun reportDoneWorks() {
+    composeTestRule.setContent {
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
+    }
+    runTest { assertEquals(viewModelAdmin.reportDone(dbSetup.finishedFlight1), false) }
   }
 }

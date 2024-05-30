@@ -1,7 +1,7 @@
 package ch.epfl.skysync.database
 
 /** Represent the flight status */
-enum class FlightStatus {
+enum class DbFlightStatus {
   PLANNED,
   CONFIRMED,
   FINISHED

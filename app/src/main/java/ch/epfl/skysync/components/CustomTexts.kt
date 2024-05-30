@@ -96,3 +96,17 @@ fun SmallTitle(
       style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
       color = color)
 }
+
+@Composable
+fun MediumTitle(
+    modifier: Modifier = Modifier,
+    title: String,
+    padding: Dp,
+    color: Color = Color.Black,
+    bold: Boolean = false
+) {
+  val style =
+      if (bold) MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+      else MaterialTheme.typography.headlineSmall
+  Title(modifier = modifier, title = title, padding = padding, style = style, color = color)
+}

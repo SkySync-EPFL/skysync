@@ -4,7 +4,6 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
@@ -120,7 +119,8 @@ class PilotReportScreenTest {
     composeTestRule.onNodeWithTag("Pause duration").performClick()
     composeTestRule.onNodeWithTag("HourCircularList").performScrollToNode(hasText("00"))
     composeTestRule.onNodeWithTag("MinuteCircularList").performScrollToNode(hasText("30"))
-    composeTestRule.onNodeWithText("Confirm", true).performClick()
+
+    composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
 
     composeTestRule.onNodeWithTag("Submit Button").performClick()
   }

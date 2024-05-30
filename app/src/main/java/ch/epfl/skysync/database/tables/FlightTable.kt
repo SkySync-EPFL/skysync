@@ -1,8 +1,8 @@
 package ch.epfl.skysync.database.tables
 
 import ch.epfl.skysync.database.DateUtility
+import ch.epfl.skysync.database.DbFlightStatus
 import ch.epfl.skysync.database.FirestoreDatabase
-import ch.epfl.skysync.database.FlightStatus
 import ch.epfl.skysync.database.ListenerUpdate
 import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.FlightMemberSchema
@@ -55,7 +55,7 @@ class FlightTable(db: FirestoreDatabase) :
       reports: List<Report>? = emptyList(),
   ): Flight {
     return when (schema.status!!) {
-      FlightStatus.PLANNED ->
+      DbFlightStatus.PLANNED ->
           PlannedFlight(
               id = schema.id!!,
               nPassengers = schema.nPassengers!!,
@@ -66,7 +66,7 @@ class FlightTable(db: FirestoreDatabase) :
               date = DateUtility.dateToLocalDate(schema.date!!),
               timeSlot = schema.timeSlot!!,
               vehicles = vehicles)
-      FlightStatus.CONFIRMED -> {
+      DbFlightStatus.CONFIRMED -> {
         // balloon and basket must be specified in confirmed flight
         if (balloon == null || basket == null) {
           throw Exception("Internal error: Invalid confirmed flight.")
@@ -91,7 +91,7 @@ class FlightTable(db: FirestoreDatabase) :
             startTimestamp = schema.startTimestamp,
         )
       }
-      FlightStatus.FINISHED ->
+      DbFlightStatus.FINISHED ->
           FinishedFlight(
               id = schema.id!!,
               nPassengers = schema.nPassengers!!,

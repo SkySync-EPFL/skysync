@@ -13,6 +13,7 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightStatus
 import ch.epfl.skysync.models.flight.FlightType
@@ -33,21 +34,20 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /** ViewModel for the user */
-class FlightsViewModel(
-    val repository: Repository,
-    val userId: String?,
-) : ViewModel() {
+class FlightsViewModel(val repository: Repository, val userId: String?, val flightId: String?) :
+    ViewModel() {
   companion object {
     @Composable
     fun createViewModel(
         repository: Repository,
         userId: String?,
+        flightId: String? = null
     ): FlightsViewModel {
       return viewModel<FlightsViewModel>(
           factory =
               object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                  return FlightsViewModel(repository, userId) as T
+                  return FlightsViewModel(repository, userId, flightId) as T
                 }
               })
     }
@@ -59,7 +59,11 @@ class FlightsViewModel(
   var timeSlot: TimeSlot? = null
     private set
 
+  // flights relevant to exist for the home screen
   private val _currentFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
+  // all flights a user has ever been affected to
+  private val _allAffectedFlights: MutableStateFlow<List<Flight>?> = MutableStateFlow(null)
+
   private val _availableBalloons: MutableStateFlow<List<Balloon>> = MutableStateFlow(emptyList())
   private val _availableBaskets: MutableStateFlow<List<Basket>> = MutableStateFlow(emptyList())
   private val _currentFlightTypes: MutableStateFlow<List<FlightType>> =
@@ -67,14 +71,17 @@ class FlightsViewModel(
   private val _availableVehicles: MutableStateFlow<List<Vehicle>> = MutableStateFlow(emptyList())
   private val _currentUser = MutableStateFlow<User?>(null)
   private val _availableUsers = MutableStateFlow(emptyList<User>())
+  private val _flight = MutableStateFlow<Flight?>(null)
 
   val currentFlights = _currentFlights.asStateFlow()
+  val affectedFlights = _allAffectedFlights.asStateFlow()
   val currentBalloons = _availableBalloons.asStateFlow()
   val currentBaskets = _availableBaskets.asStateFlow()
   val currentFlightTypes = _currentFlightTypes.asStateFlow()
   val currentVehicles = _availableVehicles.asStateFlow()
   val currentUser = _currentUser.asStateFlow()
   val availableUsers = _availableUsers.asStateFlow()
+  val flight = _flight.asStateFlow()
 
   fun refresh() {
     refreshUserAndFlights()
@@ -98,6 +105,11 @@ class FlightsViewModel(
     refreshFilteredByDateAndTimeSlot()
   }
 
+  fun setFlight(flight: Flight) {
+    _flight.value = flight
+    setDateAndTimeSlot(flight.date, flight.timeSlot)
+  }
+
   /**
    * refreshes the user and the flights. Finished flights are filtered to contain only the
    * uncompleted ones
@@ -115,16 +127,24 @@ class FlightsViewModel(
                   repository.flightTable, userId, onError = { onError(it) })
           Log.d("FlightsViewModel", "Pilot or Crew user loaded")
         }
+        _allAffectedFlights.value = fetchedFlights
         _currentFlights.value =
             FlightStatus.filterCompletedFlights(fetchedFlights, _currentUser.value!!)
       }
 
   /** updates */
-  fun hasDateAndTimeSlot(): Boolean {
+  private fun hasDateAndTimeSlot(): Boolean {
     return date != null && timeSlot != null
   }
 
-  fun refreshAvailableBalloons() =
+  private fun needsToAddCurrentlyAffected(notNull: Any?): Boolean {
+    return notNull != null &&
+        _flight.value != null &&
+        _flight.value!!.date == date &&
+        _flight.value!!.timeSlot == timeSlot
+  }
+
+  private fun refreshAvailableBalloons() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
           _availableBalloons.value =
@@ -133,12 +153,17 @@ class FlightsViewModel(
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
+
+          if (needsToAddCurrentlyAffected(_flight.value?.balloon)) {
+            val availableBalloons = _availableBalloons.value.filter { it != _flight.value?.balloon }
+            _availableBalloons.value = availableBalloons.plus(_flight.value?.balloon!!)
+          }
         } else {
           _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
         }
       }
 
-  fun refreshAvailableUsers() =
+  private fun refreshAvailableUsers() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
           _availableUsers.value =
@@ -147,12 +172,17 @@ class FlightsViewModel(
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
+          if (needsToAddCurrentlyAffected(flight.value?.team)) {
+            val flightUsers = flight.value?.team!!.getUsers()
+            val availableUsers = _availableUsers.value.filter { !flightUsers.contains(it) }
+            _availableUsers.value = availableUsers.plus(flight.value?.team!!.getUsers())
+          }
         } else {
           _availableUsers.value = repository.userTable.getAll(onError = { onError(it) })
         }
       }
 
-  fun refreshAvailableVehicles() =
+  private fun refreshAvailableVehicles() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
           _availableVehicles.value =
@@ -161,12 +191,18 @@ class FlightsViewModel(
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
+
+          if (needsToAddCurrentlyAffected(flight.value?.vehicles)) {
+            val availableVehicles =
+                _availableVehicles.value.filter { !flight.value?.vehicles!!.contains(it) }
+            _availableVehicles.value = availableVehicles.plus(flight.value?.vehicles!!)
+          }
         } else {
           _availableVehicles.value = repository.vehicleTable.getAll(onError = { onError(it) })
         }
       }
 
-  fun refreshAvailableBaskets() =
+  private fun refreshAvailableBaskets() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
           _availableBaskets.value =
@@ -175,12 +211,17 @@ class FlightsViewModel(
                   localDate = date!!,
                   timeslot = timeSlot!!,
                   onError = { onError(it) })
+
+          if (needsToAddCurrentlyAffected(flight.value?.basket)) {
+            val availableBaskets = _availableBaskets.value.filter { it != flight.value?.basket!! }
+            _availableBaskets.value = availableBaskets.plus(flight.value?.basket!!)
+          }
         } else {
           _availableBaskets.value = repository.basketTable.getAll(onError = { onError(it) })
         }
       }
 
-  fun refreshCurrentFlightTypes() =
+  private fun refreshCurrentFlightTypes() =
       viewModelScope.launch {
         _currentFlightTypes.value = repository.flightTypeTable.getAll(onError = { onError(it) })
       }
@@ -204,6 +245,10 @@ class FlightsViewModel(
     return "Flight: ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} $timeSlot"
   }
 
+  fun reportDone(flight: FinishedFlight): Boolean {
+    return (flight).reportId.any { report -> report.author == userId }
+  }
+
   /** updates the planned flight to a confirmed flight */
   fun addConfirmedFlight(flight: ConfirmedFlight) =
       viewModelScope.launch {
@@ -218,7 +263,7 @@ class FlightsViewModel(
       }
 
   fun getFlight(flightId: String): StateFlow<Flight?> {
-    return _currentFlights
+    return _allAffectedFlights
         .map { flights -> flights?.find { it.id == flightId } }
         .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
   }

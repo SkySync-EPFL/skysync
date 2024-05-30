@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -86,7 +85,7 @@ fun FlightScreen(
   val currentFlight by inFlightViewModel.currentFlight.collectAsStateWithLifecycle()
 
   val currentLocations by inFlightViewModel.currentLocations.collectAsStateWithLifecycle()
-  val flightLocations by inFlightViewModel.flightLocations.collectAsStateWithLifecycle()
+  val flightLocations by inFlightViewModel.flightLocationsCorrected.collectAsStateWithLifecycle()
   val locationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
   val fusedLocationClient = LocationServices.getFusedLocationProviderClient(LocalContext.current)
 
@@ -122,8 +121,8 @@ fun FlightScreen(
     // Defines the location request parameters.
     val locationRequest =
         LocationRequest.create().apply {
-          interval = 2000
-          fastestInterval = 2000
+          interval = 1000
+          fastestInterval = 1000
         }
 
     // Requests location updates if permission is granted.
@@ -179,21 +178,6 @@ fun FlightScreen(
                             },
                             containerColor = lightOrange) {
                               Icon(Icons.Default.LocationOn, contentDescription = "Locate Me")
-                            }
-                        FloatingActionButton(
-                            onClick = {
-                              // Here is where you'd navigate to a new screen. For now, just log a
-                              // message.
-                              Log.d(
-                                  "FlightScreen",
-                                  "FloatingActionButton clicked. Implement navigation here.")
-                              // Example navigation call: navController.navigate("FlightInfos")
-                            },
-                            containerColor = lightOrange) {
-                              Icon(
-                                  imageVector = Icons.Default.Info,
-                                  contentDescription = "Flight infos",
-                                  tint = Color.White)
                             }
                       }
                 }

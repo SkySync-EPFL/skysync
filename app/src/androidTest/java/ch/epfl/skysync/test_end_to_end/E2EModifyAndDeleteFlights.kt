@@ -21,6 +21,7 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
@@ -91,11 +92,11 @@ class E2EModifyAndDeleteFlights {
 
     clickOnFlight(flight = flight)
 
-    composeTestRule.onNodeWithTag("DeleteButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("EditButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("ConfirmButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("delete").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("edit").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirm").assertIsDisplayed()
 
-    composeTestRule.onNodeWithTag("EditButton").performClick()
+    composeTestRule.onNodeWithTag("edit").performClick()
 
     var route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.MODIFY_FLIGHT + "/{Flight ID}", route)
@@ -110,6 +111,13 @@ class E2EModifyAndDeleteFlights {
     composeTestRule.onNodeWithTag("Number of passengers").performClick()
     composeTestRule.onNodeWithTag("Number of passengers").performTextClearance()
     composeTestRule.onNodeWithTag("Number of passengers").performTextInput("11")
+
+    val tag = if (dbs.date2TimeSlotInverse == TimeSlot.AM) "Time Slot 0" else "Time Slot 1"
+    composeTestRule
+        .onNodeWithTag("Flight Lazy Column")
+        .performScrollToNode(hasTestTag("Time Slot Menu"))
+    composeTestRule.onNodeWithTag("Time Slot Menu").performClick()
+    composeTestRule.onNodeWithTag(tag).performClick()
 
     // Clicks on the "Date Field" and selects "OK" from the dialog
 
@@ -137,7 +145,7 @@ class E2EModifyAndDeleteFlights {
 
     clickOnFlight(flight = flight)
 
-    composeTestRule.onNodeWithTag("DeleteButton").performClick()
+    composeTestRule.onNodeWithTag("delete").performClick()
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
     route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.ADMIN_HOME, route)

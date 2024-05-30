@@ -1,10 +1,6 @@
 package ch.epfl.skysync.screens.crewpilot
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,22 +18,18 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel) {
   Scaffold(
       modifier = Modifier.fillMaxSize().testTag("ChatScreenScaffold"),
       bottomBar = { BottomBar(navController) },
-      floatingActionButton = {
-        IconButton(onClick = { navController.navigate(Route.CREW_REPORT) }) {
-          Icon(Icons.Default.Add, contentDescription = "Add Report")
-        }
-      }) { padding ->
-        val groupDetails by viewModel.getGroupDetails().collectAsStateWithLifecycle()
-        val sortedGroups = groupDetails.sortedByDescending { it.lastMessage?.date }
-        GroupChat(
-            groupList = sortedGroups,
-            onClick = { selectedGroup ->
-              navController.navigate(Route.CREW_TEXT + "/${selectedGroup.id}")
-            },
-            onDelete = {},
-            paddingValues = padding,
-            isAdmin = false)
-      }
+  ) { padding ->
+    val groupDetails by viewModel.getGroupDetails().collectAsStateWithLifecycle()
+    val sortedGroups = groupDetails.sortedByDescending { it.lastMessage?.date }
+    GroupChat(
+        groupList = sortedGroups,
+        onClick = { selectedGroup ->
+          navController.navigate(Route.CREW_TEXT + "/${selectedGroup.id}")
+        },
+        onDelete = {},
+        paddingValues = padding,
+        isAdmin = false)
+  }
 }
 
 /*
