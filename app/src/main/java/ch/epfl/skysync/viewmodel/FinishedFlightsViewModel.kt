@@ -1,6 +1,5 @@
 package ch.epfl.skysync.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -126,32 +125,33 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
             }
       }
 
-  private fun searchLocation(query: String) =
-      viewModelScope.launch(Dispatchers.IO) {
-        val client = OkHttpClient()
-        val url = "https://nominatim.openstreetmap.org/search?q=$query&format=json&limit=4"
-        val request = Request.Builder().url(url).build()
-        _searchResponse.value =
-            try {
-              val response = client.newCall(request).execute()
-              val responseBody = response.body()?.string()
-              responseBody
-            } catch (e: Exception) {
-              e.printStackTrace()
-              "error"
-            }
-      }
+  private suspend fun searchLocation(query: String): String? {
+    var result: String? = null
+    viewModelScope
+        .launch(Dispatchers.IO) {
+          val client = OkHttpClient()
+          val url = "https://nominatim.openstreetmap.org/search?q=$query&format=json&limit=4"
+          val request = Request.Builder().url(url).build()
+          try {
+            val response = client.newCall(request).execute()
+            val responseBody = response.body()?.string()
+            result = responseBody
+          } catch (e: Exception) {
+            onError(e)
+          }
+        }
+        .join()
+    return result
+  }
 
   fun getSearchLocation(query: String, time: Int) =
       viewModelScope.launch {
-        searchLocation(query).join()
+        val response = searchLocation(query)
         val gson = Gson()
-        if (_searchResponse.value == null) {
+        if (response == null) {
           _searchResults.value = null
-        } else if (_searchResponse.value != null && _searchResponse.value != "") {
-          Log.d("searchLocation", _searchResponse.value!!)
-          val jsonArray = gson.fromJson(_searchResponse.value, JsonArray::class.java)
-          Log.d("searchLocation", jsonArray.toString())
+        } else if (response != "") {
+          val jsonArray = gson.fromJson(response, JsonArray::class.java)
           _searchResults.value =
               jsonArray.map { jsonString ->
                 val jsonObject = gson.fromJson(jsonString, JsonObject::class.java)
