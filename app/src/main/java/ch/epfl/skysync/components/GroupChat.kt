@@ -1,7 +1,8 @@
 package ch.epfl.skysync.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -60,10 +62,12 @@ import ch.epfl.skysync.ui.theme.lightOrange
 fun GroupChat(
     groupList: List<GroupDetails>,
     onClick: (GroupDetails) -> Unit,
+    onDelete: (GroupDetails) -> Unit,
     paddingValues: PaddingValues,
     isAdmin: Boolean
 ) {
   var searchQuery by remember { mutableStateOf("") }
+  var activeGroupId by remember { mutableStateOf<String?>(null) }
   Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
     GroupChatTopBar(isAdmin = isAdmin, paddingValues = paddingValues)
     Spacer(modifier = Modifier.fillMaxHeight(0.02f))
@@ -82,7 +86,13 @@ fun GroupChat(
     if (filteredGroups.isEmpty() && searchQuery.isEmpty()) {
       LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
     } else {
-      GroupChatBody(groupList = filteredGroups, onClick = onClick)
+      GroupChatBody(
+          groupList = filteredGroups,
+          onClick = onClick,
+          onDelete = onDelete,
+          activeGroupId = activeGroupId,
+          onSetActiveGroupId = { activeGroupId = it },
+          isAdmin)
     }
   }
 }
@@ -113,15 +123,25 @@ fun GroupChatTopBar(isAdmin: Boolean, paddingValues: PaddingValues) {
  * @param onClick Callback triggered when the group card is clicked.
  * @param testTag A tag used for testing purposes.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun GroupCard(groupDetails: GroupDetails, onClick: (GroupDetails) -> Unit, testTag: String) {
+fun GroupCard(
+    groupDetails: GroupDetails,
+    onClick: (GroupDetails) -> Unit,
+    onDelete: (GroupDetails) -> Unit,
+    testTag: String,
+    isActive: Boolean,
+    onActivate: () -> Unit,
+    isAdmin: Boolean
+) {
   val time = groupDetails.lastMessage?.let { MessageDateFormatter.format(it.date) } ?: ""
   Card(
       modifier =
-          Modifier.clickable(onClick = { onClick(groupDetails) })
+          Modifier.combinedClickable(
+                  onClick = { onClick(groupDetails) }, onLongClick = { onActivate() })
               .fillMaxWidth()
               .padding(vertical = 4.dp)
-              .testTag(testTag),
+              .testTag("GroupCard$testTag"),
       shape = RoundedCornerShape(8.dp),
       colors = CardDefaults.cardColors(containerColor = lightGray)) {
         Row(modifier = Modifier.padding(8.dp)) {
@@ -156,6 +176,13 @@ fun GroupCard(groupDetails: GroupDetails, onClick: (GroupDetails) -> Unit, testT
                 style = MaterialTheme.typography.bodyMedium)
           }
         }
+        if (isActive && isAdmin) {
+          Button(
+              onClick = { onDelete(groupDetails) },
+              modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("DeleteButton$testTag")) {
+                Text("Delete Group")
+              }
+        }
       }
 }
 
@@ -167,10 +194,28 @@ fun GroupCard(groupDetails: GroupDetails, onClick: (GroupDetails) -> Unit, testT
  * @param onClick Callback triggered when a group card is clicked.
  */
 @Composable
-fun GroupChatBody(groupList: List<GroupDetails>, onClick: (GroupDetails) -> Unit) {
+fun GroupChatBody(
+    groupList: List<GroupDetails>,
+    onClick: (GroupDetails) -> Unit,
+    onDelete: (GroupDetails) -> Unit,
+    activeGroupId: String?,
+    onSetActiveGroupId: (String?) -> Unit,
+    isAdmin: Boolean
+) {
   LazyColumn(modifier = Modifier.testTag("GroupChatBody")) {
     items(groupList.size) { index ->
-      GroupCard(groupDetails = groupList[index], onClick = onClick, testTag = "GroupCard$index")
+      val group = groupList[index]
+      GroupCard(
+          groupDetails = groupList[index],
+          onClick = onClick,
+          onDelete = {
+            onDelete(group)
+            onSetActiveGroupId(null)
+          },
+          testTag = "$index",
+          isActive = activeGroupId == group.id,
+          onActivate = { onSetActiveGroupId(group.id) },
+          isAdmin)
       Spacer(modifier = Modifier.size(1.dp))
     }
   }
