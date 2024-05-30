@@ -87,5 +87,6 @@ class ReportDetailsTest {
     helper("Takeoff time", DateUtility.dateToHourMinuteString(report.takeOffTime))
     helper("Landing location", report.landingLocation.name)
     helper("Landing time", DateUtility.dateToHourMinuteString(report.landingTime))
+    helper("Pause duration", DateUtility.formatTime(report.pauseDuration.toLong()))
   }
 }

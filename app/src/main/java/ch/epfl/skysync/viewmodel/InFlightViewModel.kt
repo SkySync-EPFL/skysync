@@ -19,6 +19,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.Location
 import ch.epfl.skysync.models.location.LocationPoint
+import ch.epfl.skysync.models.location.computeCorrectedTrace
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.util.WhileUiSubscribed
 import com.google.firebase.firestore.Filter
@@ -137,6 +138,10 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   /** List of the successive locations through which the balloon (pilot) has passed */
   val flightLocations: StateFlow<List<Location>> = _flightLocations.asStateFlow()
+  val flightLocationsCorrected: StateFlow<List<Location>> =
+      _flightLocations
+          .map { computeCorrectedTrace(it) }
+          .stateIn(viewModelScope, started = WhileUiSubscribed, initialValue = emptyList())
 
   /** List of confirmed flights scheduled today where the user is assigned */
   private val _confirmedFlights: MutableStateFlow<List<ConfirmedFlight>> =
@@ -151,10 +156,13 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
           }
           .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
 
-  private val _currentFlight = MutableStateFlow<ConfirmedFlight?>(null)
+  private val _currentFlight = MutableStateFlow<Flight?>(null)
 
-  /** The ID of the current flight (might not yet be ongoing) */
-  val currentFlight: StateFlow<ConfirmedFlight?> = _currentFlight.asStateFlow()
+  /**
+   * The current flight, might be null if no current flight is set, a confirmed flight (might be
+   * inactive, ongoing or finished). Or a past flight, in case of display flight trace.
+   */
+  val currentFlight: StateFlow<Flight?> = _currentFlight.asStateFlow()
 
   /**
    * Initialize the view model.
@@ -202,7 +210,6 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
         flights.filterIsInstance<ConfirmedFlight>().filter { flight ->
           flight.date.isEqual(LocalDate.now())
         }
-
     Log.d("InFlightViewModel", "Personal Flights are loaded")
     _loading.value = false
   }
@@ -280,18 +287,9 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
    * started (through the listener).
    */
   private suspend fun startFlightUpdateDatabase() {
-    val flight = _currentFlight.value!!.copy(isOngoing = true, startTimestamp = startTimestamp)
-    flightTable.update(flight.id, flight, onError = { onError(it) })
-    _currentFlight.value = flight
-  }
-
-  /**
-   * Update the confirmed flight on the database to set [ConfirmedFlight.isOngoing] to false and set
-   * the [ConfirmedFlight.startTimestamp] to null. This will notify other flight member that the
-   * flight as stopped (through the listener).
-   */
-  private suspend fun stopFlightUpdateDatabase() {
-    val flight = _currentFlight.value!!.copy(isOngoing = false, startTimestamp = null)
+    var flight = _currentFlight.value
+    if (flight !is ConfirmedFlight) return
+    flight = flight.copy(isOngoing = true, startTimestamp = startTimestamp)
     flightTable.update(flight.id, flight, onError = { onError(it) })
     _currentFlight.value = flight
   }
@@ -349,16 +347,19 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
   fun stopFlight() =
       viewModelScope.launch {
         if (!isOngoingFlight()) return@launch
+        _loading.value = true
         _flightStage.value = FlightStage.POST
         landingTime = LocalTime.now()
         stopTimer()
         stopLocationTracking()
 
         if (_userId == pilotId) {
-          stopFlightUpdateDatabase()
           saveFinishedFlight()
           saveFlightTrace()
+        } else {
+          SnackbarManager.showMessage("Flight stopped")
         }
+        _loading.value = false
       }
 
   /**
@@ -369,6 +370,10 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
   fun clearFlight() =
       viewModelScope.launch {
         if (!isPostFlight()) return@launch
+        // do not clear the flight on loading
+        // it may be that the flight is being stopped
+        // then _currentFlight is still required and can't be cleared
+        if (_loading.value) return@launch
         _flightStage.value = FlightStage.IDLE
         pilotId = null
         _currentFlight.value = null
@@ -380,18 +385,15 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
   /**
    * Set the [flightStage] to [FlightStage.DISPLAY].
    *
-   * Must set the current flight first ([setCurrentFlight]). Load the flight trace.
+   * Load the flight trace.
    */
-  fun startDisplayFlightTrace() =
+  fun startDisplayFlightTrace(flight: FinishedFlight) =
       viewModelScope.launch {
         if (isOngoingFlight() || isPostFlight()) {
           onError(Exception("There is already a flight ongoing."))
           return@launch
         }
-        if (_currentFlight.value == null) {
-          onError(Exception("Missing the flight to start."))
-          return@launch
-        }
+        _currentFlight.value = flight
         _flightStage.value = FlightStage.DISPLAY
         loadFlightTrace()
       }
@@ -411,10 +413,10 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   /** Save the finished flight to the database */
   private suspend fun saveFinishedFlight() {
-
-    val flightToSave = _currentFlight.value ?: return
+    val flight = _currentFlight.value
+    if (flight !is ConfirmedFlight) return
     val finishedFlight =
-        flightToSave.finishFlight(
+        flight.finishFlight(
             takeOffTime = takeOffTime!!,
             landingTime = landingTime!!,
             flightTime = _counter.value,
@@ -424,6 +426,7 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
                 _flightLocations.value.lastOrNull()?.point ?: LocationPoint.UNKNONWN_POINT,
             flightTrace = FlightTrace(trace = _flightLocations.value.map { it.point }))
     flightTable.update(finishedFlight.id, finishedFlight, onError = { onError(it) })
+    refreshFlights()
     Log.d("InFlightViewModel", "Saving finished flight")
   }
 

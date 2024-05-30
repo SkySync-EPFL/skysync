@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConnectivityStatus
+import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.models.user.Crew
@@ -225,22 +226,28 @@ fun UserManagementScreen(
           roles = roles,
           count = filteredUsers.value.size)
 
-      if (filteredUsers.value.isEmpty()) {
+      if (filteredUsers.value.isEmpty() && searchQuery.isEmpty() && selectedRole == null) {
+        LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
+      } else if (filteredUsers.value.isEmpty()) {
         // Display a message when no users are found
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text("No such user exists", style = MaterialTheme.typography.titleLarge)
         }
       } else {
-        LazyColumn(
-            modifier =
-                Modifier.padding(horizontal = 16.dp)
-                    .testTag("UserManagementLazyColumn")
-                    .fillMaxSize()) {
-              items(filteredUsers.value) { user ->
-                UserCard(user) { navController.navigate(Route.ADMIN_USER_DETAILS + "/${user.id}") }
-                Spacer(modifier = Modifier.height(8.dp))
+        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+          LazyColumn(
+              modifier =
+                  Modifier.padding(horizontal = 16.dp)
+                      .testTag("UserManagementLazyColumn")
+                      .fillMaxSize()) {
+                items(filteredUsers.value) { user ->
+                  UserCard(user) {
+                    navController.navigate(Route.ADMIN_USER_DETAILS + "/${user.id}")
+                  }
+                  Spacer(modifier = Modifier.height(8.dp))
+                }
               }
-            }
+        }
       }
     }
   }

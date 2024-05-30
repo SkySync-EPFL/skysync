@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
     val vm = userGlobalViewModel ?: return
     if (result.resultCode == RESULT_OK) {
       val user = FirebaseAuth.getInstance().currentUser!!
-      vm.loadUser("id-pilot-1", "pilot1.bob@skysnc.ch")
+      vm.loadUser("id-pilot-1", user.email!!)
     }
   }
 

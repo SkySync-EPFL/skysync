@@ -1,5 +1,6 @@
 package ch.epfl.skysync.screens.reports
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,8 +38,11 @@ fun ReportDetailsScreen(
     val display = (isAdmin && reportIds!!.isNotEmpty()) || reportIds!!.any { (it.author == userId) }
     Column() {
       CustomTopAppBar(navController, "Report")
+      reportIds!!.forEach { report -> Log.d("report", report.author) }
       if (display) {
-        ReportDetail(users, reportIds, isAdmin, userId)
+
+        ReportDetail(
+            users, finishedFlightsViewModel.reportList(reportIds, isAdmin), isAdmin, userId)
       } else {
         Column(
             modifier = Modifier.fillMaxSize().padding(PaddingValues(0.dp)).testTag("NoReports"),
