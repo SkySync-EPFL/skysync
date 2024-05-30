@@ -132,7 +132,7 @@ fun LocationPickerField(
 ) {
   var active by remember { mutableStateOf(false) }
   var query by remember { mutableStateOf("") }
-  val result by viewModel.searchResults.collectAsStateWithLifecycle()
+  val results by viewModel.searchResults.collectAsStateWithLifecycle()
   Text(
       modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
       text = title,
@@ -152,7 +152,7 @@ fun LocationPickerField(
         query = if (it.name == "") it.latlng().toString() else it.name
         active = false
       },
-      propositions = result,
+      propositions = results,
       showProposition = { if (it.name == "") it.latlng().toString() else it.name })
 }
 
