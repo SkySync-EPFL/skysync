@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.epfl.skysync.components.GenericTimePicker
 import ch.epfl.skysync.components.RangeTimePicker
 import ch.epfl.skysync.components.SmallTitle
@@ -37,6 +38,7 @@ import ch.epfl.skysync.database.DateUtility.dateToHourMinuteString
 import ch.epfl.skysync.models.flight.Vehicle
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.util.hasError
+import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import java.util.Date
 
 /**
@@ -125,11 +127,12 @@ fun LocationPickerField(
     location: LocationPoint,
     defaultPadding: Dp,
     title: String,
-    setLocation: (LocationPoint) -> Unit
+    viewModel: FinishedFlightsViewModel,
+    setLocation: (LocationPoint) -> Unit,
 ) {
-  // TODO implement search bar logic
   var active by remember { mutableStateOf(false) }
   var query by remember { mutableStateOf("") }
+  val results by viewModel.searchResults.collectAsStateWithLifecycle()
   Text(
       modifier = Modifier.fillMaxWidth().padding(horizontal = defaultPadding),
       text = title,
@@ -137,15 +140,19 @@ fun LocationPickerField(
   SearchBarCustom(
       title = title,
       query = query,
-      onQueryChange = { query = it },
+      onQueryChange = {
+        query = it
+        viewModel.getSearchLocation(it, location.time)
+      },
       onSearch = { active = false },
       active = active,
       onActiveChange = { active = it },
       onElementClick = {
         setLocation(it)
         query = if (it.name == "") it.latlng().toString() else it.name
+        active = false
       },
-      propositions = emptyList<LocationPoint>(),
+      propositions = results,
       showProposition = { if (it.name == "") it.latlng().toString() else it.name })
 }
 

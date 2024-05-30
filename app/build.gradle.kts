@@ -27,6 +27,7 @@ android {
     namespace = "ch.epfl.skysync"
     compileSdk = 34
 
+
     defaultConfig {
         applicationId = "ch.epfl.skysync"
         minSdk = 29
@@ -106,6 +107,7 @@ dependencies {
     // Lifecycle utilities for Compose
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
+
     implementation ("com.google.maps.android:maps-compose:2.5.0")
     implementation("com.google.maps.android:maps-compose:4.3.0")
     implementation("com.google.maps.android:maps-compose-utils:4.3.0")
@@ -142,6 +144,7 @@ dependencies {
 
     implementation("androidx.fragment:fragment:1.5.5")
 
+    implementation ("com.google.code.gson:gson:2.10.1")
     implementation("com.squareup.okhttp3:okhttp:3.10.0")
 
     testImplementation("org.mockito:mockito-core:3.11.2")
