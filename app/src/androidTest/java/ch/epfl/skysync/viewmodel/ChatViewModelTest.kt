@@ -88,4 +88,13 @@ class ChatViewModelTest {
         1,
         callbackValues.filter { it.second.adds.find { it.content == "test message" } != null }.size)
   }
+
+  @Test
+  fun deleteGroupTest() = runTest {
+    chatViewModel.refresh().join()
+    chatViewModel.deleteGroup(dbs.messageGroup1.id).join()
+    chatViewModel.refresh().join()
+
+    assertEquals(listOf(dbs.messageGroup2), chatViewModel.uiState.value.messageGroups)
+  }
 }
