@@ -501,4 +501,12 @@ class FlightsViewModelTest {
       }
     }
   }
+
+  @Test
+  fun reportDoneWorks() {
+    composeTestRule.setContent {
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.pilot1.id)
+    }
+    runTest { assertEquals(viewModelAdmin.reportDone(dbSetup.finishedFlight1), false) }
+  }
 }

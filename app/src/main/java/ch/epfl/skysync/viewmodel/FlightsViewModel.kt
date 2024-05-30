@@ -13,6 +13,7 @@ import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
 import ch.epfl.skysync.models.flight.ConfirmedFlight
+import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.models.flight.FlightStatus
 import ch.epfl.skysync.models.flight.FlightType
@@ -242,6 +243,10 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
 
   private fun groupName(date: LocalDate, timeSlot: TimeSlot): String {
     return "Flight: ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} $timeSlot"
+  }
+
+  fun reportDone(flight: FinishedFlight): Boolean {
+    return (flight).reportId.any { report -> report.author == userId }
   }
 
   /** updates the planned flight to a confirmed flight */

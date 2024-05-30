@@ -131,7 +131,7 @@ class E2EAddFlights {
     route = navController.currentBackStackEntry?.destination?.route
     Assert.assertEquals(Route.ADMIN_HOME, route)
 
-    // Checks if the flight with 13 passengers is created successfully
+    // Checks if the flight with 13 passengers was created successfully
     var flightIsCreated = false
     runTest {
       val flights = repository.flightTable.getAll(onError = { assertNull(it) })
