@@ -150,6 +150,7 @@ fun LocationPickerField(
       onElementClick = {
         setLocation(it)
         query = if (it.name == "") it.latlng().toString() else it.name
+        active = false
       },
       propositions = result,
       showProposition = { if (it.name == "") it.latlng().toString() else it.name })

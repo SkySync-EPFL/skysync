@@ -22,14 +22,14 @@ import com.google.firebase.auth.FirebaseAuth
 class MainActivity : ComponentActivity() {
   private lateinit var signInLauncher: ActivityResultLauncher<Intent>
   private var userGlobalViewModel: UserGlobalViewModel? = null
-  private val db: FirestoreDatabase = FirestoreDatabase(true)
+  private val db: FirestoreDatabase = FirestoreDatabase()
   private val repository: Repository = Repository(db)
 
   private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
     val vm = userGlobalViewModel ?: return
     if (result.resultCode == RESULT_OK) {
       val user = FirebaseAuth.getInstance().currentUser!!
-      vm.loadUser("id-pilot-1", user.email!!)
+      vm.loadUser(user.uid, user.email!!)
     }
   }
 
