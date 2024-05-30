@@ -26,6 +26,7 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel) {
         onClick = { selectedGroup ->
           navController.navigate(Route.CREW_TEXT + "/${selectedGroup.id}")
         },
+        onDelete = {},
         paddingValues = padding,
         isAdmin = false)
   }

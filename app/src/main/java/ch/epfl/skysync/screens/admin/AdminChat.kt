@@ -15,16 +15,17 @@ import ch.epfl.skysync.viewmodel.ChatViewModel
 
 @Composable
 fun AdminChatScreen(navController: NavHostController, viewModel: ChatViewModel) {
+  val groupDetails by viewModel.getGroupDetails().collectAsStateWithLifecycle()
   Scaffold(
       modifier = Modifier.fillMaxSize().testTag("AdminChatScreenScaffold"),
       bottomBar = { AdminBottomBar(navController) },
   ) { padding ->
-    val groupDetails by viewModel.getGroupDetails().collectAsStateWithLifecycle()
     GroupChat(
         groupList = groupDetails,
         onClick = { selectedGroup ->
           navController.navigate(Route.ADMIN_TEXT + "/${selectedGroup.id}")
         },
+        onDelete = { viewModel.deleteGroup(it.id) },
         paddingValues = padding,
         isAdmin = true)
   }
