@@ -356,6 +356,8 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
         if (_userId == pilotId) {
           saveFinishedFlight()
           saveFlightTrace()
+        } else {
+          SnackbarManager.showMessage("Flight stopped")
         }
         _loading.value = false
       }
