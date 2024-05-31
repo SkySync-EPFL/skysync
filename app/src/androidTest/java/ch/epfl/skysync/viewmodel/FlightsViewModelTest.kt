@@ -434,7 +434,7 @@ class FlightsViewModelTest {
               flightType = dbSetup.flightType2,
               balloon = dbSetup.balloon1,
               basket = dbSetup.basket2,
-              date = dbSetup.date2,
+              date = dbSetup.date1,
               timeSlot = dbSetup.date2TimeSlot,
               vehicles = listOf(dbSetup.vehicle1),
               id = UNSET_ID)
@@ -449,7 +449,7 @@ class FlightsViewModelTest {
 
       viewModelAdmin.modifyFlight(modifiedFlight).join()
 
-      viewModelAdmin.getFlight("dummy")
+      viewModelAdmin.getFlight(modifiedFlight.id)
 
       viewModelAdmin.refreshUserAndFlights().join()
 

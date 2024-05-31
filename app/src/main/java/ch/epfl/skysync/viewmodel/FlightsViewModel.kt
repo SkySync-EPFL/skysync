@@ -234,7 +234,9 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
   fun modifyFlight(newFlight: Flight) =
       viewModelScope.launch {
         val oldFlight = flight.value
-        setUsersToNewStatus(oldFlight!!, AvailabilityStatus.OK)
+        if (oldFlight != null) {
+          setUsersToNewStatus(oldFlight!!, AvailabilityStatus.OK)
+        }
         repository.flightTable.update(newFlight.id, newFlight)
 
         setUsersToNewStatus(newFlight, AvailabilityStatus.ASSIGNED)
@@ -242,8 +244,8 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
 
   fun deleteFlight(flight: Flight) =
       viewModelScope.launch {
-        setUsersToNewStatus(flight, AvailabilityStatus.OK)
         repository.flightTable.delete(flight.id, onError = { onError(it) })
+        setUsersToNewStatus(flight, AvailabilityStatus.OK)
       }
 
   /** adds the given flight to the db and the viewmodel */
