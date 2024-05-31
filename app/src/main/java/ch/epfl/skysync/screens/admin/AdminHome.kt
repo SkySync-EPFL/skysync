@@ -50,7 +50,8 @@ fun AdminHomeScreen(
       },
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
-    FlightsList(currentFlights, getThemeColor(isAdmin = true), padding, "Upcoming flights") { selectedFlight ->
+    FlightsList(currentFlights, getThemeColor(isAdmin = true), padding, "Upcoming flights") {
+        selectedFlight ->
       navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/${selectedFlight}")
     }
   }

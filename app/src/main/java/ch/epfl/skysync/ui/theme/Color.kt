@@ -36,11 +36,7 @@ val lightPink = Color(0xFFF896FA)
 
 val cream = Color(0xFFffffeb)
 
-
-/**
- * returns the theme color as a function of isAdmin
- */
+/** returns the theme color as a function of isAdmin */
 fun getThemeColor(isAdmin: Boolean): Color {
-    return if (isAdmin) lightOrange
-    else Purple40
+  return if (isAdmin) lightOrange else Purple40
 }

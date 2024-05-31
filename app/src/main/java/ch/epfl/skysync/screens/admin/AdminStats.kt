@@ -13,7 +13,6 @@ import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.ScreenTitles
 import ch.epfl.skysync.ui.theme.getThemeColor
-import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 
 @Composable
@@ -25,7 +24,8 @@ fun AdminStatsScreen(navController: NavHostController, viewModel: FinishedFlight
       floatingActionButton = {},
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
-    FlightsList(finishedFlights, getThemeColor(isAdmin = true), padding, ScreenTitles.HISTORY) { selectedFlight ->
+    FlightsList(finishedFlights, getThemeColor(isAdmin = true), padding, ScreenTitles.HISTORY) {
+        selectedFlight ->
       navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/${selectedFlight}")
     }
   }

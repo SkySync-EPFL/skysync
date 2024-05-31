@@ -1,9 +1,7 @@
 package ch.epfl.skysync.models.user
 
-import androidx.compose.ui.graphics.Color
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.ui.theme.lightOrange
 
 data class Admin(
     override val id: String = UNSET_ID,
@@ -16,6 +14,5 @@ data class Admin(
     return this.copy(roleTypes = roleTypes + roleType)
   }
 
-    override fun displayRoleName(): String = "Admin"
-    override fun getThemeColor(): Color = lightOrange
+  override fun displayRoleName(): String = "Admin"
 }

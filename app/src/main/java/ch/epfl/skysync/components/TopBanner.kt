@@ -16,22 +16,23 @@ import ch.epfl.skysync.ui.theme.TOP_CORNER_ROUNDED
 
 /**
  * displays a top banner
+ *
  * @param topTitle the title of the banner
  * @param topBannerColor the color of the banner
  */
 @Composable
 fun TopBanner(topTitle: String, topBannerColor: Color, paddingValues: PaddingValues) {
-    Text(
-        text = topTitle,
-        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-        modifier =
-        Modifier.background(color = topBannerColor, shape = TOP_CORNER_ROUNDED)
-            .fillMaxWidth()
-            .padding(
-                top = paddingValues.calculateTopPadding() + 16.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 16.dp),
-        color = Color.White,
-        textAlign = TextAlign.Center)
+  Text(
+      text = topTitle,
+      style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+      modifier =
+          Modifier.background(color = topBannerColor, shape = TOP_CORNER_ROUNDED)
+              .fillMaxWidth()
+              .padding(
+                  top = paddingValues.calculateTopPadding() + 16.dp,
+                  start = 16.dp,
+                  end = 16.dp,
+                  bottom = 16.dp),
+      color = Color.White,
+      textAlign = TextAlign.Center)
 }

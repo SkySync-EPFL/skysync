@@ -68,12 +68,11 @@ fun GroupChat(
 ) {
   var searchQuery by remember { mutableStateOf("") }
   var activeGroupId by remember { mutableStateOf<String?>(null) }
-  Column(modifier = Modifier
-      .fillMaxSize()
-      .padding(paddingValues)
-      .padding(16.dp)) {
-
-      TopBanner(topTitle = ScreenTitles.MESSAGES, topBannerColor = getThemeColor(isAdmin), paddingValues = paddingValues)
+  Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
+    TopBanner(
+        topTitle = ScreenTitles.MESSAGES,
+        topBannerColor = getThemeColor(isAdmin),
+        paddingValues = paddingValues)
     Spacer(modifier = Modifier.fillMaxHeight(0.02f))
 
     OutlinedTextField(
@@ -83,9 +82,7 @@ fun GroupChat(
         colors =
             OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = lightOrange, focusedLabelColor = lightOrange),
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag("Search"),
+        modifier = Modifier.fillMaxWidth().testTag("Search"),
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done))
     val filteredGroups = groupList.filter { it.name.contains(searchQuery, ignoreCase = true) }
     Spacer(modifier = Modifier.fillMaxHeight(0.05f))
@@ -124,21 +121,17 @@ fun GroupCard(
   val time = groupDetails.lastMessage?.let { MessageDateFormatter.format(it.date) } ?: ""
   Card(
       modifier =
-      Modifier
-          .combinedClickable(
-              onClick = { onClick(groupDetails) }, onLongClick = { onActivate() })
-          .fillMaxWidth()
-          .padding(vertical = 4.dp)
-          .testTag("GroupCard$testTag"),
+          Modifier.combinedClickable(
+                  onClick = { onClick(groupDetails) }, onLongClick = { onActivate() })
+              .fillMaxWidth()
+              .padding(vertical = 4.dp)
+              .testTag("GroupCard$testTag"),
       shape = RoundedCornerShape(8.dp),
       colors = CardDefaults.cardColors(containerColor = lightGray)) {
         Row(modifier = Modifier.padding(8.dp)) {
           Box(
               modifier =
-              Modifier
-                  .size(40.dp)
-                  .clip(CircleShape)
-                  .background(groupDetails.color.toColor()!!),
+                  Modifier.size(40.dp).clip(CircleShape).background(groupDetails.color.toColor()!!),
               contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = Icons.Default.Person,
@@ -170,10 +163,7 @@ fun GroupCard(
         if (isActive && isAdmin) {
           Button(
               onClick = { onDelete(groupDetails) },
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(8.dp)
-                  .testTag("DeleteButton$testTag")) {
+              modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("DeleteButton$testTag")) {
                 Text("Delete Group")
               }
         }

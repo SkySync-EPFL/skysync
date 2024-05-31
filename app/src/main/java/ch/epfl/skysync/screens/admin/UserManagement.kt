@@ -36,7 +36,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -51,7 +50,6 @@ import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.ui.theme.lightTurquoise
 import ch.epfl.skysync.viewmodel.UserManagementViewModel
-
 
 // Composable function to display a card for a User object.
 @Composable
@@ -81,24 +79,6 @@ fun UserCard(user: User, onUserClick: (String) -> Unit) {
   }
 }
 
-// Composable function to display the top bar title with user count.
-@Composable
-fun TopBarTitle(paddingValues: Dp) {
-  Column(modifier = Modifier.fillMaxWidth().padding(paddingValues)) {
-    Text(
-        text = "Users",
-        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-        modifier =
-            Modifier.background(
-                    color = lightOrange,
-                    shape = RoundedCornerShape(topStart = paddingValues, topEnd = paddingValues))
-                .fillMaxWidth()
-                .padding(paddingValues),
-        color = Color.White,
-        textAlign = TextAlign.Center)
-  }
-}
-
 // Composable function for the search bar.
 @Composable
 fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
@@ -117,55 +97,65 @@ fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
       })
 }
 
-// Composable function to filter users by role.
+/** displays the filter along with the count of the results */
 @Composable
-fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>, count: Int) {
-  var expanded by remember { mutableStateOf(false) } // State to manage dropdown expansion.
-  var displayText by remember { mutableStateOf("Filter by role") }
+fun RoleFilterAndCount(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>, count: Int) {
   Row(
       modifier = Modifier.fillMaxWidth(),
       verticalAlignment = Alignment.CenterVertically,
   ) {
-    Column(modifier = Modifier.padding(16.dp)) {
-      Button(
-          modifier = Modifier.testTag("UserManagementRoleFilterButton"),
-          onClick = { expanded = true },
-          colors =
-              ButtonDefaults.buttonColors(
-                  containerColor = lightOrange, contentColor = Color.Black)) {
-            Text(text = displayText)
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "Expand or collapse menu")
-          }
+    RoleFilter(onRoleSelected, roles)
+    CountDisplay(count)
+  }
+}
 
-      // Dropdown menu for selecting roles.
-      DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+@Composable
+fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>) {
+  var expanded by remember { mutableStateOf(false) } // State to manage dropdown expansion.
+  var displayText by remember { mutableStateOf("Filter by role") }
+  Column(modifier = Modifier.padding(16.dp)) {
+    Button(
+        modifier = Modifier.testTag("UserManagementRoleFilterButton"),
+        onClick = { expanded = true },
+        colors =
+            ButtonDefaults.buttonColors(containerColor = lightOrange, contentColor = Color.Black)) {
+          Text(text = displayText)
+          Icon(
+              imageVector = Icons.Default.ArrowDropDown,
+              contentDescription = "Expand or collapse menu")
+        }
+
+    // Dropdown menu for selecting roles.
+    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      DropdownMenuItem(
+          onClick = {
+            displayText = "Filter by role"
+            onRoleSelected(null)
+            expanded = false
+          },
+          text = { Text("All Roles") })
+      roles.forEach { role ->
         DropdownMenuItem(
+            modifier = Modifier.testTag("RoleTag${role.description}"),
             onClick = {
-              displayText = "Filter by role"
-              onRoleSelected(null)
+              displayText = role.description
+              onRoleSelected(role)
               expanded = false
             },
-            text = { Text("All Roles") })
-        roles.forEach { role ->
-          DropdownMenuItem(
-              modifier = Modifier.testTag("RoleTag${role.description}"),
-              onClick = {
-                displayText = role.description
-                onRoleSelected(role)
-                expanded = false
-              },
-              text = { Text(role.description) })
-        }
+            text = { Text(role.description) })
       }
     }
-
-    Text(
-        text = "$count",
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.background(color = lightTurquoise, shape = CircleShape).padding(8.dp))
   }
+}
+
+/** displays a given count in a circle */
+@Composable
+fun CountDisplay(count: Int) {
+  Text(
+      text = String.format("results: %2d", count),
+      style = MaterialTheme.typography.titleLarge,
+      textAlign = TextAlign.End,
+      modifier = Modifier.background(color = lightTurquoise, shape = CircleShape).padding(8.dp))
 }
 
 // Main screen composable integrating all components. List of users to later be replaced with
@@ -208,7 +198,7 @@ fun UserManagementScreen(
             searchQuery = it
             userManagementViewModel.filterByQueryAndRole(searchQuery, selectedRole)
           })
-      RoleFilter(
+      RoleFilterAndCount(
           onRoleSelected = {
             selectedRole = it
             userManagementViewModel.filterByQueryAndRole(searchQuery, selectedRole)
@@ -217,7 +207,7 @@ fun UserManagementScreen(
           count = filteredUsers.value.size)
 
       if (filteredUsers.value.isEmpty() && searchQuery.isEmpty() && selectedRole == null) {
-        LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
+        LoadingComponent(isLoading = true) {}
       } else if (filteredUsers.value.isEmpty()) {
         // Display a message when no users are found
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

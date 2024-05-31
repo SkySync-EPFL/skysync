@@ -39,7 +39,6 @@ fun FlightsList(
   }
 }
 
-
 /**
  * shows a list of flights. Distinguishes 3 cases:
  * 1) flights == null: shows a loading component

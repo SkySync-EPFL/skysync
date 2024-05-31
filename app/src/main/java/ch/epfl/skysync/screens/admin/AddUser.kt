@@ -33,6 +33,7 @@ import ch.epfl.skysync.util.textInputValidation
 import ch.epfl.skysync.util.validateEmail
 import ch.epfl.skysync.viewmodel.UserManagementViewModel
 
+/** screen to add a user */
 @Composable
 fun AddUserScreen(navController: NavController, viewModel: UserManagementViewModel) {
   val title = "Add User"

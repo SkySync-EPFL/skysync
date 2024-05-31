@@ -22,7 +22,8 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
       modifier = Modifier.fillMaxSize(),
       bottomBar = { BottomBar(navController) },
   ) { padding ->
-    FlightsList(currentFlights, getThemeColor(isAdmin = false), padding, ScreenTitles.HOME) { selectedFlight ->
+    FlightsList(currentFlights, getThemeColor(isAdmin = false), padding, ScreenTitles.HOME) {
+        selectedFlight ->
       navController.navigate(Route.CREW_FLIGHT_DETAILS + "/${selectedFlight}")
     }
   }
