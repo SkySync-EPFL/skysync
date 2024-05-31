@@ -83,6 +83,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
   val availableUsers = _availableUsers.asStateFlow()
   val flight = _flight.asStateFlow()
 
+  /** fetches all the informations needed */
   fun refresh() {
     refreshUserAndFlights()
     refreshAvailableBalloons()
@@ -92,6 +93,10 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
     refreshAvailableUsers()
   }
 
+  /**
+   * fetches the user, balloons, baskets and vehicles according to their avaibility on the given
+   * date and time slot
+   */
   private fun refreshFilteredByDateAndTimeSlot() {
     refreshAvailableBalloons()
     refreshAvailableBaskets()
@@ -99,12 +104,14 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
     refreshAvailableUsers()
   }
 
+  /** sets the date and time slot and refreshes the filtered informations */
   fun setDateAndTimeSlot(date: LocalDate, timeSlot: TimeSlot) {
     this.date = date
     this.timeSlot = timeSlot
     refreshFilteredByDateAndTimeSlot()
   }
 
+  /** sets the flight and refreshes the filtered informations */
   fun setFlight(flight: Flight) {
     _flight.value = flight
     setDateAndTimeSlot(flight.date, flight.timeSlot)
@@ -132,11 +139,12 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
             FlightStatus.filterCompletedFlights(fetchedFlights, _currentUser.value!!)
       }
 
-  /** updates */
+  /** check if the date and time slot are set */
   private fun hasDateAndTimeSlot(): Boolean {
     return date != null && timeSlot != null
   }
 
+  /** check if a given item can be added to the list of available items */
   private fun needsToAddCurrentlyAffected(notNull: Any?): Boolean {
     return notNull != null &&
         _flight.value != null &&

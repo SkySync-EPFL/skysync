@@ -21,6 +21,14 @@ import ch.epfl.skysync.models.reports.PilotReport
 import ch.epfl.skysync.models.reports.Report
 import ch.epfl.skysync.models.user.User
 
+/**
+ * The screen to display the details of a report
+ *
+ * @param users The list of users
+ * @param reportId The report id
+ * @param isAdmin Whether the user is an admin
+ * @param userId The user id
+ */
 @Composable
 fun ReportDetail(users: List<User>?, reportId: List<Report>?, isAdmin: Boolean, userId: String) {
   val defaultPadding = 16.dp

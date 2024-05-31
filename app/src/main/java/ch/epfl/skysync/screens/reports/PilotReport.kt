@@ -40,6 +40,13 @@ import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import java.time.Instant
 import java.util.Date
 
+/**
+ * The screen to add a pilot report
+ *
+ * @param navHostController The navigation controller
+ * @param finishedFlightsViewModel The view model
+ * @param flightId The flight id
+ */
 @Composable
 fun PilotReportScreen(
     navHostController: NavHostController,

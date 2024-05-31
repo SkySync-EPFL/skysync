@@ -5,6 +5,11 @@ import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.FlightTraceSchema
 import ch.epfl.skysync.models.location.FlightTrace
 
+/**
+ * Represents the "flight trace" table in the database.
+ *
+ * @property db The FirestoreDatabase instance for interacting with the Firestore database.
+ */
 class FlightTraceTable(db: FirestoreDatabase) :
     Table<FlightTrace, FlightTraceSchema>(db, FlightTraceSchema::class, PATH) {
 

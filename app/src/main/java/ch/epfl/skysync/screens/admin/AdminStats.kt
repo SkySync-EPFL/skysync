@@ -14,6 +14,12 @@ import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 
+/**
+ * The screen for the admin stats
+ *
+ * @param navController The navigation controller
+ * @param viewModel The view model
+ */
 @Composable
 fun AdminStatsScreen(navController: NavHostController, viewModel: FinishedFlightsViewModel) {
   val finishedFlights by viewModel.currentFlights.collectAsStateWithLifecycle()

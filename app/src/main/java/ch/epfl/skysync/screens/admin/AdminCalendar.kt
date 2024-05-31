@@ -17,6 +17,14 @@ import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.screens.crewpilot.CalendarTopBar
 import ch.epfl.skysync.viewmodel.CalendarViewModel
 
+/**
+ * The screen for the admin calendar
+ *
+ * @param navController The navigation controller
+ * @param calendarType The type of calendar
+ * @param viewModel The view model
+ * @param connectivityStatus The connectivity status
+ */
 @Composable
 fun AdminCalendarScreen(
     navController: NavHostController,

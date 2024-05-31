@@ -311,6 +311,14 @@ fun AddRemark(padding: Dp, remarks: MutableList<String>) {
       })
 }
 
+/**
+ * Displays an alert dialog for adding a new remark.
+ *
+ * @param showAddMemberDialog A boolean value indicating whether the dialog should be displayed.
+ * @param onDismiss Callback function triggered when the dialog is dismissed.
+ * @param padding The padding value to be applied to the dialog.
+ * @param onConfirm Callback function triggered when the dialog is confirmed.
+ */
 @Composable
 fun AddRemarkAlertDialog(
     showAddMemberDialog: Boolean,

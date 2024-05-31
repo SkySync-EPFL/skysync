@@ -14,7 +14,12 @@ import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.Purple40
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 
-// Scaffold wrapper for the Stats Screen
+/**
+ * The screen for the stats for the crew/pilot user
+ *
+ * @param navController The navigation controller
+ * @param viewModel The view model
+ */
 @Composable
 fun StatsScreen(navController: NavHostController, viewModel: FinishedFlightsViewModel) {
   val finishedFlights by viewModel.currentFlights.collectAsStateWithLifecycle()

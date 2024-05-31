@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +36,12 @@ import ch.epfl.skysync.ui.theme.deepOrange
 import ch.epfl.skysync.viewmodel.UserGlobalViewModel
 import com.firebase.ui.auth.AuthUI
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * The login screen
+ *
+ * @param userGlobalViewModel The view model
+ * @param signInLauncher The sign in launcher
+ */
 @Composable
 fun LoginScreen(
     userGlobalViewModel: UserGlobalViewModel,

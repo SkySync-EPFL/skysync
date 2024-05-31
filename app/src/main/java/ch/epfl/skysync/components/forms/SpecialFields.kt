@@ -122,6 +122,15 @@ fun TimePickerButton(title: String, buttonColor: Color, padding: Dp, setTime: (D
       }
 }
 
+/**
+ * A composable function that displays a field for picking a location.
+ *
+ * @param location The current location.
+ * @param defaultPadding The default padding value to be applied to the field.
+ * @param title The title or label for the location picker field.
+ * @param viewModel The ViewModel that provides the search results.
+ * @param setLocation Callback function triggered when a new location is selected.
+ */
 @Composable
 fun LocationPickerField(
     location: LocationPoint,
@@ -156,6 +165,13 @@ fun LocationPickerField(
       showProposition = { if (it.name == "") it.latlng().toString() else it.name })
 }
 
+/**
+ * A composable function that displays a field for entering a vehicle problem.
+ *
+ * @param defaultPadding The default padding value to be applied to the field.
+ * @param vehicles The list of vehicles.
+ * @param onConfirm Callback function triggered when a new problem is confirmed.
+ */
 @Composable
 fun VehicleProblemField(
     defaultPadding: Dp,
@@ -252,6 +268,13 @@ fun VehicleProblemField(
   }
 }
 
+/**
+ * A composable function that displays a field for entering a pause duration.
+ *
+ * @param defaultPadding The default padding value to be applied to the field.
+ * @param pauseDuration The current pause duration.
+ * @param setPauseDuration Callback function triggered when a new pause duration is entered.
+ */
 @Composable
 fun PauseField(defaultPadding: Dp, pauseDuration: Long, setPauseDuration: (Long) -> Unit) {
   val title = "Pause duration"

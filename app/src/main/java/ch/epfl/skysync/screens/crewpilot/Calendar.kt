@@ -23,6 +23,14 @@ import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.viewmodel.CalendarViewModel
 
+/**
+ * The screen for the calendar for the crew/pilot user
+ *
+ * @param navController The navigation controller
+ * @param calendarType The type of the calendar
+ * @param viewModel The view model
+ * @param connectivityStatus The connectivity status
+ */
 @Composable
 fun CalendarScreen(
     navController: NavHostController,
@@ -78,6 +86,13 @@ fun CalendarScreen(
       }
 }
 
+/**
+ * The top bar for the calendar
+ *
+ * @param tab The current tab
+ * @param tabs The tabs
+ * @param onclick The onclick function
+ */
 @Composable
 fun CalendarTopBar(tab: String, tabs: Map<String, Int>, onclick: (String) -> Unit) {
   val tabIndex = tabs[tab]

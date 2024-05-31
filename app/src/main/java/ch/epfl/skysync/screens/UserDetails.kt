@@ -24,6 +24,12 @@ import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
+/**
+ * The user details screen
+ *
+ * @param navController The navigation controller
+ * @param flightsViewModel The view model
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun UserDetailsScreen(navController: NavHostController, flightsViewModel: FlightsViewModel) {

@@ -10,6 +10,11 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.CoroutineScope
 
+/**
+ * Represents the "location" table in the database.
+ *
+ * @property db The FirestoreDatabase instance for interacting with the Firestore database.
+ */
 class LocationTable(db: FirestoreDatabase) :
     Table<Location, LocationSchema>(db, LocationSchema::class, PATH) {
 

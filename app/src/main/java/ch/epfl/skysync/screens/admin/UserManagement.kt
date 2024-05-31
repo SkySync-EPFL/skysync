@@ -5,7 +5,15 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -20,7 +28,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -29,7 +36,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,6 +65,12 @@ import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.ui.theme.lightTurquoise
 import ch.epfl.skysync.viewmodel.UserManagementViewModel
 
+/**
+ * Display the main role of the user.
+ *
+ * @param user The user
+ * @return The main role of the user
+ */
 fun displayMainRole(user: User): String {
   return when (user) {
     is Admin -> "Admin"
@@ -63,7 +80,12 @@ fun displayMainRole(user: User): String {
   }
 }
 
-// Composable function to display a card for a User object.
+/**
+ * Composable function that displays a user card.
+ *
+ * @param user The user
+ * @param onUserClick The action to perform when the user is clicked
+ */
 @Composable
 fun UserCard(user: User, onUserClick: (String) -> Unit) {
   Card(
@@ -91,7 +113,11 @@ fun UserCard(user: User, onUserClick: (String) -> Unit) {
   }
 }
 
-// Composable function to display the top bar title with user count.
+/**
+ * Top app bar that displays the title of the user management screen.
+ *
+ * @param paddingValues The padding values
+ */
 @Composable
 fun TopBarTitle(paddingValues: Dp) {
   Column(modifier = Modifier.fillMaxWidth().padding(paddingValues)) {
@@ -109,7 +135,12 @@ fun TopBarTitle(paddingValues: Dp) {
   }
 }
 
-// Composable function for the search bar.
+/**
+ * Composable function that displays a search bar.
+ *
+ * @param query The search query
+ * @param onQueryChanged The action to perform when the query is changed
+ */
 @Composable
 fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
   OutlinedTextField(
@@ -127,7 +158,13 @@ fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
       })
 }
 
-// Composable function to filter users by role.
+/**
+ * Composable function that displays a role filter.
+ *
+ * @param onRoleSelected The action to perform when a role is selected
+ * @param roles The list of roles
+ * @param count The number of users
+ */
 @Composable
 fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>, count: Int) {
   var expanded by remember { mutableStateOf(false) } // State to manage dropdown expansion.
@@ -178,9 +215,13 @@ fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>, count
   }
 }
 
-// Main screen composable integrating all components. List of users to later be replaced with
-// UserViewModel
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Composable function that displays the user management screen.
+ *
+ * @param navController The navigation controller
+ * @param userManagementViewModel The view model
+ * @param connectivityStatus The connectivity status
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun UserManagementScreen(

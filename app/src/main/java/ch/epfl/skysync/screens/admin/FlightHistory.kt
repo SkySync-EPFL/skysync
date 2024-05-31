@@ -74,6 +74,12 @@ import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 import java.time.LocalDate
 import java.util.Date
 
+/**
+ * Screen to display the history of flights
+ *
+ * @param navController navigation controller
+ * @param finishedFlightsViewModel view model for the finished flights
+ */
 @Composable
 fun FlightHistoryScreen(
     navController: NavHostController,
@@ -222,6 +228,12 @@ fun HistoryCard(flight: FinishedFlight, modifier: Modifier) {
   Spacer(modifier = Modifier.padding(8.dp))
 }
 
+/**
+ * Menu to filter the flights
+ *
+ * @param onDismissRequest callback when the menu is dismissed
+ * @param onConfirmRequest callback when the filters are confirmed
+ */
 @Composable
 fun FiltersMenu(
     onDismissRequest: () -> Unit,
@@ -406,6 +418,15 @@ fun FlightSearchBar(modifier: Modifier, onSearch: (String) -> Unit, results: Lis
       }
 }
 
+/**
+ * A composable that displays a titled ranged filter field
+ *
+ * @param title The title of the filter field
+ * @param minValue The minimum value of the filter
+ * @param maxValue The maximum value of the filter
+ * @param onClick The action to perform when the field is clicked
+ * @param showString The function to display the value of the filter
+ */
 @Composable
 fun <T> TitledRangedFilterField(
     title: String,

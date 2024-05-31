@@ -3,6 +3,14 @@ package ch.epfl.skysync.models.reports
 import ch.epfl.skysync.models.user.User
 import java.util.Date
 
+/**
+ * Represents a report.
+ *
+ * This is an interface that defines the structure of a report.
+ *
+ * @property id The ID of the report.
+ * @property author The author of the report.
+ */
 interface Report {
   val id: String
   val author: String

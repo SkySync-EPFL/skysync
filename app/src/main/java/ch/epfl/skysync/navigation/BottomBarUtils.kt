@@ -13,6 +13,13 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import ch.epfl.skysync.R
 
+/**
+ * The bottom navigation bar screens
+ *
+ * @param route The route
+ * @param title The title
+ * @param icon The icon
+ */
 sealed class BottomBarScreen(val route: String, val title: String, @DrawableRes val icon: Int) {
   data object Home :
       BottomBarScreen(route = Route.CREW_HOME, title = "Home", icon = R.drawable.baseline_home_24)
@@ -54,6 +61,13 @@ sealed class BottomBarScreen(val route: String, val title: String, @DrawableRes 
           icon = R.drawable.baseline_calendar_month_24)
 }
 
+/**
+ * Adds an item to the bottom navigation bar
+ *
+ * @param screen The screen
+ * @param currentDestination The current destination
+ * @param navController The navigation controller
+ */
 @Composable
 fun RowScope.AddItem(
     screen: BottomBarScreen,

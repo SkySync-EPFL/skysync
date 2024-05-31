@@ -20,6 +20,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 
+/**
+ * A custom dropdown menu component.
+ *
+ * @param modifier The modifier to be applied to the dropdown menu.
+ * @param defaultPadding The default padding for the dropdown menu.
+ * @param title The title of the dropdown menu.
+ * @param value The current selected value in the dropdown menu.
+ * @param onclickMenu The function to be called when a menu item is clicked.
+ * @param items The list of items to be displayed in the dropdown menu.
+ * @param showString The function to convert an item to a string for display.
+ * @param isError A boolean indicating if there is an error.
+ * @param messageError The error message to be displayed if there is an error.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> CustomDropDownMenu(

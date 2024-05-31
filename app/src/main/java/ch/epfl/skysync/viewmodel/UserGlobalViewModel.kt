@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+/** ViewModel for the user global state */
 class UserGlobalViewModel(
     repository: Repository,
 ) : ViewModel() {

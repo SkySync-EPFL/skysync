@@ -27,7 +27,7 @@ import ch.epfl.skysync.models.flight.FlightStatus
 import java.time.LocalDate
 
 /**
- * represents a card for a flight*
+ * A composable function that represents a card for a flight*
  *
  * @param flight the flight to display
  * @param onFlightClick the action to perform when the card is clicked
@@ -57,7 +57,12 @@ fun FlightCard(flight: Flight, onFlightClick: (String) -> Unit) {
   }
 }
 
-/** displays the date of a flight */
+/**
+ * A composable function that displays the date of a flight.
+ *
+ * @param date The date of the flight.
+ * @param modifier The modifier to be applied to the text.
+ */
 @Composable
 fun FlightDateText(date: LocalDate, modifier: Modifier) {
   Text(
@@ -68,7 +73,13 @@ fun FlightDateText(date: LocalDate, modifier: Modifier) {
       color = Color.Black)
 }
 
-/** displays the flight details consisting of the flight type, passenger count and time slot */
+/**
+ * A composable function that displays the flight details consisting of the flight type, passenger
+ * count and time slot.
+ *
+ * @param flight The flight whose details are to be displayed.
+ * @param modifier The modifier to be applied to the column.
+ */
 @Composable
 fun FlightDetailsColumn(flight: Flight, modifier: Modifier) {
   Column(modifier = modifier) { // Modifier.weight(0.7f).padding(start = 16.dp)
@@ -80,7 +91,12 @@ fun FlightDetailsColumn(flight: Flight, modifier: Modifier) {
   }
 }
 
-/** displays the flight status */
+/**
+ * A composable function that displays the flight status.
+ *
+ * @param status The status of the flight.
+ * @param modifier The modifier to be applied to the text.
+ */
 @Composable
 fun FlightStatusText(status: FlightStatus, modifier: Modifier) {
   Text(

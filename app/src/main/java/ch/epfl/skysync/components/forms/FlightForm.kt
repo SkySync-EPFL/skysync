@@ -67,6 +67,22 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Calendar
 
+/**
+ * Composable function to create a flight form.
+ *
+ * @param navController The navigation controller.
+ * @param currentFlight The current flight.
+ * @param modifyFlight Boolean to indicate if the flight should be modified.
+ * @param title The title of the form.
+ * @param allFlightTypes The list of all flight types.
+ * @param allRoleTypes The list of all role types.
+ * @param availableVehicles The list of available vehicles.
+ * @param availableBalloons The list of available balloons.
+ * @param availableBaskets The list of available baskets.
+ * @param availableUsers The list of available users.
+ * @param onSaveFlight Callback function when the flight is saved.
+ * @param refreshDate Callback function when the date is refreshed.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlightForm(
@@ -354,6 +370,18 @@ fun FlightForm(
   }
 }
 
+/**
+ * Composable function to create a date picker field.
+ *
+ * @param dateValue The current date value.
+ * @param defaultPadding The default padding for the field.
+ * @param openDatePicker Boolean to indicate if the date picker should be opened.
+ * @param onclickConfirm Callback function when the confirm button is clicked.
+ * @param onclickDismiss Callback function when the dismiss button is clicked.
+ * @param onclickField Callback function when the field is clicked.
+ * @param datePickerState The state of the date picker.
+ * @param today The current date.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerField(
@@ -401,6 +429,18 @@ fun DatePickerField(
       onValueChange = {})
 }
 
+/**
+ * Composable function to create a role field.
+ *
+ * @param defaultPadding The default padding for the field.
+ * @param role The role.
+ * @param index The index of the role.
+ * @param onDelete Callback function when the delete button is clicked.
+ * @param onReassign Callback function when the role is reassigned.
+ * @param specialName The special name for the role.
+ * @param availableUsers The list of available users.
+ * @param isSelectedUserAvailable Boolean to indicate if the selected user is available.
+ */
 @Composable
 fun RoleField(
     defaultPadding: Dp,
@@ -441,6 +481,14 @@ fun RoleField(
       }
 }
 
+/**
+ * Composable function to create a field for entering the number of passengers.
+ *
+ * @param defaultPadding The default padding for the field.
+ * @param nbPassengersValue The number of passengers.
+ * @param nbPassengersValueError Boolean to indicate if there is an error in the number of
+ *   passengers.
+ */
 @Composable
 fun EnterPassengerNumber(
     defaultPadding: Dp,
@@ -458,6 +506,16 @@ fun EnterPassengerNumber(
   )
 }
 
+/**
+ * Composable function to create a field for adding a role.
+ *
+ * @param showAddMemberDialog Boolean to indicate if the add member dialog should be shown.
+ * @param onclickDismiss Callback function when the dismiss button is clicked.
+ * @param defaultPadding The default padding for the field.
+ * @param allRoleTypes The list of all role types.
+ * @param allAvailableUsers The list of all available users.
+ * @param onConfirm Callback function when the confirm button is clicked.
+ */
 @Composable
 fun AddRole(
     showAddMemberDialog: Boolean,
@@ -533,6 +591,14 @@ fun AddRole(
   }
 }
 
+/**
+ * Composable function to create a team header.
+ *
+ * @param defaultPadding The default padding for the header.
+ * @param crewMembers The list of crew members.
+ * @param allRoleTypes The list of all role types.
+ * @param availableUsers The list of available users.
+ */
 @Composable
 fun TeamHeader(
     defaultPadding: Dp,

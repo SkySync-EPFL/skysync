@@ -20,6 +20,16 @@ import androidx.compose.ui.unit.dp
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.ui.theme.Purple40
 
+/**
+ * A composable function that displays the UI for launching a flight.
+ *
+ * @param pilotBoolean A boolean indicating if the user is a pilot.
+ * @param flight The flight to be launched. Can be null, in which case a text "No flight ready to be
+ *   launched" is shown.
+ * @param paddingValues The padding values to be applied to the column.
+ * @param flightClick The action to perform when the flight card is clicked. Receives the flight ID
+ *   as a parameter.
+ */
 @Composable
 fun LaunchFlightUi(
     pilotBoolean: Boolean,

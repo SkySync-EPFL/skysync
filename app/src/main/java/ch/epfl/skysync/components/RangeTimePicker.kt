@@ -27,7 +27,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 
-/** A composable made to select a time duration of a maximum of 24 hours. */
+/**
+ * A composable function that displays a UI for selecting a time duration of a maximum of 24 hours.
+ *
+ * @param padding The padding to be applied to the AlertDialog.
+ * @param title The title of the AlertDialog.
+ * @param showDialog A boolean indicating whether the AlertDialog should be shown.
+ * @param onDismiss The action to perform when the AlertDialog is dismissed.
+ * @param onConfirm The action to perform when the time duration is confirmed. Receives the time
+ *   duration in milliseconds as a parameter.
+ */
 @Composable
 fun RangeTimePicker(
     padding: Dp,
@@ -86,7 +95,17 @@ fun RangeTimePicker(
       })
 }
 
-/** CircularList is a composable to mimic a vertical carousel list */
+/**
+ * A composable function that displays a circular list of items.
+ *
+ * @param items The list of items to be displayed.
+ * @param modifier The modifier to be applied to the LazyColumn.
+ * @param listState The state of the LazyColumn.
+ * @param isEndless A boolean indicating whether the list should be endless.
+ * @param itemHeight The height of each item in the list.
+ * @param visibleItemCount The number of items visible in the list at a time.
+ * @param testTag A tag used for testing purposes.
+ */
 @Composable
 fun CircularList(
     items: List<String>,

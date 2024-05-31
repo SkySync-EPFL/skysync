@@ -15,6 +15,18 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import ch.epfl.skysync.components.MediumTitle
 
+/**
+ * A composable function that displays a dropdown menu with a title.
+ *
+ * @param defaultPadding The default padding value to be applied to the dropdown menu.
+ * @param title The title of the dropdown menu.
+ * @param value The current selected value in the dropdown menu.
+ * @param onclickMenu Callback function triggered when a menu item is clicked.
+ * @param items The list of items to be displayed in the dropdown menu.
+ * @param showString Function to convert an item to a string for display.
+ * @param isError Boolean indicating if there is an error.
+ * @param messageError The error message to be displayed if there is an error.
+ */
 @Composable
 fun <T> TitledDropDownMenu(
     defaultPadding: Dp,
@@ -38,6 +50,19 @@ fun <T> TitledDropDownMenu(
       messageError = messageError)
 }
 
+/**
+ * A composable function that displays a dropdown menu with a title and a delete icon.
+ *
+ * @param defaultPadding The default padding value to be applied to the dropdown menu.
+ * @param title The title of the dropdown menu.
+ * @param value The current selected value in the dropdown menu.
+ * @param onclickMenu Callback function triggered when a menu item is clicked.
+ * @param onDeletion Callback function triggered when the delete icon is clicked.
+ * @param items The list of items to be displayed in the dropdown menu.
+ * @param showString Function to convert an item to a string for display.
+ * @param isError Boolean indicating if there is an error.
+ * @param messageError The error message to be displayed if there is an error.
+ */
 @Composable
 fun <T> TitledIconDropDownMenu(
     defaultPadding: Dp,

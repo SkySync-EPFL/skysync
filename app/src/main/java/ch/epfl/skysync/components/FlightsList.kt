@@ -25,7 +25,18 @@ import androidx.compose.ui.unit.dp
 import ch.epfl.skysync.models.flight.Flight
 import ch.epfl.skysync.ui.theme.TOP_CORNER_ROUNDED
 
-/** shows a list of flights with a given title on the top and a banner color */
+/**
+ * A composable function that displays a list of flights with a given title at the top and a banner
+ * color.
+ *
+ * @param flights The list of flights to be displayed. Can be null, in which case a loading
+ *   component is shown.
+ * @param topBannerColor The color of the top banner.
+ * @param paddingValues The padding values to be applied to the list.
+ * @param topTitle The title to be displayed at the top of the list.
+ * @param onFlightCardClick The action to perform when a flight card is clicked. Receives the flight
+ *   ID as a parameter.
+ */
 @Composable
 fun FlightsList(
     flights: List<Flight>?,
@@ -42,7 +53,13 @@ fun FlightsList(
   }
 }
 
-/** displays the top banner */
+/**
+ * A composable function that displays the top banner with a title.
+ *
+ * @param topTitle The title to be displayed at the top of the banner.
+ * @param topBannerColor The color of the top banner.
+ * @param paddingValues The padding values to be applied to the banner.
+ */
 @Composable
 fun TopBanner(topTitle: String, topBannerColor: Color, paddingValues: PaddingValues) {
   Text(
@@ -61,10 +78,15 @@ fun TopBanner(topTitle: String, topBannerColor: Color, paddingValues: PaddingVal
 }
 
 /**
- * shows a list of flights. Distinguishes 3 cases:
+ * A composable function that displays the content of the flights list. It distinguishes 3 cases:
  * 1) flights == null: shows a loading component
  * 2) flights is empty: shows a text "No flights"
  * 3) flights not empty: shows a the of flights
+ *
+ * @param flights The list of flights to be displayed.
+ * @param paddingValues The padding values to be applied to the list.
+ * @param onFlightClick The action to perform when a flight card is clicked. Receives the flight ID
+ *   as a parameter.
  */
 @Composable
 fun FlightsListContent(
@@ -85,7 +107,7 @@ fun FlightsListContent(
   }
 }
 
-/** shows a text "No flights" */
+/** A composable function that displays a text "No flights" when there are no flights available. */
 @Composable
 fun NoAvailableFlights() {
   Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f), contentAlignment = Alignment.Center) {

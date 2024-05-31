@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
-import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.reports.Report
@@ -53,7 +52,6 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
   private val isLoading = MutableStateFlow(false)
   private val _flightReports: MutableStateFlow<List<Report>?> = MutableStateFlow(null)
   private val _flightReportsUsers: MutableStateFlow<List<User>?> = MutableStateFlow(null)
-  private val _searchResponse: MutableStateFlow<String?> = MutableStateFlow(null)
   private val _searchResults: MutableStateFlow<List<LocationPoint>?> = MutableStateFlow(null)
 
   val currentFlights = _currentFlights.asStateFlow()
@@ -68,7 +66,7 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
 
   private fun refreshUser() =
       viewModelScope.launch {
-        _currentUser.value = repository.userTable.get(userId ?: UNSET_ID, onError = { onError(it) })
+        _currentUser.value = repository.userTable.get(userId, onError = { onError(it) })
       }
 
   private fun refreshFlights() =
@@ -83,7 +81,7 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
           fetchedFlights =
               repository.userTable
                   .retrieveAssignedFlights(
-                      repository.flightTable, userId ?: UNSET_ID, onError = { onError(it) })
+                      repository.flightTable, userId, onError = { onError(it) })
                   .filterIsInstance<FinishedFlight>()
         }
         _currentFlights.value = fetchedFlights.map { it.updateFlightStatus(_currentUser.value!!) }
@@ -98,23 +96,27 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
         isLoading.value = false
       }
 
+  /** add a flight to the database */
   fun addFlight(flight: FinishedFlight) =
       viewModelScope.launch {
         repository.flightTable.add(flight, onError = { onError(it) })
         refreshUserAndFlights()
       }
 
+  /** get a flight from the database */
   fun getFlight(flightId: String): StateFlow<FinishedFlight?> {
     return _currentFlights
         .map { flights -> flights?.find { it.id == flightId } }
         .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
   }
 
+  /** add a report to the database */
   fun addReport(report: Report, flightId: String) =
       viewModelScope.launch {
         repository.reportTable.add(report, flightId, onError = { onError(it) })
       }
 
+  /** get all reports of a given flight from the database */
   fun getAllReports(flightId: String) =
       viewModelScope.launch {
         _flightReports.value =
@@ -125,6 +127,10 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
             }
       }
 
+  /**
+   * search for the location of a given query with openstreetmap propose at most 4 of the most
+   * probable results
+   */
   private suspend fun searchLocation(query: String): String? {
     var result: String? = null
     viewModelScope
@@ -144,6 +150,7 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
     return result
   }
 
+  /** get the search location of a given query */
   fun getSearchLocation(query: String, time: Int) =
       viewModelScope.launch {
         val response = searchLocation(query)
@@ -165,6 +172,7 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
         }
       }
 
+  /** get the reports list with all the reports the user can see according its role */
   fun reportList(reportIds: List<Report>?, isAdmin: Boolean): List<Report>? {
     return if (isAdmin) reportIds else reportIds!!.filter { (it.author == userId) }
   }

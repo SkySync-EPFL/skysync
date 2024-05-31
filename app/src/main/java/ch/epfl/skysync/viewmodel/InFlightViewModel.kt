@@ -576,6 +576,7 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
     }
   }
 
+  /** Load the flight trace from the database */
   private suspend fun loadFlightTrace() {
     val flightTrace = flightTraceTable.get(_currentFlight.value!!.id, onError = { onError(it) })
     if (flightTrace == null) {
@@ -585,6 +586,7 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
     _flightLocations.value = flightTrace.trace.map { Location(userId = "", point = it) }
   }
 
+  /** Callback executed when the viewModel is cleared */
   override fun onCleared() {
     flightListeners.forEach { it.remove() }
     flightListeners.clear()

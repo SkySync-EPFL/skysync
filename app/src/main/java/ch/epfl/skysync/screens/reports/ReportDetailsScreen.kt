@@ -20,6 +20,15 @@ import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 
+/**
+ * The screen to display the report details
+ *
+ * @param flightId The flight id
+ * @param finishedFlightsViewModel The view model
+ * @param isAdmin Whether the user is an admin
+ * @param userId The user id
+ * @param navController The navigation controller
+ */
 @Composable
 fun ReportDetailsScreen(
     flightId: String,
