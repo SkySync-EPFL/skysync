@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
@@ -40,7 +39,7 @@ fun <T> SearchBarCustom(
     active: Boolean,
     onActiveChange: (Boolean) -> Unit,
     onElementClick: (T) -> Unit,
-    propositions: List<T>,
+    propositions: List<T>? = null,
     showProposition: (T) -> String,
     placeholder: String = "Search"
 ) {
@@ -75,13 +74,29 @@ fun <T> SearchBarCustom(
         Spacer(modifier = Modifier.height(16.dp))
         if (active) {
           LazyColumn(modifier = Modifier.fillMaxSize().weight(1f).testTag("Search Propositions")) {
-            items(propositions) { proposition ->
-              Box(modifier = Modifier.fillMaxWidth().clickable { onElementClick(proposition) }) {
-                Spacer(modifier = Modifier.height(16.dp))
+            if (propositions == null) {
+              item {
                 Text(
-                    text = showProposition(proposition),
+                    text = "No results found",
                     modifier =
                         Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 16.dp))
+              }
+            } else {
+
+              propositions.withIndex().forEach { (id, proposition) ->
+                item {
+                  Box(
+                      modifier =
+                          Modifier.fillMaxWidth().clickable { onElementClick(proposition) }) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = showProposition(proposition),
+                            modifier =
+                                Modifier.fillMaxWidth()
+                                    .padding(vertical = 16.dp, horizontal = 16.dp)
+                                    .testTag("Search Proposition $id"))
+                      }
+                }
               }
             }
           }

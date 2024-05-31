@@ -2,8 +2,10 @@ package ch.epfl.skysync.screens.reports
 
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
@@ -121,6 +123,29 @@ class PilotReportScreenTest {
     composeTestRule.onNodeWithTag("MinuteCircularList").performScrollToNode(hasText("30"))
 
     composeTestRule.onNodeWithTag("AlertDialogConfirm").performClick()
+
+    composeTestRule.onNodeWithTag("Submit Button").performClick()
+  }
+
+  @Test
+  fun locationWorksCorrectly() {
+    composeTestRule
+        .onNodeWithTag("Pilot Report LazyColumn")
+        .performScrollToNode(hasTestTag("Takeoff location Search Bar Input"))
+    composeTestRule.onNodeWithTag("Takeoff location Search Bar Input").performTextInput("Geneva")
+    composeTestRule.waitUntil {
+      composeTestRule.onNodeWithText("No results found").isNotDisplayed()
+    }
+    composeTestRule.onNodeWithTag("Search Proposition 0", true).performClick()
+
+    composeTestRule
+        .onNodeWithTag("Pilot Report LazyColumn")
+        .performScrollToNode(hasTestTag("Landing location Search Bar Input"))
+    composeTestRule.onNodeWithTag("Landing location Search Bar Input").performTextInput("Zurich")
+    composeTestRule.waitUntil {
+      composeTestRule.onNodeWithText("No results found").isNotDisplayed()
+    }
+    composeTestRule.onNodeWithTag("Search Proposition 0", true).performClick()
 
     composeTestRule.onNodeWithTag("Submit Button").performClick()
   }
