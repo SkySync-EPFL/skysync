@@ -1,5 +1,6 @@
 package ch.epfl.skysync.models.user
 
+import androidx.compose.ui.graphics.Color
 import ch.epfl.skysync.models.flight.RoleType
 
 interface User {
@@ -16,4 +17,13 @@ interface User {
   }
 
   fun name(): String = "$firstname $lastname"
+
+  /**
+   * displays the name of a particular User class
+   */
+  fun displayRoleName(): String
+
+
+  fun getThemeColor(): Color
+
 }

@@ -19,6 +19,7 @@ import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.FlightsList
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
+import ch.epfl.skysync.ui.theme.getThemeColor
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
@@ -49,7 +50,7 @@ fun AdminHomeScreen(
       },
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
-    FlightsList(currentFlights, lightOrange, padding, "Upcoming flights") { selectedFlight ->
+    FlightsList(currentFlights, getThemeColor(isAdmin = true), padding, "Upcoming flights") { selectedFlight ->
       navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/${selectedFlight}")
     }
   }

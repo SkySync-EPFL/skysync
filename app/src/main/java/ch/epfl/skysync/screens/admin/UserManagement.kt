@@ -42,10 +42,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.LoadingComponent
+import ch.epfl.skysync.components.TopBanner
 import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.user.Admin
-import ch.epfl.skysync.models.user.Crew
-import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
@@ -54,14 +52,6 @@ import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.ui.theme.lightTurquoise
 import ch.epfl.skysync.viewmodel.UserManagementViewModel
 
-fun displayMainRole(user: User): String {
-  return when (user) {
-    is Admin -> "Admin"
-    is Pilot -> "Pilot"
-    is Crew -> "Crew"
-    else -> "Unknown"
-  }
-}
 
 // Composable function to display a card for a User object.
 @Composable
@@ -86,7 +76,7 @@ fun UserCard(user: User, onUserClick: (String) -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween) {
           Text(
               user.name(), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge)
-          Text(displayMainRole(user))
+          Text(user.displayRoleName())
         }
   }
 }
@@ -210,8 +200,8 @@ fun UserManagementScreen(
         }
       },
   ) { padding ->
-    Column(modifier = Modifier.padding(padding)) {
-      TopBarTitle(defaultPadding)
+    Column(modifier = Modifier.padding(defaultPadding)) {
+      TopBanner("Users", lightOrange, padding)
       SearchBar(
           query = searchQuery,
           onQueryChanged = {

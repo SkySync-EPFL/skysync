@@ -5,4 +5,9 @@ package ch.epfl.skysync.ui.theme
 /** Home screen */
 
 /** Title of the home screen */
-const val HOME_SCREEN_TITLE = "Upcoming flights"
+object ScreenTitles{
+    const val HOME = "Upcoming flights"
+    const val MESSAGES = "Messages"
+    const val HISTORY = "Flights History"
+}
+
