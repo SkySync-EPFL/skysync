@@ -39,7 +39,7 @@ data class LocationPoint(
   }
 
   companion object {
-    val UNKNONWN_POINT = LocationPoint(-1, 0.0, 0.0)
+    val UNKNOWN_POINT = LocationPoint(-1, 0.0, 0.0)
   }
 }
 

@@ -56,6 +56,7 @@ class InFlightViewModelTest {
   fun finishedFlightIsSavedOnStop() = runTest {
     inFlightViewModel.setCurrentFlight(dbs.flight4.id)
     inFlightViewModel.startFlight().join()
+    composeTestRule.waitUntil { inFlightViewModel.isOngoingFlight() }
     inFlightViewModel.stopFlight().join()
     val flight = flightTable.get(dbs.flight4.id, onError = { assertNull(it) })
     assertFalse(flight is ConfirmedFlight)
