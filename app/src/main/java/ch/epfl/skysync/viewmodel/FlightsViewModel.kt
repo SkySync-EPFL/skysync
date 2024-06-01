@@ -144,7 +144,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         _flight.value!!.timeSlot == timeSlot
   }
 
-  private fun refreshAvailableBalloons() =
+  fun refreshAvailableBalloons() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
           _availableBalloons.value =
@@ -161,9 +161,10 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         } else {
           _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
         }
+        _availableBalloons.value = _availableBalloons.value.sortedBy { it.name }
       }
 
-  private fun refreshAvailableUsers() =
+  fun refreshAvailableUsers() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
           _availableUsers.value =
@@ -180,9 +181,10 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         } else {
           _availableUsers.value = repository.userTable.getAll(onError = { onError(it) })
         }
+        _availableUsers.value = _availableUsers.value.sortedBy { it.name() }
       }
 
-  private fun refreshAvailableVehicles() =
+  fun refreshAvailableVehicles() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
           _availableVehicles.value =
@@ -200,9 +202,10 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         } else {
           _availableVehicles.value = repository.vehicleTable.getAll(onError = { onError(it) })
         }
+        _availableVehicles.value = _availableVehicles.value.sortedBy { it.name }
       }
 
-  private fun refreshAvailableBaskets() =
+  fun refreshAvailableBaskets() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
           _availableBaskets.value =
@@ -219,11 +222,13 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         } else {
           _availableBaskets.value = repository.basketTable.getAll(onError = { onError(it) })
         }
+        _availableBaskets.value = _availableBaskets.value.sortedBy { it.name }
       }
 
   private fun refreshCurrentFlightTypes() =
       viewModelScope.launch {
-        _currentFlightTypes.value = repository.flightTypeTable.getAll(onError = { onError(it) })
+        _currentFlightTypes.value =
+            repository.flightTypeTable.getAll(onError = { onError(it) }).sortedBy { it.name }
       }
 
   /**
