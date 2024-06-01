@@ -41,12 +41,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.models.message.GroupDetails
 import ch.epfl.skysync.models.message.MessageDateFormatter
-import ch.epfl.skysync.ui.theme.Purple40
+import ch.epfl.skysync.ui.theme.ScreenTitles
+import ch.epfl.skysync.ui.theme.getThemeColor
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
 
@@ -69,7 +69,10 @@ fun GroupChat(
   var searchQuery by remember { mutableStateOf("") }
   var activeGroupId by remember { mutableStateOf<String?>(null) }
   Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
-    GroupChatTopBar(isAdmin = isAdmin, paddingValues = paddingValues)
+    TopBanner(
+        topTitle = ScreenTitles.MESSAGES,
+        topBannerColor = getThemeColor(isAdmin),
+        paddingValues = paddingValues)
     Spacer(modifier = Modifier.fillMaxHeight(0.02f))
 
     OutlinedTextField(
@@ -95,25 +98,6 @@ fun GroupChat(
           isAdmin)
     }
   }
-}
-/** Composable function to display the top bar of the group chat UI. */
-@Composable
-fun GroupChatTopBar(isAdmin: Boolean, paddingValues: PaddingValues) {
-  val color = if (isAdmin) lightOrange else Purple40
-  Text(
-      text = "Messages",
-      style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-      modifier =
-          Modifier.background(
-                  color = color, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-              .fillMaxWidth()
-              .padding(
-                  top = paddingValues.calculateTopPadding() + 16.dp,
-                  start = 16.dp,
-                  end = 16.dp,
-                  bottom = 16.dp),
-      color = Color.White,
-      textAlign = TextAlign.Center)
 }
 
 /**

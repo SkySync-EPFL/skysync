@@ -10,8 +10,8 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.FlightsList
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
-import ch.epfl.skysync.ui.theme.HOME_SCREEN_TITLE
-import ch.epfl.skysync.ui.theme.Purple40
+import ch.epfl.skysync.ui.theme.ScreenTitles
+import ch.epfl.skysync.ui.theme.getThemeColor
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
 /** represents the home screen of the crew/pilot */
@@ -22,7 +22,8 @@ fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
       modifier = Modifier.fillMaxSize(),
       bottomBar = { BottomBar(navController) },
   ) { padding ->
-    FlightsList(currentFlights, Purple40, padding, HOME_SCREEN_TITLE) { selectedFlight ->
+    FlightsList(currentFlights, getThemeColor(isAdmin = false), padding, ScreenTitles.HOME) {
+        selectedFlight ->
       navController.navigate(Route.CREW_FLIGHT_DETAILS + "/${selectedFlight}")
     }
   }

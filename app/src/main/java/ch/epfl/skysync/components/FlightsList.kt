@@ -1,6 +1,5 @@
 package ch.epfl.skysync.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,10 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ch.epfl.skysync.models.flight.Flight
-import ch.epfl.skysync.ui.theme.TOP_CORNER_ROUNDED
 
 /** shows a list of flights with a given title on the top and a banner color */
 @Composable
@@ -40,24 +37,6 @@ fun FlightsList(
     FlightsListContent(
         flights = flights, paddingValues = paddingValues, onFlightClick = onFlightCardClick)
   }
-}
-
-/** displays the top banner */
-@Composable
-fun TopBanner(topTitle: String, topBannerColor: Color, paddingValues: PaddingValues) {
-  Text(
-      text = topTitle,
-      style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-      modifier =
-          Modifier.background(color = topBannerColor, shape = TOP_CORNER_ROUNDED)
-              .fillMaxWidth()
-              .padding(
-                  top = paddingValues.calculateTopPadding() + 16.dp,
-                  start = 16.dp,
-                  end = 16.dp,
-                  bottom = 16.dp),
-      color = Color.White,
-      textAlign = TextAlign.Center)
 }
 
 /**

@@ -16,4 +16,7 @@ interface User {
   }
 
   fun name(): String = "$firstname $lastname"
+
+  /** displays the name of a particular User class */
+  fun displayRoleName(): String
 }
