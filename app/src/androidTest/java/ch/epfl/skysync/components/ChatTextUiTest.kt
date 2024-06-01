@@ -2,7 +2,6 @@ package ch.epfl.skysync.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
@@ -22,18 +21,15 @@ class ChatTextUiTest {
   @get:Rule val composeTestRule = createComposeRule()
   val dbs = DatabaseSetup()
 
-  val image: ImageVector? = null
   private val fakeText =
       ChatMessage(
           dbs.message1,
           MessageType.RECEIVED,
-          image,
       )
   private val myFakeText =
       ChatMessage(
           dbs.message2,
           MessageType.SENT,
-          image,
       )
   private val list = (0..50).map { i -> if (i % 2 == 0) fakeText else myFakeText }
 

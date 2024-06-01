@@ -2,7 +2,6 @@ package ch.epfl.skysync.chat
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
@@ -28,9 +27,8 @@ class GroupChatTest {
   @get:Rule val composeTestRule = createComposeRule()
   lateinit var navController: TestNavHostController
   val dbs = DatabaseSetup()
-  val image: ImageVector? = null
-  val group = GroupDetails("id1", "Group", FlightColor.NO_COLOR, image, dbs.message1)
-  val searchGroup = GroupDetails("id2", "GroupSearch", FlightColor.GREEN, image, dbs.message2)
+  val group = GroupDetails("id1", "Group", FlightColor.NO_COLOR, dbs.message1)
+  val searchGroup = GroupDetails("id2", "GroupSearch", FlightColor.GREEN, dbs.message2)
   val groups =
       listOf(
           group,

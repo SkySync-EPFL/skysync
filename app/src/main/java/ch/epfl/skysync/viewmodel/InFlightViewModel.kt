@@ -239,18 +239,14 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
     if (flights.size != 1) return
     val flight = flights.last()
 
-    if (flight is FinishedFlight || (flight is ConfirmedFlight && !flight.isOngoing)) {
-      if (isOngoingFlight() && flight.id == _currentFlight.value!!.id) {
-        stopFlight()
-      }
+    if (flight is FinishedFlight && isOngoingFlight() && flight.id == _currentFlight.value!!.id) {
+      stopFlight()
     }
-    if (flight is ConfirmedFlight && flight.isOngoing) {
-      if (!isOngoingFlight()) {
-        startTimestamp = flight.startTimestamp!!
-        setCurrentFlight(flight.id)
-        startFlightInternal()
-        SnackbarManager.showMessage("Flight started")
-      }
+    if (flight is ConfirmedFlight && flight.isOngoing && !isOngoingFlight()) {
+      startTimestamp = flight.startTimestamp!!
+      setCurrentFlight(flight.id)
+      startFlightInternal()
+      SnackbarManager.showMessage("Flight started")
     }
   }
 
@@ -434,9 +430,9 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
             landingTime = landingTime!!,
             flightTime = _counter.value,
             takeOffLocation =
-                _flightLocations.value.firstOrNull()?.point ?: LocationPoint.UNKNONWN_POINT,
+                _flightLocations.value.firstOrNull()?.point ?: LocationPoint.UNKNOWN_POINT,
             landingLocation =
-                _flightLocations.value.lastOrNull()?.point ?: LocationPoint.UNKNONWN_POINT,
+                _flightLocations.value.lastOrNull()?.point ?: LocationPoint.UNKNOWN_POINT,
             flightTrace = FlightTrace(trace = _flightLocations.value.map { it.point }))
     flightTable.update(finishedFlight.id, finishedFlight, onError = { onError(it) })
     refreshFlights()
@@ -492,24 +488,35 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
                 if (userId == pilotId) {
                   updateFlightLocations(update)
                 }
-                if (update.adds.isEmpty()) {
-                  return@listenForLocationUpdates
-                }
-                // the return is useless but needed to make sonar cloud happy
-                val user = users[userId] ?: return@listenForLocationUpdates
-
-                // get the latest location
-                var locations = update.adds + update.updates
-                val currentLocation = _currentLocations.value[userId]?.second
-                if (currentLocation != null) {
-                  locations = locations.plus(currentLocation)
-                }
-                val lastLocation = locations.maxByOrNull { it.point.time }!!
-                _currentLocations.value =
-                    _currentLocations.value.plus(Pair(userId, Pair(user, lastLocation)))
+                updateUserLocation(userId, update)
               },
               viewModelScope)
         }
+  }
+
+  /**
+   * Update the user current (latest) location
+   *
+   * @param userId The ID of the user whose location to update
+   * @param update The update to apply to the user's location
+   */
+  private fun updateUserLocation(userId: String, update: ListenerUpdate<Location>) {
+    if (update.adds.isEmpty()) {
+      return
+    }
+
+    // the return is useless but needed to make sonar cloud happy
+    val user = users[userId] ?: return
+
+    // get the latest location
+    var locations = update.adds + update.updates
+    val currentLocation = _currentLocations.value[userId]?.second
+    if (currentLocation != null) {
+      locations = locations.plus(currentLocation)
+    }
+
+    val lastLocation = locations.maxByOrNull { it.point.time }!!
+    _currentLocations.value = _currentLocations.value.plus(Pair(userId, Pair(user, lastLocation)))
   }
 
   /**

@@ -45,7 +45,7 @@ class ChatViewModelTest {
 
   @Test
   fun uiStateTest() = runTest {
-    chatViewModel.refresh().join()
+    chatViewModel.refreshGroups().join()
     chatViewModel.refreshUser().join()
     val groupDetails = chatViewModel.getGroupDetails().value
     // the getGroupDetails() stateflow returns the initialValue
@@ -91,9 +91,9 @@ class ChatViewModelTest {
 
   @Test
   fun deleteGroupTest() = runTest {
-    chatViewModel.refresh().join()
+    chatViewModel.refreshGroups().join()
     chatViewModel.deleteGroup(dbs.messageGroup1.id).join()
-    chatViewModel.refresh().join()
+    chatViewModel.refreshGroups().join()
 
     assertEquals(listOf(dbs.messageGroup2), chatViewModel.uiState.value.messageGroups)
   }

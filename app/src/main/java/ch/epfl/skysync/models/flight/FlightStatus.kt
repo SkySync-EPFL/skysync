@@ -29,7 +29,6 @@ enum class FlightStatus(val text: String, val displayColor: Color) {
   IN_PLANNING("planned", lightGray), // still missing some information
   READY_FOR_CONFIRMATION("ready", lightBlue), // has all the information needed to be confirmed
   CONFIRMED("confirmed", lightGreen), // has been confirmed
-  //  IN_PROGRESS("in progress", lightOrange), // is currently happening (flight day)
   MISSING_REPORT("missing report", middleLightRed), // landed but missing the report
   COMPLETED("completed", lightViolet);
 

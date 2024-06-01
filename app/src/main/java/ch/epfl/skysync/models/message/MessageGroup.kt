@@ -16,8 +16,4 @@ data class MessageGroup(
     val color: FlightColor,
     val userIds: Set<String> = setOf(),
     val messages: List<Message> = listOf()
-) {
-  fun withNewMessage(message: Message): MessageGroup {
-    return this.copy(messages = listOf(message) + messages)
-  }
-}
+) {}
