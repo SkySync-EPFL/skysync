@@ -38,4 +38,7 @@ interface User {
 
   /** @return The full name of the user */
   fun name(): String = "$firstname $lastname"
+
+  /** displays the name of a particular User class */
+  fun displayRoleName(): String
 }

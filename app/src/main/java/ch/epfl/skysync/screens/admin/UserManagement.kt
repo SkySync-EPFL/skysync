@@ -47,16 +47,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.LoadingComponent
+import ch.epfl.skysync.components.TopBanner
 import ch.epfl.skysync.models.flight.RoleType
-import ch.epfl.skysync.models.user.Admin
-import ch.epfl.skysync.models.user.Crew
-import ch.epfl.skysync.models.user.Pilot
 import ch.epfl.skysync.models.user.User
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
@@ -64,21 +61,6 @@ import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.ui.theme.lightTurquoise
 import ch.epfl.skysync.viewmodel.UserManagementViewModel
-
-/**
- * Display the main role of the user.
- *
- * @param user The user
- * @return The main role of the user
- */
-fun displayMainRole(user: User): String {
-  return when (user) {
-    is Admin -> "Admin"
-    is Pilot -> "Pilot"
-    is Crew -> "Crew"
-    else -> "Unknown"
-  }
-}
 
 /**
  * Composable function that displays a user card.
@@ -108,30 +90,8 @@ fun UserCard(user: User, onUserClick: (String) -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween) {
           Text(
               user.name(), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge)
-          Text(displayMainRole(user))
+          Text(user.displayRoleName())
         }
-  }
-}
-
-/**
- * Top app bar that displays the title of the user management screen.
- *
- * @param paddingValues The padding values
- */
-@Composable
-fun TopBarTitle(paddingValues: Dp) {
-  Column(modifier = Modifier.fillMaxWidth().padding(paddingValues)) {
-    Text(
-        text = "Users",
-        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-        modifier =
-            Modifier.background(
-                    color = lightOrange,
-                    shape = RoundedCornerShape(topStart = paddingValues, topEnd = paddingValues))
-                .fillMaxWidth()
-                .padding(paddingValues),
-        color = Color.White,
-        textAlign = TextAlign.Center)
   }
 }
 
@@ -159,6 +119,23 @@ fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
 }
 
 /**
+ * Displays the filter along with the count of the results
+ *
+ * @param onRoleSelected The action to perform when a role is selected
+ * @param roles The list of roles
+ * @param count The number of users
+ */
+@Composable
+fun RoleFilterAndCount(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>, count: Int) {
+  Row(
+      modifier = Modifier.fillMaxWidth(),
+      verticalAlignment = Alignment.CenterVertically,
+  ) {
+    RoleFilter(onRoleSelected, roles)
+    CountDisplay(count)
+  }
+}
+/**
  * Composable function that displays a role filter.
  *
  * @param onRoleSelected The action to perform when a role is selected
@@ -166,53 +143,52 @@ fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
  * @param count The number of users
  */
 @Composable
-fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>, count: Int) {
+fun RoleFilter(onRoleSelected: (RoleType?) -> Unit, roles: List<RoleType>) {
   var expanded by remember { mutableStateOf(false) } // State to manage dropdown expansion.
   var displayText by remember { mutableStateOf("Filter by role") }
-  Row(
-      modifier = Modifier.fillMaxWidth(),
-      verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Column(modifier = Modifier.padding(16.dp)) {
-      Button(
-          modifier = Modifier.testTag("UserManagementRoleFilterButton"),
-          onClick = { expanded = true },
-          colors =
-              ButtonDefaults.buttonColors(
-                  containerColor = lightOrange, contentColor = Color.Black)) {
-            Text(text = displayText)
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "Expand or collapse menu")
-          }
+  Column(modifier = Modifier.padding(16.dp)) {
+    Button(
+        modifier = Modifier.testTag("UserManagementRoleFilterButton"),
+        onClick = { expanded = true },
+        colors =
+            ButtonDefaults.buttonColors(containerColor = lightOrange, contentColor = Color.Black)) {
+          Text(text = displayText)
+          Icon(
+              imageVector = Icons.Default.ArrowDropDown,
+              contentDescription = "Expand or collapse menu")
+        }
 
-      // Dropdown menu for selecting roles.
-      DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+    // Dropdown menu for selecting roles.
+    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      DropdownMenuItem(
+          onClick = {
+            displayText = "Filter by role"
+            onRoleSelected(null)
+            expanded = false
+          },
+          text = { Text("All Roles") })
+      roles.forEach { role ->
         DropdownMenuItem(
+            modifier = Modifier.testTag("RoleTag${role.description}"),
             onClick = {
-              displayText = "Filter by role"
-              onRoleSelected(null)
+              displayText = role.description
+              onRoleSelected(role)
               expanded = false
             },
-            text = { Text("All Roles") })
-        roles.forEach { role ->
-          DropdownMenuItem(
-              modifier = Modifier.testTag("RoleTag${role.description}"),
-              onClick = {
-                displayText = role.description
-                onRoleSelected(role)
-                expanded = false
-              },
-              text = { Text(role.description) })
-        }
+            text = { Text(role.description) })
       }
     }
-
-    Text(
-        text = "$count",
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.background(color = lightTurquoise, shape = CircleShape).padding(8.dp))
   }
+}
+
+/** displays a given count in a circle */
+@Composable
+fun CountDisplay(count: Int) {
+  Text(
+      text = String.format("results: %2d", count),
+      style = MaterialTheme.typography.titleLarge,
+      textAlign = TextAlign.End,
+      modifier = Modifier.background(color = lightTurquoise, shape = CircleShape).padding(8.dp))
 }
 
 /**
@@ -251,15 +227,15 @@ fun UserManagementScreen(
         }
       },
   ) { padding ->
-    Column(modifier = Modifier.padding(padding)) {
-      TopBarTitle(defaultPadding)
+    Column(modifier = Modifier.padding(defaultPadding)) {
+      TopBanner("Users", lightOrange, padding)
       SearchBar(
           query = searchQuery,
           onQueryChanged = {
             searchQuery = it
             userManagementViewModel.filterByQueryAndRole(searchQuery, selectedRole)
           })
-      RoleFilter(
+      RoleFilterAndCount(
           onRoleSelected = {
             selectedRole = it
             userManagementViewModel.filterByQueryAndRole(searchQuery, selectedRole)
@@ -268,7 +244,7 @@ fun UserManagementScreen(
           count = filteredUsers.value.size)
 
       if (filteredUsers.value.isEmpty() && searchQuery.isEmpty() && selectedRole == null) {
-        LoadingComponent(isLoading = true, onRefresh = { /*TODO*/}) {}
+        LoadingComponent(isLoading = true) {}
       } else if (filteredUsers.value.isEmpty()) {
         // Display a message when no users are found
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

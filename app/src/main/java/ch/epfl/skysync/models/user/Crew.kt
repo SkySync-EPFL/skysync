@@ -22,4 +22,6 @@ data class Crew(
   override fun addRoleType(roleType: RoleType): Crew {
     return this.copy(roleTypes = roleTypes + roleType)
   }
+
+  override fun displayRoleName(): String = "Crew"
 }

@@ -1,6 +1,5 @@
 package ch.epfl.skysync.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,10 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ch.epfl.skysync.models.flight.Flight
-import ch.epfl.skysync.ui.theme.TOP_CORNER_ROUNDED
 
 /**
  * A composable function that displays a list of flights with a given title at the top and a banner
@@ -54,34 +51,10 @@ fun FlightsList(
 }
 
 /**
- * A composable function that displays the top banner with a title.
- *
- * @param topTitle The title to be displayed at the top of the banner.
- * @param topBannerColor The color of the top banner.
- * @param paddingValues The padding values to be applied to the banner.
- */
-@Composable
-fun TopBanner(topTitle: String, topBannerColor: Color, paddingValues: PaddingValues) {
-  Text(
-      text = topTitle,
-      style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-      modifier =
-          Modifier.background(color = topBannerColor, shape = TOP_CORNER_ROUNDED)
-              .fillMaxWidth()
-              .padding(
-                  top = paddingValues.calculateTopPadding() + 16.dp,
-                  start = 16.dp,
-                  end = 16.dp,
-                  bottom = 16.dp),
-      color = Color.White,
-      textAlign = TextAlign.Center)
-}
-
-/**
  * A composable function that displays the content of the flights list. It distinguishes 3 cases:
  * 1) flights == null: shows a loading component
  * 2) flights is empty: shows a text "No flights"
- * 3) flights not empty: shows cards with the informations of the flights
+ * 3) flights not empty: shows cards with the information of the flights
  *
  * @param flights The list of flights to be displayed.
  * @param paddingValues The padding values to be applied to the list.
