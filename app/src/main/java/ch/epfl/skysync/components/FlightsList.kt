@@ -81,7 +81,7 @@ fun TopBanner(topTitle: String, topBannerColor: Color, paddingValues: PaddingVal
  * A composable function that displays the content of the flights list. It distinguishes 3 cases:
  * 1) flights == null: shows a loading component
  * 2) flights is empty: shows a text "No flights"
- * 3) flights not empty: shows a the of flights
+ * 3) flights not empty: shows cards with the informations of the flights
  *
  * @param flights The list of flights to be displayed.
  * @param paddingValues The padding values to be applied to the list.

@@ -8,7 +8,7 @@ package ch.epfl.skysync.models.calendar
  * - MAYBE: The person's availability is pending confirmation.
  * - NO: The person is not available.
  * - UNDEFINED: The availability status is not defined.
- * - ASSIGNED: The person is assigned to a task.
+ * - ASSIGNED: The person is assigned to a flight.
  *
  * The [next] function is used to cycle through the statuses in a round-robin fashion.
  */

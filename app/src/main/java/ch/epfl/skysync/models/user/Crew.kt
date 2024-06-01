@@ -4,7 +4,7 @@ import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.flight.RoleType
 
 /**
- * Represents an admin user
+ * Represents a crew user
  *
  * @param id The ID of the user. By default, it is set to UNSET_ID.
  * @param firstname The first name of the user

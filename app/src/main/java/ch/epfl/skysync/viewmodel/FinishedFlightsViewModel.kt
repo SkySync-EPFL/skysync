@@ -29,7 +29,13 @@ import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-/** ViewModel for the user for the finished flights */
+/**
+ * ViewModel for the user for the finished flights
+ *
+ * @param repository The app repository
+ * @param userId The user id
+ * @return The finished flights view model
+ */
 class FinishedFlightsViewModel(val repository: Repository, val userId: String) : ViewModel() {
   companion object {
     @Composable
@@ -60,15 +66,18 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
   val flightReportsUsers = _flightReportsUsers.asStateFlow()
   val searchResults = _searchResults.asStateFlow()
 
+  /** Refreshes the view model values */
   fun refresh() {
     refreshUserAndFlights()
   }
 
+  /** Refreshes the user logged in */
   private fun refreshUser() =
       viewModelScope.launch {
         _currentUser.value = repository.userTable.get(userId, onError = { onError(it) })
       }
 
+  /** Refreshes the finished flights */
   private fun refreshFlights() =
       viewModelScope.launch {
         lateinit var fetchedFlights: List<FinishedFlight>
@@ -96,27 +105,45 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
         isLoading.value = false
       }
 
-  /** add a flight to the database */
+  /**
+   * Add a flight to the database
+   *
+   * @param flight The flight to add
+   */
   fun addFlight(flight: FinishedFlight) =
       viewModelScope.launch {
         repository.flightTable.add(flight, onError = { onError(it) })
         refreshUserAndFlights()
       }
 
-  /** get a flight from the database */
+  /**
+   * Get a flight from the database
+   *
+   * @param flightId The flight id
+   * @return The finished flight
+   */
   fun getFlight(flightId: String): StateFlow<FinishedFlight?> {
     return _currentFlights
         .map { flights -> flights?.find { it.id == flightId } }
         .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
   }
 
-  /** add a report to the database */
+  /**
+   * Add a report which is linked to a flight to the database
+   *
+   * @param report The report to add
+   * @param flightId The flight id
+   */
   fun addReport(report: Report, flightId: String) =
       viewModelScope.launch {
         repository.reportTable.add(report, flightId, onError = { onError(it) })
       }
 
-  /** get all reports of a given flight from the database */
+  /**
+   * Get all reports of a given flight from the database
+   *
+   * @param flightId The flight id
+   */
   fun getAllReports(flightId: String) =
       viewModelScope.launch {
         _flightReports.value =
@@ -128,8 +155,11 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
       }
 
   /**
-   * search for the location of a given query with openstreetmap propose at most 4 of the most
+   * Search for the location of a given query with openstreetmap propose at most 4 of the most
    * probable results
+   *
+   * @param query The query to search
+   * @return The search results
    */
   private suspend fun searchLocation(query: String): String? {
     var result: String? = null
@@ -150,7 +180,12 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
     return result
   }
 
-  /** get the search location of a given query */
+  /**
+   * Get the search location of a given query
+   *
+   * @param query The query to search
+   * @param time The time of measure of the location to replace
+   */
   fun getSearchLocation(query: String, time: Int) =
       viewModelScope.launch {
         val response = searchLocation(query)
@@ -172,12 +207,22 @@ class FinishedFlightsViewModel(val repository: Repository, val userId: String) :
         }
       }
 
-  /** get the reports list with all the reports the user can see according its role */
+  /**
+   * Get the reports list with all the reports the user can see according to its role
+   *
+   * @param reportIds The list of reports
+   * @param isAdmin The user is an admin
+   * @return The list of reports
+   */
   fun reportList(reportIds: List<Report>?, isAdmin: Boolean): List<Report>? {
     return if (isAdmin) reportIds else reportIds!!.filter { (it.author == userId) }
   }
 
-  /** Callback executed when an error occurs on database-related operations */
+  /**
+   * Callback executed when an error occurs on database-related operations
+   *
+   * @param e The exception that occurred
+   */
   private fun onError(e: Exception) {
     if (e !is CancellationException) {
       SnackbarManager.showMessage(e.message ?: "An unknown error occurred")

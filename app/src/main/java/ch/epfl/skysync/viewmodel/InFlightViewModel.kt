@@ -36,7 +36,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/** ViewModel for the location tracking of the user during a flight and the timer. */
+/**
+ * ViewModel for the location tracking of the user during a flight and the timer.
+ *
+ * @param repository The app repository
+ * @return The in-flight view model
+ */
 class InFlightViewModel(val repository: Repository) : ViewModel() {
 
   /**
@@ -181,19 +186,19 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
         }
       }
 
-  /** If the current flight stage is [FlightStage.ONGOING] */
+  /** @return if the current flight stage is [FlightStage.ONGOING] */
   fun isOngoingFlight(): Boolean = _flightStage.value == FlightStage.ONGOING
 
-  /** If the current flight stage is [FlightStage.POST] */
+  /** @return if the current flight stage is [FlightStage.POST] */
   fun isPostFlight(): Boolean = _flightStage.value == FlightStage.POST
 
-  /** If the current flight stage is [FlightStage.DISPLAY] */
+  /** @return if the current flight stage is [FlightStage.DISPLAY] */
   fun isDisplayTrace(): Boolean = _flightStage.value == FlightStage.DISPLAY
 
-  /** Returns if the user is the pilot of the ongoing flight */
+  /** @return if the user is the pilot of the ongoing flight */
   fun isPilot(): Boolean = pilotId == _userId
 
-  /** Returns if the user is assigned a pilot role in the team */
+  /** @return if the user is assigned a pilot role in the team */
   private fun isUserPilotRole(team: Team): Boolean {
     return team.hasUserRole(RoleType.PILOT, _userId!!)
   }
@@ -223,7 +228,11 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
         }
   }
 
-  /** The function executed on flight listener update, start/stop a flight if needed. */
+  /**
+   * The function executed on flight listener update, start/stop a flight if needed.
+   *
+   * @param update The listener executed
+   */
   private fun onFlightListenerUpdate(update: ListenerUpdate<Flight>) {
     val flights = update.adds + update.updates
     // The listener is specific to the flight, so we expect to have exactly one flight in the update
@@ -249,6 +258,8 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
    * Set the current flight
    *
    * This will fail with an error if the flight is not found.
+   *
+   * @param flightId The flight ID to set as the current flight
    */
   fun setCurrentFlight(flightId: String) {
     if (_flightStage.value != FlightStage.IDLE) return
@@ -386,6 +397,8 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
    * Set the [flightStage] to [FlightStage.DISPLAY].
    *
    * Load the flight trace.
+   *
+   * @param flight The flight to display
    */
   fun startDisplayFlightTrace(flight: FinishedFlight) =
       viewModelScope.launch {
@@ -450,6 +463,8 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
    * Filter the locations update to only keep locations that have been recorded at a time smaller
    * than the current time, this is useful in the case where a user has leftover locations from a
    * past flight.
+   *
+   * @param update The listener for the updated locations
    */
   private fun filterLocationUpdate(update: ListenerUpdate<Location>): ListenerUpdate<Location> {
     val currentTime = (_counter.value / 1000).toInt()
@@ -497,7 +512,11 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
         }
   }
 
-  /** Update the flight trace locations according to the received update */
+  /**
+   * Update the flight trace locations according to the received update
+   *
+   * @param update The update to apply to the flight trace locations
+   */
   private fun updateFlightLocations(update: ListenerUpdate<Location>) {
     var locations = _flightLocations.value
     // do not take deletions into account, as it can happen that the pilot
@@ -537,6 +556,8 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
    *
    * Setup listeners on flight members' to track their current location and start to construct
    * flight trace.
+   *
+   * @param team The team of the flight
    */
   private fun startLocationTracking(team: Team) {
 
@@ -569,7 +590,11 @@ class InFlightViewModel(val repository: Repository) : ViewModel() {
     locationTable.queryDelete(Filter.equalTo("userId", _userId), onError = { onError(it) })
   }
 
-  /** Callback executed when an error occurs on database-related operations */
+  /**
+   * Callback executed when an error occurs on database-related operations
+   *
+   * @param e The exception that occurred
+   */
   private fun onError(e: Exception) {
     if (e !is CancellationException) {
       SnackbarManager.showMessage(e.message ?: "An unknown error occurred")

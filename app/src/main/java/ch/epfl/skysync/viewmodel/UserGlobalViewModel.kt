@@ -13,7 +13,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/** ViewModel for the user global state */
+/**
+ * ViewModel for the user global state
+ *
+ * @param repository The app repository
+ * @return The user global view model
+ */
 class UserGlobalViewModel(
     repository: Repository,
 ) : ViewModel() {
@@ -46,8 +51,8 @@ class UserGlobalViewModel(
    *   fetch it from the temp user table
    * - If the user doesn't exists, connect with a default admin account for testing purposes
    *
-   *     @param uid The Firebase authentication uid of the user
-   *     @param email The email address of the user
+   * @param uid The Firebase authentication uid of the user
+   * @param email The email address of the user
    */
   fun loadUser(uid: String, email: String) =
       viewModelScope.launch {
@@ -83,7 +88,11 @@ class UserGlobalViewModel(
         _isLoading.value = false
       }
 
-  /** Callback executed when an error occurs on database-related operations */
+  /**
+   * Callback executed when an error occurs on database-related operations
+   *
+   * @param e The exception that occurred
+   */
   private fun onError(e: Exception) {
     if (e !is CancellationException) {
       SnackbarManager.showMessage(e.message ?: "An unknown error occurred")

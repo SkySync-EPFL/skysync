@@ -53,7 +53,7 @@ class FlightGroupCalendar(cells: List<FlightGroup> = listOf()) : CalendarModel<F
 
   /**
    * Adds the given flight to the existing FlightGroup at slot for (date, timeSlot) or adds a new
-   * FlightGroup if non exists.
+   * FlightGroup if it does not exist.
    *
    * @param date The date coordinate of the slot to add the flight to.
    * @param timeSlot The timeSlot coordinate of the slot to add the flight to.

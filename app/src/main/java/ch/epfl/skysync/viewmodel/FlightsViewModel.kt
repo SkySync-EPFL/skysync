@@ -33,7 +33,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/** ViewModel for the user */
+/**
+ * ViewModel for the flights
+ *
+ * @param repository The app repository
+ * @param userId The user id
+ * @param flightId The flight id
+ * @return The flights view model
+ */
 class FlightsViewModel(val repository: Repository, val userId: String?, val flightId: String?) :
     ViewModel() {
   companion object {
@@ -94,7 +101,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
   }
 
   /**
-   * fetches the user, balloons, baskets and vehicles according to their avaibility on the given
+   * fetches the user, balloons, baskets and vehicles according to their availability on the given
    * date and time slot
    */
   private fun refreshFilteredByDateAndTimeSlot() {
@@ -104,14 +111,23 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
     refreshAvailableUsers()
   }
 
-  /** sets the date and time slot and refreshes the filtered informations */
+  /**
+   * Sets the date and time slot and refreshes the filtered information
+   *
+   * @param date The date of the flight
+   * @param timeSlot The time slot of the flight
+   */
   fun setDateAndTimeSlot(date: LocalDate, timeSlot: TimeSlot) {
     this.date = date
     this.timeSlot = timeSlot
     refreshFilteredByDateAndTimeSlot()
   }
 
-  /** sets the flight and refreshes the filtered informations */
+  /**
+   * sets the flight and refreshes the filtered information
+   *
+   * @param flight The flight to set
+   */
   fun setFlight(flight: Flight) {
     _flight.value = flight
     setDateAndTimeSlot(flight.date, flight.timeSlot)
@@ -139,12 +155,21 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
             FlightStatus.filterCompletedFlights(fetchedFlights, _currentUser.value!!)
       }
 
-  /** check if the date and time slot are set */
+  /**
+   * Check if the date and time slot are set
+   *
+   * @return true if the date and time slot are set, false otherwise
+   */
   private fun hasDateAndTimeSlot(): Boolean {
     return date != null && timeSlot != null
   }
 
-  /** check if a given item can be added to the list of available items */
+  /**
+   * Check if a given item can be added to the list of available items
+   *
+   * @param notNull The item to check
+   * @return true if the item can be added, false otherwise
+   */
   private fun needsToAddCurrentlyAffected(notNull: Any?): Boolean {
     return notNull != null &&
         _flight.value != null &&
@@ -152,6 +177,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         _flight.value!!.timeSlot == timeSlot
   }
 
+  /** Refreshes the available balloons */
   fun refreshAvailableBalloons() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
@@ -172,6 +198,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         _availableBalloons.value = _availableBalloons.value.sortedBy { it.name }
       }
 
+  /** Refreshes the available users */
   fun refreshAvailableUsers() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
@@ -192,6 +219,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         _availableUsers.value = _availableUsers.value.sortedBy { it.name() }
       }
 
+  /** Refreshes the available vehicles */
   fun refreshAvailableVehicles() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
@@ -213,6 +241,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         _availableVehicles.value = _availableVehicles.value.sortedBy { it.name }
       }
 
+  /** Refreshes the available baskets */
   fun refreshAvailableBaskets() =
       viewModelScope.launch {
         if (hasDateAndTimeSlot()) {
@@ -233,6 +262,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         _availableBaskets.value = _availableBaskets.value.sortedBy { it.name }
       }
 
+  /** Refreshes the current flight types */
   private fun refreshCurrentFlightTypes() =
       viewModelScope.launch {
         _currentFlightTypes.value =
@@ -241,28 +271,56 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
 
   /**
    * modifies the flight by deleting the old flight and adding a new one in the db and the viewmodel
+   *
+   * @param newFlight The modified flight to add
    */
   fun modifyFlight(
       newFlight: Flight,
   ) = viewModelScope.launch { repository.flightTable.update(newFlight.id, newFlight) }
 
+  /**
+   * Deletes the flight from the db
+   *
+   * @param flightId The id of the flight to delete
+   */
   fun deleteFlight(flightId: String) =
       viewModelScope.launch { repository.flightTable.delete(flightId, onError = { onError(it) }) }
 
-  /** adds the given flight to the db and the viewmodel */
+  /**
+   * Adds the given flight to the db and the viewmodel
+   *
+   * @param flight The flight to add
+   */
   fun addFlight(
       flight: PlannedFlight,
   ) = viewModelScope.launch { repository.flightTable.add(flight, onError = { onError(it) }) }
 
+  /**
+   * Get the group name for the flight
+   *
+   * @param date The date of the flight
+   * @param timeSlot The time slot of the flight
+   * @return The group name
+   */
   private fun groupName(date: LocalDate, timeSlot: TimeSlot): String {
     return "Flight: ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} $timeSlot"
   }
 
+  /**
+   * Check if the report is done for the authenticated user
+   *
+   * @param flight The flight to check
+   * @return true if the report is done, false otherwise
+   */
   fun reportDone(flight: FinishedFlight): Boolean {
     return (flight).reportId.any { report -> report.author == userId }
   }
 
-  /** updates the planned flight to a confirmed flight */
+  /**
+   * Create a confirmed flight from a planned flight
+   *
+   * @param flight The flight to update
+   */
   fun addConfirmedFlight(flight: ConfirmedFlight) =
       viewModelScope.launch {
         repository.flightTable.update(flight.id, flight, onError = { onError(it) })
@@ -275,19 +333,30 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         repository.messageGroupTable.add(flightChatGroup, onError = { onError(it) })
       }
 
+  /**
+   * Get the flight from the db
+   *
+   * @param flightId The id of the flight to get
+   * @return The flight
+   */
   fun getFlight(flightId: String): StateFlow<Flight?> {
     return _allAffectedFlights
         .map { flights -> flights?.find { it.id == flightId } }
         .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = null)
   }
 
-  /** Callback executed when an error occurs on database-related operations */
+  /**
+   * Callback executed when an error occurs on database-related operations
+   *
+   * @param e The exception that occurred
+   */
   private fun onError(e: Exception) {
     if (e !is CancellationException) {
       SnackbarManager.showMessage(e.message ?: "An unknown error occurred")
     }
   }
 
+  /** Function called when the ViewModel is initialized */
   init {
     refresh()
   }

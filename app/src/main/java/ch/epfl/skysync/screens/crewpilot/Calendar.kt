@@ -91,7 +91,7 @@ fun CalendarScreen(
  *
  * @param tab The current tab
  * @param tabs The tabs
- * @param onclick The onclick function
+ * @param onclick The function to switch between tabs
  */
 @Composable
 fun CalendarTopBar(tab: String, tabs: Map<String, Int>, onclick: (String) -> Unit) {
