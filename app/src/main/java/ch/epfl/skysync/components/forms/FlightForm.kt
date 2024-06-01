@@ -48,6 +48,7 @@ import ch.epfl.skysync.components.LoadingComponent
 import ch.epfl.skysync.database.DateUtility
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.calendar.TimeSlot
+import ch.epfl.skysync.models.calendar.getTimeSlot
 import ch.epfl.skysync.models.flight.BASE_ROLES
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
@@ -64,6 +65,7 @@ import ch.epfl.skysync.util.inputNonNullValidation
 import ch.epfl.skysync.util.nbPassengerInputValidation
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import java.util.Calendar
 
@@ -107,7 +109,6 @@ fun FlightForm(
     } else {
       Column {
         val defaultPadding = 16.dp
-        val defaultTimeSlot = TimeSlot.AM
 
         var nbPassengersValue = remember {
           mutableStateOf(currentFlight?.nPassengers?.toString() ?: "")
@@ -115,7 +116,7 @@ fun FlightForm(
         var flightTypeValue: FlightType? by remember { mutableStateOf(currentFlight?.flightType) }
         var dateValue by remember { mutableStateOf(currentFlight?.date ?: LocalDate.now()) }
         var timeSlotValue: TimeSlot by remember {
-          mutableStateOf(currentFlight?.timeSlot ?: defaultTimeSlot)
+          mutableStateOf(currentFlight?.timeSlot ?: getTimeSlot(LocalTime.now()))
         }
         val selectedVehicles: MutableState<List<Vehicle?>> = remember {
           mutableStateOf(currentFlight?.vehicles ?: listOf(null))
