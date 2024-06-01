@@ -78,7 +78,7 @@ class E2EPilotDuringFlight {
   @Test
   fun useMapAndChatAsPilot() = runTest {
     // Refreshes chat and user data asynchronously
-    chatViewModel.refresh().join()
+    chatViewModel.refreshGroups().join()
     chatViewModel.refreshUser().join()
     composeTestRule.waitUntil(3000) { !inFlightViewModel.loading.value }
 
@@ -125,7 +125,7 @@ class E2EPilotDuringFlight {
 
     // Refreshes chat data asynchronously
     val index = 0
-    chatViewModel.refresh().join()
+    chatViewModel.refreshGroups().join()
     chatViewModel.refreshUser().join()
 
     // Waits for the UI to become idle

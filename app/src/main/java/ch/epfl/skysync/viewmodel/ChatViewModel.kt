@@ -89,7 +89,7 @@ class ChatViewModel(
         .map { groups ->
           groups
               .map { group ->
-                GroupDetails(group.id, group.name, group.color, null, group.messages.getOrNull(0))
+                GroupDetails(group.id, group.name, group.color, group.messages.getOrNull(0))
               }
               .sortedByDescending { it.lastMessage?.date ?: Date.from(Instant.now()) }
         }
@@ -112,7 +112,7 @@ class ChatViewModel(
                     ChatMessage(
                         message,
                         if (message.user.id == uid) MessageType.SENT else MessageType.RECEIVED,
-                        null)
+                    )
                   } ?: listOf())
               .reversed()
         }
@@ -120,9 +120,8 @@ class ChatViewModel(
   }
 
   /**
-   * Update the state of a message group
-   *
-   * @param messageGroup The message group to update
+   * Update the [ChatViewModel.messageGroups] flow with a new reference that has the [messageGroup]
+   * updated.
    */
   private fun updateMessageGroupState(messageGroup: MessageGroup) {
     messageGroups.value =
@@ -152,7 +151,7 @@ class ChatViewModel(
   }
 
   /** Fetch all message groups the user is part of, as well as the messages of these groups. */
-  fun refresh() =
+  fun refreshGroups() =
       viewModelScope.launch {
         isLoading.value = true
         val groups =
@@ -203,21 +202,18 @@ class ChatViewModel(
       viewModelScope.launch {
         messageGroupTable.delete(groupId, onError = { onError(it) })
         messageGroups.value = messageGroups.value.filter { it.id != groupId }
-        refresh()
+        refreshGroups()
       }
 
   init {
     messageListenerViewModel.pushCallback(this::onMessageGroupChange)
-    println("Debug ChatViewModel PUSH")
     refreshUser()
-    refresh()
+    refreshGroups()
   }
 
   /** Callback executed when the ViewModel is cleared */
   override fun onCleared() {
     messageListenerViewModel.popCallback()
-    println("Debug ChatViewModel POP")
-
     super.onCleared()
   }
 
