@@ -52,7 +52,7 @@ class UserManagementTest {
     composeTestRule
         .onNodeWithText("${dbSetup.pilot1.firstname} ${dbSetup.pilot1.lastname}")
         .assertIsDisplayed()
-    // composeTestRule.onNodeWithText(displayMainRole(dbSetup.pilot1)).assertIsDisplayed()
+    composeTestRule.onNodeWithText(dbSetup.pilot1.displayRoleName()).assertIsDisplayed()
   }
 
   @Test
@@ -130,7 +130,7 @@ class UserManagementTest {
     filterByRole(currentRoleType = RoleType.PILOT, expectedUsers = dbSetup.allPilots)
 
     // Filter the admins
-    // filterByRole(currentRoleType = RoleType.ADMIN, expectedUsers = dbSetup.allAdmins)
+    filterByRole(currentRoleType = RoleType.ADMIN, expectedUsers = dbSetup.allAdmins)
 
     composeTestRule.onNodeWithTag("UserManagementRoleFilterButton").performClick()
     composeTestRule.onNodeWithTag("RoleTag${RoleType.MAITRE_FONDUE.description}").performClick()
