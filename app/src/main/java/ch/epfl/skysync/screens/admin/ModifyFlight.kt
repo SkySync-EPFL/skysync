@@ -10,6 +10,13 @@ import ch.epfl.skysync.models.flight.RoleType
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
+/**
+ * The screen for modifying a flight
+ *
+ * @param navController The navigation controller
+ * @param viewModel The view model
+ * @param flightId The flight id
+ */
 @Composable
 fun ModifyFlightScreen(
     navController: NavHostController,

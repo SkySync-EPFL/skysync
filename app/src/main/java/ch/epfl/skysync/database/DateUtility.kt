@@ -20,6 +20,13 @@ import java.util.Locale
  * Format [LocalTime] to string, parse from string.
  */
 object DateUtility {
+  /**
+   * Converts a [LocalDate] and [LocalTime] to a [Date] object.
+   *
+   * @param date The [LocalDate] object to be converted.
+   * @param time The [LocalTime] object to be converted.
+   * @return The equivalent [Date] object.
+   */
   fun localDateAndTimeToDate(date: LocalDate, time: LocalTime): Date {
     val localDateTime = LocalDateTime.of(date, time)
     return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
@@ -57,6 +64,11 @@ object DateUtility {
   /**
    * Creates a [Date] object from the given year, month, day, hour, and minute.
    *
+   * @param year The year to be used.
+   * @param month The month to be used.
+   * @param day The day to be used.
+   * @param hour The hour to be used.
+   * @param minute The minute to be used.
    * @return The [Date] object created.
    */
   fun createDate(year: Int, month: Int, day: Int, hour: Int, minute: Int): Date {
@@ -123,6 +135,13 @@ object DateUtility {
     return "--:--"
   }
 
+  /**
+   * Converts a string in "HH:mm" format to a [Date] object.
+   *
+   * @param time The string to be converted.
+   * @param date The [LocalDate] object to be used.
+   * @return The equivalent [Date] object.
+   */
   fun hourMinuteStringToDate(time: String, date: LocalDate): Date {
     val formatter = DateTimeFormatter.ofPattern("HH:mm")
     val localTime = LocalTime.parse(time, formatter)
@@ -130,7 +149,12 @@ object DateUtility {
     return Date.from(localDateTime.atZone(ZoneOffset.systemDefault()).toInstant())
   }
 
-  /** Formats the given time in milliseconds to a string in the format "HH:MM:SS". */
+  /**
+   * Formats the given time in milliseconds to a string in the format "HH:MM:SS".
+   *
+   * @param milliseconds The time in milliseconds to be formatted.
+   * @return The formatted time string.
+   */
   fun formatTime(milliseconds: Long): String {
     val secondsRounded = milliseconds / 1000
     val hours = secondsRounded / 3600
@@ -139,6 +163,12 @@ object DateUtility {
     return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
   }
 
+  /**
+   * Converts a [LocalDate] object to a string in "E\nMMM dd" format.
+   *
+   * @param localDate The [LocalDate] object to be converted.
+   * @return The equivalent string.
+   */
   fun localDateToWeekdayMonthDay(localDate: LocalDate): String {
     return localDate.format(DateTimeFormatter.ofPattern("E\nMMM dd").withLocale(Locale.ENGLISH))
   }

@@ -11,7 +11,11 @@ import com.google.firebase.firestore.Filter
 import java.time.LocalDate
 import kotlinx.coroutines.coroutineScope
 
-/** Represent the "vehicle" table */
+/**
+ * Represents the "vehicle" table in the database.
+ *
+ * @property db The FirestoreDatabase instance for interacting with the Firestore database.
+ */
 class VehicleTable(db: FirestoreDatabase) :
     Table<Vehicle, VehicleSchema>(db, VehicleSchema::class, PATH) {
 

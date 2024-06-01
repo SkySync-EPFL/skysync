@@ -23,7 +23,13 @@ import ch.epfl.skysync.ui.theme.getThemeColor
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
-// Scaffold wrapper for the Home Screen
+/**
+ * The screen for the admin home
+ *
+ * @param navController The navigation controller
+ * @param viewModel The view model
+ * @param connectivityStatus The connectivity status
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AdminHomeScreen(

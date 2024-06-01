@@ -1,7 +1,6 @@
-package ch.epfl.skysync.screens
+package ch.epfl.skysync.screens.admin
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import ch.epfl.skysync.components.forms.FlightForm
@@ -13,6 +12,12 @@ import ch.epfl.skysync.viewmodel.FlightsViewModel
 import java.time.LocalDate
 import java.time.LocalTime
 
+/**
+ * The screen to add a flight
+ *
+ * @param navController The navigation controller
+ * @param viewModel The view model
+ */
 @Composable
 fun AddFlightScreen(navController: NavHostController, viewModel: FlightsViewModel) {
 

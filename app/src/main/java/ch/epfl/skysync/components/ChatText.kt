@@ -132,6 +132,16 @@ fun ChatBubble(message: ChatMessage, index: String) {
       }
 }
 
+/**
+ * Composable function representing a message within a chat bubble.
+ *
+ * @param messageContent The content of the message.
+ * @param time The time the message was sent.
+ * @param backgroundColor The background color of the message bubble.
+ * @param contentColor The color of the message text.
+ * @param shape The shape of the message bubble.
+ * @param index The index of the message.
+ */
 @Composable
 fun Message(
     messageContent: String,

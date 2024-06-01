@@ -15,6 +15,12 @@ import ch.epfl.skysync.ui.theme.ScreenTitles
 import ch.epfl.skysync.ui.theme.getThemeColor
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 
+/**
+ * The screen for the admin stats
+ *
+ * @param navController The navigation controller
+ * @param viewModel The view model
+ */
 @Composable
 fun AdminStatsScreen(navController: NavHostController, viewModel: FinishedFlightsViewModel) {
   val finishedFlights by viewModel.currentFlights.collectAsStateWithLifecycle()

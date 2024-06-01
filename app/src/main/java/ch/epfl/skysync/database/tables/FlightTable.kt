@@ -32,7 +32,11 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
-/** Represent the "flight" table */
+/**
+ * Represents the "flight" table in the database.
+ *
+ * @property db The FirestoreDatabase instance for interacting with the Firestore database.
+ */
 class FlightTable(db: FirestoreDatabase) :
     Table<Flight, FlightSchema>(db, FlightSchema::class, PATH) {
   private val flightTypeTable = FlightTypeTable(db)
@@ -43,7 +47,19 @@ class FlightTable(db: FirestoreDatabase) :
   private val userTable = UserTable(db)
   private val reportTable = ReportTable(db)
 
-  /** Create a [Flight] instance from the flight schema and the retrieved entities */
+  /**
+   * Creates a [Flight] instance from the flight schema and the retrieved entities.
+   *
+   * @param schema The FlightSchema instance.
+   * @param flightType The FlightType instance.
+   * @param balloon The Balloon instance.
+   * @param basket The Basket instance.
+   * @param vehicles The list of Vehicle instances.
+   * @param team The Team instance.
+   * @param flightTrace The FlightTrace instance.
+   * @param reports The list of Report instances.
+   * @return The created Flight instance.
+   */
   private fun makeFlight(
       schema: FlightSchema,
       flightType: FlightType,
@@ -122,13 +138,16 @@ class FlightTable(db: FirestoreDatabase) :
   }
 
   /**
-   * Add a listener on a flight
+   * Adds a listener on a flight.
    *
    * The listener will be triggered each time the flight is updated.
    *
-   * @param flightId The ID of the flight
+   * @param flightId The ID of the flight.
    * @param onChange Callback called each time the listener is triggered, passed the adds, updates,
    *   deletes that happened since the last listener trigger.
+   * @param coroutineScope The CoroutineScope instance.
+   * @param onError Callback called when an error occurs.
+   * @return The ListenerRegistration instance.
    */
   fun addFlightListener(
       flightId: String,
@@ -159,8 +178,11 @@ class FlightTable(db: FirestoreDatabase) :
   }
 
   /**
-   * Add items to the flight-member relation for each role defined in the team, whether or not it
+   * Adds items to the flight-member relation for each role defined in the team, whether or not it
    * has a user assigned.
+   *
+   * @param flightId The ID of the flight.
+   * @param team The Team instance.
    */
   private suspend fun addTeam(
       flightId: String,
@@ -178,8 +200,11 @@ class FlightTable(db: FirestoreDatabase) :
   }
 
   /**
-   * Set items to the flight-member relation for each role defined in the team, whether or not it
+   * Sets items to the flight-member relation for each role defined in the team, whether or not it
    * has a user assigned.
+   *
+   * @param flightId The ID of the flight.
+   * @param team The Team instance.
    */
   private suspend fun setTeam(
       flightId: String,
@@ -190,10 +215,13 @@ class FlightTable(db: FirestoreDatabase) :
   }
 
   /**
-   * Retrieve the team members of the flight
+   * Retrieves the team members of the flight.
    *
    * First query the flight-member relation then for the roles which have a user assigned, query the
    * user table.
+   *
+   * @param schema The FlightSchema instance.
+   * @return The Team instance.
    */
   private suspend fun retrieveTeam(schema: FlightSchema): Team = coroutineScope {
     val members = flightMemberTable.query(Filter.equalTo("flightId", schema.id))
@@ -218,7 +246,12 @@ class FlightTable(db: FirestoreDatabase) :
     Team(roles)
   }
 
-  /** Retrieve the vehicles linked to the flight */
+  /**
+   * Retrieves the vehicles linked to the flight.
+   *
+   * @param schema The FlightSchema instance.
+   * @return The list of Vehicle instances.
+   */
   private suspend fun retrieveVehicles(schema: FlightSchema): List<Vehicle> = coroutineScope {
     schema.vehicleIds!!
         .map { vehicleId ->
@@ -234,7 +267,12 @@ class FlightTable(db: FirestoreDatabase) :
         .filterNotNull()
   }
 
-  /** Retrieve all the entities linked to the flight */
+  /**
+   * Retrieves all the entities linked to the flight.
+   *
+   * @param flightSchema The FlightSchema instance.
+   * @return The Flight instance.
+   */
   private suspend fun retrieveFlight(flightSchema: FlightSchema): Flight? = coroutineScope {
     var flightType: FlightType? = null
     var balloon: Balloon? = null
@@ -282,6 +320,13 @@ class FlightTable(db: FirestoreDatabase) :
         flightTrace = FlightTrace(flightSchema.id!!, emptyList()))
   }
 
+  /**
+   * Retrieves a flight by its ID.
+   *
+   * @param id The ID of the flight.
+   * @param onError Callback called when an error occurs.
+   * @return The Flight instance.
+   */
   override suspend fun get(id: String, onError: ((Exception) -> Unit)?): Flight? {
     return withErrorCallback(onError) {
       val schema = db.getItem(path, id, clazz) ?: return@withErrorCallback null
@@ -289,6 +334,12 @@ class FlightTable(db: FirestoreDatabase) :
     }
   }
 
+  /**
+   * Retrieves all flights.
+   *
+   * @param onError Callback called when an error occurs.
+   * @return The list of Flight instances.
+   */
   override suspend fun getAll(onError: ((Exception) -> Unit)?): List<Flight> = coroutineScope {
     withErrorCallback(onError) {
       val schemas = db.getAll(path, clazz)
@@ -306,6 +357,16 @@ class FlightTable(db: FirestoreDatabase) :
     }
   }
 
+  /**
+   * Queries flights based on a filter.
+   *
+   * @param filter The Filter instance.
+   * @param limit The maximum number of results to return.
+   * @param orderBy The field to order by.
+   * @param orderByDirection The direction to order by.
+   * @param onError Callback called when an error occurs.
+   * @return The list of Flight instances.
+   */
   override suspend fun query(
       filter: Filter,
       limit: Long?,
@@ -330,13 +391,14 @@ class FlightTable(db: FirestoreDatabase) :
   }
 
   /**
-   * Add a new flight to the database
+   * Adds a new flight to the database.
    *
    * This will generate a new id for this flight and disregard any previously set id. This will
    * create the [Flight.team] (and in the process the [User.assignedFlights])
    *
-   * @param item The flight to add to the database
-   * @param onError Callback called when an error occurs
+   * @param item The flight to add to the database.
+   * @param onError Callback called when an error occurs.
+   * @return The ID of the added flight.
    */
   suspend fun add(item: Flight, onError: ((Exception) -> Unit)? = null): String {
     return withErrorCallback(onError) {
@@ -373,6 +435,12 @@ class FlightTable(db: FirestoreDatabase) :
         }
       }
 
+  /**
+   * Deletes a flight by its ID.
+   *
+   * @param id The ID of the flight.
+   * @param onError Callback called when an error occurs.
+   */
   override suspend fun delete(id: String, onError: ((Exception) -> Unit)?) = coroutineScope {
     withErrorCallback(onError) {
       listOf(

@@ -7,8 +7,6 @@ import ch.epfl.skysync.models.user.User
  *
  * @property roleType the type of this role
  * @property assignedUser the user that will assume this role
- * @property confirmedAttendance one flight is confirmed keeps track if the assuming user has
- *   confirmed his presence
  *
  * (immutable class)
  */
@@ -51,6 +49,12 @@ data class Role(
     }
   }
 
+  /**
+   * Checks if this team is equal to the given object.
+   *
+   * @param other The object to compare with.
+   * @return True if the given object is a team with the same roles, false otherwise.
+   */
   override fun equals(other: Any?): Boolean {
     if (other == null) return false
     if (other::class != this::class) return false
@@ -58,6 +62,12 @@ data class Role(
     return (roleType == otherRole.roleType && assignedUser?.id == otherRole.assignedUser?.id)
   }
 
+  /**
+   * Checks if this team is equal to the given object.
+   *
+   * @param other The object to compare with.
+   * @return True if the given object is a team with the same roles, false otherwise.
+   */
   override fun hashCode(): Int {
     var result = roleType.hashCode()
     result = 31 * result + (assignedUser?.hashCode() ?: 0)

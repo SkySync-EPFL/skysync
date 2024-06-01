@@ -9,6 +9,12 @@ import ch.epfl.skysync.models.user.Admin
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
+/**
+ * The loading screen
+ *
+ * @param navController The navigation controller
+ * @param viewModel The view model
+ */
 @Composable
 fun LoadingScreen(navController: NavHostController, viewModel: FlightsViewModel) {
   val user by viewModel.currentUser.collectAsStateWithLifecycle()

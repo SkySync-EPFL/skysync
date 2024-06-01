@@ -10,7 +10,6 @@ object Route {
   const val ADMIN_USER_DETAILS = "User Details"
   const val REPORT = "Report"
 
-  // The reports route will be merged when the viewModel is implemented
   const val CREW_REPORT = "Crew Report"
   const val PILOT_REPORT = "Pilot Report"
 

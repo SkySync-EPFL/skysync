@@ -10,7 +10,28 @@ import ch.epfl.skysync.models.user.User
 import java.time.LocalDate
 import java.util.Date
 
-/** Represents the flight when it is finished and the report has been submitted */
+/**
+ * Represents a finished flight with a submitted report.
+ *
+ * @property id The ID of the flight.
+ * @property nPassengers The number of passengers on the flight.
+ * @property team The team assigned to the flight.
+ * @property flightType The type of the flight.
+ * @property balloon The balloon used for the flight.
+ * @property basket The basket used for the flight.
+ * @property date The date of the flight.
+ * @property timeSlot The time slot of the flight.
+ * @property vehicles The list of vehicles used for the flight.
+ * @property color The color assigned to the flight.
+ * @property takeOffTime The take off time of the flight.
+ * @property takeOffLocation The take off location of the flight.
+ * @property landingTime The landing time of the flight.
+ * @property landingLocation The landing location of the flight.
+ * @property flightTime The flight time in milliseconds.
+ * @property reportId The list of report IDs.
+ * @property flightTrace The flight trace.
+ * @property thisFlightStatus The status of the flight.
+ */
 data class FinishedFlight(
     override val id: String,
     override val nPassengers: Int,
@@ -37,9 +58,12 @@ data class FinishedFlight(
   }
 
   /**
-   * Update the flight status based on the reports submitted For an ADMIN a flight is considered
-   * completed iff all the team members have submitted their report. For an CREW/PILOT the flight is
-   * considered completed iff the user has submitted their own report
+   * Updates the flight status based on the reports submitted. For an ADMIN, a flight is considered
+   * completed if all the team members have submitted their report. For a CREW/PILOT, the flight is
+   * considered completed if the user has submitted their own report.
+   *
+   * @param user The user to check the report status for.
+   * @return The updated FinishedFlight.
    */
   fun updateFlightStatus(user: User): FinishedFlight {
     return if (user is Admin) {
@@ -49,7 +73,12 @@ data class FinishedFlight(
     }
   }
 
-  /** Update the flight status based on the flightIsCompleted condition */
+  /**
+   * Updates the flight status based on the flightIsCompleted condition.
+   *
+   * @param flightIsCompleted The condition to check for flight completion.
+   * @return The updated FinishedFlight.
+   */
   private fun updateFlightStatusForWithCondition(flightIsCompleted: () -> Boolean): FinishedFlight {
     if (flightIsCompleted()) {
       if (thisFlightStatus == FlightStatus.MISSING_REPORT) {
@@ -64,16 +93,21 @@ data class FinishedFlight(
   }
 
   /**
-   * For an CREW/PILOT the flight is considered completed iff the user has submitted their own
-   * report
+   * For a CREW/PILOT, the flight is considered completed if the user has submitted their own
+   * report.
+   *
+   * @param user The user to check the report status for.
+   * @return The updated FinishedFlight.
    */
   private fun updateFlightStatusForCrewPilot(user: User): FinishedFlight {
     return updateFlightStatusForWithCondition { reportId.any { it.authoredBy(user) } }
   }
 
   /**
-   * For an ADMIN a flight is considered completed iff all the team members have submitted their
+   * For an ADMIN, a flight is considered completed if all the team members have submitted their
    * report.
+   *
+   * @return The updated FinishedFlight.
    */
   private fun updateFlightStatusForAdmin(): FinishedFlight {
     return updateFlightStatusForWithCondition {

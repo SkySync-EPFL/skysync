@@ -53,10 +53,12 @@ import ch.epfl.skysync.ui.theme.lightOrange
 /**
  * Composable function to display a group chat UI.
  *
- * @param groupList A list of quadruples representing group data containing group name, image, last
- *   message, and last message time.
+ * @param groupList A list of GroupDetails representing group data containing group name, image,
+ *   last message, and last message time.
  * @param onClick Callback triggered when a group is clicked.
+ * @param onDelete Callback triggered when a group is deleted.
  * @param paddingValues Padding values for the column.
+ * @param isAdmin Boolean indicating if the current user is an admin.
  */
 @Composable
 fun GroupChat(
@@ -103,9 +105,13 @@ fun GroupChat(
 /**
  * Composable function to display a group card in the group chat UI.
  *
- * @param groupDetails The details of the group
+ * @param groupDetails The details of the group.
  * @param onClick Callback triggered when the group card is clicked.
+ * @param onDelete Callback triggered when the group card is long clicked.
  * @param testTag A tag used for testing purposes.
+ * @param isActive Boolean indicating if the group is currently active.
+ * @param onActivate Callback triggered when the group card is long clicked.
+ * @param isAdmin Boolean indicating if the current user is an admin.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -173,9 +179,13 @@ fun GroupCard(
 /**
  * Composable function to display the body of the group chat UI.
  *
- * @param Groups List of quadruples representing group data containing group name, image, last
+ * @param groupList List of GroupDetails representing group data containing group name, image, last
  *   message, and last message time.
  * @param onClick Callback triggered when a group card is clicked.
+ * @param onDelete Callback triggered when a group card is long clicked.
+ * @param activeGroupId The ID of the currently active group.
+ * @param onSetActiveGroupId Callback triggered when a group card is long clicked.
+ * @param isAdmin Boolean indicating if the current user is an admin.
  */
 @Composable
 fun GroupChatBody(
@@ -204,15 +214,3 @@ fun GroupChatBody(
     }
   }
 }
-
-// @Composable
-// @Preview
-// fun GroupChatPreview() {
-//    val image: ImageVector? = null
-//    val groups = listOf(Quadruple("Group 1", image, "Last message", "Last message time"),
-//        Quadruple("Group 2",image, "Last message", "Last message time"),
-//        Quadruple("Group 3",image,"Last message", "Last message time")
-//    )
-//    GroupChat(GroupsImageLastmsgLastmsgtime = groups, onClick = {}, paddingValues =
-// PaddingValues(0.dp))
-// }

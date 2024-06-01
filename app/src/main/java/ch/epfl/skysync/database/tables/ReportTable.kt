@@ -9,6 +9,11 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
+/**
+ * Represents the "report" table in the database.
+ *
+ * @property db The FirestoreDatabase instance for interacting with the Firestore database.
+ */
 class ReportTable(db: FirestoreDatabase) :
     Table<Report, ReportSchema>(db, ReportSchema::class, PATH) {
 

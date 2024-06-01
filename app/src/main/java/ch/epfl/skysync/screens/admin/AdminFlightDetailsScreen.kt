@@ -28,6 +28,15 @@ import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 
+/**
+ * Composable function that displays the admin flight detail screen.
+ *
+ * @param navController The navigation controller
+ * @param flightId The flight id
+ * @param viewModel The view model
+ * @param inFlightViewModel The in flight view model
+ * @param connectivityStatus The connectivity status
+ */
 @Composable
 fun AdminFlightDetailScreen(
     navController: NavHostController,

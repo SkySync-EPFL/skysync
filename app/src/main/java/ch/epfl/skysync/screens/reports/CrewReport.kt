@@ -36,6 +36,13 @@ import ch.epfl.skysync.util.bottleInputValidation
 import ch.epfl.skysync.util.hasError
 import ch.epfl.skysync.viewmodel.FinishedFlightsViewModel
 
+/**
+ * The screen to add a crew report
+ *
+ * @param navHostController The navigation controller
+ * @param finishedFlightsViewModel The view model
+ * @param flightId The flight id
+ */
 @Composable
 fun CrewReportScreen(
     navHostController: NavHostController,

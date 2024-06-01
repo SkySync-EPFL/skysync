@@ -30,6 +30,20 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+/**
+ * A custom search bar component.
+ *
+ * @param title The title of the search bar.
+ * @param query The current search query.
+ * @param onQueryChange Callback function when the query changes.
+ * @param onSearch Callback function when the search is performed.
+ * @param active Boolean indicating if the search bar is active.
+ * @param onActiveChange Callback function when the active state changes.
+ * @param onElementClick Callback function when an element is clicked.
+ * @param propositions The list of propositions to be displayed.
+ * @param showProposition Function to convert a proposition to a string for display.
+ * @param placeholder The placeholder text for the search bar.
+ */
 @Composable
 fun <T> SearchBarCustom(
     title: String = "",

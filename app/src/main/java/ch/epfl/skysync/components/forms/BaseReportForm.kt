@@ -15,6 +15,22 @@ import ch.epfl.skysync.models.flight.FinishedFlight
 import ch.epfl.skysync.models.flight.Vehicle
 import java.util.Date
 
+/**
+ * Function to create the basic fields for a report form.
+ *
+ * @param defaultPadding The default padding for the fields.
+ * @param beginTime The start time of the flight.
+ * @param endTime The end time of the flight.
+ * @param pauseDuration The duration of the pause.
+ * @param flight The finished flight.
+ * @param onConfirm Callback function when a vehicle problem is confirmed.
+ * @param vehicleProblem A map of vehicles and their problems.
+ * @param comments Any comments about the flight.
+ * @param onBeginTimeChange Callback function when the begin time changes.
+ * @param onEndTimeChange Callback function when the end time changes.
+ * @param onPauseDurationChange Callback function when the pause duration changes.
+ * @param onCommentsChange Callback function when the comments change.
+ */
 fun LazyListScope.baseReportFields(
     defaultPadding: Dp,
     beginTime: Date,
@@ -63,6 +79,14 @@ fun LazyListScope.baseReportFields(
   }
 }
 
+/**
+ * Composable function to modify a vehicle problem.
+ *
+ * @param addProblem Boolean to indicate if a problem should be added.
+ * @param vehicle The vehicle with the problem.
+ * @param problem The problem of the vehicle.
+ * @param modify Callback function to modify the vehicle problem.
+ */
 @Composable
 fun ModifyVehicleProblem(
     addProblem: Boolean,

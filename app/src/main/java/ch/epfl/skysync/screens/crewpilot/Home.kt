@@ -14,7 +14,12 @@ import ch.epfl.skysync.ui.theme.ScreenTitles
 import ch.epfl.skysync.ui.theme.getThemeColor
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
-/** represents the home screen of the crew/pilot */
+/**
+ * The screen for the home for the crew/pilot user
+ *
+ * @param navController The navigation controller
+ * @param viewModel The view model
+ */
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: FlightsViewModel) {
   val currentFlights by viewModel.currentFlights.collectAsStateWithLifecycle()

@@ -8,6 +8,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
+/**
+ * The bottom navigation bar for the admin user
+ *
+ * @param navController The navigation controller
+ */
 @Composable
 fun AdminBottomBar(navController: NavHostController) {
   val screens =

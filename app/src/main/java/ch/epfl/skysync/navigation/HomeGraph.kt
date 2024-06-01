@@ -1,6 +1,5 @@
 package ch.epfl.skysync.navigation
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -16,7 +15,16 @@ import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 
-/** Graph of the main screens of the app */
+/**
+ * The home graph
+ *
+ * @param repository The repository
+ * @param navController The navigation controller
+ * @param uid The user ID
+ * @param inFlightViewModel The in flight view model
+ * @param messageListenerViewModel The message listener view model
+ * @param connectivityStatus The connectivity status
+ */
 fun NavGraphBuilder.homeGraph(
     repository: Repository,
     navController: NavHostController,

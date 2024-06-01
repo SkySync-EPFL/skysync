@@ -7,6 +7,7 @@ import ch.epfl.skysync.models.UNSET_ID
  *
  * @property name name of the type
  * @property specialRoles roles in addition to the BASE_ROLES(crew, pilot)
+ * @property id The ID of the flight type.
  */
 data class FlightType(
     val name: String,

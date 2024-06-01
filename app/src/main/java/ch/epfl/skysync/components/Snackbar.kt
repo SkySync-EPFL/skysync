@@ -13,13 +13,16 @@ import androidx.compose.ui.Modifier
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
-// Singleton object to manage snackbar messages.
+/** Singleton object to manage snackbar messages. */
 object SnackbarManager {
   // Using a Channel to handle message passing; conflated to drop old messages if new ones arrive
   // before they are displayed.
   private val messageChannel = Channel<String>(Channel.CONFLATED)
 
-  // Function to enqueue a message to the snackbar. Messages are sent to the channel.
+  /**
+   * Using a Channel to handle message passing; conflated to drop old messages if new ones arrive
+   * before they are displayed.
+   */
   fun showMessage(message: String) {
     messageChannel.trySend(message)
   }
@@ -28,7 +31,7 @@ object SnackbarManager {
   val messagesFlow = messageChannel.receiveAsFlow()
 }
 
-// Composable function that hosts a Snackbar. It listens for messages from the SnackbarManager.
+/** Composable function that hosts a Snackbar. It listens for messages from the SnackbarManager. */
 @Composable
 fun GlobalSnackbarHost() {
   val snackbarHostState = remember { SnackbarHostState() }
@@ -49,19 +52,3 @@ fun GlobalSnackbarHost() {
         })
   }
 }
-
-// Preview of how the snackbar system works within a Scaffold. Useful for seeing the behavior in the
-// design tool.
-// @Preview(showBackground = true)
-// @Composable
-// fun SnackbarPreview() {
- // MaterialTheme {
- //   Scaffold(snackbarHost = { GlobalSnackbarHost() }) { innerPadding ->
-//      Box(
-//          contentAlignment = Alignment.Center) {
-  //          // An effect to send a test message when the Preview is launched.
-//            LaunchedEffect(Unit) { SnackbarManager.showMessage("Preview: Error in database") }
-//          }
- //   }
-//  }
-// }

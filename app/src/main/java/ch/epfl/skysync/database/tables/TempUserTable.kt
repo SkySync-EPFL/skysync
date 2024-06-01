@@ -5,6 +5,11 @@ import ch.epfl.skysync.database.Table
 import ch.epfl.skysync.database.schemas.TempUserSchema
 import ch.epfl.skysync.models.user.TempUser
 
+/**
+ * Represents the "temporary user" table in the database.
+ *
+ * @property db The FirestoreDatabase instance for interacting with the Firestore database.
+ */
 class TempUserTable(db: FirestoreDatabase) :
     Table<TempUser, TempUserSchema>(db, TempUserSchema::class, PATH) {
   /**
