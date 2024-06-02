@@ -318,7 +318,13 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
   private fun groupName(date: LocalDate, timeSlot: TimeSlot): String {
     return "Flight: ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} $timeSlot"
   }
-
+    /**
+     * set every user to a flight to a new status on the flight date
+     *
+     * @param flight The flight
+     * @param status the new availability status to set
+     *
+     */
   private suspend fun setUsersToNewStatus(flight: Flight, status: AvailabilityStatus) {
     flight.team.getUsers().forEach { user ->
       val availability =
