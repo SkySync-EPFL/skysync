@@ -1,5 +1,6 @@
 package ch.epfl.skysync.screens.home
 
+import android.util.Log
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -58,14 +59,15 @@ class ModifyFlightTest {
         .performScrollToNode(hasTestTag("Number of passengers"))
     composeTestRule.onNodeWithTag("Number of passengers").performClick()
     composeTestRule.onNodeWithTag("Number of passengers").performTextClearance()
-    composeTestRule.onNodeWithTag("Number of passengers").performTextInput("24")
+    composeTestRule.onNodeWithTag("Number of passengers").performTextInput("2")
     composeTestRule.onNodeWithTag("Modify Flight Button").performClick()
     viewModelAdmin.refreshUserAndFlights().join()
+    viewModelAdmin.currentFlights.value?.forEach {
+      Log.d("debug", it.nPassengers.toString() + "//" + it.id + "==" + dbs.flight1.id)
+    }
     assertEquals(
-        viewModelAdmin.currentFlights.value?.any {
-          it.nPassengers == 24 && it.id == dbs.flight1.id
-        },
-        true)
+        true,
+        viewModelAdmin.currentFlights.value?.any { it.nPassengers == 2 && it.id == dbs.flight1.id })
   }
 
   @Test

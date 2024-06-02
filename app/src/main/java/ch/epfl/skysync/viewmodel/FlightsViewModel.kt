@@ -9,6 +9,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.SnackbarManager
 import ch.epfl.skysync.models.UNSET_ID
+import ch.epfl.skysync.models.calendar.Availability
+import ch.epfl.skysync.models.calendar.AvailabilityStatus
 import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.models.flight.Balloon
 import ch.epfl.skysync.models.flight.Basket
@@ -195,7 +197,6 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         } else {
           _availableBalloons.value = repository.balloonTable.getAll(onError = { onError(it) })
         }
-        _availableBalloons.value = _availableBalloons.value.sortedBy { it.name }
       }
 
   /** Refreshes the available users */
@@ -274,18 +275,26 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
    *
    * @param newFlight The modified flight to add
    */
-  fun modifyFlight(
-      newFlight: Flight,
-  ) = viewModelScope.launch { repository.flightTable.update(newFlight.id, newFlight) }
+  fun modifyFlight(newFlight: Flight) =
+      viewModelScope.launch {
+        val oldFlight = flight.value
+        if (oldFlight != null) {
+          setUsersToNewStatus(oldFlight!!, AvailabilityStatus.OK)
+        }
+        repository.flightTable.update(newFlight.id, newFlight)
 
+        setUsersToNewStatus(newFlight, AvailabilityStatus.ASSIGNED)
+      }
   /**
    * Deletes the flight from the db
    *
-   * @param flightId The id of the flight to delete
+   * @param flight The flight to delete
    */
-  fun deleteFlight(flightId: String) =
-      viewModelScope.launch { repository.flightTable.delete(flightId, onError = { onError(it) }) }
-
+  fun deleteFlight(flight: Flight) =
+      viewModelScope.launch {
+        repository.flightTable.delete(flight.id, onError = { onError(it) })
+        setUsersToNewStatus(flight, AvailabilityStatus.OK)
+      }
   /**
    * Adds the given flight to the db and the viewmodel
    *
@@ -293,7 +302,11 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
    */
   fun addFlight(
       flight: PlannedFlight,
-  ) = viewModelScope.launch { repository.flightTable.add(flight, onError = { onError(it) }) }
+  ) =
+      viewModelScope.launch {
+        repository.flightTable.add(flight, onError = { onError(it) })
+        setUsersToNewStatus(flight, AvailabilityStatus.ASSIGNED)
+      }
 
   /**
    * Get the group name for the flight
@@ -304,6 +317,27 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
    */
   private fun groupName(date: LocalDate, timeSlot: TimeSlot): String {
     return "Flight: ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} $timeSlot"
+  }
+  /**
+   * set every user to a flight to a new status on the flight date
+   *
+   * @param flight The flight
+   * @param status the new availability status to set
+   */
+  private suspend fun setUsersToNewStatus(flight: Flight, status: AvailabilityStatus) {
+    flight.team.getUsers().forEach { user ->
+      val availability =
+          repository.availabilityTable.queryByDateAndUserId(
+              user.id, flight.date, flight.timeSlot, onError = { onError(it) })
+      repository.availabilityTable.update(
+          user.id,
+          availability.id,
+          Availability(
+              status = status,
+              timeSlot = flight.timeSlot,
+              date = flight.date,
+              id = availability.id))
+    }
   }
 
   /**
@@ -319,7 +353,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
   /**
    * Create a confirmed flight from a planned flight
    *
-   * @param flight The flight to update
+   * @param flight The flight to confirm
    */
   fun addConfirmedFlight(flight: ConfirmedFlight) =
       viewModelScope.launch {

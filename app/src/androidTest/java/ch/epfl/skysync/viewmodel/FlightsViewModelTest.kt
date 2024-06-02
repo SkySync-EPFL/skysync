@@ -440,8 +440,8 @@ class FlightsViewModelTest {
               flightType = dbSetup.flightType2,
               balloon = dbSetup.balloon1,
               basket = dbSetup.basket2,
-              date = LocalDate.of(2024, 8, 12),
-              timeSlot = TimeSlot.AM,
+              date = dbSetup.date2,
+              timeSlot = dbSetup.date2TimeSlot,
               vehicles = listOf(dbSetup.vehicle1),
               id = UNSET_ID)
 
@@ -472,8 +472,8 @@ class FlightsViewModelTest {
               flightType = dbSetup.flightType2,
               balloon = dbSetup.balloon1,
               basket = dbSetup.basket2,
-              date = LocalDate.of(2024, 8, 12),
-              timeSlot = TimeSlot.AM,
+              date = dbSetup.date2,
+              timeSlot = dbSetup.date2TimeSlot,
               vehicles = listOf(dbSetup.vehicle1),
               id = UNSET_ID)
 
@@ -506,7 +506,7 @@ class FlightsViewModelTest {
 
       assertEquals(7, withFlightsAdded?.size)
 
-      viewModelAdmin.deleteFlight(flight1.id).join()
+      viewModelAdmin.deleteFlight(flight1).join()
 
       viewModelAdmin.refreshUserAndFlights().join()
 
@@ -537,8 +537,8 @@ class FlightsViewModelTest {
               flightType = dbSetup.flightType2,
               balloon = dbSetup.balloon1,
               basket = dbSetup.basket2,
-              date = LocalDate.of(2024, 8, 12),
-              timeSlot = TimeSlot.AM,
+              date = dbSetup.date1,
+              timeSlot = dbSetup.date2TimeSlot,
               vehicles = listOf(dbSetup.vehicle1),
               id = UNSET_ID)
 
@@ -552,7 +552,7 @@ class FlightsViewModelTest {
 
       viewModelAdmin.modifyFlight(modifiedFlight).join()
 
-      viewModelAdmin.getFlight("dummy")
+      viewModelAdmin.getFlight(modifiedFlight.id)
 
       viewModelAdmin.refreshUserAndFlights().join()
 

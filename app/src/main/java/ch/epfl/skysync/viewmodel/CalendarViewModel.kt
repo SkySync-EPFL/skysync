@@ -79,11 +79,11 @@ class CalendarViewModel(
   private suspend fun refreshUserAndCalendars() {
     _user.value = userTable.get(uid, this::onError)!!
     val currentAvCal = AvailabilityCalendar(userTable.retrieveAvailabilities(uid, this::onError))
+    val flights = userTable.retrieveAssignedFlights(flightTable, uid, this::onError)
     _currentAvailabilityCalendar.value = currentAvCal
     originalAvailabilityCalendar = currentAvCal
-    _currentFlightGroupCalendar.value =
-        FlightGroupCalendar.fromFlightList(
-            userTable.retrieveAssignedFlights(flightTable, uid, this::onError))
+
+    _currentFlightGroupCalendar.value = FlightGroupCalendar.fromFlightList(flights)
   }
 
   /** Callback executed when an error occurs on database-related operations */
