@@ -4,6 +4,7 @@ import ch.epfl.skysync.database.UserRole
 import ch.epfl.skysync.database.schemas.UserSchema
 import ch.epfl.skysync.models.UNSET_ID
 import ch.epfl.skysync.models.flight.BalloonQualification
+import ch.epfl.skysync.models.flight.RoleType
 
 /**
  * Represents a temporary user.
@@ -28,13 +29,20 @@ class TempUser(
    * @return The user schema.
    */
   fun toUserSchema(uid: String): UserSchema {
+    val roleTypes =
+        when (userRole) {
+          UserRole.ADMIN -> listOf(RoleType.ADMIN)
+          UserRole.PILOT -> listOf(RoleType.PILOT, RoleType.CREW)
+          UserRole.CREW -> listOf(RoleType.CREW)
+        }
+
     return UserSchema(
         id = uid,
         userRole = userRole,
         firstname = firstname,
         lastname = lastname,
         email = email,
-        roleTypes = listOf(),
+        roleTypes = roleTypes,
         balloonQualification = balloonQualification,
     )
   }
