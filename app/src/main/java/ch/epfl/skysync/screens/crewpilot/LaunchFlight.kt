@@ -17,6 +17,14 @@ import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 
+/**
+ * The screen for the launched flight for the crew/pilot user
+ *
+ * @param navController The navigation controller
+ * @param flightViewModel The flight view model
+ * @param inFlightViewModel The in flight view model
+ * @param connectivityStatus The connectivity status
+ */
 @Composable
 fun LaunchFlight(
     navController: NavHostController,

@@ -16,6 +16,7 @@ import ch.epfl.skysync.models.flight.Team
 import ch.epfl.skysync.models.location.FlightTrace
 import ch.epfl.skysync.models.location.LocationPoint
 import ch.epfl.skysync.models.reports.FlightReport
+import ch.epfl.skysync.models.user.User
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.test.runTest
@@ -152,6 +153,108 @@ class FlightsViewModelTest {
     viewModelAdmin.setDateAndTimeSlot(LocalDate.of(2024, 8, 12), TimeSlot.AM)
     assertEquals(LocalDate.of(2024, 8, 12), viewModelAdmin.date)
     assertEquals(TimeSlot.AM, viewModelAdmin.timeSlot)
+  }
+
+  @Test
+  fun correctEquipmentModifyFlight() {
+    // Set up the ComposeTestRule with the necessary content
+    composeTestRule.setContent {
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
+      viewModelAdmin.setFlight(dbSetup.flight4)
+    }
+
+    runTest {
+      viewModelAdmin.refreshAvailableBalloons().join()
+      viewModelAdmin.refreshAvailableBaskets().join()
+      viewModelAdmin.refreshAvailableVehicles().join()
+      viewModelAdmin.refreshAvailableUsers().join()
+
+      var expectedBalloons =
+          listOf(dbSetup.balloon1, dbSetup.balloon2, dbSetup.balloon3).sortedBy { it.id }
+      var expectedBaskets =
+          listOf(dbSetup.basket1, dbSetup.basket2, dbSetup.basket3).sortedBy { it.id }
+      var expectedVehicles =
+          listOf(dbSetup.vehicle1, dbSetup.vehicle2, dbSetup.vehicle3).sortedBy { it.id }
+      var expectedUsers = listOf(dbSetup.pilot1, dbSetup.crew1, dbSetup.crew2).sortedBy { it.id }
+
+      val currentBalloons = viewModelAdmin.currentBalloons
+      val currentBaskets = viewModelAdmin.currentBaskets
+      val currentVehicles = viewModelAdmin.currentVehicles
+      val currentUsers = viewModelAdmin.availableUsers
+
+      assertEquals(expectedBalloons, currentBalloons.value.sortedBy { it.id })
+      assertEquals(expectedBaskets, currentBaskets.value.sortedBy { it.id })
+      assertEquals(expectedVehicles, currentVehicles.value.sortedBy { it.id })
+      assertEquals(expectedUsers, currentUsers.value.sortedBy { it.id })
+
+      viewModelAdmin.setDateAndTimeSlot(dbSetup.date1, TimeSlot.AM)
+
+      viewModelAdmin.refreshAvailableBalloons().join()
+      viewModelAdmin.refreshAvailableBaskets().join()
+      viewModelAdmin.refreshAvailableVehicles().join()
+      viewModelAdmin.refreshAvailableUsers().join()
+
+      expectedBalloons = listOf(dbSetup.balloon3)
+      expectedBaskets = listOf(dbSetup.basket3)
+      expectedVehicles = listOf()
+      expectedUsers = listOf()
+
+      assertEquals(expectedBalloons, currentBalloons.value.sortedBy { it.id })
+      assertEquals(expectedBaskets, currentBaskets.value.sortedBy { it.id })
+      assertEquals(expectedVehicles, currentVehicles.value.sortedBy { it.id })
+      assertEquals(expectedUsers, currentUsers.value.sortedBy { it.id })
+    }
+  }
+
+  @Test
+  fun correctEquipmentWhenAddingFlight() {
+    composeTestRule.setContent {
+      viewModelAdmin = FlightsViewModel.createViewModel(repository, dbSetup.admin1.id)
+      viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, dbSetup.date2TimeSlot)
+    }
+
+    runTest {
+      viewModelAdmin.refreshAvailableBalloons().join()
+      viewModelAdmin.refreshAvailableBaskets().join()
+      viewModelAdmin.refreshAvailableVehicles().join()
+      viewModelAdmin.refreshAvailableUsers().join()
+
+      var expectedBalloons = listOf(dbSetup.balloon2, dbSetup.balloon3).sortedBy { it.id }
+      var expectedBaskets = listOf(dbSetup.basket2, dbSetup.basket3).sortedBy { it.id }
+
+      var expectedVehicles = listOf(dbSetup.vehicle1, dbSetup.vehicle3).sortedBy { it.id }
+      var expectedUsers = listOf<User>()
+
+      val currentBalloons = viewModelAdmin.currentBalloons
+      val currentBaskets = viewModelAdmin.currentBaskets
+      val currentVehicles = viewModelAdmin.currentVehicles
+      val currentUsers = viewModelAdmin.availableUsers
+
+      assertEquals(expectedBalloons, currentBalloons.value.sortedBy { it.id })
+      assertEquals(expectedBaskets, currentBaskets.value.sortedBy { it.id })
+      assertEquals(expectedVehicles, currentVehicles.value.sortedBy { it.id })
+      assertEquals(expectedUsers, currentUsers.value.sortedBy { it.id })
+
+      viewModelAdmin.setDateAndTimeSlot(dbSetup.date2, dbSetup.date2TimeSlotInverse)
+
+      viewModelAdmin.refreshAvailableBalloons().join()
+      viewModelAdmin.refreshAvailableBaskets().join()
+      viewModelAdmin.refreshAvailableVehicles().join()
+      viewModelAdmin.refreshAvailableUsers().join()
+
+      expectedBalloons =
+          listOf(dbSetup.balloon1, dbSetup.balloon2, dbSetup.balloon3).sortedBy { it.id }
+      expectedBaskets = listOf(dbSetup.basket1, dbSetup.basket2, dbSetup.basket3).sortedBy { it.id }
+      expectedVehicles =
+          listOf(dbSetup.vehicle1, dbSetup.vehicle2, dbSetup.vehicle3).sortedBy { it.id }
+      expectedUsers =
+          listOf(dbSetup.pilot1, dbSetup.crew1, dbSetup.crew2, dbSetup.admin1).sortedBy { it.id }
+
+      assertEquals(expectedBalloons, currentBalloons.value.sortedBy { it.id })
+      assertEquals(expectedBaskets, currentBaskets.value.sortedBy { it.id })
+      assertEquals(expectedVehicles, currentVehicles.value.sortedBy { it.id })
+      assertEquals(expectedUsers, currentUsers.value.sortedBy { it.id })
+    }
   }
 
   @Test

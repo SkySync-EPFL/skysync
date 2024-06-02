@@ -17,17 +17,12 @@ import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.InFlightViewModel.FlightStage
 
 /**
- * Timer composable that displays the current timer value and a button to start (if the timer is
- * currently not running) or stop (if the timer is currently running).
+ * A composable function that displays a timer and a button to start or stop the timer based on the
+ * flight stage.
  *
- * @param modifier Modifier to apply to this layout node.
+ * @param modifier The modifier to be applied to the timer.
  * @param currentTimer The current value of the timer.
- * @param flightStage The current flight stage.
- * @param isPilot If the user is the pilot of the flight.
- * @param onStart Callback to start the flight.
- * @param onStop Callback to stop the flight.
- * @param onClear Callback to clear the flight.
- * @param onQuitDisplay Callback to quit the flight trace display.
+ * @param flightStage The current stage of the flight.
  */
 @Composable
 fun Timer(modifier: Modifier, currentTimer: String, flightStage: FlightStage) {
@@ -43,6 +38,18 @@ fun Timer(modifier: Modifier, currentTimer: String, flightStage: FlightStage) {
   }
 }
 
+/**
+ * A composable function that displays a button to start, stop, clear or quit the flight based on
+ * the flight stage.
+ *
+ * @param modifier The modifier to be applied to the button.
+ * @param flightStage The current stage of the flight.
+ * @param isPilot A boolean indicating if the user is a pilot.
+ * @param onStart The action to perform when the start button is clicked.
+ * @param onStop The action to perform when the stop button is clicked.
+ * @param onClear The action to perform when the clear button is clicked.
+ * @param onQuitDisplay The action to perform when the quit button is clicked.
+ */
 @Composable
 fun TimerButton(
     modifier: Modifier,

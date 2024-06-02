@@ -9,8 +9,8 @@ import androidx.navigation.navigation
 import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.models.UNSET_ID
-import ch.epfl.skysync.screens.AddFlightScreen
 import ch.epfl.skysync.screens.UserDetailsScreen
+import ch.epfl.skysync.screens.admin.AddFlightScreen
 import ch.epfl.skysync.screens.admin.AddUserScreen
 import ch.epfl.skysync.screens.admin.AdminChatScreen
 import ch.epfl.skysync.screens.admin.AdminFlightDetailScreen
@@ -29,6 +29,16 @@ import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 import ch.epfl.skysync.viewmodel.UserManagementViewModel
 
+/**
+ * The admin graph
+ *
+ * @param repository The repository
+ * @param navController The navigation controller
+ * @param uid The user ID
+ * @param inFlightViewModel The in flight view model
+ * @param messageListenerViewModel The message listener view model
+ * @param connectivityStatus The connectivity status
+ */
 fun NavGraphBuilder.adminGraph(
     repository: Repository,
     navController: NavHostController,

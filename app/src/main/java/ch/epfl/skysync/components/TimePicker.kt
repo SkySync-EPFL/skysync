@@ -136,6 +136,15 @@ fun TimePickerDialog(
   }
 }
 
+/**
+ * A composable function that displays a button for toggling between the picker and input modes of
+ * the time picker.
+ *
+ * @param displayMode The current display mode of the time picker.
+ * @param onDisplayModeChange Callback invoked when the display mode is changed. It provides the new
+ *   [DisplayMode].
+ * @param modifier Modifier for styling and layout customization.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DisplayModeToggleButton(

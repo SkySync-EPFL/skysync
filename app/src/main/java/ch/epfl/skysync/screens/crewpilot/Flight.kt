@@ -57,6 +57,12 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 
+/**
+ * This composable function renders a marker on the map at the given location.
+ *
+ * @param location The location to render the marker at.
+ * @param user The user associated with the location.
+ */
 @Composable
 fun UserLocationMarker(location: Location, user: User) {
   return Marker(state = MarkerState(position = location.point.latlng()), title = user.name())

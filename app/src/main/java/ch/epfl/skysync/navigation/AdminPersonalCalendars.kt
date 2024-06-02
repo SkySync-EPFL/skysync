@@ -9,6 +9,14 @@ import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.screens.admin.AdminCalendarScreen
 import ch.epfl.skysync.viewmodel.CalendarViewModel
 
+/**
+ * The graph for the calendar of an admin user
+ *
+ * @param repository The repository
+ * @param navController The navigation controller
+ * @param uid The user ID
+ * @param connectivityStatus The connectivity status
+ */
 fun NavGraphBuilder.adminpersonalCalendar(
     repository: Repository,
     navController: NavHostController,

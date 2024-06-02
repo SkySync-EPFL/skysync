@@ -26,6 +26,14 @@ import androidx.navigation.NavHostController
 import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.ui.theme.lightOrange
 
+/**
+ * A composable function that wraps the provided content and displays an offline message or an alert
+ * dialog if the device is not online.
+ *
+ * @param connectivityStatus The current connectivity status.
+ * @param navController The navigation controller.
+ * @param content The content to be displayed if the device is online.
+ */
 @Composable
 fun ConnectivityWrapper(
     connectivityStatus: ConnectivityStatus,

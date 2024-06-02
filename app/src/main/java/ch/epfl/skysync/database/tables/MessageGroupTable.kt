@@ -17,6 +17,11 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
+/**
+ * Represents the "message groups" table in the database.
+ *
+ * @property db The FirestoreDatabase instance for interacting with the Firestore database.
+ */
 class MessageGroupTable(db: FirestoreDatabase) :
     Table<MessageGroup, MessageGroupSchema>(db, MessageGroupSchema::class, PATH) {
   private val messageTable = MessageTable(db)
@@ -139,6 +144,14 @@ class MessageGroupTable(db: FirestoreDatabase) :
     return withErrorCallback(onError) { db.setItem(path, id, MessageGroupSchema.fromModel(item)) }
   }
 
+  /**
+   * Deletes a message group by its ID.
+   *
+   * This function will delete the message group and all its associated messages from the database.
+   *
+   * @param id The ID of the message group to be deleted.
+   * @param onError Callback invoked when an error occurs during the deletion process.
+   */
   override suspend fun delete(id: String, onError: ((Exception) -> Unit)?) = coroutineScope {
     withErrorCallback(onError) {
       listOf(

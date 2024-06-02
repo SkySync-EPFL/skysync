@@ -25,6 +25,16 @@ import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 
+/**
+ * The crew/pilot graph
+ *
+ * @param repository The repository
+ * @param navController The navigation controller
+ * @param uid The user ID
+ * @param inFlightViewModel The in flight view model
+ * @param messageListenerViewModel The message listener view model
+ * @param connectivityStatus The connectivity status
+ */
 fun NavGraphBuilder.crewPilotGraph(
     repository: Repository,
     navController: NavHostController,

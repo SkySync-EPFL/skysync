@@ -19,10 +19,17 @@ import ch.epfl.skysync.components.ConnectivityStatus
 import ch.epfl.skysync.components.FlightsList
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
+import ch.epfl.skysync.ui.theme.getThemeColor
 import ch.epfl.skysync.ui.theme.lightOrange
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 
-// Scaffold wrapper for the Home Screen
+/**
+ * The screen for the admin home
+ *
+ * @param navController The navigation controller
+ * @param viewModel The view model
+ * @param connectivityStatus The connectivity status
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AdminHomeScreen(
@@ -49,7 +56,8 @@ fun AdminHomeScreen(
       },
       floatingActionButtonPosition = FabPosition.End,
   ) { padding ->
-    FlightsList(currentFlights, lightOrange, padding, "Upcoming flights") { selectedFlight ->
+    FlightsList(currentFlights, getThemeColor(isAdmin = true), padding, "Upcoming flights") {
+        selectedFlight ->
       navController.navigate(Route.ADMIN_FLIGHT_DETAILS + "/${selectedFlight}")
     }
   }

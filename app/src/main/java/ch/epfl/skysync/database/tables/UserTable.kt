@@ -15,7 +15,11 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
-/** Represent the "user" table */
+/**
+ * Represents the "user" table in the database.
+ *
+ * @property db The FirestoreDatabase instance for interacting with the Firestore database.
+ */
 class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema::class, PATH) {
   private val availabilityTable = AvailabilityTable(db)
   private val flightMemberTable = FlightMemberTable(db)
@@ -70,7 +74,14 @@ class UserTable(db: FirestoreDatabase) : Table<User, UserSchema>(db, UserSchema:
     }
   }
 
-  /** Remove user from all its flight assignments */
+  /**
+   * Removes the user from all its flight assignments.
+   *
+   * This function will go through all the flight-member relations where the user is a member, and
+   * set the user ID to null, effectively removing the user from these flights.
+   *
+   * @param id The ID of the user to be removed from flight assignments.
+   */
   private suspend fun removeUserFromFlightMemberSchemas(id: String): Unit = coroutineScope {
     val memberships = flightMemberTable.query(Filter.equalTo("userId", id))
     memberships

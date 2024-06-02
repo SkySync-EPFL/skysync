@@ -57,23 +57,3 @@ fun LoadingComponent(
     }
   }
 }
-
-/**
- * Preview of the LoadingComponent. This preview function helps visualize how the LoadingComponent
- * will look in the UI.
- */
-// @Preview(showBackground = true)
-// @Composable
-// fun LoadingContentPreview() {
-// Surface(modifier = Modifier.fillMaxSize()) {
-// Instantiate the LoadingComponent with a simple Text inside.
-//   LoadingComponent(
-//       isLoading = true,
-//       onRefresh = { /* Define what happens on refresh here, e.g., viewModel.loadData() */},
-//       content = {
-//          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//           Text("Content goes here", style = MaterialTheme.typography.bodyLarge)
-//          }
-//       })
-//  }
-// }

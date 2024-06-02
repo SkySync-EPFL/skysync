@@ -14,6 +14,14 @@ import ch.epfl.skysync.components.CustomTopAppBar
 import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.viewmodel.ChatViewModel
 
+/**
+ * The screen for the admin chat
+ *
+ * @param navController The navigation controller
+ * @param groupId The group id
+ * @param viewModel The view model
+ * @param connectivityStatus The connectivity status
+ */
 @Composable
 fun AdminTextScreen(
     navController: NavHostController,

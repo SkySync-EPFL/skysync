@@ -26,6 +26,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+/**
+ * Represents the state of the chat screen
+ *
+ * @property messageGroups The message groups
+ * @property isLoading Whether the chat is loading
+ */
 data class ChatUiState(
     val messageGroups: List<MessageGroup> = listOf(),
     val isLoading: Boolean = true,
@@ -83,14 +89,19 @@ class ChatViewModel(
         .map { groups ->
           groups
               .map { group ->
-                GroupDetails(group.id, group.name, group.color, null, group.messages.getOrNull(0))
+                GroupDetails(group.id, group.name, group.color, group.messages.getOrNull(0))
               }
               .sortedByDescending { it.lastMessage?.date ?: Date.from(Instant.now()) }
         }
         .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = listOf())
   }
 
-  /** Returns a flow of the messages of a message group, updated on new messages */
+  /**
+   * Returns a flow of the messages of a message group, updated on new messages
+   *
+   * @param groupId The ID of the group to get the messages from
+   * @return A flow of the messages of the group
+   */
   fun getGroupChatMessages(groupId: String): StateFlow<List<ChatMessage>> {
     return messageGroups
         .map { groups ->
@@ -101,19 +112,28 @@ class ChatViewModel(
                     ChatMessage(
                         message,
                         if (message.user.id == uid) MessageType.SENT else MessageType.RECEIVED,
-                        null)
+                    )
                   } ?: listOf())
               .reversed()
         }
         .stateIn(scope = viewModelScope, started = WhileUiSubscribed, initialValue = listOf())
   }
 
+  /**
+   * Update the [ChatViewModel.messageGroups] flow with a new reference that has the [messageGroup]
+   * updated.
+   */
   private fun updateMessageGroupState(messageGroup: MessageGroup) {
     messageGroups.value =
         (messageGroups.value.filter { it.id != messageGroup.id } + messageGroup).sortedBy { it.id }
   }
 
-  /** Callback called on message listener update. */
+  /**
+   * Callback called on message listener update.
+   *
+   * @param group The message group that has been updated
+   * @param update The listener of the message group
+   */
   private fun onMessageGroupChange(group: MessageGroup, update: ListenerUpdate<Message>) {
     val group = messageGroups.value.find { it.id == group.id } ?: return
     var messages = group.messages
@@ -131,7 +151,7 @@ class ChatViewModel(
   }
 
   /** Fetch all message groups the user is part of, as well as the messages of these groups. */
-  fun refresh() =
+  fun refreshGroups() =
       viewModelScope.launch {
         isLoading.value = true
         val groups =
@@ -177,28 +197,31 @@ class ChatViewModel(
         messageTable.add(groupId, message, onError = { onError(it) })
       }
 
+  /** Delete a message group */
   fun deleteGroup(groupId: String) =
       viewModelScope.launch {
         messageGroupTable.delete(groupId, onError = { onError(it) })
         messageGroups.value = messageGroups.value.filter { it.id != groupId }
-        refresh()
+        refreshGroups()
       }
 
   init {
     messageListenerViewModel.pushCallback(this::onMessageGroupChange)
-    println("Debug ChatViewModel PUSH")
     refreshUser()
-    refresh()
+    refreshGroups()
   }
 
+  /** Callback executed when the ViewModel is cleared */
   override fun onCleared() {
     messageListenerViewModel.popCallback()
-    println("Debug ChatViewModel POP")
-
     super.onCleared()
   }
 
-  /** Callback executed when an error occurs on database-related operations */
+  /**
+   * Callback executed when an error occurs on database-related operations
+   *
+   * @param e The exception that occurred
+   */
   private fun onError(e: Exception) {
     if (e !is CancellationException) {
       SnackbarManager.showMessage(e.message ?: "An unknown error occurred")

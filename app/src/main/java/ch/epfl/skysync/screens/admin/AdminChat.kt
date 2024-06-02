@@ -13,6 +13,12 @@ import ch.epfl.skysync.navigation.AdminBottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.ChatViewModel
 
+/**
+ * The screen for the admin chat
+ *
+ * @param navController The navigation controller
+ * @param viewModel The view model
+ */
 @Composable
 fun AdminChatScreen(navController: NavHostController, viewModel: ChatViewModel) {
   val groupDetails by viewModel.getGroupDetails().collectAsStateWithLifecycle()

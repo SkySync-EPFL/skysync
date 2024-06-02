@@ -17,7 +17,16 @@ import ch.epfl.skysync.viewmodel.InFlightViewModel
 import ch.epfl.skysync.viewmodel.MessageListenerViewModel
 import ch.epfl.skysync.viewmodel.UserGlobalViewModel
 
-/** Graph of the whole navigation of the app */
+/**
+ * The graph of the whole application
+ *
+ * @param repository The repository
+ * @param navHostController The navigation controller
+ * @param signInLauncher The sign in launcher
+ * @param inFlightsViewModel The in flight view model
+ * @param messageListenerViewModel The message listener view model
+ * @param userGlobalViewModel The user global view model
+ */
 @Composable
 fun MainGraph(
     repository: Repository,

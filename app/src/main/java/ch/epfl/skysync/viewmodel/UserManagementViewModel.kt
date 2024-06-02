@@ -38,43 +38,36 @@ class UserManagementViewModel(
 
   private val _allUsers: MutableStateFlow<List<User>> = MutableStateFlow(emptyList())
   private val _filteredUsers: MutableStateFlow<List<User>> = MutableStateFlow(emptyList())
-  private val _selectedUser: MutableStateFlow<User?> = MutableStateFlow(null)
 
   val allUsers = _allUsers.asStateFlow()
   val filteredUsers = _filteredUsers.asStateFlow()
 
-  /** Refreshes the data of the viewmodel */
-  fun refresh() {
-    refreshAllUsers()
-  }
+  /** Refreshes the users */
+  fun refresh() = viewModelScope.launch { refreshAllUsers() }
 
-  /** Refreshes the data of all users */
-  private fun refreshAllUsers() {
-    viewModelScope.launch {
-      _allUsers.value = repository.userTable.getAll(onError = { onError(it) })
-      _filteredUsers.value = _allUsers.value
-    }
+  /** Refreshes the users, resets filtered users */
+  private suspend fun refreshAllUsers() {
+    _allUsers.value = repository.userTable.getAll(onError = { onError(it) })
+    _filteredUsers.value = _allUsers.value
   }
 
   /**
    * Creates a user in the temporary user table that will add a user when the user connects for the
    * first time
    */
-  fun createUser(tmpUser: TempUser) {
-    viewModelScope.launch {
-      repository.tempUserTable.set(tmpUser.email, tmpUser, onError = { onError(it) })
-      SnackbarManager.showMessage("User created successfully")
-      refreshAllUsers()
-    }
-  }
+  fun createUser(tmpUser: TempUser) =
+      viewModelScope.launch {
+        repository.tempUserTable.set(tmpUser.email, tmpUser, onError = { onError(it) })
+        SnackbarManager.showMessage("User created successfully")
+        refreshAllUsers()
+      }
 
   /** Deletes a user from the database */
-  fun deleteUser(user: User) {
-    viewModelScope.launch {
-      repository.userTable.delete(user.id, onError = { onError(it) })
-      refreshAllUsers()
-    }
-  }
+  fun deleteUser(user: User) =
+      viewModelScope.launch {
+        repository.userTable.delete(user.id, onError = { onError(it) })
+        refreshAllUsers()
+      }
 
   /**
    * Filters the list of users based on a search query and a role.

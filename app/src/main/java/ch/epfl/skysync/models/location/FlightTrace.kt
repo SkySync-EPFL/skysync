@@ -2,15 +2,21 @@ package ch.epfl.skysync.models.location
 
 import ch.epfl.skysync.models.UNSET_ID
 
+/**
+ * Represents a flight trace.
+ *
+ * This is an immutable data class that holds all the location points of a flight trace.
+ *
+ * @property id The ID of the flight trace.
+ * @property trace The list of location points in the flight trace.
+ */
 data class FlightTrace(
     val id: String = UNSET_ID,
     val trace: List<LocationPoint>,
-) {
-  /** removes points that are exceptionally far away */
-}
+)
 
 /**
- * tries to identify and remove points that are exceptionally far away from the preceding points of
+ * Tries to identify and remove points that are exceptionally far away from the preceding points of
  * the trace
  *
  * @param trace the trace to be corrected
@@ -19,6 +25,7 @@ data class FlightTrace(
  * @param allowedIncreasedDistanceFactor the factor by which the distance between a given point and
  *   its predecessor is allowed to increment with respect to the mean distance between the other
  *   predecessors
+ * @return the corrected trace
  */
 fun computeCorrectedTrace(
     trace: List<Location>,

@@ -117,7 +117,7 @@ class MessageListenerViewModel : ViewModel() {
       }
 
   /** Remove all listeners and clear the callback stack */
-  fun reset() {
+  private fun reset() {
     listeners.forEach { it.value.remove() }
     listeners.clear()
     callbackStack.clear()

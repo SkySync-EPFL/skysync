@@ -41,22 +41,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.epfl.skysync.models.message.GroupDetails
 import ch.epfl.skysync.models.message.MessageDateFormatter
-import ch.epfl.skysync.ui.theme.Purple40
+import ch.epfl.skysync.ui.theme.ScreenTitles
+import ch.epfl.skysync.ui.theme.getThemeColor
 import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.ui.theme.lightOrange
 
 /**
  * Composable function to display a group chat UI.
  *
- * @param groupList A list of quadruples representing group data containing group name, image, last
- *   message, and last message time.
+ * @param groupList A list of GroupDetails representing group data containing group name, image,
+ *   last message, and last message time.
  * @param onClick Callback triggered when a group is clicked.
+ * @param onDelete Callback triggered when a group is deleted.
  * @param paddingValues Padding values for the column.
+ * @param isAdmin Boolean indicating if the current user is an admin.
  */
 @Composable
 fun GroupChat(
@@ -69,7 +71,10 @@ fun GroupChat(
   var searchQuery by remember { mutableStateOf("") }
   var activeGroupId by remember { mutableStateOf<String?>(null) }
   Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
-    GroupChatTopBar(isAdmin = isAdmin, paddingValues = paddingValues)
+    TopBanner(
+        topTitle = ScreenTitles.MESSAGES,
+        topBannerColor = getThemeColor(isAdmin),
+        paddingValues = paddingValues)
     Spacer(modifier = Modifier.fillMaxHeight(0.02f))
 
     OutlinedTextField(
@@ -96,32 +101,17 @@ fun GroupChat(
     }
   }
 }
-/** Composable function to display the top bar of the group chat UI. */
-@Composable
-fun GroupChatTopBar(isAdmin: Boolean, paddingValues: PaddingValues) {
-  val color = if (isAdmin) lightOrange else Purple40
-  Text(
-      text = "Messages",
-      style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-      modifier =
-          Modifier.background(
-                  color = color, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-              .fillMaxWidth()
-              .padding(
-                  top = paddingValues.calculateTopPadding() + 16.dp,
-                  start = 16.dp,
-                  end = 16.dp,
-                  bottom = 16.dp),
-      color = Color.White,
-      textAlign = TextAlign.Center)
-}
 
 /**
  * Composable function to display a group card in the group chat UI.
  *
- * @param groupDetails The details of the group
+ * @param groupDetails The details of the group.
  * @param onClick Callback triggered when the group card is clicked.
+ * @param onDelete Callback triggered when the group card is long clicked.
  * @param testTag A tag used for testing purposes.
+ * @param isActive Boolean indicating if the group is currently active.
+ * @param onActivate Callback triggered when the group card is long clicked.
+ * @param isAdmin Boolean indicating if the current user is an admin.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -189,9 +179,13 @@ fun GroupCard(
 /**
  * Composable function to display the body of the group chat UI.
  *
- * @param Groups List of quadruples representing group data containing group name, image, last
+ * @param groupList List of GroupDetails representing group data containing group name, image, last
  *   message, and last message time.
  * @param onClick Callback triggered when a group card is clicked.
+ * @param onDelete Callback triggered when a group card is long clicked.
+ * @param activeGroupId The ID of the currently active group.
+ * @param onSetActiveGroupId Callback triggered when a group card is long clicked.
+ * @param isAdmin Boolean indicating if the current user is an admin.
  */
 @Composable
 fun GroupChatBody(
@@ -220,15 +214,3 @@ fun GroupChatBody(
     }
   }
 }
-
-// @Composable
-// @Preview
-// fun GroupChatPreview() {
-//    val image: ImageVector? = null
-//    val groups = listOf(Quadruple("Group 1", image, "Last message", "Last message time"),
-//        Quadruple("Group 2",image, "Last message", "Last message time"),
-//        Quadruple("Group 3",image,"Last message", "Last message time")
-//    )
-//    GroupChat(GroupsImageLastmsgLastmsgtime = groups, onClick = {}, paddingValues =
-// PaddingValues(0.dp))
-// }

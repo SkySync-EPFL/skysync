@@ -41,6 +41,15 @@ fun TitledText(
   Spacer(modifier = Modifier.padding(12.dp))
 }
 
+/**
+ * A composable function that displays a title.
+ *
+ * @param modifier The modifier to be applied to the title.
+ * @param title The text of the title.
+ * @param padding The padding value to be applied to the title.
+ * @param style The style to be applied to the title.
+ * @param color The color of the title.
+ */
 @Composable
 fun Title(
     modifier: Modifier = Modifier,
@@ -52,6 +61,14 @@ fun Title(
   Text(modifier = modifier.padding(padding), text = title, style = style, color = color)
 }
 
+/**
+ * A composable function that displays a header title.
+ *
+ * @param modifier The modifier to be applied to the title.
+ * @param title The text of the title.
+ * @param padding The padding value to be applied to the title.
+ * @param color The color of the title.
+ */
 @Composable
 fun HeaderTitle(
     modifier: Modifier = Modifier,
@@ -67,6 +84,14 @@ fun HeaderTitle(
       color = color)
 }
 
+/**
+ * A composable function that displays a large title.
+ *
+ * @param modifier The modifier to be applied to the title.
+ * @param title The text of the title.
+ * @param padding The padding value to be applied to the title.
+ * @param color The color of the title.
+ */
 @Composable
 fun LargeTitle(
     modifier: Modifier = Modifier,
@@ -82,6 +107,14 @@ fun LargeTitle(
       color = color)
 }
 
+/**
+ * A composable function that displays a small title.
+ *
+ * @param modifier The modifier to be applied to the title.
+ * @param title The text of the title.
+ * @param padding The padding value to be applied to the title.
+ * @param color The color of the title.
+ */
 @Composable
 fun SmallTitle(
     modifier: Modifier = Modifier,
@@ -97,6 +130,15 @@ fun SmallTitle(
       color = color)
 }
 
+/**
+ * A composable function that displays a medium title.
+ *
+ * @param modifier The modifier to be applied to the title.
+ * @param title The text of the title.
+ * @param padding The padding value to be applied to the title.
+ * @param color The color of the title.
+ * @param bold Boolean indicating if the title should be bold.
+ */
 @Composable
 fun MediumTitle(
     modifier: Modifier = Modifier,

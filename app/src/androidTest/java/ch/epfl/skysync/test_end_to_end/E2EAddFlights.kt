@@ -18,6 +18,7 @@ import ch.epfl.skysync.Repository
 import ch.epfl.skysync.components.ContextConnectivityStatus
 import ch.epfl.skysync.database.DatabaseSetup
 import ch.epfl.skysync.database.FirestoreDatabase
+import ch.epfl.skysync.models.calendar.TimeSlot
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.navigation.homeGraph
 import ch.epfl.skysync.viewmodel.InFlightViewModel
@@ -96,7 +97,6 @@ class E2EAddFlights {
         .onNodeWithTag("Flight Lazy Column")
         .performScrollToNode(hasTestTag("Flight Type Menu"))
     composeTestRule.onNodeWithTag("Flight Type Menu").performClick()
-    composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("Flight Type 1").performClick()
 
     composeTestRule
@@ -105,23 +105,24 @@ class E2EAddFlights {
     composeTestRule.onNodeWithTag("Vehicle 0 Menu").performClick()
     composeTestRule.onNodeWithTag("Vehicle 0 1").performClick()
 
+    val timeSlotTag = "Time Slot ${if(dbs.date2TimeSlot == TimeSlot.AM) 0 else 1}"
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
         .performScrollToNode(hasTestTag("Time Slot Menu"))
     composeTestRule.onNodeWithTag("Time Slot Menu").performClick()
-    composeTestRule.onNodeWithTag("Time Slot 1").performClick()
+    composeTestRule.onNodeWithTag(timeSlotTag).performClick()
 
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
         .performScrollToNode(hasTestTag("Balloon Menu"))
     composeTestRule.onNodeWithTag("Balloon Menu").performClick()
-    composeTestRule.onNodeWithTag("Balloon 1").performClick()
+    composeTestRule.onNodeWithTag("Balloon 0").performClick()
 
     composeTestRule
         .onNodeWithTag("Flight Lazy Column")
         .performScrollToNode(hasTestTag("Basket Menu"))
     composeTestRule.onNodeWithTag("Basket Menu").performClick()
-    composeTestRule.onNodeWithTag("Basket 1").performClick()
+    composeTestRule.onNodeWithTag("Basket 0").performClick()
 
     // Clicks on the "Add Flight" button to confirm flight addition
     val title1 = "Add Flight"

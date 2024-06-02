@@ -15,11 +15,12 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
     CalendarModel<Availability>(cells = cells) {
 
   /**
-   * changes the status of the availability of given date and timeSlot if found in the calendar
+   * Changes the status of the availability of given date and timeSlot if found in the calendar.
    *
-   * @param date: the date of the availability to change
-   * @param timeSlot: the timeSlot of the availability to change
-   * @param status: the new status
+   * @param date The date of the availability to change.
+   * @param timeSlot The timeSlot of the availability to change.
+   * @param status The new status.
+   * @return The updated calendar model.
    */
   fun setAvailabilityByDate(
       date: LocalDate,
@@ -31,7 +32,13 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
     }
   }
 
-  /** @return current AvailabilityStatus for given date and timeSlot if any, else UNDEFINED */
+  /**
+   * Returns current AvailabilityStatus for given date and timeSlot if any, else UNDEFINED.
+   *
+   * @param date The date to check.
+   * @param timeSlot The timeSlot to check.
+   * @return The availability status.
+   */
   fun getAvailabilityStatus(date: LocalDate, timeSlot: TimeSlot): AvailabilityStatus {
     return getByDate(date, timeSlot)?.status ?: AvailabilityStatus.UNDEFINED
   }
@@ -59,9 +66,10 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
   /**
    * Returns the differences between this and the other calendar, from the point of view of the
    * other calendar (that is, [CalendarDifferenceType.ADDED] means that [newCalendar] has an added
-   * availability compared to this)
+   * availability compared to this).
    *
-   * @param newCalendar The other calendar
+   * @param newCalendar The other calendar.
+   * @return The list of differences.
    */
   fun getDifferencesWithOtherCalendar(
       newCalendar: AvailabilityCalendar
@@ -92,14 +100,31 @@ class AvailabilityCalendar(cells: List<Availability> = listOf()) :
     return differences
   }
 
+  /**
+   * Returns a copy of the current AvailabilityCalendar.
+   *
+   * @return The copied AvailabilityCalendar.
+   */
   fun copy(): AvailabilityCalendar {
     return AvailabilityCalendar(cells)
   }
 
+  /**
+   * Constructs a new instance of the [CalendarModel] with the given cells.
+   *
+   * @param cells The list of availabilities to be included in the new calendar model.
+   * @return A new instance of [CalendarModel] with the given cells.
+   */
   override fun constructor(cells: List<Availability>): CalendarModel<Availability> {
     return AvailabilityCalendar(cells)
   }
 
+  /**
+   * Returns a new AvailabilityCalendar with the given cells added.
+   *
+   * @param elementsToAdd The cells to add.
+   * @return The new AvailabilityCalendar.
+   */
   override fun addCells(elementsToAdd: List<Availability>): AvailabilityCalendar {
     return super.addCells(elementsToAdd) as AvailabilityCalendar
   }

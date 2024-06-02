@@ -18,6 +18,14 @@ import ch.epfl.skysync.ui.theme.lightGray
 import ch.epfl.skysync.viewmodel.FlightsViewModel
 import ch.epfl.skysync.viewmodel.InFlightViewModel
 
+/**
+ * The screen for the crew/pilot flight detail
+ *
+ * @param navController The navigation controller
+ * @param flightId The flight id
+ * @param viewModel The view model
+ * @param inFlightViewModel The in flight view model
+ */
 @Composable
 fun CrewFlightDetailScreen(
     navController: NavHostController,

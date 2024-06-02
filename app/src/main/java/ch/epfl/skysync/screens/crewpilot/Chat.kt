@@ -13,6 +13,12 @@ import ch.epfl.skysync.navigation.BottomBar
 import ch.epfl.skysync.navigation.Route
 import ch.epfl.skysync.viewmodel.ChatViewModel
 
+/**
+ * The screen for the chat for the crew/pilot user
+ *
+ * @param navController The navigation controller
+ * @param viewModel The view model
+ */
 @Composable
 fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel) {
   Scaffold(
@@ -31,12 +37,3 @@ fun ChatScreen(navController: NavHostController, viewModel: ChatViewModel) {
         isAdmin = false)
   }
 }
-
-/*
-@Composable
-@Preview
-fun Preview() {
-  val navController = rememberNavController()
-  ChatScreen(navController = navController)
-}
-*/
