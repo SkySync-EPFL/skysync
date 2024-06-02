@@ -199,25 +199,26 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
         }
       }
 
-  private fun refreshAvailableUsers() =
-      viewModelScope.launch {
-        if (hasDateAndTimeSlot()) {
-          _availableUsers.value =
-              repository.userTable.getUsersAvailableOn(
-                  flightTable = repository.flightTable,
-                  localDate = date!!,
-                  timeslot = timeSlot!!,
-                  onError = { onError(it) })
-          if (needsToAddCurrentlyAffected(flight.value?.team)) {
-            val flightUsers = flight.value?.team!!.getUsers()
-            val availableUsers = _availableUsers.value.filter { !flightUsers.contains(it) }
-            _availableUsers.value = availableUsers.plus(flight.value?.team!!.getUsers())
-          }
-        } else {
-          _availableUsers.value = repository.userTable.getAll(onError = { onError(it) })
+    /** Refreshes the available users */
+    fun refreshAvailableUsers() =
+        viewModelScope.launch {
+            if (hasDateAndTimeSlot()) {
+                _availableUsers.value =
+                    repository.userTable.getUsersAvailableOn(
+                        flightTable = repository.flightTable,
+                        localDate = date!!,
+                        timeslot = timeSlot!!,
+                        onError = { onError(it) })
+                if (needsToAddCurrentlyAffected(flight.value?.team)) {
+                    val flightUsers = flight.value?.team!!.getUsers()
+                    val availableUsers = _availableUsers.value.filter { !flightUsers.contains(it) }
+                    _availableUsers.value = availableUsers.plus(flight.value?.team!!.getUsers())
+                }
+            } else {
+                _availableUsers.value = repository.userTable.getAll(onError = { onError(it) })
+            }
+            _availableUsers.value = _availableUsers.value.sortedBy { it.name() }
         }
-        _availableUsers.value = _availableUsers.value.sortedBy { it.name() }
-      }
 
   /** Refreshes the available vehicles */
   fun refreshAvailableVehicles() =
@@ -284,20 +285,16 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
 
         setUsersToNewStatus(newFlight, AvailabilityStatus.ASSIGNED)
       }
-
+    /**
+     * Deletes the flight from the db
+     *
+     * @param flight The flight to delete
+     */
   fun deleteFlight(flight: Flight) =
       viewModelScope.launch {
         repository.flightTable.delete(flight.id, onError = { onError(it) })
         setUsersToNewStatus(flight, AvailabilityStatus.OK)
       }
-  /**
-   * Deletes the flight from the db
-   *
-   * @param flightId The id of the flight to delete
-   */
-  fun deleteFlight(flightId: String) =
-      viewModelScope.launch { repository.flightTable.delete(flightId, onError = { onError(it) }) }
-
   /**
    * Adds the given flight to the db and the viewmodel
    *
