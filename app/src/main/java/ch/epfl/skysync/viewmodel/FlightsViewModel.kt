@@ -354,7 +354,7 @@ class FlightsViewModel(val repository: Repository, val userId: String?, val flig
   /**
    * Create a confirmed flight from a planned flight
    *
-   * @param flight The flight to update
+   * @param flight The flight to confirm
    */
   fun addConfirmedFlight(flight: ConfirmedFlight) =
       viewModelScope.launch {
